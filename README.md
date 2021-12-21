@@ -63,10 +63,7 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 * Responsible AI patterns
 
 [M8] ML Engineering and MLOps Case Studies
-* Mechanical Turk Data Labeling 
-* Urban mobility
-* Industrial IoT
-* Power Systems
+* ...
 
 ## Exam
 
