@@ -27,25 +27,24 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 
 
 ## Modules
-[M1] Designing distributed AI-enabled services
+[M1] Designing AI-Ready Distributed Services
 * Single node patterns (Sidecar, Ambassador, Adapters)
 * Serving patterns (Replicated service, load-balanced service, gather/scatter)
 * Batch patterns (Queue Systems, Event-driven, coordinated batches)
 * ML patterns (Resilient Serving, reproducibility, responsible AI)
 
-[M2] Deploying distributed AI-enabled services
+[M2] Deploying on the Edge-to-Cloud Continuum
 * Containerization (Docker) and scaling up (Kubernetes)
 * Edge Deployment (Coral, Azure Percept, TFHub)
 * Cloud Deployment (AWS, Azure, GCP)
 * Integrating ML models and reusing workflows
-* Edge-to-Cloud Continuum
 
-[M3] Continuous delivery, monitoring and logging 
+[M3] Continuous Delivery, Integration and Monitoring
 * Packaging applications, services, and ML models
 * Continuous delivery and deployment 
 * Monitoring applications, services, and ML models with stream processing systems (Apache Samza, Apache Kafka)
 
-[M4] Distributed cyber-physical systems 
+[M4] Distributed Cyber-Physical Systems 
 - Digital Twin Models and Edge/Cloud Architectures
 - Digital Twin Frameworks (Eclipse Ditto, Microsoft Azure)
 - Digital Twins Use Cases (IoT, Industrial IoT, ...)
