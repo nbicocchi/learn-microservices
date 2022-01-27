@@ -42,8 +42,8 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 
 [M3] Continuous delivery, monitoring and logging 
 * Packaging applications, services, and ML models
-* Continuous Delivery and Deployment of distributed services 
-* Monitoring distributes services with stream processing systems (Apache Samza, Apache Kafka)
+* Continuous Delivery and Deployment 
+* Monitoring applications, services, and ML models with stream processing systems (Apache Samza, Apache Kafka)
 
 [M4] Digital Twins
 - Digital Twin Models and Edge/Cloud Architectures
