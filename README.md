@@ -63,9 +63,9 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 
 [M7] Patterns for scalable, reliable, services
 * Single node patterns (Sidecar, Ambassador, Adapters)
-* Serving Patterns (Replicated service, load-balanced service, gather/scatter)
-* Batch Computational Patterns (Queue Systems, Event-driven, coordinated batches)
-* ML Patterns (Resilient Serving, reproducibility, Responsible AI)
+* Serving patterns (Replicated service, load-balanced service, gather/scatter)
+* Batch patterns (Queue Systems, Event-driven, coordinated batches)
+* Machine learning patterns (Resilient Serving, reproducibility, responsible AI)
 
 [M8] ML Engineering and MLOps Case Studies
 * ...
