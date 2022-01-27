@@ -45,11 +45,10 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 * Continuous delivery and deployment 
 * Monitoring applications, services, and ML models with stream processing systems (Apache Samza, Apache Kafka)
 
-[M4] Digital Twins
+[M4] The Digital Twins approach 
 - Digital Twin Models and Edge/Cloud Architectures
-- Digital Twins Use Cases (IoT and Industrial IoT)
 - Digital Twin Frameworks (Eclipse Ditto, Microsoft Azure)
-
+- Digital Twins Use Cases (IoT and Industrial IoT)
 
 ## Exam
 
