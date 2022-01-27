@@ -7,8 +7,8 @@
 
 ## Books
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
-* Building Industrial Digital Twins: Design, Develop, and Deploy Digital Twin Solutions for Real-world Industries
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
+* Building Industrial Digital Twins: Design, Develop, and Deploy Digital Twin Solutions for Real-world Industries
 
 <!--
 * Introducing MLOps: How to Scale Machine Learning in the Enterprise; Treveil et. al.; O'Reilly
