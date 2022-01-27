@@ -7,11 +7,11 @@
 
 ## Books
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
-[
+<!--
 * Introducing MLOps: How to Scale Machine Learning in the Enterprise; Treveil et. al.; O'Reilly
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 * Machine Learning Design Patterns: Solutions to Common Challenges in Data Preparation, Model Building, and MLOps; Lakshmanan et. al.; O'Reilly
-]:
+-->
 
 ## Articles
 * A Digital Twin Architecture Model Applied with MLOps Techniques to Improve Short-Term Energy Consumption Prediction; Fujii et. al.
