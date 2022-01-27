@@ -6,9 +6,15 @@
 * [Google Cloud Platform]()
 
 ## Books
+* Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
+<!---
 * Introducing MLOps: How to Scale Machine Learning in the Enterprise; Treveil et. al.; O'Reilly
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 * Machine Learning Design Patterns: Solutions to Common Challenges in Data Preparation, Model Building, and MLOps; Lakshmanan et. al.; O'Reilly
+---!>
+
+## Articles
+* A Digital Twin Architecture Model Applied with MLOps Techniques to Improve Short-Term Energy Consumption Prediction; Fujii et. al.
 
 ## Videos
 * N/A
@@ -54,13 +60,11 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 * ML Interoperability (Open Neural Network Exchange)
 * Edge Integration
 
-[M7] ML Design Patterns
-* Data Representation patterns
-* Problem Representation patterns
-* Model Training patterns
-* Resilient Serving patterns
-* Reproducibility patterns
-* Responsible AI patterns
+[M7] Patterns for scalable, reliable, services
+* Single node patterns (Sidecar, Ambassador, Adapters)
+* Serving Patterns (Replicated service, load-balanced service, gather/scatter)
+* Batch Computational Patterns (Queue Systems, Event-driven, coordinated batches)
+* ML Patterns (Resilient Serving, reproducibility, Responsible AI)
 
 [M8] ML Engineering and MLOps Case Studies
 * ...
