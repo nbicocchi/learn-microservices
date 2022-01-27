@@ -1,4 +1,4 @@
-# ML Ops (DIEF, UNIMORE)
+# AI-enabled distributed services (DIEF, UNIMORE)
 
 ## Software, Tutorials, Exercises
 * [Microsoft Azure](https://azure.microsoft.com/en-gb/)
@@ -7,9 +7,11 @@
 
 ## Books
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
+* Building Industrial Digital Twins: Design, Develop, and Deploy Digital Twin Solutions for Real-world Industries
+* Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
+
 <!--
 * Introducing MLOps: How to Scale Machine Learning in the Enterprise; Treveil et. al.; O'Reilly
-* Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 * Machine Learning Design Patterns: Solutions to Common Challenges in Data Preparation, Model Building, and MLOps; Lakshmanan et. al.; O'Reilly
 -->
 
@@ -25,50 +27,29 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 
 
 ## Modules
-[M1] Introduction
-* MLOps key challenges (data quality, reproducibility, drift, scale)
-* MLOps for risk assessment and mitigation
-* MLOps people (data scientists, data engineers, software engineers)
-* MLOps key features (model development, productionalization and deployment, monitoring, iteration and life cycle, governance)
-
-[M2] Pre-Production Checklist
-* Risk evaluation
-* Reproducibility and Auditability
-* Security
-* Quality assurance
-
-[M3] MLOps for Containers and Edge Devices
-* Serving a trained model with microservices
-* Containers for managed ML systems (Docker)
-* Edge devices (Coral, Azure Percept, TFHub, Porting Over Non-TPU Models)
-* Build once, run many MLOps workflows
-
-[M4] Continuous Delivery
-* Packaging for ML models
-* Infrastructure for Continuous Delivery of ML models
-* Controlled rollout of ML models
-* Testing techniques for Continuous Deployment of ML models
-
-[M5] Monitoring and Logging 
-* Monitoring and Observability
-* Understanding Model Degradation
-* Monitoring Drift with AWS SageMaker and Azure ML
-
-[M6] Deployment on Cloud Infrastructures
-* Scaling up (Kubernetes)
-* Cloud Deployment (AWS, Azure, GCP)
-* Multi-Cloud, Hybrid-Cloud Deployment
-* AI Integration (Open Neural Network Exchange)
-* Edge Integration
-
-[M7] Patterns for scalable, reliable, services
+[M1] Designing distributed services
 * Single node patterns (Sidecar, Ambassador, Adapters)
 * Serving patterns (Replicated service, load-balanced service, gather/scatter)
 * Batch patterns (Queue Systems, Event-driven, coordinated batches)
 * Machine learning patterns (Resilient Serving, reproducibility, responsible AI)
 
-[M8] ML Engineering and MLOps Case Studies
-* ...
+[M2] Deploying distributed services
+* Containerization (Docker) and scaling up (Kubernetes)
+* Edge Deployment (Coral, Azure Percept, TFHub)
+* Cloud Deployment (AWS, Azure, GCP)
+* Integrating ML models and reusing workflows
+* Edge-to-Cloud Continuum
+
+[M3] Continuous delivery, monitoring and logging 
+* Packaging applications, services, and ML models
+* Continuous Delivery and Deployment of distributed services 
+* Monitoring distributes services with stream processing systems (Apache Samza, Apache Kafka)
+
+[M4] Digital Twins
+- Digital Twin Models and Edge/Cloud Architectures
+- Digital Twins Use Cases (IoT and Industrial IoT)
+- Digital Twin Frameworks (Eclipse Ditto, Microsoft Azure)
+
 
 ## Exam
 
