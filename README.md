@@ -27,13 +27,13 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 
 
 ## Modules
-[M1] Designing distributed cyber-physical systems
+[M1] Designing distributed AI-enabled services
 * Single node patterns (Sidecar, Ambassador, Adapters)
 * Serving patterns (Replicated service, load-balanced service, gather/scatter)
 * Batch patterns (Queue Systems, Event-driven, coordinated batches)
 * ML patterns (Resilient Serving, reproducibility, responsible AI)
 
-[M2] Deploying distributed cyber-physical systems
+[M2] Deploying distributed AI-enabled services
 * Containerization (Docker) and scaling up (Kubernetes)
 * Edge Deployment (Coral, Azure Percept, TFHub)
 * Cloud Deployment (AWS, Azure, GCP)
@@ -45,10 +45,10 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 * Continuous delivery and deployment 
 * Monitoring applications, services, and ML models with stream processing systems (Apache Samza, Apache Kafka)
 
-[M4] The Digital Twins approach 
+[M4] Distributed cyber-physical systems 
 - Digital Twin Models and Edge/Cloud Architectures
 - Digital Twin Frameworks (Eclipse Ditto, Microsoft Azure)
-- Digital Twins Use Cases (IoT and Industrial IoT)
+- Digital Twins Use Cases (IoT, Industrial IoT, ...)
 
 ## Exam
 
