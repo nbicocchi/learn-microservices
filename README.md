@@ -1,4 +1,4 @@
-# AI-enabled distributed services (DIEF, UNIMORE)
+# Distributed Edge Programming (DIEF, UNIMORE)
 
 ## Software, Tutorials, Exercises
 * [Microsoft Azure](https://azure.microsoft.com/en-gb/)
