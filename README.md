@@ -54,10 +54,11 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 * Understanding Model Degradation
 * Monitoring Drift with AWS SageMaker and Azure ML
 
-[M6] MLOps for Cloud Infrastructures
-* Scaling deployments (Kubernetes)
-* MLOps for AWS, Azure, GCP
-* ML Interoperability (Open Neural Network Exchange)
+[M6] Deployment on Cloud Infrastructures
+* Scaling up (Kubernetes)
+* Cloud Deployment (AWS, Azure, GCP)
+* Multi-Cloud, Hybrid-Cloud Deployment
+* AI Integration (Open Neural Network Exchange)
 * Edge Integration
 
 [M7] Patterns for scalable, reliable, services
