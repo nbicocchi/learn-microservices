@@ -31,7 +31,7 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 * Single node patterns (Sidecar, Ambassador, Adapters)
 * Serving patterns (Replicated service, load-balanced service, gather/scatter)
 * Batch patterns (Queue Systems, Event-driven, coordinated batches)
-* Machine learning patterns (Resilient Serving, reproducibility, responsible AI)
+* ML patterns (Resilient Serving, reproducibility, responsible AI)
 
 [M2] Deploying distributed services
 * Containerization (Docker) and scaling up (Kubernetes)
