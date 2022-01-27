@@ -27,13 +27,13 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 
 
 ## Modules
-[M1] Designing distributed services
+[M1] Designing distributed cyber-physical systems
 * Single node patterns (Sidecar, Ambassador, Adapters)
 * Serving patterns (Replicated service, load-balanced service, gather/scatter)
 * Batch patterns (Queue Systems, Event-driven, coordinated batches)
 * ML patterns (Resilient Serving, reproducibility, responsible AI)
 
-[M2] Deploying distributed services
+[M2] Deploying distributed cyber-physical systems
 * Containerization (Docker) and scaling up (Kubernetes)
 * Edge Deployment (Coral, Azure Percept, TFHub)
 * Cloud Deployment (AWS, Azure, GCP)
@@ -42,7 +42,7 @@ Please use Microsoft Teams instead of emails for asking questions and discuss id
 
 [M3] Continuous delivery, monitoring and logging 
 * Packaging applications, services, and ML models
-* Continuous Delivery and Deployment 
+* Continuous delivery and deployment 
 * Monitoring applications, services, and ML models with stream processing systems (Apache Samza, Apache Kafka)
 
 [M4] Digital Twins
