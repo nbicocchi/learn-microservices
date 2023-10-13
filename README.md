@@ -44,13 +44,6 @@
 * Decomposition guidelines
 * Defining service APIs
 
-[] Synchronous communication
-* Synchronous communications (REST/GraphQL/gRPC)
-* Real-time communication (WebSocket Protocol)
-* Pull communication (AMQP)
-* Event-Driven communication (Publish/Subscribe)
-
-
 [] Synchronous remote procedure invocation
 * Using REST/GraphQL/gRPC
 * Handling partial failure using the Circuit breaker pattern
@@ -70,7 +63,6 @@
 * Libraries and frameworks for messaging
 * Kafka and RabbitMQ architectures
 
-
 [] Distributed data management
 * The Database-per-Service Pattern (Polyglot Persistence)
 * Database sharding
@@ -87,8 +79,6 @@
 * Microservices Observability with Elastic Stack 
 * Microservices Distributed Tracing with OpenTelemetry and Zipkin
 * Microservices Health Monitoring with Kubernetes, Prometheus and Grafana
-
-
 
 [] Orchestrators
 * Kubernetes design-patterns
