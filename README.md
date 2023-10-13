@@ -1,53 +1,119 @@
 # Distributed Edge Programming (DIEF, UNIMORE)
 
-## Software, Tutorials, Exercises
-* [Microsoft Azure](https://azure.microsoft.com/en-gb/)
-* [Amazon AWS]()
-* [Google Cloud Platform]()
+## Software
+* [spring boot](https://spring.io/projects/spring-boot)
+* [docker](https://www.docker.com/), [kubernetes](https://kubernetes.io/), [istio](https://istio.io/)
+* [kafka](https://kafka.apache.org/), [rabbitmq](https://www.rabbitmq.com/)
+* [redis](https://redis.io/), [memcached](https://memcached.org/) 
+* [prometheus](https://prometheus.io/), [grafana](https://grafana.com/)
+* [cockroachdb](https://www.cockroachlabs.com/), [cassandra](https://cassandra.apache.org/), [debezium](https://debezium.io/)
 
 ## Books
+* Microservices Patterns; Richardson
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
+* Hands-On Microservices with Kubernetes; Sayfan
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
-* Building Industrial Digital Twins: Design, Develop, and Deploy Digital Twin Solutions for Real-world Industries
-
-<!--
-* Introducing MLOps: How to Scale Machine Learning in the Enterprise; Treveil et. al.; O'Reilly
-* Machine Learning Design Patterns: Solutions to Common Challenges in Data Preparation, Model Building, and MLOps; Lakshmanan et. al.; O'Reilly
--->
 
 ## Articles
-* A Digital Twin Architecture Model Applied with MLOps Techniques to Improve Short-Term Energy Consumption Prediction; Fujii et. al.
+* [microservices.io](https://microservices.io/index.html)
+* [vinsguru](https://www.vinsguru.com/)
+* [Azure Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/)
 
 ## Videos
-* N/A
+* [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
+* [Event-Driven Architectures Done Right, Apache Kafka](https://www.youtube.com/watch?v=A_mstzRGfIE)
 
-
-## Microsoft Teams
-Please use Microsoft Teams instead of emails for asking questions and discuss ideas, exercises, and home projects.
-
+## Code Examples
+* https://github.com/vinsguru/vinsguru-blog-code-samples/
 
 ## Modules
-[M1] Designing AI-Ready Distributed Services
-* Single node patterns (Sidecar, Ambassador, Adapters)
-* Serving patterns (Replicated service, load-balanced service, gather/scatter)
-* Batch patterns (Queue Systems, Event-driven, coordinated batches)
-* ML patterns (Resilient Serving, reproducibility, responsible AI)
+[] Transitioning from monolithic architectures to microservices
 
-[M2] Deploying on the Edge-to-Cloud Continuum
-* Containerization (Docker) and scaling up (Kubernetes)
-* Edge Deployment (Coral, Azure Percept, TFHub)
-* Cloud Deployment (AWS, Azure, GCP)
+* What is software architecture and why does it matter 
+* Overview of architectural styles (monolithic,layered-monolithic, clean, modular-monolithic, microservices)
+* Microservices as a form of modularity (scale cube)
+* Benefits and drawbacks of the microservice architecture
+* Beyond microservices: process and organization
+* The Twelve Factors (of cloud-native applications)
+* The Eight Fallacies of Distributed Computing
+
+[] Decomposition strategies 
+* Defining services
+    * Decompose by business capability pattern
+    * Decompose by sub-domain pattern
+* Decomposition guidelines
+* Defining service APIs
+
+[] Synchronous communication
+* Synchronous communications (REST/GraphQL/gRPC)
+* Real-time communication (WebSocket Protocol)
+* Pull communication (AMQP)
+* Event-Driven communication (Publish/Subscribe)
+
+
+[] Synchronous remote procedure invocation
+* Using REST/GraphQL/gRPC
+* Handling partial failure using the Circuit breaker pattern
+* Using service discovery
+* API Gateways
+    * Routing pattern
+    * Aggregation Pattern
+    * Offloading Pattern
+    * Service Registry/Discovery Pattern
+
+[] Asynchronous messaging
+* Benefits and challenges of asynchronous Communication
+* Messaging-based service APIs
+* Using a message broker
+* Competing receivers and message ordering
+* Transactional messaging
+* Libraries and frameworks for messaging
+* Kafka and RabbitMQ architectures
+
+
+[] Distributed data management
+* The Database-per-Service Pattern (Polyglot Persistence)
+* Database sharding
+* Cross-service queries
+    * Materialized View and CQRS patterns
+    * Transactional boundaries
+* Cross-service transactions
+    * SAGA pattern (choreography and orchestration)
+    * Transactional Outbox pattern
+    * Change Data Capture (CDC) pattern
+* Distributed caching
+
+[] Resilience, Observability and monitoring
+* Microservices Observability with Elastic Stack 
+* Microservices Distributed Tracing with OpenTelemetry and Zipkin
+* Microservices Health Monitoring with Kubernetes, Prometheus and Grafana
+
+
+
+[] Orchestrators
+* Kubernetes design-patterns
+    * Single node patterns (Sidecar, Ambassador, Adapters)
+    * Serving patterns (Replicated service, load-balanced service, gather/scatter)
+    * Batch patterns (Queue Systems, Event-driven, coordinated batches)
+
+[] Communications (Services Mesh)
+
+[] Backing Services (K8s Databases, Caches, Message Brokers)
+
+[] Scalability (HPA, KEDA)
+
+[] Devops CI/CD IaC GitOps
+
+[] Monitoring & Observability
+
+[] AI-enabled microservices
 * Integrating ML models and reusing workflows
-
-[M3] Continuous Delivery, Integration and Monitoring
 * Packaging applications, services, and ML models
-* Continuous delivery and deployment 
-* Monitoring applications, services, and ML models with stream processing systems (Apache Samza, Apache Kafka)
+* Monitoring ML models with stream processing systems
+* ML patterns (Resilient Serving, reproducibility)
 
-[M4] Distributed Cyber-Physical Systems 
-- Digital Twin Models and Edge/Cloud Architectures
-- Digital Twin Frameworks (Eclipse Ditto, Microsoft Azure)
-- Digital Twins Use Cases (IoT, Industrial IoT, ...)
+
+
 
 ## Exam
 
