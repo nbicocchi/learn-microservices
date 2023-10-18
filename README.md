@@ -98,7 +98,7 @@
 * Event sourcing and publishing events
 * Using snapshots to improve performance
 * Idempotent message processing
-* Implementing an event store 202
+* Implementing an event store
 * Using sagas and event sourcing together
     * Choreography-based sagas using event sourcing
     * Orchestration-based sagas using event sourcing
