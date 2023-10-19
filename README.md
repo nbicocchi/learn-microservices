@@ -1,18 +1,19 @@
 # Distributed Edge Programming (DIEF, UNIMORE)
 
 ## Software
-* [spring boot](https://spring.io/projects/spring-boot)
-* [docker](https://www.docker.com/), [kubernetes](https://kubernetes.io/)
-* [istio](https://istio.io/), [linkerd](https://linkerd.io/)
-* [kafka](https://kafka.apache.org/), [rabbitmq](https://www.rabbitmq.com/)
-* [redis](https://redis.io/), [memcached](https://memcached.org/) 
-* [prometheus](https://prometheus.io/), [grafana](https://grafana.com/)
-* [cockroachdb](https://www.cockroachlabs.com/), [cassandra](https://cassandra.apache.org/), [debezium](https://debezium.io/)
+* Frameworks: spring boot, quarkus, micronaut 
+* Orchestration: docker, kubernetes
+* Service discovery: eureka
+* Service mesh: istio, linkerd, dapr, envoy
+* Message queue: kafka, rabbitmq
+* Caching: redis, memcached 
+* Observability: prometheus/grafana, consul, jaeger, zipkin, elasticsearch/kibana (ELK)
+* Distributed database: cockroachdb, cassandra, debezium
 
 ## Books
 * Microservices Patterns; Richardson
+* Cloud Native DevOps with Kubernetes; Arundel, Domingus
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
-* Hands-On Microservices with Kubernetes; Sayfan
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 
 ## Articles
@@ -25,10 +26,12 @@
 * [Dynamo: Amazon’s Highly Available Key-value Store](https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html)
 * [Bigtable: A Distributed Storage System for Structured Data](https://static.googleusercontent.com/media/research.google.com/en//archive/bigtable-osdi06.pdf)
 * [Service Discovery in Microservices](https://www.baeldung.com/cs/service-discovery-microservices)
+* [Distributed Tracing Infrastructure with Jaeger on Kubernetes](https://masroorhasan.medium.com/tracing-infrastructure-with-jaeger-on-kubernetes-6800132a677)
 
 ## Videos
 * [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
 * [Event-Driven Architectures Done Right, Apache Kafka](https://www.youtube.com/watch?v=A_mstzRGfIE)
+* [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
 
 ## Code Examples
 * https://github.com/vinsguru/vinsguru-blog-code-samples/
@@ -128,10 +131,10 @@
 * Designing observable services
     * Health check API pattern 
     * Log aggregation pattern (Elasticsearch/Logstash/Kibana)
-    * Distributed tracing pattern (penTelemetry/Zipkin)
+    * Distributed tracing pattern (OpenTelemetry/Zipkin)
     * Application metrics pattern (Prometheus/Grafana)
 * Developing services using the Microservice chassis pattern
-* From microservice chassis to service mesh (Istio/Linkerd/Dapr)
+* From microservice chassis to service mesh (Istio/Linkerd/Dapr/Envoy)
 
 [11] Deploying microservices
 * Deployment strategies
