@@ -12,6 +12,7 @@
 
 ## Books
 * Microservices Patterns; Richardson
+* Microservices AntiPatterns and Pitfalls; Richards
 * Cloud Native DevOps with Kubernetes; Arundel, Domingus
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
@@ -46,8 +47,7 @@
 * What is software architecture and why does it matter 
 * Overview of architectural styles (monolithic,layered-monolithic, clean, modular-monolithic, microservices)
 * Microservices as a form of modularity (scale cube)
-* Benefits and drawbacks of the microservice architecture
-* Beyond microservices: process and organization
+* Benefits, drawbacks, and anti-patterns of the microservice architecture
 * The scale cube and microservices
 * The twelve factors (of cloud-native applications)
 * The eight fallacies of Distributed Computing
@@ -65,9 +65,10 @@
     * Client-side service discovery
     * Server-side service discovery
 * Handling failures (resiliency patterns)
-    * Circuit breaker
+    * Circuit breaker, retry, fallback
+    * Rate limiter, time limiter
     * Bulkhead
-    * Retry
+    * Cache
 
 [4] Asynchronous messaging
 * Benefits and challenges of asynchronous Communication
