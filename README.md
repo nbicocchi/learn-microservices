@@ -12,6 +12,7 @@
 
 ## Books
 * Microservices Patterns; Richardson
+* Microservices with Spring Boot 3 and Spring Cloud; Larsson
 * Microservices AntiPatterns and Pitfalls; Richards
 * Cloud Native DevOps with Kubernetes; Arundel, Domingus
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
@@ -33,6 +34,7 @@
 * [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
 * [Event-Driven Architectures Done Right, Apache Kafka](https://www.youtube.com/watch?v=A_mstzRGfIE)
 * [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
+* [Visualising software architecture with the C4 model](https://www.youtube.com/watch?v=x2-rSnhpw0g&t=11s)
 
 ## Code Examples
 * https://github.com/vinsguru/vinsguru-blog-code-samples/
