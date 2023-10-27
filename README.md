@@ -15,29 +15,29 @@
 * Microservices with Spring Boot 3 and Spring Cloud; Larsson
 * Microservices AntiPatterns and Pitfalls; Richards
 * Cloud Native DevOps with Kubernetes; Arundel, Domingus
+* Modern DevOps Practices; Agarwal
 * Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 
 ## Articles
 * [microservices.io](https://microservices.io/index.html)
-* [vinsguru](https://www.vinsguru.com/)
+* [DZone](https://dzone.com/)
 * [Azure Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/)
-* [Java Microservices Collection](https://dzone.com/articles/java-microservices-tutorials-and-articles)
-* [The Complete Kubernetes Collection](https://dzone.com/articles/the-complete-kubernetes-collection-tutorials-and-tools)
-* [Building Mancala Game in Microservices Using Spring Boot](https://dzone.com/articles/mancala-game-implementation-using-microservices-ap)
-* [Dynamo: Amazon’s Highly Available Key-value Store](https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html)
-* [Bigtable: A Distributed Storage System for Structured Data](https://static.googleusercontent.com/media/research.google.com/en//archive/bigtable-osdi06.pdf)
 * [Service Discovery in Microservices](https://www.baeldung.com/cs/service-discovery-microservices)
 * [Distributed Tracing Infrastructure with Jaeger on Kubernetes](https://masroorhasan.medium.com/tracing-infrastructure-with-jaeger-on-kubernetes-6800132a677)
+* [Transitioning from RestTemplate to WebClient in Spring Boot: A Detailed Guide](https://medium.com/hprog99/transitioning-from-resttemplate-to-webclient-in-spring-boot-a-detailed-guide-4febd21063ba)
 
 ## Videos
+* [What is 12-Factor App?](https://www.youtube.com/watch?v=1OhmRmMsGdQ)
+* [Fallacies of Distributed Systems](https://www.youtube.com/watch?v=8fRzZtJ_SLk&list=PL1DZqeVwRLnD3EjyciYAO82dT9Owiq8I5)
+* [Visualising software architecture with the C4 model](https://www.youtube.com/watch?v=x2-rSnhpw0g&t=11s)
 * [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
 * [Event-Driven Architectures Done Right, Apache Kafka](https://www.youtube.com/watch?v=A_mstzRGfIE)
+* [The ULTIMATE Guide to Spring Boot](https://www.youtube.com/watch?v=Nv2DERaMx-4)
 * [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
-* [Visualising software architecture with the C4 model](https://www.youtube.com/watch?v=x2-rSnhpw0g&t=11s)
 
 ## Code Examples
-* https://github.com/vinsguru/vinsguru-blog-code-samples/
+* https://github.com/PacktPublishing/Microservices-with-Spring-Boot-and-Spring-Cloud-Third-Edition/tree/main
 
 ## Exam
 * Answer general questions about the key topics of the course (1 or 2) (50% weight)
