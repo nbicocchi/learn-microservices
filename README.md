@@ -44,7 +44,7 @@
 * Discuss the structure and engineering choices of a home project (50% weight)
 
 ## Modules
-[1] Transitioning from monolithic architectures to microservices
+[] Transitioning from monolithic architectures to microservices
 
 * What is software architecture and why does it matter 
 * Overview of architectural styles (monolithic,layered-monolithic, clean, modular-monolithic, microservices)
@@ -54,14 +54,16 @@
 * The twelve factors (of cloud-native applications)
 * The eight fallacies of Distributed Computing
 
-[2] Decomposition strategies 
+[] Spring Boot introduction
+
+[] Microservices decomposition strategies 
 * Defining services
     * Decompose by business capability pattern
     * Decompose by sub-domain pattern
 * Decomposition guidelines
 * Defining service APIs
 
-[3] Synchronous remote procedure invocation
+[] Synchronous remote procedure invocation
 * REST/GraphQL/gRPC APIs
 * Service discovery pattern
     * Client-side service discovery
@@ -72,7 +74,7 @@
     * Bulkhead
     * Cache
 
-[4] Asynchronous messaging
+[] Asynchronous messaging
 * Benefits and challenges of asynchronous Communication
 * Messaging-based service APIs
 * Using a message broker
@@ -81,7 +83,7 @@
 * Libraries and frameworks for messaging
 * Kafka and RabbitMQ architectures
 
-[5] Managing transactions and queries
+[] Managing transactions and queries
 * The need for distributed transactions in a microservice architecture
 * Using the Saga pattern to maintain data consistency
     * Choreography-based sagas
@@ -90,7 +92,7 @@
 * The API composition pattern 
 * The CQRS pattern
 
-[6] Business logic in a microservice architecture
+[] Business logic in a microservice architecture
 * Business logic organization patterns
     * Transaction script pattern
     * Domain model pattern
@@ -99,7 +101,7 @@
 * Generating and publishing domain events
 * Consuming domain events
 
-[7] Business logic with event sourcing
+[] Business logic with event sourcing
 * The trouble with traditional persistence
 * Event sourcing and publishing events
 * Using snapshots to improve performance
@@ -109,7 +111,7 @@
     * Choreography-based sagas using event sourcing
     * Orchestration-based sagas using event sourcing
 
-[8] API Gateways
+[] API Gateways
 * The API gateway pattern
 * Backends for Frontends pattern
 * Implementing an API gateway
@@ -117,7 +119,13 @@
     * Developing your own API gateway
     * Implementing an API gateway using GraphQL
 
-[9] Testing microservices
+[] Reactive Microservices
+* Choosing between non-blocking synchronous APIs and event-driven asynchronous services
+* Developing non-blocking synchronous REST APIs
+* Developing event-driven asynchronous services
+* Testing reactive microservices
+
+[] Testing microservices
 * Testing strategies for microservice architectures
     * The challenge of testing microservices
     * The deployment pipeline
@@ -126,9 +134,8 @@
     * Integration tests
     * Component tests 
     * End-to-end tests
-* Introducing chaos-mesh
 
-[10] Production-ready services
+[] Production-ready services
 * Developing secure services
 * Designing configurable services
 * Designing observable services
@@ -137,18 +144,18 @@
     * Distributed tracing pattern (OpenTelemetry/Zipkin)
     * Application metrics pattern (Prometheus/Grafana)
 * Developing services using the Microservice chassis pattern
-* From microservice chassis to service mesh (Istio/Linkerd/Dapr/Envoy)
 
-[11] Deploying microservices
+[] Deploying microservices
 * Deployment strategies
     * Language-specific packaging pattern
     * Virtual machine pattern
     * Service container pattern
     * Serverless pattern
 * Deploying with Kubernetes
+* Testing with Chaos-Mesh
 * Devops CI/CD IaC GitOps
 
-[12] AI-enabled microservices
+[] AI-enabled microservices
 * Integrating ML models and reusing workflows
 * Packaging services and ML models
 * Monitoring ML models in production
