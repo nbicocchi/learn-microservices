@@ -11,12 +11,12 @@
 * Distributed database: cockroachdb, cassandra, debezium
 
 ## Books
+* Spring Boot in Action; Walls
 * Microservices Patterns; Richardson
 * Microservices with Spring Boot 3 and Spring Cloud; Larsson
 * Microservices AntiPatterns and Pitfalls; Richards
 * Cloud Native DevOps with Kubernetes; Arundel, Domingus
 * Modern DevOps Practices; Agarwal
-* Designing Distributed Systems Patterns and Paradigms for Scalable, Reliable Services; Burns
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 
 ## Articles
