@@ -1,7 +1,7 @@
 # Distributed Edge Programming (DIEF, UNIMORE)
 
 ## Software
-* Frameworks: spring boot, quarkus, micronaut 
+* Frameworks: spring boot
 * Orchestration: docker, kubernetes
 * Service discovery: eureka
 * Service mesh: istio, linkerd, dapr, envoy
