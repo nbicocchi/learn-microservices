@@ -19,14 +19,6 @@
 * Modern DevOps Practices; Agarwal
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 
-## Articles
-* [microservices.io](https://microservices.io/index.html)
-* [DZone](https://dzone.com/)
-* [Azure Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/)
-* [Service Discovery in Microservices](https://www.baeldung.com/cs/service-discovery-microservices)
-* [Distributed Tracing Infrastructure with Jaeger on Kubernetes](https://masroorhasan.medium.com/tracing-infrastructure-with-jaeger-on-kubernetes-6800132a677)
-* [Transitioning from RestTemplate to WebClient in Spring Boot: A Detailed Guide](https://medium.com/hprog99/transitioning-from-resttemplate-to-webclient-in-spring-boot-a-detailed-guide-4febd21063ba)
-
 ## Videos
 * [What is 12-Factor App?](https://www.youtube.com/watch?v=1OhmRmMsGdQ)
 * [Fallacies of Distributed Systems](https://www.youtube.com/watch?v=8fRzZtJ_SLk&list=PL1DZqeVwRLnD3EjyciYAO82dT9Owiq8I5)
@@ -35,9 +27,6 @@
 * [Event-Driven Architectures Done Right, Apache Kafka](https://www.youtube.com/watch?v=A_mstzRGfIE)
 * [The ULTIMATE Guide to Spring Boot](https://www.youtube.com/watch?v=Nv2DERaMx-4)
 * [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
-
-## Code Examples
-* https://github.com/PacktPublishing/Microservices-with-Spring-Boot-and-Spring-Cloud-Third-Edition/tree/main
 
 ## Exam
 * Answer general questions about the key topics of the course (1 or 2) (50% weight)
