@@ -11,7 +11,7 @@
 * Distributed database: cockroachdb, cassandra, debezium
 
 ## Books
-* Spring Boot in Action; Walls
+* Spring Microservices in Action; Carnell, Sánchez
 * Microservices Patterns; Richardson
 * Microservices with Spring Boot 3 and Spring Cloud; Larsson
 * Microservices AntiPatterns and Pitfalls; Richards
@@ -44,122 +44,72 @@
 * Discuss the structure and engineering choices of a home project (50% weight)
 
 ## Modules
-[] Transitioning from monolithic architectures to microservices
-
+[W1-1] Introduction to microservices
 * What is software architecture and why does it matter 
-* Overview of architectural styles (monolithic,layered-monolithic, clean, modular-monolithic, microservices)
-* Microservices as a form of modularity (scale cube)
+* Overview of architectural styles (monolithic, layered-monolithic, clean, modular-monolithic, microservices)
 * Benefits, drawbacks, and anti-patterns of the microservice architecture
-* The scale cube and microservices
-* The twelve factors (of cloud-native applications)
-* The eight fallacies of Distributed Computing
+  * The scale cube and microservices
+  * The twelve factors (of cloud-native applications)
+  * The eight fallacies of Distributed Computing
+* Microservices decomposition
+  * Defining services (business capability/sub-domain pattern)
+  * Establish service granularity
+  * Defining service interfaces (REST/GraphQL/gRPC APIs)
 
-[] Spring Boot introduction
+[W1-2] Introduction to Spring Boot and Spring Cloud
 
-[] Microservices decomposition strategies 
-* Defining services
-    * Decompose by business capability pattern
-    * Decompose by sub-domain pattern
-* Decomposition guidelines
-* Defining service APIs
+[W2-1] Service configuration
+* On managing configuration (and complexity)
+* Building our Spring Cloud Configuration Server
+* Integrating Spring Cloud Config with a Spring Boot client
+* Protecting sensitive configuration information
 
-[] Synchronous remote procedure invocation
-* REST/GraphQL/gRPC APIs
-* Service discovery pattern
-    * Client-side service discovery
-    * Server-side service discovery
-* Handling failures (resiliency patterns)
-    * Circuit breaker, retry, fallback
-    * Rate limiter, time limiter
-    * Bulkhead
-    * Cache
+[W2-1] Service discovery
+* Service discovery in the cloud
+* Building our Spring Eureka service
+* Registering services with Spring Eureka
+* Using service discovery to look up a service
 
-[] Asynchronous messaging
-* Benefits and challenges of asynchronous Communication
-* Messaging-based service APIs
-* Using a message broker
-* Competing receivers and message ordering
-* Transactional messaging
-* Libraries and frameworks for messaging
-* Kafka and RabbitMQ architectures
+[W2-2] Resiliency patterns (Resilience4j)
+* Client-side resiliency patterns? 
+* Implementing a circuit breaker
+* Fallback processing
+* Implementing the bulkhead pattern
+* Implementing the retry pattern
+* Implementing the rate limiter pattern
 
-[] Managing transactions and queries
-* The need for distributed transactions in a microservice architecture
-* Using the Saga pattern to maintain data consistency
-    * Choreography-based sagas
-    * Orchestration-based sagas
-* Handling the lack of transactions isolation
-* The API composition pattern 
-* The CQRS pattern
+[W2-2] Service routing
+* Introducing Spring Cloud Gateway
+* Configuring the Spring Cloud Gateway to communicate with Eureka
+* Automated mapping of routes via service discovery 
+* Manually mapping routes using service discovery
+* Dynamically reloading route configuration
+* Predicate and Filter Factories 
 
-[] Business logic in a microservice architecture
-* Business logic organization patterns
-    * Transaction script pattern
-    * Domain model pattern
-    * Domain-driven aggregate pattern
-* Designing business logic with aggregates
-* Generating and publishing domain events
-* Consuming domain events
+[W3-1] Persistence
 
-[] Business logic with event sourcing
-* The trouble with traditional persistence
-* Event sourcing and publishing events
-* Using snapshots to improve performance
-* Idempotent message processing
-* Implementing an event store
-* Using sagas and event sourcing together
-    * Choreography-based sagas using event sourcing
-    * Orchestration-based sagas using event sourcing
+[W3-2] Event-driven architectures
+* The case for messaging, EDA, and microservices
+* Introducing Spring Cloud Stream
+* Configuring Apache Kafka and Redis in Docker 
+* Spring Cloud Stream use case: Distributed caching 
 
-[] API Gateways
-* The API gateway pattern
-* Backends for Frontends pattern
-* Implementing an API gateway
-    * Using an off-the-shelf API gateway product/service
-    * Developing your own API gateway
-    * Implementing an API gateway using GraphQL
+[W4-1] Distributed tracing 
+* Spring Cloud Sleuth and the correlation ID
+* Log aggregation and Spring Cloud Sleuth
+* Distributed tracing with Zipkin 
 
-[] Reactive Microservices
-* Choosing between non-blocking synchronous APIs and event-driven asynchronous services
-* Developing non-blocking synchronous REST APIs
-* Developing event-driven asynchronous services
-* Testing reactive microservices
+[W4-2] Deploying microservices
+* The architecture of a build/deployment pipeline
+* Setting up O-stock’s core infrastructure in the cloud
+* Beyond the infrastructure: Deploying O-stock and ELK
+* Your build/deployment pipeline in action
 
-[] Testing microservices
-* Testing strategies for microservice architectures
-    * The challenge of testing microservices
-    * The deployment pipeline
-* Writing tests
-    * Unit tests
-    * Integration tests
-    * Component tests 
-    * End-to-end tests
+[W5-1] 
+* Chapters 15-16 Larsson
 
-[] Production-ready services
-* Developing secure services
-* Designing configurable services
-* Designing observable services
-    * Health check API pattern 
-    * Log aggregation pattern (Elasticsearch/Logstash/Kibana)
-    * Distributed tracing pattern (OpenTelemetry/Zipkin)
-    * Application metrics pattern (Prometheus/Grafana)
-* Developing services using the Microservice chassis pattern
-
-[] Deploying microservices
-* Deployment strategies
-    * Language-specific packaging pattern
-    * Virtual machine pattern
-    * Service container pattern
-    * Serverless pattern
-* Deploying with Kubernetes
-* Testing with Chaos-Mesh
-* Devops CI/CD IaC GitOps
-
-[] AI-enabled microservices
-* Integrating ML models and reusing workflows
-* Packaging services and ML models
-* Monitoring ML models in production
-* ML patterns (Resilient Serving, reproducibility)
+[W5-2] 
+* Chapters 17-18 Larsson
 
 ## FAQ
 n/a
