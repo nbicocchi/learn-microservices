@@ -3,11 +3,11 @@
 ## Software
 * Frameworks: spring boot
 * Orchestration: docker, kubernetes
-* Service discovery: eureka
+* Service discovery: eureka, consul
 * Service mesh: istio, linkerd, dapr, envoy
 * Message queue: kafka, rabbitmq
 * Caching: redis, memcached 
-* Observability: prometheus/grafana, consul, jaeger, zipkin, elasticsearch/kibana (ELK)
+* Observability: prometheus/grafana, jaeger, zipkin, elasticsearch/kibana (ELK)
 * Distributed database: cockroachdb, cassandra, debezium
 
 ## Books
@@ -90,8 +90,8 @@
 
 [W4-2] Deploying microservices
 * The architecture of a build/deployment pipeline
-* Setting up O-stock’s core infrastructure in the cloud
-* Beyond the infrastructure: Deploying O-stock and ELK
+* Setting up the core infrastructure in the cloud
+* Deploying with ELK
 * Your build/deployment pipeline in action
 
 [W5-1] 
