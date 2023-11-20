@@ -20,13 +20,19 @@
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 
 ## Videos
+Microservices 
 * [What is 12-Factor App?](https://www.youtube.com/watch?v=1OhmRmMsGdQ)
 * [Fallacies of Distributed Systems](https://www.youtube.com/watch?v=8fRzZtJ_SLk&list=PL1DZqeVwRLnD3EjyciYAO82dT9Owiq8I5)
 * [Visualising software architecture with the C4 model](https://www.youtube.com/watch?v=x2-rSnhpw0g&t=11s)
 * [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
-* [Event-Driven Architectures Done Right, Apache Kafka](https://www.youtube.com/watch?v=A_mstzRGfIE)
+* [Event-Driven Architectures Done Right, Apache Kafka]
+
+Spring Boot
 * [The ULTIMATE Guide to Spring Boot](https://www.youtube.com/watch?v=Nv2DERaMx-4)
+* [Spring Boot Tutorial | Spring Data JPA](https://www.youtube.com/watch?v=8SGI_XS5OPw)
+* [Spring Data JPA Relationships Tutorial](https://www.youtube.com/watch?v=f5bdUjEIbrg)
 * [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
+
 
 ## Exam
 * Answer general questions about the key topics of the course (1 or 2) (50% weight)
@@ -41,9 +47,9 @@
   * The twelve factors (of cloud-native applications)
   * The eight fallacies of Distributed Computing
 * Microservices decomposition
+  * Defining operations
   * Defining services (business capability/sub-domain pattern)
-  * Establish service granularity
-  * Defining service interfaces (REST/GraphQL/gRPC APIs)
+  * Defining services APIs (REST/GraphQL/gRPC APIs)
 
 [W1-2] Introduction to Spring Boot and Spring Cloud
 
