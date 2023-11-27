@@ -119,7 +119,7 @@ https://maven.apache.org/guides/introduction/introduction-to-the-pom.html
 </project>
 ```
 
-## Spring Boot Starters
+### Spring Boot Starters
 Dependency management is a critical aspects of any complex project. And doing this manually is less than ideal; the more time you spent on it the less time you have on the other important aspects of the project.
 
 Spring Boot starters were built to address exactly this problem. Starter POMs are a set of convenient dependency descriptors that you can include in your application. You get a one-stop-shop for all the Spring and related technology that you need, without having to hunt through sample code and copy-paste loads of dependency descriptors.
@@ -133,6 +133,9 @@ The actual list of starters can be found [here](https://github.com/spring-projec
 
 https://www.baeldung.com/spring-boot-starters
 
+### Spring Boot Dev Tools
+
+https://www.baeldung.com/spring-boot-devtools
 
 ## Dependency Injection
 
@@ -353,11 +356,11 @@ pizza.crust=stuffed
 ```
 
 
-## Databases Pt 1 -- Database Basics
+## Database: Basics
 
-## Databases Pt 2 -- DAOs with Spring JDBC
+## Database: DAOs with Spring JDBC
 
-## Databases Pt 3 -- Spring Data JPA
+## Database: Spring Data JPA
 
 ## Jackson & JSON
 
