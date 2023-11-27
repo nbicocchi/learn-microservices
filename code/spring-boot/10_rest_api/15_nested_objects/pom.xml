@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.devtiro</groupId>
-	<artifactId>database</artifactId>
+	<artifactId>restapi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>database</name>
+	<name>restapi</name>
 	<description>Demo project for Connecting to Postgres DB using JDBC</description>
 	<properties>
 		<java.version>17</java.version>
