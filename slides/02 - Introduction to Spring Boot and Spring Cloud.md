@@ -53,7 +53,41 @@ https://start.spring.io/
 
 ![](images/spring-initializr.png)
 
+### Spring Boot Starters
+Dependency management is a critical aspects of any complex project. And doing this manually is less than ideal; the more time you spent on it the less time you have on the other important aspects of the project.
+
+Spring Boot starters were built to address exactly this problem. Starter POMs are a set of convenient dependency descriptors that you can include in your application. You get a one-stop-shop for all the Spring and related technology that you need, without having to hunt through sample code and copy-paste loads of dependency descriptors.
+
+Benefits of using Spring Boot starters:
+* increase pom manageability
+* production-ready, tested & supported dependency configurations
+* decrease the overall configuration time for the project
+
+https://www.baeldung.com/spring-boot-starters
+
+### Spring Boot Dev Tools
+
+Spring Boot gives us the ability to quickly setup and run services.
+
+To enhance the development experience further, Spring released the spring-boot-devtools tool – as part of Spring Boot-1.3.
+
+* Property defaults
+* Automatic Restart
+* Live Reload
+* Global settings
+* Remote applications
+
+https://www.baeldung.com/spring-boot-devtools
+
 ## Maven
+The key features of Maven are:
+* simple project setup that follows best practices: Maven tries to avoid as much configuration as possible, by supplying project templates (named archetypes)
+* dependency management: it includes automatic updating, downloading and validating the compatibility, as well as reporting the dependency closures (known also as transitive dependencies)
+* isolation between project dependencies and plugins: with Maven, project dependencies are retrieved from the dependency repositories while any plugin’s dependencies are retrieved from the plugin repositories, resulting in fewer conflicts when plugins start to download additional dependencies
+* central repository system: project dependencies can be loaded from the local file system or public repositories, such as Maven Central
+
+https://www.baeldung.com/maven
+
 ### Maven Standard Directory Structure
 
 ```
@@ -93,49 +127,259 @@ Some of the configuration that can be specified in the POM are the project depen
 https://maven.apache.org/guides/introduction/introduction-to-the-pom.html
 
 ```
-<project>
-  <modelVersion>4.0.0</modelVersion>
- 
-  <groupId>com.mycompany.app</groupId>
-  <artifactId>my-app</artifactId>
-  <version>1</version>
-  
-  <properties>
-    <mavenVersion>3.0</mavenVersion>
-  </properties>
- 
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-      <version>${mavenVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
-      <version>${mavenVersion}</version>
-    </dependency>
-  </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.nbicocchi</groupId>
+	<artifactId>demo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>demo</name>
+	<description>Demo project for Spring Boot</description>
+	<properties>
+		<java.version>17</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+    ...
+
 </project>
+
 ```
 
-### Spring Boot Starters
-Dependency management is a critical aspects of any complex project. And doing this manually is less than ideal; the more time you spent on it the less time you have on the other important aspects of the project.
+## Gradle
 
-Spring Boot starters were built to address exactly this problem. Starter POMs are a set of convenient dependency descriptors that you can include in your application. You get a one-stop-shop for all the Spring and related technology that you need, without having to hunt through sample code and copy-paste loads of dependency descriptors.
+https://www.baeldung.com/gradle
 
-Benefits of using Spring Boot starters:
-* increase pom manageability
-* production-ready, tested & supported dependency configurations
-* decrease the overall configuration time for the project
+### build.gradle
+```
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
 
-The actual list of starters can be found [here](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-starters)
+group = 'com.nbicocchi'
+version = '0.0.1-SNAPSHOT'
 
-https://www.baeldung.com/spring-boot-starters
+java {
+    sourceCompatibility = '17'
+}
 
-### Spring Boot Dev Tools
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
 
-https://www.baeldung.com/spring-boot-devtools
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+## Lombok
+Java is a great language, but it can sometimes get too verbose for common tasks we have to do in our code or compliance with some framework practices. This often doesn’t bring any real value to the business side of our programs, and that’s where Lombok comes in to make us more productive.
+
+The way it works is by plugging into our build process and auto-generating Java bytecode into our .class files as per a number of project annotations we introduce in our code.
+
+Including it in our builds, in whichever system we’re using, is very straight forward. Project Lombok’s project page has detailed instructions on the specifics. 
+
+```
+<dependencies>
+    ...
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.20</version>
+        <scope>provided</scope>
+    </dependency>
+    ...
+</dependencies>
+```
+
+https://projectlombok.org/features/
+
+https://www.baeldung.com/intro-to-project-lombok
+
+## Configuration
+
+https://www.baeldung.com/properties-with-spring
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+
+### Application Properties
+A common practice in Spring Boot is using an external configuration to define our properties. This allows us to use the same application code in different environments. **We can use properties files, YAML files, environment variables and command-line arguments.**
+
+By default, Spring Boot can access configurations set in an application.properties file, which uses a key-value format:
+
+```
+server.port=8181
+spring.main.banner-mode=off
+```
+
+Within our values, we can use placeholders with the ${} syntax to refer to the contents of other keys, system properties, or environment variables:
+
+```
+app.name=MyApp
+app.description=${app.name} is a Spring Boot application
+```
+
+If we have the same kind of properties with different values, we can represent the list structure with array indices:
+
+```
+app.servers[0].ip=127.0.0.1
+app.servers[0].path=/path1
+app.servers[1].ip=127.0.0.2
+app.servers[1].path=/path2
+app.servers[2].ip=127.0.0.3
+app.servers[2].path=/path3
+```
+
+If we don’t want determinist property values, we can use RandomValuePropertySource to randomize the values of properties:
+
+```
+random.number=${random.int}
+random.long=${random.long}
+random.uuid=${random.uuid}
+```
+
+### YAML Properties
+As well as Java properties files, we can also use YAML-based configuration files in our Spring Boot application. YAML is a convenient format for specifying hierarchical configuration data.
+
+```
+server:
+  port: 8181
+
+spring:
+  main:
+    banner-mode: off
+
+app:
+  name: MyApp
+  description: ${app.name} is a Spring Boot application
+  version: ${random.int}
+  serial: ${random.uuid}
+  servers[0].ip: 127.0.0.1
+  servers[0].path: /path1
+  servers[1].ip: 127.0.0.2
+  servers[1].path: /path2
+  servers[2].ip: 127.0.0.3
+  servers[2].path: /path3
+```
+
+### Accessing properties with @Value
+```
+@Log
+@Component
+public class InitRunnerv2 implements CommandLineRunner {
+    @Value("${app.name}")
+    String name;
+    @Value("${app.description}")
+    String description;
+
+    @Override
+    public void run(String... args) throws Exception {
+        log.info(name + " " + description);
+    }
+}
+```
+
+### Accessing properties with @ConfigurationProperties
+```
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Configuration
+@ConfigurationProperties(prefix = "app")
+public class AppConfig {
+    private String name;
+    private String description;
+}
+```
+
+```
+@Log
+@Component
+public class InitRunnerv1 implements CommandLineRunner {
+    AppConfig appConfig;
+
+    public InitRunnerv1(AppConfig pizzaConfig) {
+        this.appConfig = pizzaConfig;
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        log.info(appConfig.getName() + " " + appConfig.getDescription());
+    }
+}
+```
+
+### Multiple Profiles
+Spring Boot supports creating multi-document properties files. We can split a single physical file into multiple logical documents.
+
+This allows us to define a document for each profile we need to declare, all in the same file:
+
+```
+logging.file.name=myapplication.log
+bael.property=defaultValue
+#---
+spring.config.activate.on-profile=dev
+spring.datasource.password=password
+spring.datasource.url=jdbc:h2:dev
+spring.datasource.username=SA
+bael.property=devValue
+#---
+spring.config.activate.on-profile=prod
+spring.datasource.password=password
+spring.datasource.url=jdbc:h2:prod
+spring.datasource.username=prodUser
+bael.property=prodValue
+```
+
+As an alternative to having different profiles in the same file, we can store multiple profiles across different files. We achieve this by putting the name of the profile in the file name — for example, application-dev.yml or application-dev.properties.
+
+https://www.baeldung.com/properties-with-spring
+
+
+### Properties files, environment variables and command-line arguments
+
+Esempi di override
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+
+
 
 ## Dependency Injection
 
@@ -218,148 +462,6 @@ https://www.baeldung.com/spring-primary
 ### @Lazy annotation
 https://www.baeldung.com/spring-lazy-annotation
 
-
-## Configuration
-
-### Application Properties
-A common practice in Spring Boot is using an external configuration to define our properties. This allows us to use the same application code in different environments. **We can use properties files, YAML files, environment variables and command-line arguments.**
-
-By default, Spring Boot can access configurations set in an application.properties file, which uses a key-value format:
-
-```
-spring.datasource.url=jdbc:h2:dev
-spring.datasource.username=SA
-spring.datasource.password=password
-```
-
-Within our values, we can use placeholders with the ${} syntax to refer to the contents of other keys, system properties, or environment variables:
-
-```
-app.name=MyApp
-app.description=${app.name} is a Spring Boot application
-```
-
-If we have the same kind of properties with different values, we can represent the list structure with array indices:
-
-```
-application.servers[0].ip=127.0.0.1
-application.servers[0].path=/path1
-application.servers[1].ip=127.0.0.2
-application.servers[1].path=/path2
-application.servers[2].ip=127.0.0.3
-application.servers[2].path=/path3
-```
-
-
-### YAML Properties
-As well as Java properties files, we can also use YAML-based configuration files in our Spring Boot application. YAML is a convenient format for specifying hierarchical configuration data.
-
-```
-spring:
-    datasource:
-        password: password
-        url: jdbc:h2:dev
-        username: SA
-```
-
-```
-application:
-    servers:
-    -   ip: '127.0.0.1'
-        path: '/path1'
-    -   ip: '127.0.0.2'
-        path: '/path2'
-    -   ip: '127.0.0.3'
-        path: '/path3'
-```
-
-```
-logging:
-  file:
-    name: myapplication.log
-bael:
-  property: defaultValue
----
-spring:
-  config:
-    activate:
-      on-profile: staging
-  datasource:
-    password: 'password'
-    url: jdbc:h2:staging
-    username: SA
-bael:
-  property: stagingValue
-```
-
-### Value properties
-```
-public class PizzaApplication implements CommandLineRunner {
-    @Value("${pizza.sauce}")
-    String sauce;
-    @Value("${pizza.topping}")
-    String topping;
-    @Value("${pizza.crust}")
-    String crust;
-    ...
-```
-
-```
-# application.properties
-pizza.sauce=bbq
-pizza.topping=chicken
-pizza.crust=stuffed
-```
-
-### Configuration properties
-```
-@Configuration
-@ConfigurationProperties(prefix = "pizza")
-public class PizzaConfig {
-  private String sauce;
-  private String topping;
-  private String crust;
-}
-```
-
-```
-# application.properties
-pizza.sauce=bbq
-pizza.topping=chicken
-pizza.crust=stuffed
-```
-
-### Multiple Profiles
-Spring Boot supports creating multi-document properties files. We can split a single physical file into multiple logical documents.
-
-This allows us to define a document for each profile we need to declare, all in the same file:
-
-```
-logging.file.name=myapplication.log
-bael.property=defaultValue
-#---
-spring.config.activate.on-profile=dev
-spring.datasource.password=password
-spring.datasource.url=jdbc:h2:dev
-spring.datasource.username=SA
-bael.property=devValue
-#---
-spring.config.activate.on-profile=prod
-spring.datasource.password=password
-spring.datasource.url=jdbc:h2:prod
-spring.datasource.username=prodUser
-bael.property=prodValue
-```
-
-As an alternative to having different profiles in the same file, we can store multiple profiles across different files. We achieve this by putting the name of the profile in the file name — for example, application-dev.yml or application-dev.properties.
-
-
-
-### Properties files, environment variables and command-line arguments
-
-Esempi di override
-
-https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
 
 
 ## Database: Basics
