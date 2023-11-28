@@ -192,7 +192,7 @@ public class AppConfig {
 }
 ```
 
-### Spring Stereotype Annotations
+### @Component annotation
 Spring has provided a few **specialized stereotype annotations: @Controller, @Service and @Repository**. They all provide the same function as **@Component**.
 
 They all act the same because they are all composed annotations with @Component as a meta-annotation for each of them. They are like @Component aliases with specialized uses and meaning outside Spring auto-detection or dependency injection.
@@ -212,6 +212,13 @@ https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring
 
 https://www.baeldung.com/spring-component-annotation
 
+### @Primary annotation
+https://www.baeldung.com/spring-primary
+
+### @Lazy annotation
+https://www.baeldung.com/spring-lazy-annotation
+
+
 ## Configuration
 
 ### Application Properties
@@ -225,14 +232,6 @@ spring.datasource.username=SA
 spring.datasource.password=password
 ```
 
-### Properties files, environment variables and command-line arguments
-
-Esempi di override
-
-https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
-
-
-### Placeholders in Properties
 Within our values, we can use placeholders with the ${} syntax to refer to the contents of other keys, system properties, or environment variables:
 
 ```
@@ -240,7 +239,6 @@ app.name=MyApp
 app.description=${app.name} is a Spring Boot application
 ```
 
-### List Structure
 If we have the same kind of properties with different values, we can represent the list structure with array indices:
 
 ```
@@ -252,32 +250,8 @@ application.servers[2].ip=127.0.0.3
 application.servers[2].path=/path3
 ```
 
-### Multiple Profiles
-Spring Boot supports creating multi-document properties files. We can split a single physical file into multiple logical documents.
 
-This allows us to define a document for each profile we need to declare, all in the same file:
-
-```
-logging.file.name=myapplication.log
-bael.property=defaultValue
-#---
-spring.config.activate.on-profile=dev
-spring.datasource.password=password
-spring.datasource.url=jdbc:h2:dev
-spring.datasource.username=SA
-bael.property=devValue
-#---
-spring.config.activate.on-profile=prod
-spring.datasource.password=password
-spring.datasource.url=jdbc:h2:prod
-spring.datasource.username=prodUser
-bael.property=prodValue
-```
-
-As an alternative to having different profiles in the same file, we can store multiple profiles across different files. We achieve this by putting the name of the profile in the file name — for example, application-dev.yml or application-dev.properties.
-
-
-### YAML Format
+### YAML Properties
 As well as Java properties files, we can also use YAML-based configuration files in our Spring Boot application. YAML is a convenient format for specifying hierarchical configuration data.
 
 ```
@@ -355,13 +329,144 @@ pizza.topping=chicken
 pizza.crust=stuffed
 ```
 
+### Multiple Profiles
+Spring Boot supports creating multi-document properties files. We can split a single physical file into multiple logical documents.
+
+This allows us to define a document for each profile we need to declare, all in the same file:
+
+```
+logging.file.name=myapplication.log
+bael.property=defaultValue
+#---
+spring.config.activate.on-profile=dev
+spring.datasource.password=password
+spring.datasource.url=jdbc:h2:dev
+spring.datasource.username=SA
+bael.property=devValue
+#---
+spring.config.activate.on-profile=prod
+spring.datasource.password=password
+spring.datasource.url=jdbc:h2:prod
+spring.datasource.username=prodUser
+bael.property=prodValue
+```
+
+As an alternative to having different profiles in the same file, we can store multiple profiles across different files. We achieve this by putting the name of the profile in the file name — for example, application-dev.yml or application-dev.properties.
+
+
+
+### Properties files, environment variables and command-line arguments
+
+Esempi di override
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+
 
 ## Database: Basics
 
+```
+Spring Data JPA ---> JPA
+                      |
+                      V
+    Spring JDBC ---> JDBC
+                      |
+                      V
+                   JDBC Driver
+```
+
+Add depencencies to pom.xml file
+
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+
+Configure a datasource in application.properties (H2)
+
+```
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+```
+
+Configure a datasource in application.properties (PostGres)
+
+```
+spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+spring.datasource.username=postgres
+spring.datasource.password=changemeinprod!
+spring.datasource.driver-class-name=org.postgresql.Driver
+```
+
+We can use Docker Compose to install a containerized version of a DBMS (PostGres)
+
+```
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: changemeinprod!
+```
+
+/src/main/resources/data.sql can be used to create schemas
+```
+DROP TABLE IF EXISTS "widgets";
+
+DROP SEQUENCE IF EXISTS widgets_id_seq;
+CREATE SEQUENCE widgets_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+
+CREATE TABLE "widgets" (
+    "id" bigint DEFAULT nextval('widgets_id_seq') NOT NULL,
+    "name" text,
+    "purpose" text,
+    CONSTRAINT "widgets_pkey" PRIMARY KEY ("id")
+);
+```
+
+/src/main/resources/data.sql can be used to populate schemas
+```
+INSERT INTO widgets (id, name, purpose) VALUES
+(1, 'Widget A', 'Used for testing purposes.'),
+(2, 'Widget B', 'Designed for entertainment.'),
+(3, 'Widget C', 'Enhances productivity.'),
+(4, 'Widget D', 'Perfect for outdoor activities.'),
+(5, 'Widget E', 'Improves overall well-being.');
+```
+
+https://www.baeldung.com/spring-boot-data-sql-and-schema-sql
+
 ## Database: DAOs with Spring JDBC
+See code
 
 ## Database: Spring Data JPA
+https://www.baeldung.com/spring-data-repositories
+https://www.baeldung.com/the-persistence-layer-with-spring-data-jpa
+
+
 
 ## Jackson & JSON
+See code
 
 ## Building a REST API
+See code
