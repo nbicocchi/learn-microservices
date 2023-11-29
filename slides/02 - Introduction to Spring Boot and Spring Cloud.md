@@ -88,6 +88,8 @@ The key features of Maven are:
 
 https://www.baeldung.com/maven
 
+https://12factor.net/dependencies
+
 ### Maven Standard Directory Structure
 
 ```
@@ -209,6 +211,16 @@ tasks.named('test') {
 }
 ```
 
+### Key commands
+
+```
+$ ./gradlew clean
+$ ./gradlew build
+$ ./gradlew test
+$ ./gradlew bootRun
+$ ./gradlew bootJar
+```
+
 ## Lombok
 Java is a great language, but it can sometimes get too verbose for common tasks we have to do in our code or compliance with some framework practices. This often doesn’t bring any real value to the business side of our programs, and that’s where Lombok comes in to make us more productive.
 
@@ -238,6 +250,8 @@ https://www.baeldung.com/intro-to-project-lombok
 https://www.baeldung.com/properties-with-spring
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+
+https://12factor.net/config
 
 ### Application Properties
 A common practice in Spring Boot is using an external configuration to define our properties. This allows us to use the same application code in different environments. **We can use properties files, YAML files, environment variables and command-line arguments.**
@@ -352,34 +366,55 @@ Spring Boot supports creating multi-document properties files. We can split a si
 This allows us to define a document for each profile we need to declare, all in the same file:
 
 ```
-logging.file.name=myapplication.log
-bael.property=defaultValue
+app.msg=used-always-in-all-profiles
 #---
 spring.config.activate.on-profile=dev
-spring.datasource.password=password
-spring.datasource.url=jdbc:h2:dev
-spring.datasource.username=SA
-bael.property=devValue
+app.msg=dev-profile
 #---
-spring.config.activate.on-profile=prod
-spring.datasource.password=password
-spring.datasource.url=jdbc:h2:prod
-spring.datasource.username=prodUser
-bael.property=prodValue
+spring.config.activate.on-profile=production
+server.port=9000
+app.msg=production-profile
 ```
 
 As an alternative to having different profiles in the same file, we can store multiple profiles across different files. We achieve this by putting the name of the profile in the file name — for example, application-dev.yml or application-dev.properties.
 
-https://www.baeldung.com/properties-with-spring
+https://www.baeldung.com/spring-profiles
 
 
 ### Properties files, environment variables and command-line arguments
 
-Esempi di override
+Properties can be passed in via environment variables.
 
-https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+```
+# Change the http server port to 7777 (instead of 8080)
+$ SERVER_PORT=7777 ./gradlew bootRun
 
+# Activates the dev profile
+$ SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
+```
 
+Or via a JVM system parameter (-D option).
+
+```
+# Change the http server port to 7777 (instead of 8080)
+java -Dserver.port=7777 -jar build/libs/configuration-0.0.1-SNAPSHOT.jar
+
+# Activates the dev profile
+java -Dspring.profiles.active=dev -jar build/libs/configuration-0.0.1-SNAPSHOT.jar
+```
+
+There is a precise hierarchy for overriding properties:
+1. Command line
+2. Environment variables
+3. application.properties
+
+```
+SPRING_PROFILES_ACTIVE=production java -Dspring.profiles.active=dev -jar build/libs/configuration-0.0.1-SNAPSHOT.jar
+```
+
+https://12factor.net/codebase
+
+https://12factor.net/build-release-run
 
 ## Dependency Injection
 
@@ -399,12 +434,20 @@ We can achieve Inversion of Control through various mechanisms such as: Strategy
 Dependency injection is a pattern we can use to implement IoC, where the control being inverted is setting an object’s dependencies. Connecting objects with other objects, or “injecting” objects into other objects, is done by an assembler rather than by the objects themselves.
 
 Here’s how we would create an object dependency in traditional programming:
+
 ```
-public class Store {
-    private Item item;
- 
-    public Store() {
-        item = new ItemImpl1();    
+public class Mustang implements Car {
+    private final Engine engine;
+    private final Transmission transmission;
+
+    public Mustang() {
+        this.engine = new FordV8();
+        this.transmission = new FordTransmission400CV();
+    }
+
+    @Override
+    public String print() {
+        return String.join(", ", engine.print(), transmission.print());
     }
 }
 ```
