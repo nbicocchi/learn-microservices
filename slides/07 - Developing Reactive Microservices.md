@@ -1,5 +1,6 @@
 # Developing Reactive Microservices
-
+Sources: Spring Microservices in Action (Chapter 7)
+## Introduction
 In this chapter we will see why the need for reactivity (i.e. non-blocking operations) has surged in demand over the past few years. 
 As already mentioned, the mutlithreaded model is not suited for applications that need to sustain massive quantities of traffic. That is why, over the recent years, concepts like **nonblocking** and **event-driven** programming arose.<br>
 Further on in this chapter, we will analyse methods with which microservices can communicate together.
@@ -231,7 +232,249 @@ is triggered by the web framework, Spring WebFlux (which is based on Project Rea
 - We map the entity we got from the database to the actual model we want to return;
 - We use `setServiceAddress()`, to set the DNS name and IP address of the microservices that processed the request in the serviceAddress field of the model object.
 
-## Dealing with blocking endpoints
+### Dealing with blocking endpoints
 Since JPA is not reactive by nature, we need to change the code a little bit more when dealing with controllers that access blocking repositories. We can’t just set the return types of our handlers to a different datatype (`Mono`/`Flux`) and let the magic happen just like the previous case.<br>
 This is because JPA is a thread-based library by default, meaning that when we execute a query to the database, a new thread is created because the non-blocking approach is not supported.<br>
 Since we want control over the thread we create and we don’t want JPA to saturate the microservice, Spring Boot can offer a separate threadpool in which JPA-related threads can be run. This pool is **hard-limited**, meaning that the number of concurrent threads running inside the pool is capped at a certain amount.
+
+Let’s see how this can be set up in the following steps (taking as an example the ReviewServiceApplication because it contains blocking logic):
+
+1. First, we configure a scheduler bean and its thread pool in the main class
+ReviewServiceApplication, as follows:
+
+    ```java
+    @Autowired
+    public ReviewServiceApplication(
+    @Value("${app.threadPoolSize:10}") Integer threadPoolSize,
+    @Value("${app.taskQueueSize:100}") Integer taskQueueSize
+    ) {
+        this.threadPoolSize = threadPoolSize;
+        this.taskQueueSize = taskQueueSize;
+    }
+    @Bean
+    public Scheduler jdbcScheduler() {
+        return Schedulers.newBoundedElastic(threadPoolSize, taskQueueSize, "jdbc-pool");
+    }
+    ```
+    We create a `Bean` called `jdbcScheduler` and we configure it to support up to `threadPoolSize` threads. The variable `taskQueueSize` specifies the max number of tasks that are allowed to be placed in a queue waiting for available threads.
+
+2. We inject the bean inside our controller
+
+    ```java
+    @RestController
+    public class ReviewServiceImpl implements ReviewService {
+        private final Scheduler jdbcScheduler;
+        
+        @Autowired
+        public ReviewServiceImpl(
+            @Qualifier("jdbcScheduler") Scheduler jdbcScheduler, ...) {
+                this.jdbcScheduler = jdbcScheduler;
+            }
+        )
+    }
+    ```
+
+3. Finally, we use the scheduler’s thread pool in the reactive implementation of the getReviews()
+method, like so:
+
+    ```java
+    @Override
+    public Flux<Review> getReviews(int productId) {
+        if (productId < 1) {
+            throw new InvalidInputException("Invalid productId: " + productId);
+        }
+        LOG.info("Will get reviews for product with id={}",
+        productId);
+            return Mono.fromCallable(() -> internalGetReviews(productId))
+            .flatMapMany(Flux::fromIterable)
+            .log(LOG.getName(), FINE)
+            .subscribeOn(jdbcScheduler);
+        }
+        private List<Review> internalGetReviews(int productId) {
+            List<ReviewEntity> entityList = repository.
+            findByProductId(productId);
+            List<Review> list = mapper.entityListToApiList(entityList);
+            list.forEach(e -> e.setServiceAddress(serviceUtil.
+            getServiceAddress()));
+            LOG.debug("Response size: {}", list.size());
+            return list;
+    }
+    ```
+    The blocking `internalGetReviews` method gets wrapped inside `Mono.fromCallable` and the execution of the former gets dispatched inside the threadpool using the `subscribeOn` method.
+
+### Non-blocking composite service
+We need to modify the source code of the composite service too, because we want to take full advantage of the nonblocking model.<br>
+We need to make the controllers async **and** the HTTP requests async.
+#### Async controllers in the composite service
+Making the controllers async is easily achieved by changing the return types of the methods inside each controller to `Mono`/`Flux`. We also need to parallelise async operation using the `zip` method.<br>
+Taking for example the `getProduct` method inside the composite service, we need to query three different microservices “in parallel” and get the responses accordingly.<br>
+To do so, we can use the `Mono.zip` method, that runs three async tasks concurrently and offers a way to map their returning values to a single Mono instance.
+
+```
+public Mono<ProductAggregate> getProduct(int productId) {
+return Mono.zip(
+	values -> createProductAggregate(
+	(Product) values[0],
+	(List<Recommendation>) values[1],
+	(List<Review>) values[2],
+	serviceUtil.getServiceAddress()),
+	integration.getProduct(productId),
+	integration.getRecommendations(productId).collectList(),
+	integration.getReviews(productId).collectList())
+	.doOnError(ex ->
+	LOG.warn("getCompositeProduct failed: {}",
+		ex.toString()))
+	.log(LOG.getName(), FINE);
+}
+```
+- The first parameter of the `zip` method is a lambda function that will receive the responses in
+an array, named `values`. The array will contain a `Product`, a list of `Recommendation` objects, and a
+list of `Review` objects. The actual aggregation of the responses from the three API calls is handled by
+the same helper method as before, `createProductAggregate()`, without any changes.
+- The parameters after the lambda function are a list of the requests that the `zip` method will
+call in parallel, one `Mono` object per request. In our case, we send in three `Mono` objects that
+were created by the methods in the integration class, one for each request that is sent to each
+core microservice.
+
+### Async HTTP requests
+To make async HTTP requests, we need to swap the blocking `RestTemplate` with its non-blocking equivalent: `WebClient`.<br>
+Taking as an example the `getProduct` method in the composite microservice:
+- In the constructor, the `WebClient` is auto-injected. We build the `WebClient` instance without any configuration for simplicity's sake:
+
+    ```java
+    public class ProductCompositeIntegration implements ProductService,
+    RecommendationService, ReviewService {
+        private final WebClient webClient;
+
+        @Autowired
+        public ProductCompositeIntegration(
+            WebClient.Builder webClient, ...
+        ) {
+            this.webClient = webClient.build();
+        }
+    ```
+
+- Next, we use the `WebClient` instance to make our non-blocking requests for calling the product
+service:
+
+    ```java
+    @Override
+    public Mono<Product> getProduct(int productId) {
+        String url = productServiceUrl + "/product/" + productId;
+        return webClient.get().uri(url).retrieve()
+            .bodyToMono(Product.class)
+            .log(LOG.getName(), FINE)
+            .onErrorMap(WebClientResponseException.class,
+                ex -> handleException(ex)
+            );
+        }
+    ```
+
+This way, though, our microservice will fail completely if one of the three requests fails, and we don’t want that! <br>
+To suppress the exception invocation we can simply return an empty response by replacing the `onErrorMap` with `onErrorResume(error -> empty())`.
+
+The `error` variable will represent the type of error we got back (if any) and we can decide to propagate it or not by using `Mono.error(…)` when needed.
+```java
+    @Override
+    public Mono<Product> getProduct(int productId) {
+        String url = productServiceUrl + "/product/" + productId;
+        return webClient.get().uri(url).retrieve()
+            .bodyToMono(Product.class)
+            .log(LOG.getName(), FINE)
+            .onErrorResume(error -> empty());
+        }
+```
+
+## Developing event-driven asynchronous services
+Asynchronous services are used when we don’t want to wait for the “callee” service to reply with data.<br>
+In this scenario a message is passed between services using a **topic**, to which multiple services can subscribe to and listen to/publish events.<br>
+Spring Boot offers a very simple mechanism that abstract whichever implementation we want to use (Kafka/RabbitMQ) with a production-ready API based on the functional interfaces already present in the Java language (`Supplier`, `Function`, `Consumer`).<br>
+Publishing a message on a given topic is pretty straightforward: 
+
+```java
+@Autowired
+private StreamBridge streamBridge;
+@PostMapping
+void sampleCreateAPI(@RequestBody String body) {
+	streamBridge.send("topic", body);
+}
+```
+
+And consuming one too: 
+
+```java
+@Bean
+public Consumer<String> mySubscriber() {
+	return s -> System.out.println("ML RECEIVED: " + s);
+}
+```
+
+Spring Cloud offers three different mechanism to deal with the complexity of this type of communication between services:
+- Consumer groups
+- Retries and dead-letter queues
+- Guaranteed orders and partitions
+
+### Consumer groups
+What happens if we scale the current scenario to multiple replicas of a certain consumer subscribed to a topic?<br>
+The messages published on that particular topic will get processed for every replica we made: this could be something we don’t want to happen.
+Spring Boot can abstract **consumer groups**, a way to make different consumers (replicas) process different messages inside the topic.<br>
+
+![](images/chapter-7/without-consumer-groups.png)
+*Without consumer groups*
+
+![](images/chapter-7/with-consumer-groups.png)
+*With consumer groups*
+
+Enabling consumer groups in Spring Boot is pretty easy:
+```yaml
+spring.cloud.stream:
+	bindings.mySubscriber-in-0:
+		destination: products
+		group: productsGroup
+```
+
+This way, we’re instructing Spring Boot to forward messages sent on the `products` topic to the `mySubscriber` function. The microservice configured with this file will be added to the `productsGroup` consumer group. The suffix `-0` specifies that the function `mySubscriber` will take **one** argument.
+
+### Retries and dead-letter queues
+Not all messages get consumed without problems. Certain messages can be malformed or some parts of our architecture might be unavailable at a certain point in time, causing failures to happen when processing messages.<br>
+Failing to process a message inside a topic causes **re-queueing** of such message inside the latter, because we might want to retry processing it.<br>
+To avoid this kind of faults to cramp up our infrastructure (e.g. faulty messages fabricated by a third party could be injected inside the system to trigger retries and make the whole architecture unable to process new messages) we can configure how often retries are performed, preferably with an
+increasing length of time between each retry. 
+
+```yaml
+spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
+	maxAttempts: 3
+	backOffInitialInterval: 500
+	backOffMaxInterval: 1000
+	backOffMultiplier: 2.0
+
+spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer:
+	autoBindDlq: true
+	republishToDlq: true
+
+spring.cloud.stream.kafka.bindings.messageProcessor-in-0.consumer:
+	enableDlq: true
+```
+Dead-letter queues are, in the end, the place where messages that get re-queued more times than specified in the configuration are placed. This way, "suspicious" messages can be further analysed by the infrastructure administrators.
+
+### Guaranteed order and partitions
+
+To guarantee FIFO messaging between services we can enable **partitions**. To place a message in a certain partition we use a **key**, specified on the message. Messages with the same **key** will be placed in the same partition and will be delivered in the same order they arrive to the messaging system. 
+
+```yaml
+spring.cloud.stream.bindings.products-out-0.producer:
+	partition-key-expression: headers['partitionKey']
+	partition-count: 2
+```
+We can specify where to take the partition key from: in this case in the message headers. We can also specify the number of partitions.
+
+```yaml
+spring.cloud.stream.bindings.messageProcessor-in-0:
+	destination: products
+	group: productsGroup
+	consumer:
+		partitioned: true
+		instance-index: 0
+```
+
+The consumer has to specify which partition it wants to consume messages from (through the `message-index` property).
