@@ -11,7 +11,7 @@ To understand what it means, let's define what "blocking" means first: an operat
 There are scenarios where blocking is the right way to approach a problem, for example when dealing with shared resources (using a _mutex_ blocks the thread), however, there are certain operations that are blocking "by default" (but that can be made nonblocking) that limit the thorughput of our application, for example **reading data from file descriptors**. <br>
 Imagine this scenario: we have a server application that accepts connections from clients on a given socket. <br>
 We wrote this simple pseudo-code that handles incoming connections:
-```
+```java
 void main(){
 
     Socket s = new Socket(3000);
@@ -38,7 +38,7 @@ What can we do to tackle this problem?
 The naive solution would be spawn a new thread for each connection we receive. This is what many web frameworks do (and what Spring Boot does by default).
 <br>
 So our pseudo-code changes:
-```
+```java
 void main(){
 
     Socket s = new Socket(3000);
@@ -63,7 +63,7 @@ Well, that's nice, we solved all the issues we mentioned before! We can also ser
 ### Second solution: nonblocking programming
 What if there was another solution that could accept more requests **within the same thread**? That would be nice, right?<br>
 Let's imagine we could change the code to something like this:
-```
+```java
 async void main(){
 
     Socket s = new Socket(3000);
@@ -99,7 +99,7 @@ In our case, we have a **nonblocking** read (`await conn.read`), so this spawns 
 The main concept, here, is that many tasks get decomposed in smaller chunks that can be executed concurrently by the runtime itself, enabling, with a small thread-pool, applications to scale up to millions of concurrent requests.
 
 An important takeoff from this brief explanation is that **async programming doesn't make blocking code magically async!** If you write blocking code inside an async function, that function **will block the executor's thread**, making your async function completely useless! That's why you need to keep your async functions "as-async-as-possible". For example:
-```
+```java
 async void megaLoop(){
 
     for(int i = 0; i < 1000000; i++){
@@ -180,7 +180,7 @@ To tell Project Reactor to `await` on a task we use the `.block()` method, avail
 From now on, "nonblocking" and "reactive" will be used as synonyms. _Reactive_ programming is essentialy Spring Boot's way to implement nonblocking programming.
 
 As a short introduction, let's look at the following code:
-```
+```java
 List<Integer> list = Flux.just(1, 2, 3, 4)
     .filter(n -> n % 2 == 0)
     .map(n -> n * 2)
@@ -200,7 +200,7 @@ that waits for the processing to complete.
 ### Non-blocking persistence using Spring Data for MongoDB
 Spring Boot's persistence layer doesn't fully support reactive programming, in particular only MongoDB-enabled microservices can leverage nonblocking methods "natively".<br>
 We can change the repository code to the following to enable nonblocking features on our database layer:
-```
+```java
 public interface ProductRepository extends ReactiveCrudRepository <ProductEntity, String> {
     Mono<ProductEntity> findByProductId(int productId);
 }
@@ -215,7 +215,7 @@ When returning from API mappings that consume an async persistence layer (such a
 <br>
 We just need to map the return value to a reactive datatype and we’re done! Our old method becomes:
 
-```
+```java
 public Mono<Product> getProduct(int productId) {
     // ...
 
