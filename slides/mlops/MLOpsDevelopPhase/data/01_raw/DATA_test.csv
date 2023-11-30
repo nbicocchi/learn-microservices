@@ -1,0 +1,6 @@
+Date,Activity ID,Type,Distance (km),Duration,Average Speed (km/h),Calories Burned,Climb (m),Average Heart rate (tpm)
+2022-01-14,1b2f3d34-af23-4956-bd6d-8a08bd56a0d9,Walking,4.01,3:34,10.58,1400,69,118
+2021-06-20,fe6c66b3-3586-4984-a220-d37a71fc265e,Walking,11.26,5:22,15.59,1106,15,81
+2020-11-19,51bcf5f6-97ca-4483-a04d-34485da4cb69,Other,8.23,4:55,7.33,1142,278,116
+2022-06-07,7d022916-9793-489e-a816-f707f6524747,Other,28.8,5:48,20.39,854,95,96
+2021-10-11,0382e2f5-9ef2-48d4-9654-8348a01d45cc,Cycling,10.51,5:00,19.41,606,135,125
