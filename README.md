@@ -35,6 +35,7 @@
 ## Modules
 
 ### Building Microservices with Spring Boot
+* Getting Started With Spring
 * Dependency Injection and the Spring Context
 * Project Configuration
 * Deep Dive Into Spring Boot
