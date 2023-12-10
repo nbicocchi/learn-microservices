@@ -30,15 +30,17 @@ In any complex application, you’ll need to go beyond Boot. At that point, unde
 
 We need to understand how the core pieces of Spring actually work, and more importantly, what Spring Boot does on top of them.
 
-The codebase of the course here will, naturally, make heavy use of Boot.
-
 ## Basic Features of Boot
 
 Some of the core Boot features that allow the functionality we've discussed are:
 
--   Starters - can be seen as modules which encapsulate specific functionality (JPA, testing, web, mail, logging, etc)
--   Auto-configuration - the default Spring configuration that’s loaded under certain conditions
--   Dependency management - helps solve the issue of incompatible dependency versions
+* Create stand-alone Spring applications
+* Embed Tomcat, Jetty or Undertow directly (no need to deploy WAR files)
+* Provide opinionated 'starter' dependencies to simplify your build configuration
+* Automatically configure Spring and 3rd party libraries whenever possible
+* Provide production-ready features such as metrics, health checks, and externalized configuration
+* Absolutely no code generation and no requirement for XML configuration
 
 ## Resources
+- [Spring Boot Project](https://spring.io/projects/spring-boot)
 - [Spring Boot Reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)

@@ -1,6 +1,6 @@
- # Why Spring?
- 
-This introductory lesson contains an overview of the Spring framework, including the benefits of using Spring and how to approach learning the [framework](https://en.wikipedia.org/wiki/Software_framework).
+# Understanding the Spring Ecosystem
+
+In this lesson, we'll go through the main modules that Spring offers and understand how they relate to each other to form the Spring ecosystem.
 
 ## What is Spring?
 Let's start with understanding what Spring actually is. Simply put, Spring is a [back-end](https://en.wikipedia.org/wiki/Front_and_back_ends) technology with a broad range of uses, the most common being the development of web applications.
@@ -12,15 +12,13 @@ The framework is also quite dominant in the Java ecosystem.
 
 Let's have a look at just a quick search trend: [Spring Framework Google Search Trend](https://trends.google.com/trends/explore?date=all&q=%2Fm%2F0dhx5b)
 
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/J3vkMLZ2QGijwCJbaIIB)
+![](images/spring-trends.png)
 
 And given that Spring was originally built in response to the complexity of developing with [J2EE](https://www.oracle.com/technetwork/java/javaee/appmodel-135059.html) / Java EE, let's compare it with that: [Spring Framework - Java EE Google Search Trend Comparison](https://trends.google.com/trends/explore?date=all&q=%2Fm%2F0dhx5b,Java%20EE)
 
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/Tg9eUN91Q3iDqgUVFrnd)
+![](images/spring-vs-javaee-trends.png)
 
 As the graph shows, Spring clearly overtakes its main competitor in popularity.
-
-Of course, today Spring is so much more than just an alternative to Java EE.
 
 Another indication of Spring's popularity is the number of questions on StackOverflow for Spring compared to other related Java technologies:
 
@@ -52,5 +50,69 @@ In this course, we'll focus on understanding the foundational concepts of Spring
 
 As we progress through the lessons, we'll dive deeper into each Spring aspect.
 
+## The Spring Ecosystem
+Due to the success of the framework, the Spring ecosystem grew over time.
+
+This is now quite vast, as you can see on the [official site](https://spring.io/projects/spring-framework).
+
+**Let's go through some of the most popular Spring modules.**
+
+### Spring Core
+
+-   contains the Core technologies: DI, events, validation, data binding, AOP
+-   support for Testing
+-   Spring Web
+-   Data Access
+-   can be used with several other programming languages: Kotlin, Groovy, dynamic languages
+
+### Spring MVC
+
+-   the Web MVC module
+-   technically part of Spring Core, but worth discussing separately
+-   Spring has both Spring MVC (for Servlet-stack web applications) and Spring WebFlux (for reactive-stack applications)
+
+### Spring Persistence
+
+-   also part of Spring Core
+-   allows Data Access: transactions, DAO/Repository support, JDBC, ORM, Marshalling XML
+-   contains the Spring Data project which reduces boilerplate code related to data access
+
+### Spring Security
+
+-   the most popular security framework when working with Java
+-   “Learn Spring Security” - full course dedicated to it
+
+### Spring Cloud
+
+-   support for distributed system
+
+### Spring Boot
+
+-   provides an opinionated view of Spring development
+-   has a very high adoption rate
+
+### Others Spring Projects
+
+-   Spring Batch
+-   Spring Integration
+-   Spring HATEOAS
+-   Spring REST Docs
+-   Spring AMQP
+-   Spring Web Flow
+-   Spring Web Services
+
+In simple terms, **the framework has first class support for most technologies in the Java ecosystem**.
+
+## Simplifying Spring Development with Boot
+
+Of course, as the ecosystem grew it became more complex.
+
+Over time, the Spring team made a few attempts to simplify Spring development according to the initial purpose, such as Spring Roo and the Groovy integration.
+
+But eventually, **learning from what didn’t work, Spring Boot was born**. This project changed everything about developing with Spring by taking an opinionated view and providing sensible defaults.
+
+We'll explore Boot in great detail further in the course. The goal in this lesson is to get a high-level picture of the Spring modules.
+
 ## Resources
 - [Spring Framework Reference](https://docs.spring.io/spring/docs/current/spring-framework-reference/overview.html)
+- [The Spring Projects](https://spring.io/projects/spring-framework)

@@ -14,18 +14,25 @@ First, let’s make sure the environment is set up properly.
 Let’s check that Java is installed locally. We can do this by opening the command line window and running the following commands:
 
 ```
-$ java $ java -version
-```
-
-The first command should prompt the user manual for this command, and the second one should retrieve an output like this:
-
-```
-java version “1.8.0_191"
+$ java
+Usage: java [options] <mainclass> [args...]
+           (to execute a class)
+   or  java [options] -jar <jarfile> [args...]
+           (to execute a jar file)
+   or  java [options] -m <module>[/<mainclass>] [args...]
+       java [options] --module <module>[/<mainclass>] [args...]
+           (to execute the main class in a module)
+   or  java [options] <sourcefile> [args]
+           (to execute a single source-file program)
+   ...
+   
+$ java -version
+java version "17.0.7" 2023-04-18 LTS
 ```
 
 This shows that Java is installed correctly.
 
-We won't go over installing a JDK here because, while we’re starting from scratch with Spring, the course here assumes you’ve done Java development before. **If you don't have Java installed**, check out our guide on [](https://www.baeldung.com/ubuntu-install-jdk)[Installing the JDK on Ubuntu](https://www.baeldung.com/ubuntu-install-jdk) or the [](https://www.java.com/en/download/help/windows_manual_download.html)[official guide for Windows](https://www.java.com/en/download/help/windows_manual_download.html).
+We won't go over installing a JDK here because, while we’re starting from scratch with Spring, the course here assumes you’ve done Java development before. **If you don't have Java installed**, check out the [official download page](https://www.oracle.com/java/technologies/downloads/).
 
 ### Git
 
@@ -33,13 +40,16 @@ Let’s also check that Git is available. For this, you can type the following c
 
 ```
 $ git
+usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]
+           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]
+           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+           [--super-prefix=<path>] [--config-env=<name>=<envvar>]
+           <command> [<args>]
+           ...
+           
 $ git --version
-```
-
-Again, the first command should provide a Git manual, and the second one should retrieve something like this:
-
-```
-git version 2.35.1.windows.2
+git version 2.39.2 (Apple Git-143)
 ```
 
 We’re going to need this later while cloning our project from GitHub.
@@ -50,19 +60,18 @@ We’re going to need this later while cloning our project from GitHub.
 
 First, note that the IDE we choose will already contain a Maven plugin, so **you can use Maven from the IDE** without a separate installation.
 
-Therefore installing a local instance of Maven is entirely optional. This is useful if you want to run Maven commands from the command line, or change the default installation in the IDE. Check out our guide on [Installing Maven](https://www.baeldung.com/install-maven-on-windows-linux-mac) for more detailed instructions on this.
+Therefore installing a local instance of Maven is entirely optional. This is useful if you want to run Maven commands from the command line, or change the default installation in the IDE. Check out this guide on [Installing Maven](https://www.baeldung.com/install-maven-on-windows-linux-mac) for more detailed instructions on this.
 
 ## Checkout the Course Codebase
 
 Next, let's set up the course [repository](https://en.wikipedia.org/wiki/Repository_(version_control)) on the local machine.
 
-First, let's go to the project on GitHub, select the 'clone' option, and copy the URL [https://github.com/eugenp/learn-spring.git](https://github.com/eugenp/learn-spring.git).
+First, let's go to the project on GitHub, select the 'clone' option, and copy the URL [https://github.com/nbicocchi/spring-boot-course).
 
-Then in a command line/PowerShell, let's move to the directory where we want to clone our repository (e.g., "_/opt/learnsping_") and execute the corresponding git command:
+Then in a command line/PowerShell, let's move to the directory where we want to clone our repository (e.g., "_/$HOME/Desktop_") and execute the corresponding git command:
 
 ```
-$ cd /opt/learnspring/ 
-$ git clone https://github.com/eugenp/learn-spring.git
+$ git clone https://github.com/nbicocchi/spring-boot-course
 ```
 
 Next, let's move to the repository directory and **checkout the _module1_ branch**:
@@ -94,9 +103,7 @@ We can clean up the perspective by moving, hiding, or removing the functional vi
 
 ### Save Action Effects
 
-You can indicate the IDE to automatically organize imports or format the source code whenever you save changes in a file. You can access this by navigating to the Preferences menu option > Java > Editor > Save Action:
-
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://cdn.filestackcontent.com/okUhimCnTOfTy4AeOj2A)
+You can indicate the IDE to automatically organize imports or format the source code whenever you save changes in a file. You can access this by navigating to the Preferences menu option > Java > Editor > Save Action.
 
 ### JDK and Maven Installations
 
@@ -124,7 +131,7 @@ Finally, we can run the application using the Boot Dashboard.
 
 A quick heads up, we’ll be exploring the project in another lesson, so you can disregard the actual implementation and functionality at this stage.
 
-In each lesson, I'll use common **shortcuts in the IDE** to ease development. Do check out this guide with the most useful shortcuts for Eclipse: [](https://www.baeldung.com/eclipse-shortcuts)[Common Shortcuts in Eclipse](https://www.baeldung.com/eclipse-shortcuts).
+In each lesson, I'll use common **shortcuts in the IDE** to ease development. Check out this guide with the most useful [shortcuts for Eclipse](https://www.baeldung.com/eclipse-shortcuts).
 
 ## IntelliJ IDE
 
@@ -138,25 +145,11 @@ Now let’s see how to import a project. We can select 'Import Project', then se
 
 For more tips & tricks on using IntelliJ, this guide to [IntelliJ Basics](https://www.baeldung.com/intellij-basics) will get you started with the most common setup steps and useful shortcuts.
 
-As with Eclipse, we can also optionally override the Maven instance that the IDE uses. We can go to the Preferences menu option > Maven > change the “Bundled” Maven home path selection by looking up the downloaded Maven instance.
-
-Now to run a Maven command for the project, we can go to the _“Run”_ menu > _“Edit Configurations…”_ > click on the _“+”_ _button_ \> _Maven_ \> indicate the Maven Goal in the _“Command Line”_ text box (e.g., _“clean install”_):
-
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://cdn.filestackcontent.com/wrqo9SNTGewcYjVERNQB)
+...
 
 Finally, **we can run the project by right-clicking the main _LsApp class > Run ‘LsApp’_ option**. And we're done; the full environment is up and running.
 
 Same as Eclipse, **IntelliJ provides shortcuts** to speed up development. You can find the most popular ones in this guide: [Common Shortcuts in IntelliJ IDEA](https://www.baeldung.com/intellij-idea-shortcuts).
-
-## Errata
-
-Even though we mention that the course project can be built with any version over Java 8, it might take some time until we verify that everything is working as expected with the latest released versions.
-
-So, we recommend sticking either to Java 8 or to a moderately newer version to go over the course material
-
-You can download JDK 8 from the Oracle site: [https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
-
-**You can check your installed JDK version, with the command** _javac -version_. Using _java -version_ will only check that the JRE is installed.
 
 ## Resources
 - [Eclipse STS](https://spring.io/tools)

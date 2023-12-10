@@ -14,7 +14,7 @@ First, we've defined the basic identifying information about our project: the _g
 
 ```
 <groupId>com.baeldung</groupId>
-<artifactId>real-world-project-lesson</artifactId>
+<artifactId>task-management-app-lesson</artifactId>
 <version>0.1.0-SNAPSHOT</version>
 <packaging>jar</packaging>
 ```
@@ -27,7 +27,7 @@ Next, we have a core part of the pom here, namely the _parent_:
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.3.RELEASE</version>
+    <version>3.0.5</version>
     <relativePath /> <!-- lookup parent from repository -->
 </parent>
 ```
@@ -79,7 +79,7 @@ Finally, we have a handful of properties which override what’s defined in the 
 ```
 <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.8</java.version>
+    <java.version>17</java.version>
 </properties>
 ```
 
@@ -142,17 +142,6 @@ Note we also added a JUnit dependency to our _pom.xml_ file to support testing f
   <artifactId>junit-jupiter-engine</artifactId>
   <scope>test</scope>
 </dependency>
-```
-
-## Upgrade Notes
-
-Starting from version 3, Spring Boot requires Java 17 as a minimum version. We can set the Java version in the _pom.xml_ file as follows:
-
-```
-<properties>
-   ...
-   <java.version>17</java.version>
-</properties>
 ```
 
 ## Resources
