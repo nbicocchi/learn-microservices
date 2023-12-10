@@ -2,9 +2,7 @@
 
 In this lesson, we'll start looking into the web aspects of Spring.
 
-The relevant module you need to import when you're starting with this lesson is: [m6-what-is-spring-mvc-lesson-start](https://github.com/eugenp/learn-spring/tree/module6/m6-what-is-spring-mvc-lesson-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m6-what-is-spring-mvc-lesson-end](https://github.com/eugenp/learn-spring/tree/module6/m6-what-is-spring-mvc-lesson-end)
+The relevant module for this lesson is: [what-is-spring-mvc-lesson-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/what-is-spring-mvc-lesson-end)
 
 ## Spring MVC
 

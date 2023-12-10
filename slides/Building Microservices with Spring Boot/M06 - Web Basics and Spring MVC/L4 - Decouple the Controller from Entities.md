@@ -2,11 +2,7 @@
 
 In this lesson, **we’ll focus on exposing Resources instead of Entities from our controllers back to the client**.
 
-The relevant module you need to import when you're starting with this lesson is: [m6-decouple-controller-from-entities-start](https://github.com/eugenp/learn-spring/tree/module6/m6-decouple-controller-from-entities-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m6-decouple-controller-from-entities-end](https://github.com/eugenp/learn-spring/tree/module6/m6-decouple-controller-from-entities-end)
-
-**For this lesson, you can also check out a Kotlin version of the fully implemented project for reference:** [**m6-decouple-controller-from-entities-end-kotlin**](https://github.com/eugenp/learn-spring/tree/module6/decouple-controller-from-entities-end-kotlin)
+The relevant module for this lesson is: [decouple-controller-from-entities-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/decouple-controller-from-entities-end)
 
 ## Reasons for Conversion
 

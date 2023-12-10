@@ -2,9 +2,7 @@
 
 In this lesson, we’re going to continue the work we started previously, by taking our naive controller implementation to the next level.
 
-The relevant module you need to import when you're starting with this lesson is: [m6-expanding-our-first-controller-start](https://github.com/eugenp/learn-spring/tree/module6/m6-expanding-our-first-controller-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m6-expanding-our-first-controller-end](https://github.com/eugenp/learn-spring/tree/module6/m6-expanding-our-first-controller-end)
+The relevant module for lesson is: [expanding-our-first-controller-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/expanding-our-first-controller-end)
 
 ## The _findOne()_ Method
 
