@@ -2,9 +2,7 @@
 
 In this lesson, we'll focus on a core feature of Spring Boot - actuators.
 
-The relevant module you need to import when you're starting with this lesson is: [m4-actuators-in-boot-start](https://github.com/eugenp/learn-spring/tree/module4/m4-actuators-in-boot-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m4-actuators-in-boot-end](https://github.com/eugenp/learn-spring/tree/module4/m4-actuators-in-boot-end)
+The relevant module for this lesson is: [actuators-in-boot-end](https://github.com/nbicocchi/spring-boot-course/tree/module4/actuators-in-boot-end)
 
 ## Actuators
 

@@ -2,9 +2,7 @@
 
 In this lesson, we'll keep on investigating Spring Boot actuators and **we'll create our first** **custom actuator that will extend the basic functionality of the _/health_ actuator**.
 
-The relevant module you need to import when you're starting with this lesson is: [actuator-custom-health-indicator-start](https://github.com/eugenp/learn-spring/tree/module4/actuator-custom-health-indicator-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [actuator-custom-health-indicator-end](https://github.com/eugenp/learn-spring/tree/module4/actuator-custom-health-indicator-end)
+The relevant module for this lesson is: [actuator-custom-health-indicator-end](https://github.com/nbicocchi/spring-boot-course/tree/module4/actuator-custom-health-indicator-end)
 
 ## Default Output of the Health Actuator
 

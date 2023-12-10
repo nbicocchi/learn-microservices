@@ -2,9 +2,7 @@
 
 In this lesson, we'll understand the Spring Boot autoconfiguration mechanism.
 
-The relevant module you need to import when you're starting with this lesson is:[m4-boot-autoconfiguration-start](https://github.com/eugenp/learn-spring/tree/module4/m4-boot-autoconfiguration-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import:[m4-boot-autoconfiguration-end](https://github.com/eugenp/learn-spring/tree/module4/m4-boot-autoconfiguration-end)
+The relevant module for this lesson is:[boot-autoconfiguration-end](https://github.com/nbicocchi/spring-boot-course/tree/module4/boot-autoconfiguration-end)
 
 ## Boot autoconfiguration
 
