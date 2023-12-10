@@ -12,7 +12,7 @@ What’s powerful about this mechanism is that it intelligently backs off when w
 
 Like many other things in Spring, the mechanism is driven by annotations.
 
-**Boot relies on the_@Conditional_annotation and on a number of variations****to drive autoconfiguration:**
+**Boot relies on the_@Conditional_annotation and on a number of variations to drive autoconfiguration:**
 
 -   _@ConditionalOnClass,_
 -   _@ConditionalOnMissingClass,_
@@ -101,7 +101,7 @@ It also allows excluding certain autoconfiguration classes using the_exclude_pro
 
 Previously we saw that_@SpringBootApplication_also does the same so what is the difference between these two annotations?
 
-Basically,**_@SpringBootApplication_is a combination of the annotations_@EnableAutoConfiguration_,_@ComponentScan_and_@Configuration_**thus it simplifies development by reducing the number of annotations needed to bootstrap the context.
+Basically, **_@SpringBootApplication_is a combination of the annotations_@EnableAutoConfiguration_,_@ComponentScan_and_@Configuration_** thus it simplifies development by reducing the number of annotations needed to bootstrap the context.
 
 You should only choose and add one of these two annotations to your primary_@Configuration_class.
 
