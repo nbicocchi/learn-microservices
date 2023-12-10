@@ -2,6 +2,21 @@
 
 In this lesson, we'll focus on understanding the concept of Dependency Injection (DI) and how this work in Spring.
 
+## What Is Inversion of Control?
+
+Inversion of Control is a principle in software engineering which transfers the control of objects or portions of a program to a container or framework. We most often use it in the context of object-oriented programming.
+
+In contrast with traditional programming, in which our custom code makes calls to a library, IoC enables a framework to take control of the flow of a program and make calls to our custom code. To enable this, frameworks use abstractions with additional behavior built in. **If we want to add our own behavior, we need to extend the classes of the framework or plugin our own classes.**
+
+The advantages of this architecture are:
+* decoupling the execution of a task from its implementation
+* making it easier to switch between different implementations
+* greater modularity of a program
+* greater ease in testing a program by isolating a component or mocking its dependencies, and allowing components to communicate through contracts
+
+We can achieve Inversion of Control through various mechanisms such as: Strategy design pattern, Service Locator pattern, Factory pattern, and Dependency Injection (DI).
+
+
 ## What is a Dependency?
 
 Before we can talk about Dependency Injection, let’s first define what a dependency is.
@@ -65,14 +80,27 @@ There are essentially three ways to inject a dependency:
 These all have their advantages and disadvantages, and we’ll look into each in detail throughout the course.
 
 ## The Spring IoC Container
+An IoC container is a common characteristic of frameworks that implement IoC.
 
-Dependency Injection is a technique that’s part of the broader Inversion of Control (IoC) principle.
+In the Spring framework, the interface _ApplicationContext_ represents the IoC container. The Spring container is responsible for instantiating, configuring and assembling objects known as _beans_, as well as managing their life cycles.
 
-We won't go into detail here about IoC, but have a look at the resources section for more information on it.
+The Spring framework provides several implementations of the _ApplicationContext_ interface: AnnotationConfigApplicationContext, _ClassPathXmlApplicationContext_ and _FileSystemXmlApplicationContext_ for standalone applications, and _WebApplicationContext_ for web applications.
 
-Now that we understand the concepts and principles, let’s touch on what Spring does as well. Simply put, **Spring has the responsibility of creating and configuring the dependencies and injecting them where needed**.
+In order to assemble beans, the container uses configuration metadata, which can be in the form of XML configuration or annotations.
 
-We’ll discuss the Spring IOC Container further in the next lesson.
+Here’s one way to manually instantiate a container:
+
+```
+ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+```
+
+And here’s an example of manually instantiating a container using _AnnotationConfigApplicationContext_:
+
+```
+AnnotationConfigApplicationContext annotationContext = new AnnotationConfigApplicationContext();
+```
+
+When you create an instance of _AnnotationConfigApplicationContext_ and provide it with one or more configuration classes, it scans these classes for the _@Bean_ annotations and other relevant annotations. It then initializes and manages the beans defined in these classes, setting up their dependencies and managing their lifecycle.
 
 ## Resources
 - [Inversion of Control and Dependency Injection with Spring](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)

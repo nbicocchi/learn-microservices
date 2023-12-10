@@ -31,13 +31,9 @@ We can add a breakpoint in the constructor here and start up the application, to
 
 This way, we can see that component scanning is working as we expected.
 
-Note that we never actually defined component scanning explicitly. This is because **_@SpringBootApplication_ is already using the annotation**.
+Note that we never actually defined component scanning explicitly. This is because **_@SpringBootApplication_ is already using the annotation**. If we go to the _@SpringBootApplication_ definition (In Intellij: View > Jump to Source), we'll see that is includes the _@ComponentScan_ annotation.
 
-If we go to the _@SpringBootApplication_ definition, we'll see that is includes the _@ComponentScan_ annotation.
-
-By default, this scans classes in the same package or below. In our case, this is the _com.baeldung.ls_ package and all the packages below it.
-
-**If we want to scan a specific package, we can specify it using the _basePackages_ attribute.**
+By default, this scans classes in the same package or below. In our case, this is the _com.baeldung.ls_ package and all the packages below it. **If we want to scan a specific package, we can specify it using the _basePackages_ attribute.**
 
 Let’s add a new _PersistenceConfig_ class that uses _@ComponentScan_ to scan only the _com.baeldung.ls.persistence_ package:
 
