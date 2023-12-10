@@ -2,7 +2,7 @@
 
 In this module, we’re going to take a closer look at some of the core Spring MVC annotations that are useful not only when building a REST API, but also when building a more traditional MVC application.
 
-The relevant module for this lesson is: [controller-basics-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/controller-basics-end)
+The relevant module for this lesson is: [controller-basics-end](https://github.com/nbicocchi/spring-boot-course/tree/module7/controller-basics-end)
 
 ## Overview
 

@@ -2,7 +2,7 @@
 
 In this module, we’ll continue with our analysis of the Spring MVC Controller features. More precisely, we'll focus on the _@PathVariable_ annotation.
 
-The relevant module for this lesson is: [controller-urls-pathvariable-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/controller-urls-pathvariable-end)
+The relevant module for this lesson is: [controller-urls-pathvariable-end](https://github.com/nbicocchi/spring-boot-course/tree/module7/controller-urls-pathvariable-end)
 
 ## The _@PathVariable_ Annotation
 

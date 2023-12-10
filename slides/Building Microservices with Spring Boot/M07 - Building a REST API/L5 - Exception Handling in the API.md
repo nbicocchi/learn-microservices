@@ -4,7 +4,7 @@ In this module, we’re going to see how exception handling is done in a REST AP
 
 Specifically, we'll explore different mechanisms in Spring to handle exceptions gracefully and return a correct response back to the client.
 
-The relevant module for this lesson is: [exception-handling-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/exception-handling-end)
+The relevant module for this lesson is: [exception-handling-end](https://github.com/nbicocchi/spring-boot-course/tree/module7/exception-handling-end)
 
 ## Overview
 

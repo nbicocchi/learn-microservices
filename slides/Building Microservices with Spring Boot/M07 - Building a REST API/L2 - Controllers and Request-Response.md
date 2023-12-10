@@ -2,7 +2,7 @@
 
 In this lesson, we’re going to continue our discussion about the _Controller,_ and explore a few more core Spring MVC annotations that come into play when building a REST API.
 
-The relevant module for this lesson is: [controller-request-response](https://github.com/nbicocchi/spring-boot-course/tree/module8/controller-request-response)
+The relevant module for this lesson is: [controller-request-response](https://github.com/nbicocchi/spring-boot-course/tree/module7/controller-request-response)
 
 ## Overview
 
