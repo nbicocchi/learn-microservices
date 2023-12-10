@@ -2,9 +2,7 @@
 
 In this lesson, we'll go through the basic concepts of the bean lifecycle in Spring.
 
-The relevant module you need to import when you're starting with this lesson is: [m2-lifecycle-of-a-bean-start](https://github.com/eugenp/learn-spring/tree/module2/m2-lifecycle-of-a-bean-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m2-lifecycle-of-a-bean-end](https://github.com/eugenp/learn-spring/tree/module2/m2-lifecycle-of-a-bean-end)
+The relevant module for this lesson is: [lifecycle-of-a-bean-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/lifecycle-of-a-bean-end)
 
 ## Bean Lifecycle Phases
 

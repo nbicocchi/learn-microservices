@@ -2,9 +2,7 @@
 
 In this lesson, we'll discuss the main Spring IoC container - the Spring Application Context.
 
-The relevant module you need to import when you're starting with this lesson is: [m2-basics-of-java-configuration-and-the-spring-context-start](https://github.com/eugenp/learn-spring/tree/module2/m2-basics-of-java-configuration-and-the-spring-context-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m2-basics-of-java-configuration-and-the-spring-context-end](https://github.com/eugenp/learn-spring/tree/module2/m2-basics-of-java-configuration-and-the-spring-context-end)
+The relevant module for this lesson is: [basics-of-java-configuration-and-the-spring-context-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/basics-of-java-configuration-and-the-spring-context-end)
 
 ## Spring Application Context
 

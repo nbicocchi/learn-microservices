@@ -2,9 +2,7 @@
 
 In this lesson, we'll learn about the **Spring ApplicationContext.**
 
-The relevant module you need to import when you're starting with this lesson is: [the-spring-application-context-start](https://github.com/eugenp/learn-spring/tree/module2/the-spring-application-context-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [the-spring-application-context-end](https://github.com/eugenp/learn-spring/tree/module2/the-spring-application-context-end)
+The relevant module for this lesson is: [the-spring-application-context-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/the-spring-application-context-end)
 
 ## What is the Application Context
 

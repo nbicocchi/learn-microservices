@@ -2,7 +2,7 @@
 
 In this lesson, we'll get started with the project we'll be using throughout the course.
 
-The relevant module for this lesson is: [m1-real-world-project](https://github.com/eugenp/learn-spring/tree/module1/m1-real-world-project).
+The relevant module for this lesson is: [real-world-project](https://github.com/nbicocchi/spring-boot-course/tree/module1/real-world-project).
 
 ## Creating the Project
 

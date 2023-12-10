@@ -2,9 +2,7 @@
 
 In this lesson, we'll discuss the possibility to wire the beans into the application context using the _@Resource_ and _@Inject_ annotations.
 
-The relevant module you need to import when you're starting with this lesson is: [spring-wiring-resource-and-inject-start](https://github.com/eugenp/learn-spring/tree/module2/spring-wiring-resource-and-inject-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [spring-wiring-resource-and-inject-end](https://github.com/eugenp/learn-spring/tree/module2/spring-wiring-resource-and-inject-end)
+The relevant module for this lesson is: [spring-wiring-resource-and-inject-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/spring-wiring-resource-and-inject-end)
 
 ## Wiring Annotations
 

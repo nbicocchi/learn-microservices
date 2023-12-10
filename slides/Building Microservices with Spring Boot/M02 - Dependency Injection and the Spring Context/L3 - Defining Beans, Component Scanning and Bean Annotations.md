@@ -2,9 +2,7 @@
 
 In this lesson, we'll focus on how to define beans in Spring and discover them using component scanning.
 
-The relevant module you need to import when you're starting with this lesson is: [m2-defining-beans-component-scanning-and-bean-annotations-start](https://github.com/eugenp/learn-spring/tree/module2/m2-defining-beans-component-scanning-and-bean-annotations-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m2-defining-beans-component-scanning-and-bean-annotations-end](https://github.com/eugenp/learn-spring/tree/module2/m2-defining-beans-component-scanning-and-bean-annotations-end)
+The relevant module for this lesson is: [defining-beans-component-scanning-and-bean-annotations-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/defining-beans-component-scanning-and-bean-annotations-end)
 
 ## Spring Component Scanning
 

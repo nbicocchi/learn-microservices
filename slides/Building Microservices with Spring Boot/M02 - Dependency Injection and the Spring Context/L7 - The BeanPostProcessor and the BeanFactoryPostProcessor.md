@@ -2,9 +2,7 @@
 
 In this lesson, we'll learn about the **Spring container extension points**.
 
-The relevant module you need to import when you're starting with this lesson is: [beanPostProcessor-and-beanFactoryPostProcessor-start](https://github.com/eugenp/learn-spring/tree/module2/beanPostProcessor-and-beanFactoryPostProcessor-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [beanPostProcessor-and-beanFactoryPostProcessor-end](https://github.com/eugenp/learn-spring/tree/module2/beanPostProcessor-and-beanFactoryPostProcessor-end)
+The relevant module for this lesson is: [beanPostProcessor-and-beanFactoryPostProcessor-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/beanPostProcessor-and-beanFactoryPostProcessor-end)
 
 ## The Spring Container Extension Points
 

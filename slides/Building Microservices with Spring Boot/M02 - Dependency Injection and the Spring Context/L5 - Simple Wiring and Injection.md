@@ -2,9 +2,7 @@
 
 In this lesson, we'll have a look at how to wire beans together using Dependency Injection.
 
-The relevant module you need to import when you're starting with this lesson is: [m2-simple-wiring-and-injection-start](https://github.com/eugenp/learn-spring/tree/module2/m2-simple-wiring-and-injection-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m2-simple-wiring-and-injection-end](https://github.com/eugenp/learn-spring/tree/module2/m2-simple-wiring-and-injection-end)
+The relevant module for this lesson is: [simple-wiring-and-injection-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/simple-wiring-and-injection-end)
 
 ## Dependency Injection
 

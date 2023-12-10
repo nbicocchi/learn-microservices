@@ -2,9 +2,7 @@
 
 In this lesson, we'll consider the different scopes of beans in Spring.
 
-The relevant module you need to import when you're starting with this lesson is: [scopes-of-spring-beans-start](https://github.com/eugenp/learn-spring/tree/module2/scopes-of-spring-beans-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [scopes-of-spring-beans-end](https://github.com/eugenp/learn-spring/tree/module2/scopes-of-spring-beans-end)
+The relevant module for this lesson is: [scopes-of-spring-beans-end](https://github.com/nbicocchi/spring-boot-course/tree/module2/scopes-of-spring-beans-end)
 
 ## Scopes of Beans
 
