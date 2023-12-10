@@ -2,9 +2,7 @@
 
 Welcome to a new lesson out of Learn Spring Data. In this lesson, we’ll set up our project and create the domain entities that we’ll use throughout our course.
 
-The relevant module you need to import when you're working with this lesson is: [persistence-project](https://github.com/Baeldung/learn-spring-data/tree/module1/persistence-project)
-
-**This lesson only needs a single reference codebase, so there is no end version of the project.**
+The relevant module for this lesson is: [persistence-project](https://github.com/nbicocchi/spring-boot-course/tree/module5/persistence-project)
 
 ## Setting up the Project
 

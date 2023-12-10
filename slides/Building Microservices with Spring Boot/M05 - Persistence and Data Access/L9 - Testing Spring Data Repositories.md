@@ -2,9 +2,7 @@
 
 In this lesson, we're going to learn how to test Spring Data repositories’ methods using a convenience annotation provided by Spring Boot.
 
-The relevant module you need to import when you're starting with this lesson is: [testing-spring-data-repositories-start](https://github.com/Baeldung/learn-spring-data/tree/module2/testing-spring-data-repositories-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [testing-spring-data-repositories-end](https://github.com/Baeldung/learn-spring-data/tree/module2/testing-spring-data-repositories-end)
+The relevant module for this lesson is: [testing-spring-data-repositories-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/testing-spring-data-repositories-end)
 
 ## Unit Test or Integration Test
 

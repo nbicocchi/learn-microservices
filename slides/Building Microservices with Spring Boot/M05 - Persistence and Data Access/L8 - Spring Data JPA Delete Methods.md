@@ -2,9 +2,7 @@
 
 In this lesson from Learn Spring Data, we’ll explore how we can remove entries from the database using Spring Data JPA.
 
-The relevant module you need to import when you're starting with this lesson is: [delete-methods-start](https://github.com/Baeldung/learn-spring-data/tree/module2/delete-methods-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [delete-methods-end](https://github.com/Baeldung/learn-spring-data/tree/module2/delete-methods-end)
+The relevant module for this lesson is: [delete-methods-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/delete-methods-end)
 
 ## Delete Entities
 

@@ -2,9 +2,7 @@
 
 In this lesson, we’ll look at how Spring Data JPA supports pagination and sorting.
 
-The relevant module you need to import when you're starting with this lesson is: [pagination-and-sorting-support-lesson-start](https://github.com/Baeldung/learn-spring-data/tree/module4/pagination-and-sorting-support-lesson-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [pagination-and-sorting-support-lesson-end](https://github.com/Baeldung/learn-spring-data/tree/module4/pagination-and-sorting-support-lesson-end)
+The relevant module for this lesson is: [pagination-and-sorting-support-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/pagination-and-sorting-support-end)
 
 ## Introduction
 

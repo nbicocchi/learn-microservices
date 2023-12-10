@@ -2,9 +2,7 @@
 
 Welcome to this lesson from Learn Spring Data, where we’ll deep dive into the derived query methods of Spring Data JPA.
 
-The relevant module you need to import when you're starting with this lesson is: [deep-dive-into-derived-query-methods-start](https://github.com/Baeldung/learn-spring-data/tree/module2/deep-dive-into-derived-query-methods-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [deep-dive-into-derived-query-methods-end](https://github.com/Baeldung/learn-spring-data/tree/module2/deep-dive-into-derived-query-methods-end)
+The relevant module for this lesson is: [deep-dive-into-derived-query-methods-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/deep-dive-into-derived-query-methods-end)
 
 ## Deep Dive Into Derived Query Methods
 

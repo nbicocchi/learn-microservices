@@ -2,9 +2,7 @@
 
 In this lesson, we're going to explore different operations for persisting new entities and updating existing ones.
 
-The relevant module you need to import when you're starting with this lesson is: [save-methods-start](https://github.com/Baeldung/learn-spring-data/tree/module2/save-methods-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [save-methods-end](https://github.com/Baeldung/learn-spring-data/tree/module2/save-methods-end)
+The relevant module you need to import when you're starting with this lesson is: [save-methods-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/save-methods-end)
 
 ## Persisting New Entities
 

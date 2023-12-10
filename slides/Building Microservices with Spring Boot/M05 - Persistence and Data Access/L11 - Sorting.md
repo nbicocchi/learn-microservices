@@ -8,9 +8,7 @@ In the previous lesson, we looked at two convenience methods that Spring Data of
 
 The focus of this lesson is to introduce different mechanisms we can employ to sort entities in Spring Data JPA, and look at how we can address some complex sorting requirements. **We’ll learn how to sort entities with derived query methods, and with _Sort_ parameters.**
 
-The relevant module you need to import when you're starting with this lesson is: [sorting-lesson-start](https://github.com/Baeldung/learn-spring-data/tree/module4/sorting-lesson-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [sorting-lesson-end](https://github.com/Baeldung/learn-spring-data/tree/module4/sorting-lesson-end)
+The relevant module for this lesson is: [sorting-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/sorting-end)
 
 ## Sort Order
 

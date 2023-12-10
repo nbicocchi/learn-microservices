@@ -4,9 +4,7 @@ Welcome to a new lesson from the Learn Spring Data course. In this lesson, we’
 
 This is a core topic in Spring Data and the Spring Data JPA framework, since they represent the main mechanism for interacting with the database.
 
-The relevant module you need to import when you're starting with this lesson is: [introduction-to-spring-data-jpa-repositories-start](https://github.com/Baeldung/learn-spring-data/tree/module2/introduction-to-spring-data-jpa-repositories-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [introduction-to-spring-data-jpa-repositories-end](https://github.com/Baeldung/learn-spring-data/tree/module2/introduction-to-spring-data-jpa-repositories-end)
+The relevant module for this lesson is: [introduction-to-spring-data-jpa-repositories-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/introduction-to-spring-data-jpa-repositories-end)
 
 ## Handling Data With Spring Data JPA
 

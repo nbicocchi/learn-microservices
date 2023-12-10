@@ -4,9 +4,7 @@ In this lesson, we'll explore different ways that we can paginate query results 
 
 We'll demonstrate this for derived methods, as well as custom methods. Finally, we'll discuss what factors we should consider when returning results from paginated methods.
 
-The relevant module you need to import when you're starting with this lesson is: [pagination-lesson-start](https://github.com/Baeldung/learn-spring-data/tree/module4/pagination-lesson-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [pagination-lesson-end](https://github.com/Baeldung/learn-spring-data/tree/module4/pagination-lesson-end)
+The relevant module for this lesson is: [pagination-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/pagination-end)
 
 ## Introduction
 

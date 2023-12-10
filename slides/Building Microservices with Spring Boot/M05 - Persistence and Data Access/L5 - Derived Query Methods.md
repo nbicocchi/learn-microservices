@@ -2,9 +2,7 @@
 
 In this lesson, we’ll explore Spring Data JPA’s derived query methods. We'll discuss the naming convention, which is the cornerstone of this feature.
 
-The relevant module you need to import when you're starting with this lesson is: [derived-query-methods-start](https://github.com/Baeldung/learn-spring-data/tree/module2/derived-query-methods-start)
-
-**If you want to have a look at the fully implemented lesson, as a reference, feel free to import:** [derived-query-methods-end](https://github.com/Baeldung/learn-spring-data/tree/module2/derived-query-methods-end)
+The relevant module for this lesson is: [derived-query-methods-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/derived-query-methods-end)
 
 ## Introduction
 
