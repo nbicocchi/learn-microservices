@@ -2,7 +2,7 @@
 
 In this lesson, we'll understand the Spring Boot autoconfiguration mechanism.
 
-The relevant module for this lesson is:[boot-autoconfiguration-end](https://github.com/nbicocchi/spring-boot-course/tree/module4/boot-autoconfiguration-end)
+The relevant module for this lesson is:[boot-auto-configuration-end](https://github.com/nbicocchi/spring-boot-course/tree/module4/boot-auto-configuration-end)
 
 ## Boot autoconfiguration
 
