@@ -2,9 +2,7 @@
 
 In this module, we’re going to focus on the events support in Spring.
 
-The relevant module you need to import when you're starting with this lesson is: [m9-working-with-events-and-listeners-start](https://github.com/eugenp/learn-spring/tree/module9/m9-working-with-events-and-listeners-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m9-working-with-events-and-listeners-end](https://github.com/eugenp/learn-spring/tree/module9/m9-working-with-events-and-listeners-end)
+The relevant module for this lesson is: [working-with-events-and-listeners-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/working-with-events-and-listeners-end)
 
 ## Overview
 

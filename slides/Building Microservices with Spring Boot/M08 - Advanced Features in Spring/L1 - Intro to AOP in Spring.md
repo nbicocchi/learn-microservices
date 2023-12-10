@@ -2,9 +2,7 @@
 
 In this lesson, we’re going to focus on Aspect Oriented Programming, or AOP, in Spring.
 
-The relevant module you need to import when you're starting with this lesson is: [spring-aop-in-practice-start](https://github.com/eugenp/learn-spring/tree/module9/spring-aop-in-practice-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [spring-aop-in-practice-end](https://github.com/eugenp/learn-spring/tree/module9/spring-aop-in-practice-end)
+The relevant module for this lesson is: [spring-aop-in-practice-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/spring-aop-in-practice-end)
 
 ## Aspect-Oriented Programming (AOP)
 

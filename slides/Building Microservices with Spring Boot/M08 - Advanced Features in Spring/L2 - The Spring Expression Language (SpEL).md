@@ -2,9 +2,7 @@
 
 In this lesson, we’re going we're going to focus on Spring Expression Language or _SpEL_.
 
-The relevant module you need to import when you're starting with this lesson is: [m9-the-spring-expression-language-start](https://github.com/eugenp/learn-spring/tree/module9/m9-the-spring-expression-language-start).
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m9-the-spring-expression-language-end](https://github.com/eugenp/learn-spring/tree/module9/m9-the-spring-expression-language-end).
+The relevant module for this lesson is: [the-spring-expression-language-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/the-spring-expression-language-end).
 
 ## Spring Expression Language
 

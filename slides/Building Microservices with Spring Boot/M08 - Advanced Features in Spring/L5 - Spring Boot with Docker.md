@@ -4,9 +4,7 @@ Welcome to a new lesson out of Learn Spring. In this lesson, we are going to lea
 
 Note that we won’t be covering what Docker is nor its basic concepts here. If you don’t have experience using this platform, then I strongly recommend having a look at the Docker links in the Resources section before moving on, as they will help you understand all the base Docker features.
 
-The relevant module you need to import when you're starting with this lesson is: [spring-boot-with-docker-start](https://github.com/eugenp/learn-spring/tree/module9/spring-boot-with-docker-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [spring-boot-with-docker-end](https://github.com/eugenp/learn-spring/tree/module9/spring-boot-with-docker-end)
+The relevant module for this lesson is: [spring-boot-with-docker-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/spring-boot-with-docker-end)
 
 ## The Spring Boot Plugin
 
