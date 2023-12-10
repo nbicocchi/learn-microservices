@@ -6,7 +6,7 @@ The relevant module for this lesson is:[boot-auto-configuration-end](https://git
 
 ## Boot autoconfiguration
 
-**Spring Boot simplifies development with a core, versatile mechanism called autoconfiguration.** This is based on a number of aspects, such as properties, beans and[classpath](https://en.wikipedia.org/wiki/Classpath_(Java))dependencies.
+**Spring Boot simplifies development with a core, versatile mechanism called autoconfiguration.** This is based on a number of aspects, such as properties, beans and [classpath](https://en.wikipedia.org/wiki/Classpath_(Java)) dependencies.
 
 What’s powerful about this mechanism is that it intelligently backs off when we add our own configuration.
 
