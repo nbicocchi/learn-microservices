@@ -2,9 +2,7 @@
 
 In this module, we’re going to take a closer look at some of the core Spring MVC annotations that are useful not only when building a REST API, but also when building a more traditional MVC application.
 
-The relevant module you need to import when you're starting with this lesson is: [m8-controller-basics-start](https://github.com/eugenp/learn-spring/tree/module8/m8-controller-basics-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m8-controller-basics-end](https://github.com/eugenp/learn-spring/tree/module8/m8-controller-basics-end)
+The relevant module for this lesson is: [controller-basics-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/controller-basics-end)
 
 ## Overview
 

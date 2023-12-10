@@ -6,9 +6,7 @@ We’re going to be looking at a really common and powerful option to drive our 
 
 Keep in mind that even though we're using Spring both to implement our API and now to consume it, it certainly doesn’t have to be the case. Since this is REST, the API side of things can be implemented with pretty much any language or technology.
 
-The relevant module you need to import when you're starting with this lesson is: [m8-intro-to-the-rest-template-start](https://github.com/eugenp/learn-spring/tree/module8/m8-intro-to-the-rest-template-start).
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m8-intro-to-the-rest-template-end](https://github.com/eugenp/learn-spring/tree/module8/m8-intro-to-the-rest-template-end).
+The relevant module for this lesson is: [intro-to-the-rest-template-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/intro-to-the-rest-template-end).
 
 ## Adding _RestTemplate_
 

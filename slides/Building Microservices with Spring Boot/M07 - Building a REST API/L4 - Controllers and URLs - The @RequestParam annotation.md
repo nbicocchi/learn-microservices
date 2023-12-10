@@ -2,9 +2,7 @@
 
 In this lesson, we’ll analyze one more Spring MVC Controller annotation that comes into play when building a REST API, the _@RequestParam_ annotation.
 
-The relevant module you need to import when you're starting with this lesson is: [controller-urls-requestparam-start](https://github.com/eugenp/learn-spring/tree/module8/controller-urls-requestparam-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [controller-urls-requestparam-end](https://github.com/eugenp/learn-spring/tree/module8/controller-urls-requestparam-end)
+The relevant module for this lesson is: [controller-urls-requestparam-end](https://github.com/nbicocchi/spring-boot-course/tree/module8/controller-urls-requestparam-end)
 
 ## Uses of the _@__RequestParam_ Annotation
 
