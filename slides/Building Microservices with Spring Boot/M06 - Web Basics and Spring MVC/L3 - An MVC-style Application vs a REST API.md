@@ -69,9 +69,13 @@ This is just a very simple example; there’s a lot more to cover.
 
 Now, if we have a look at a RESTful example:
 
-JAVA
-
-`@GetMapping("/project") public Project project() { Project project = projectService.find...; return project; }`
+```
+@GetMapping("/project") 
+public Project project() { 
+    Project project = projectService.find...; 
+    return project; 
+}
+```
 
 Notice the URL here represents a Resource, and doesn't contain any verb, since **the verb is the HTTP verb defined in the mapping; in our case here - GET**.
 

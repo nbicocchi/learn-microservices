@@ -2,9 +2,7 @@
 
 In this lesson, we'll learn how to use Spring profiles for creating beans that are only enabled when a specific profile is activated.
 
-The relevant module you need to import when you're starting with this lesson is: [m3-working-with-profiles-start](https://github.com/eugenp/learn-spring/tree/module3/m3-working-with-profiles-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m3-working-with-profiles-end](https://github.com/eugenp/learn-spring/tree/module3/m3-working-with-profiles-end)
+The relevant module for this lesson is: [working-with-profiles-end](https://github.com/nbicocchi/spring-boot-course/tree/module3/working-with-profiles-end)
 
 ## Creating Profile-Specific Beans
 

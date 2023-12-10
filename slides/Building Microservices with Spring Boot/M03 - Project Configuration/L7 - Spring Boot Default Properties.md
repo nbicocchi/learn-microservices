@@ -2,9 +2,7 @@
 
 In this lesson, we’ll see how Spring Boot defines the configuration properties that allow us to customize the behavior it provides out of the box according to our needs.
 
-The relevant module you need to import when you're starting with this lesson is: [default-properties-start](https://github.com/eugenp/learn-spring/tree/module3/default-properties-start)
-
-If you want to have a look at the fully implemented lesson, as a reference, feel free to import: [default-properties-end](https://github.com/eugenp/learn-spring/tree/module3/default-properties-end)
+The relevant module for lesson is: [default-properties-end](https://github.com/nbicocchi/spring-boot-course/tree/module3/default-properties-end)
 
 ## Spring Boot and Application Properties
 

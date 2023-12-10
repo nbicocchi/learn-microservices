@@ -4,9 +4,7 @@ In this Learn Spring lesson, we’ll explore some alternative options to deploy 
 
 We previously learned how to achieve this using the IDE. However, running the app through the IDE is only suitable for local dev environments. In this lesson, we’ll focus on building and running our app from the command line, including some approaches that can be extended to deploy our app in production or test environments.
 
-The relevant module you need to import when you're working with this lesson is: [deploying-boot-application-other-options](https://github.com/eugenp/learn-spring/tree/module3/deploying-boot-application-other-options)
-
-[T](https://github.com/eugenp/learn-spring/tree/module3/deploying-boot-application-other-options)his lesson only needs a single reference codebase, so there is no end version of the project.
+The relevant module for this lesson is: [deploying-boot-application-other-options](https://github.com/nbicocchi/spring-boot-course/tree/module3/deploying-boot-application-other-options)
 
 ## The Spring Boot Maven Plugin
 

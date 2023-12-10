@@ -2,9 +2,7 @@
 
 In this lesson, we'll learn about [logging](https://en.wikipedia.org/wiki/Log_file) in a Spring Boot project, including how to configure logging levels and other logging configurations.
 
-The relevant module you need to import when you're starting with this lesson is: [m3-logging-in-a-spring-boot-project-start](https://github.com/eugenp/learn-spring/tree/module3/m3-logging-in-a-spring-boot-project-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m3-logging-in-a-spring-boot-project-end](https://github.com/eugenp/learn-spring/tree/module3/m3-logging-in-a-spring-boot-project-end)
+The relevant module for this lesson is: [logging-in-a-spring-boot-project-end](https://github.com/nbicocchi/spring-boot-course/tree/module3/logging-in-a-spring-boot-project-end)
 
 ## Logging Dependency
 

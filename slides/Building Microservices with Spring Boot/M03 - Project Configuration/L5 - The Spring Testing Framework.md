@@ -2,9 +2,7 @@
 
 In this lesson, we'll have a look at basics of the Spring Testing framework.
 
-The relevant module you need to import when you're starting with this lesson is: [m3-spring-testing-framework-lesson-start](https://github.com/eugenp/learn-spring/tree/module3/m3-spring-testing-framework-lesson-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [m3-spring-testing-framework-lesson-end](https://github.com/eugenp/learn-spring/tree/module3/m3-spring-testing-framework-lesson-end)
+The relevant module for this lesson is: [spring-testing-framework-lesson-end](https://github.com/nbicocchi/spring-boot-course/tree/module3/spring-testing-framework-lesson-end)
 
 ## Unit Testing and Integration Testing
 

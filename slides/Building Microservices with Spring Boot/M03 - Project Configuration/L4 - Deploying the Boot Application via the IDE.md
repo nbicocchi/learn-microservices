@@ -6,9 +6,7 @@ Of course, this is useful primarily during development and not really for produc
 
 We also have other options such as launching the app from the command-line.
 
-The relevant module you need to import when you're working with this lesson is: [m3-deploying-a-spring-boot-project](https://github.com/eugenp/learn-spring/tree/module3/m3-deploying-a-spring-boot-project)
-
-This lesson only needs a single reference codebase, so there is no end version of the project.
+The relevant module for lesson is: [deploying-a-spring-boot-project](https://github.com/nbicocchi/spring-boot-course/tree/module3/deploying-a-spring-boot-project)
 
 ## Using Eclipse
 

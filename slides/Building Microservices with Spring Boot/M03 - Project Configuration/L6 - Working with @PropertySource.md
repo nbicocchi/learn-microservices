@@ -2,9 +2,7 @@
 
 In this lesson, we'll focus on the _@PropertySource_ annotation.
 
-The relevant module you need to import when you're starting with this lesson is: [working-with-property-source-start](https://github.com/eugenp/learn-spring/tree/module3/working-with-property-source-start)
-
-If you want have a look at the fully implemented lesson, as a reference, feel free to import: [working-with-property-source-end](https://github.com/eugenp/learn-spring/tree/module3/working-with-property-source-end)
+The relevant module for this lesson is: [working-with-property-source-end](https://github.com/nbicocchi/spring-boot-course/tree/module3/working-with-property-source-end)
 
 ## Main and Test Property Sources
 
