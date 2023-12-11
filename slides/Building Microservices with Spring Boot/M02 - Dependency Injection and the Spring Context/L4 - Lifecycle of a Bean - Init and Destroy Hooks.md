@@ -39,9 +39,13 @@ Let’s look at first hook that Spring provides to customize the bean creation. 
 Let’s add this method to the _BeanA_ definition:
 
 ```
-@PostConstruct
-public void post() {
-    // 
+public class BeanA {
+    private static Logger log = LoggerFactory.getLogger(BeanA.class);
+
+    @PostConstruct
+    public void post() {
+        log.info("@PostConstruct method is called.");
+    }
 }
 ```
 
@@ -53,11 +57,18 @@ First, let’s create our new bean - _BeanB_ and let’s provide it with a simpl
 
 ```
 public class BeanB {
+    private static Logger log = LoggerFactory.getLogger(BeanB.class);
 
     public void initialize() {
         log.info("Custom initializer is called.");
     }
+
+    @PostConstruct
+    public void postConstruct() {
+        log.info("@PostConstruct method is called.");
+    }
 }
+
 ```
 
 Now let’s define this as a bean, **using the _@Bean_ annotation and add an optional param of the annotation called _initMethod_**_:_
@@ -92,7 +103,7 @@ public class BeanC {
 
     @PreDestroy
     public void preDestroy() {
-        log.info("@PreDestroy annotated method is called.");
+        log.info("@PreDestroy method is called.");
     }
 
     public void destroy() {
@@ -117,17 +128,6 @@ public static void main(final String... args) {
     ConfigurableApplicationContext context = SpringApplication.run(LsApp.class, args);
     context.close();
 }
-```
-
-## Upgrade Notes
-
-In Spring Boot 3.0, the transition from Java EE to Jakarta EE has been applied.
-
-With this, several elements have migrated from _javax.\*_ packages to the corresponding _jakarta.\*_ ones. In fact, the import statements for the _@PostConstruct_ and _@PreDestroy_ annotations we introduce in this lesson would differ from the ones shown in the video with the newer version:
-
-```
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 ```
 
 ## Resources

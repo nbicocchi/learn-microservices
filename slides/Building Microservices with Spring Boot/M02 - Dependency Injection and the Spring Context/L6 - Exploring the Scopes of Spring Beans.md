@@ -39,13 +39,18 @@ public IProjectRepository singletonBean() {
 }
 ```
 
-The 2 declarations above are equivalent.
-
-Instead of typing the String value for the scope, we can also use a built-in constant:
+or
 
 ```
+@Bean
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+public IProjectRepository singletonBean() {
+    return new ProjectRepositoryImpl();
+}
 ```
+
+The 3 declarations above are equivalent.
+
 
 ## Prototype Scope
 
@@ -91,9 +96,12 @@ public class ProjectServiceImpl implements IProjectService {
 
 In order to check how the beans are injected, in _ProjectServiceImpl_ we'll add a new method annotated with @_PostConstruct:_
 
-JAVA
-
-`@PostConstruct public void after() { }`
+```
+@PostConstruct 
+public void after() { 
+    //
+}
+```
 
 **Let's add a breakpoint in this method and start the application in debug mode.**
 

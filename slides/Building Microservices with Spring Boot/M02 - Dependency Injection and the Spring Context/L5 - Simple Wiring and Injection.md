@@ -42,9 +42,7 @@ public class ProjectServiceImpl implements IProjectService {
 
 The Spring container will fetch the _projectRepository_ bean for us and inject it in our service class.
 
-Note that **since we have a single constructor, the _@Autowired_ annotation is optional**.
-
-If we define more than one constructor and we want one of them to inject dependencies on creating the bean, then we need to add _@Autowired_ on the required constructor.
+Note that **since we have a single constructor, the _@Autowired_ annotation is optional. If we define more than one constructor and we want one of them to inject dependencies on creating the bean, then we need to add _@Autowired_ on the required constructor.**
 
 Overall, constructor based dependency injection is clean and doesn't introduce any container specific classes, annotations or other dependencies.
 
