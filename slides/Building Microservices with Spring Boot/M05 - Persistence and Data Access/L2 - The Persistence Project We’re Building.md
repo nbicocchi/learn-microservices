@@ -2,11 +2,9 @@
 
 Welcome to a new lesson out of Learn Spring Data. In this lesson, we’ll set up our project and create the domain entities that we’ll use throughout our course.
 
-The relevant module for this lesson is: [persistence-project](https://github.com/nbicocchi/spring-boot-course/tree/module5/persistence-project)
+The relevant module for this lesson is: [spring-data-jpa-setup-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/spring-data-jpa-setup-end)
 
 ## Setting up the Project
-
-Now that we have a high-level understanding of the Spring Data JPA module, let’s have a look at the project we’ll be working with throughout this course.
 
 Our main focus will be the persistence layer, and an important part of this is the domain.
 
@@ -38,13 +36,9 @@ Now we’ll continue with **defining our entities**.
 
 Let’s have a look at a short diagram that presents our entities to get an idea of our goal before we start the implementation:
 
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/TJJaXyl1QrOFHxKmU6th)
+![](images/diagram-project.png)
 
-As we can see here, we’ll have a _Project_ entity that has a 1-to-many relationship with the _Task_ entity.
-
-In addition, we’ll define a Worker entity that has a 1-to-many relationship with the _Task_ entity.
-
-This is the basic domain we’ll use to demonstrate the features of Spring Data.
+As we can see here, we’ll have a _Project_ entity that has a 1-to-many relationship with the _Task_ entity. In addition, we’ll define a Worker entity that has a 1-to-many relationship with the _Task_ entity.
 
 Now let’s move on to the implementation. We’ll start by **adding a _Task_ class** in a new _com.baeldung.lsd.persistence.model_ package.
 

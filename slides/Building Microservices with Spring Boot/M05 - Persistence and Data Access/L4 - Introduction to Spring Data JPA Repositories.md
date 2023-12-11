@@ -12,9 +12,9 @@ Spring Data Repositories allow us to **carry out standard database operations wi
 
 The framework provides interfaces that supply methods for querying our database. Some examples of these interfaces are:
 
-- _JpaRepository_
-- _CrudRepository_
-- _PagingAndSortingRepository_
+* _[CrudRepository](https://docs.spring.io/spring-data/data-commons/docs/2.7.9/api/org/springframework/data/repository/CrudRepository.html)_ provides CRUD functions
+* _[PagingAndSortingRepository](https://docs.spring.io/spring-data/data-commons/docs/2.7.9/api/org/springframework/data/repository/PagingAndSortingRepository.html)_ provides methods to do pagination and sorting of records
+* _[JpaRepository](https://docs.spring.io/spring-data/jpa/docs/2.7.9/api/org/springframework/data/jpa/repository/JpaRepository.html)_ provides JPA-related methods such as flushing the persistence context and deleting records in a batch
 
 In this lesson, we'll take a look at the _CrudRepository_ interface. This interface provides the base querying functionality, as the other repositories extend from it.
 
@@ -170,4 +170,4 @@ Number of workers:
 
 ## Resources
 - [Spring Data Repositories on Baeldung](https://www.baeldung.com/spring-data-repositories)
-- [JPA Repositories in the Spring Reference Documentation](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#reference)
+- [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)

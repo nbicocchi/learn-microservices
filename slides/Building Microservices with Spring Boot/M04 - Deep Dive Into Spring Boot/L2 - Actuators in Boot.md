@@ -1,6 +1,6 @@
 # Actuators in Boot
 
-In this lesson, we'll focus on a core feature of Spring Boot - actuators.
+In this lesson, we'll focus on a core feature of Spring Boot: **actuators**.
 
 The relevant module for this lesson is: [actuators-in-boot-end](https://github.com/nbicocchi/spring-boot-course/tree/module4/actuators-in-boot-end)
 
@@ -26,6 +26,41 @@ Through actuators, Spring Boot provides these built-in endpoints focused on audi
 Boot provides a number of built-in endpoints, well documented in the [official reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints).
 
 Out of these, two endpoints are enabled by default: the _/health_ and _/info_ endpoints.
+
+##
+
+Let’s go to _http://localhost:8080/actuator_ and view a list of available endpoints because the actuator endpoints are HATEOS enabled. We should see _/health_ and _/info_.
+
+```
+{
+    "_links": {
+        "self": {
+            "href": "http://localhost:8080/actuator",
+            "templated": false
+        },
+        "health": {
+            "href": "http://localhost:8080/actuator/health",
+            "templated": false
+        },
+        "health-path": {
+            "href": "http://localhost:8080/actuator/health/{*path}",
+            "templated": true
+        },
+        "info": {
+            "href": "http://localhost:8080/actuator/info",
+            "templated": false
+        },
+        "loggers": {
+            "href": "http://localhost:8080/actuator/loggers",
+            "templated": false
+        },
+        "loggers-name": {
+            "href": "http://localhost:8080/actuator/loggers/{name}",
+            "templated": true
+        }
+    }
+}
+```
 
 ## The _/health_ Endpoint
 
@@ -152,16 +187,6 @@ with the payload:
 Now our app will start logging at debug level.
 
 This can be very useful when troubleshooting issues without having to restart our app.
-
-## Upgrade Notes
-
-Note that since Spring Boot 2.5, the actuator's "_info_" HTTP endpoint is not enabled by default anymore. That means we now have to explicitly include it in the list of enabled endpoints property (_management.endpoints.web.exposure.include_) as we've shown in this lesson if we want to use it.
-
-Additionally, since version 2.6 the "_info_" endpoint doesn't retrieve the "_info._" prefixed properties from the Spring Environment by default (as the _info.lsapp.name_ and _info.lsapp.description_ ones we've defined above). To enable this, we have to add the following application property in _application.properties_ file:
-
-```
-management.info.env.enabled=true`
-```
 
 ## Resources
 - [Spring Boot Actuator](https://www.baeldung.com/spring-boot-actuators)

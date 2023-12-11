@@ -81,10 +81,32 @@ java -jar -Dspring.profiles.active=dev \
 target/deploying-boot-application-other-options-0.1.0-SNAPSHOT.jar
 ```
 
+or environment variables:
+
 ```
 $ SERVER_PORT=8181 SPRING_PROFILES_ACTIVE=dev \
 java -jar target/deploying-boot-application-other-options-0.1.0-SNAPSHOT.jar
 ```
+
+or both:
+
+```
+SERVER_PORT=8181 SPRING_PROFILES_ACTIVE=dev java -jar -Dspring.profiles.active=prod \
+-Dserver.port=8282 \
+target/deploying-boot-application-other-options-0.1.0-SNAPSHOT.jar
+
+2023-12-11T15:39:07.864+01:00  INFO 12860 --- [           main] com.baeldung.ls.LsApp                    : The following 1 profile is active: "prod"
+2023-12-11T15:39:08.869+01:00  INFO 12860 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8282 (http)
+2023-12-11T15:39:08.880+01:00  INFO 12860 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-12-11T15:39:08.881+01:00  INFO 12860 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.7]
+2023-12-11T15:39:08.962+01:00  INFO 12860 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-12-11T15:39:08.964+01:00  INFO 12860 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1021 ms
+2023-12-11T15:39:09.374+01:00  INFO 12860 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8282 (http) with context path ''
+2023-12-11T15:39:09.392+01:00  INFO 12860 --- [           main] com.baeldung.ls.LsApp                    : Started LsApp in 1.95 seconds (process running for 2.368)
+...
+```
+
+
 
 Spring Boot uses a very particular order that is designed to allow sensible overriding of values. Later property sources can override the values defined in earlier ones as described [here](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config).
 

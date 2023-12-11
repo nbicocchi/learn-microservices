@@ -10,8 +10,6 @@ In a general sense, persistence refers to the **permanent storage of data,** so 
 
 This can be done using various data structures, such as files, relational databases, NoSQL databases, object databases, etc.
 
-**The most popular approach remains relational databases**, which is the structure we’ll focus on in this course as well.
-
 ## Java Persistence Solutions
 
 Let’s go over the persistence options available in the Java ecosystem at a very high level.
@@ -46,7 +44,6 @@ However, we have to keep in mind that JPA is only the specification. We also nee
 
 The reference implementation of JPA is EclipseLink, but **the most popular implementation is the Hibernate ORM** (Object Relational Mapping) framework.
 
-The next persistence solution we’ll look at is the Spring Data JPA project.
 
 **Spring Data JPA**
 
@@ -58,13 +55,12 @@ Underneath, Spring Data JPA uses Hibernate by default, which we previously menti
 
 Let’s see a quick diagram to recap the solutions we’ve looked at so far, from the lowest to highest level of abstraction over the database:
 
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/RlC12Yh5RJucvZq0IhzI)
+![](images/diagram-db-abstractions.png)
 
 Finally, it’s important to keep in mind that these options can also work together, and we shouldn’t be dogmatic about which option we choose.
 
 Spring Data JPA still uses many of the same concepts and APIs as the JPA specification for defining entities, while also adding some powerful tools for querying and manipulating entities.
 
-This is what we’ll focus on in the next lessons.
 
 ## Spring Data
 
@@ -74,13 +70,13 @@ Simply put, **Spring Data is a family of projects, all related to data access as
 
 Spring Data Commons is the core subproject. It’s the foundation for all the other modules, which include, among others:
 
--   Spring Data JDBC
--   Spring Data LDAP
--   Spring Data MongoDB
--   Spring Data Redis
--   and, of course, **Spring Data JPA**
+- Spring Data JDBC
+- Spring Data LDAP
+- Spring Data MongoDB
+- Spring Data Redis
+- Spring Data JPA
 
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/90qVXM6REelL374tLvky)
+![](images/diagram-spring-data.png)
 
 ## Spring Data JPA
 

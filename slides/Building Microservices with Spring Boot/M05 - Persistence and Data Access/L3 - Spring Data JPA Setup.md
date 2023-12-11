@@ -2,7 +2,7 @@
 
 In this lesson, we're going to learn how we can configure Spring Data JPA in our applications. Since Spring Boot greatly simplifies the configuration, we'll use it in our project, but we’ll also take a closer look to understand what exactly its auto-configuration process does under the hood.
 
-The relevant module you need to import when you're starting with this lesson is: [spring-data-jpa-setup-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/spring-data-jpa-setup-end)
+The relevant module for this lesson is: [spring-data-jpa-setup-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/spring-data-jpa-setup-end)
 
 ## Spring Data JPA Setup
 
@@ -19,7 +19,7 @@ As such, the first step is to add the starter dependency to our _pom.xml_ file:
 
 If we launched our project with just this dependency, it would fail to start because it would try to configure a data source, and our project wouldn’t have any way to sort this out on its own:
 
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/HbzSmza6TYCC6Ege9VGg)
+![](images/spring-data-dependencies.png)
 
 However, we already have the H2 dependency in place:
 

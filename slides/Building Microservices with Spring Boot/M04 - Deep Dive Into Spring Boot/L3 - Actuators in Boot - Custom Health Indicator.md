@@ -111,10 +111,10 @@ Note that by default, Spring Boot chooses a name for the node based on the name 
 
 By default, there are four status types that a health indicator can return:
 
--   UP
--   DOWN
--   OUT\_OF\_SERVICE
--   UNKNOWN
+- UP
+- DOWN
+- OUT\_OF\_SERVICE
+- UNKNOWN
 
 We can also return a custom status from our custom health indicator.
 
