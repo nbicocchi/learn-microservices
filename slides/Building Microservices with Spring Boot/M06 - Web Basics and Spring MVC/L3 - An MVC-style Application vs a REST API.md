@@ -22,8 +22,6 @@ In a very simplified way, **the traditional MVC architectural pattern decouples 
 
 The interesting part here is that the view is used as a visual representation of the Model.
 
-Next, let's see how REST compares with this approach.
-
 ## REST
 
 **REST simply returns the representation of the Resource / Model directly in whatever media type the client asks for**, without making any assumptions of how the data will be visually represented over on the client side.
@@ -44,7 +42,7 @@ That’s because it was built before REST was as popular.
 
 Then, when REST did become hugely popular: [Model-view-controller REST Google Search Trend](https://trends.google.com/trends/explore?date=all&geo=US&q=%2Fm%2F01q9vj,%2Fm%2F03nsxd)
 
-![](https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/ZmTStb44SfCvklfU9XnQ)
+![](images/trends-springmvc-vs-rest.png)
 
 **The core Spring team decided to add first-class REST support, as part of Spring MVC**, and not as a separate part of the framework.
 

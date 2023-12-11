@@ -8,13 +8,9 @@ The relevant module for this lesson is: [what-is-spring-mvc-lesson-end](https://
 
 Up until this point, we developed our application, but we never actually consumed it. Naturally, we want to interact with an application.
 
-So that’s what we’re going to be exploring in this module: opening up our simple application over HTTP so that we can then interact with it.
-
-This is where Spring MVC comes in.
+So that’s what we’re going to be exploring in this module: opening up our simple application over HTTP so that we can then interact with it. This is where Spring MVC comes in.
 
 **Broadly speaking, Spring MVC is the overall Spring support for the web.**
-
-**Note: if you're new to web development, check out the Annex for this module (the last lecture in the module);** this gives a high-level overview of the basic concepts and technologies used for the web.
 
 ## Adding Web Support
 
@@ -27,10 +23,9 @@ Without Boot, we would have to add the web dependencies that the starter brings 
 We'd also have to create a simple, separate config class _WebConfig_ that uses the _@EnableWebMvc_ annotation:
 
 ```
-@EnableWebMvc public class WebConfig { }
+@EnableWebMvc 
+public class WebConfig { }
 ```
-
-We're now ready to use Spring MVC.
 
 Like every part of Spring, this is enough for us to get up and running with a fully functional web application.
 
@@ -49,7 +44,7 @@ public class ProjectController {
 }
 ```
 
-**We’ve also annotated this with _@RestController_** \- our very first Spring MVC annotation.
+**We’ve also annotated this with _@RestController_**, our very first Spring MVC annotation.
 
 Note that we could also use the raw _@Controller_ annotation, but _@RestController_ will be simpler in our case.
 

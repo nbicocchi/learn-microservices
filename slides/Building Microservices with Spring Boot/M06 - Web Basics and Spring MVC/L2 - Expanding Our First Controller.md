@@ -40,7 +40,7 @@ public Project findOne(Long id) {
 }
 ```
 
-**The parameter also needs to be** **mapped to a** [**path component**](https://en.wikipedia.org/wiki/URL_Template)**, or path variable, by using the _@PathVariable_ annotation_._**
+**The parameter also needs to be** **mapped to a** [**path component**](https://en.wikipedia.org/wiki/URL_Template)**, or path variable, by using the _@PathVariable_ annotation.**
 
 Finally, we'll remove the hardcoded "_1"_ in the URL and replace with the _id_ path variable. Now the _findOne_ method will be:
 
@@ -57,7 +57,7 @@ We'll open up Postman and consume it from the client side by calling: [_http://l
 
 ## Error Handling Problems
 
-There are a few things to address here. We’ll, of course, dedicate a full lesson to improving our exception/error handling, so we won’t fix these here. But let’s at least have a quick look at what the problems are.
+There are a few things to address here.
 
 One is that **we’re seeing the raw exception here** which is obviously not ideal.
 
