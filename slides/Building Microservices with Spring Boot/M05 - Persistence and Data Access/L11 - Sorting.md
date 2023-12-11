@@ -1,12 +1,6 @@
 # Sorting
 
-In this lesson, we’ll learn how we can sort queried entities with Spring Data JPA.
-
-**Database engines are optimized to perform this task very effectively**, so it's usually a good decision to rely on them to order the data when possible.
-
-In the previous lesson, we looked at two convenience methods that Spring Data offers out of the box to paginate and sort all entities.
-
-The focus of this lesson is to introduce different mechanisms we can employ to sort entities in Spring Data JPA, and look at how we can address some complex sorting requirements. **We’ll learn how to sort entities with derived query methods, and with _Sort_ parameters.**
+In this lesson, we’ll learn how we can sort queried entities with Spring Data JPA. The focus of this lesson is to introduce different mechanisms we can employ to sort entities in Spring Data JPA, and look at how we can address some complex sorting requirements. **We’ll learn how to sort entities with derived query methods, and with _Sort_ parameters.**
 
 The relevant module for this lesson is: [sorting-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/sorting-end)
 

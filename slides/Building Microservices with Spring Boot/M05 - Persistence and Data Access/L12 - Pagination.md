@@ -1,8 +1,6 @@
 # Pagination
 
-In this lesson, we'll explore different ways that we can paginate query results with Spring Data JPA.
-
-We'll demonstrate this for derived methods, as well as custom methods. Finally, we'll discuss what factors we should consider when returning results from paginated methods.
+In this lesson, we'll explore different ways that we can paginate query results with Spring Data JPA. We'll demonstrate this for derived methods, as well as custom methods. Finally, we'll discuss what factors we should consider when returning results from paginated methods.
 
 The relevant module for this lesson is: [pagination-end](https://github.com/nbicocchi/spring-boot-course/tree/module5/pagination-end)
 
