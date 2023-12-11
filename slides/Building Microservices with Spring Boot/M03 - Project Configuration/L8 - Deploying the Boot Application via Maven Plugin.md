@@ -81,6 +81,13 @@ java -jar -Dspring.profiles.active=dev \
 target/deploying-boot-application-other-options-0.1.0-SNAPSHOT.jar
 ```
 
+```
+$ SERVER_PORT=8181 SPRING_PROFILES_ACTIVE=dev \
+java -jar target/deploying-boot-application-other-options-0.1.0-SNAPSHOT.jar
+```
+
+Spring Boot uses a very particular order that is designed to allow sensible overriding of values. Later property sources can override the values defined in earlier ones as described [here](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config).
+
 This is a comparatively better approach for running the app in a production environment, as we’ve decoupled the build and execution processes; the server only needs to have the required Java version installed to run the app.
 
 ## Other Approaches
