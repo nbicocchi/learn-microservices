@@ -7,9 +7,7 @@ The relevant module for this lesson is: [working-with-properties-end](https://gi
 ## Configuration Using Properties
 By now we have a basic understanding that we can create configurable Spring Boot applications using its support for flexible externalized configuration.
 
-In our examples, we'll focus on using a properties file for configuration, as it's the most common format.
-
-However, other formats like [yaml](https://en.wikipedia.org/wiki/YAML) files, environment variables and command lines arguments can also be used to configure our app.
+In our examples, we'll focus on using a properties file for configuration, as it's the most common format. However, other formats like [yaml](https://en.wikipedia.org/wiki/YAML) files, environment variables and command lines arguments can also be used to configure our app.
 
 Configuration using properties files helps in changing the behaviour of an application through a properties file.
 
@@ -97,8 +95,6 @@ public class LsApp {
 }
 ```
 
-Note: you'll notice the Project constructor signature differs from the one used in the video. That's because we improved its logic in the code to autogenerate the id incrementally (which better simulates the usual database behavior).
-
 Now, when we run our app, we'll see the logs:
 
 ```
@@ -141,23 +137,23 @@ public class AppConfig {
 }
 ```
 
-In this example, the *Environment *object performs a search over a set of *PropertySource* objects to find the value of *"project.suffix".*
+In this example, the *Environment* object performs a search over a set of *PropertySource* objects to find the value of *"project.suffix".*
 
 ## Spring Property Sources (extra)
 
-*The PropertySource class *is a simple abstraction of any source of key value pairs in a standalone Spring application.
+*The PropertySource class* is a simple abstraction of any source of key value pairs in a standalone Spring application.
 
 The *Environment* object is configured with 2 default *PropertySource* objects:
 
 -   the JVM system properties - *System.getProperties()*
 -   the system environment variables -  *System.getenv()*
 
-In a web application, the *Environment *contains some additional property sources, such as: *ServletConfig* parameters and *ServletContext* parameters.
+In a web application, the *Environment* contains some additional property sources, such as: *ServletConfig* parameters and *ServletContext* parameters.
 
 A Spring Boot application is configured with even more property sources; for example
 
 -   *application.properties* and yaml variants
--   *application-{profile}.properties *
+-   *application-{profile}.properties*
 
 These are only a few of a multitude of other property sources that Spring supports, implementing a well-thought ordering to allow sensible overriding.
 
