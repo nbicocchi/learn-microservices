@@ -2,9 +2,7 @@
 
 In this lesson, we'll have a look into **deploying our Spring Boot application using an IDE**.
 
-Of course, this is useful primarily during development and not really for production use.
-
-We also have other options such as launching the app from the command-line.
+Of course, this is useful primarily during development and not really for production use. We also have other options such as launching the app from the command-line.
 
 The relevant module for lesson is: [deploying-a-spring-boot-project](https://github.com/nbicocchi/spring-boot-course/tree/module3/deploying-a-spring-boot-project)
 
@@ -54,7 +52,7 @@ As we said, launching the application from the IDE is not suitable for productio
 Since we're using the Maven Plugin in our application, we can use the following _mvn_ command:
 
 ```
-mvn spring-boot:run
+$ mvn spring-boot:run
 ```
 
 In the Resources section you'll find a link with more information about these and other options to launch a Spring Boot application.
@@ -76,7 +74,9 @@ By default, Spring Boot apps are packaged as a JAR file rather than as a traditi
 This makes the artifact completely self-contained and can be run on any machine with just a simple java command:
 
 ```
-java -jar <artifact-name>
+$ mvn clean
+$ mvn package
+$ java -jar target/artifact-name.jar
 ```
 
 ## Resources

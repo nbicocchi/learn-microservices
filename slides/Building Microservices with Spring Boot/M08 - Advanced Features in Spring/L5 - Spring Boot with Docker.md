@@ -1,6 +1,6 @@
 # Spring Boot with Docker
 
-Welcome to a new lesson out of Learn Spring. In this lesson, we are going to learn about **the Spring Boot Docker support**.
+In this lesson, we are going to learn about **the Spring Boot Docker support**.
 
 Note that we won’t be covering what Docker is nor its basic concepts here. If you don’t have experience using this platform, then I strongly recommend having a look at the Docker links in the Resources section before moving on, as they will help you understand all the base Docker features.
 

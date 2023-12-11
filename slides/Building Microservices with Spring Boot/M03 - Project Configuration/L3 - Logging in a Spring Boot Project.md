@@ -13,15 +13,18 @@ We can verify this by checking the dependency tree in our IDE, or by running the
 Let's have a look at the output of the command:
 
 ```
-[INFO] com.baeldung:logging-in-a-spring-boot-project-lesson-start:jar:0.1.0-SNAPSHOT
-[INFO] \- org.springframework.boot:spring-boot-starter:jar:2.1.3.RELEASE:compile
-[INFO]    +- org.springframework.boot:spring-boot-starter-logging:jar:2.1.3.RELEASE:compile
-[INFO]    |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
-[INFO]    |  |  +- ch.qos.logback:logback-core:jar:1.2.3:compile
-[INFO]    |  |  \- org.slf4j:slf4j-api:jar:1.7.25:compile
-[INFO]    |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.11.2:compile
-[INFO]    |  |  \- org.apache.logging.log4j:log4j-api:jar:2.11.2:compile
-[INFO]    |  \- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] com.baeldung:logging-in-a-spring-boot-project-end:jar:0.1.0-SNAPSHOT
+[INFO] \- org.springframework.boot:spring-boot-starter-web:jar:3.0.5:compile
+[INFO]    +- org.springframework.boot:spring-boot-starter:jar:3.0.5:compile
+[INFO]    |  +- org.springframework.boot:spring-boot:jar:3.0.5:compile
+[INFO]    |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.0.5:compile
+[INFO]    |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.0.5:compile
+[INFO]    |  |  +- ch.qos.logback:logback-classic:jar:1.4.6:compile
+[INFO]    |  |  |  +- ch.qos.logback:logback-core:jar:1.4.6:compile
+[INFO]    |  |  |  \- org.slf4j:slf4j-api:jar:2.0.7:compile
+[INFO]    |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.19.0:compile
+[INFO]    |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.19.0:compile
+[INFO]    |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.7:compile
 ...
 ```
 
@@ -133,12 +136,6 @@ Or, if we want to **change the date-format of logs**:
 _logging.pattern.dateformat=yyyy-MM-dd_
 
 You can keep exploring these config options by using the autocomplete in the _application.properties._
-
-## Upgrade Notes
-
-Since Spring Boot 2.2, _logging.file_ has been deprecated in favor of _logging.file.name_:
-
-_logging.file.name=app.log_
 
 ## Resources
 - [Logging in Spring Boot](https://www.baeldung.com/spring-boot-logging)

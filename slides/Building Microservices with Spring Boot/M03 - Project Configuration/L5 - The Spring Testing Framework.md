@@ -33,30 +33,7 @@ Let's add the Boot support and JUnit 5:
 
 Let’s create the folder and package: _/src/test/java_ and _com.baeldung.ls.service_.
 
-In the next part, we'll continue with creating a test class.
-
-## Upgrade Notes
-
-Since Boot 2.2, the Spring team has added support for JUnit 5 Jupiter into the _spring-boot-starter-test_ by default, and therefore there is no need to include the _junit-jupiter-engine_ dependency ourselves anymore.
-
-Together with this, they also included a _junit-vintage-engine_ library, which supported running JUnit 4 tests using the JUnit 5 Jupiter platform. If we don't need to run JUnit 4 tests in our project, we can exclude the Vintage Engine transitive dependency:
-
-```
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-test</artifactId>
-  <scope>test</scope>
-  <exclusions>
-      <exclusion>
-          <groupId>org.junit.vintage</groupId>
-          <artifactId>junit-vintage-engine</artifactId>
-      </exclusion>
-  </exclusions>
-</dependency>
-```
-
-**Later on, on version 2.4, Spring finally removed the Vintage Engine library from the _spring-boot-starter-test_ dependencies. So, for newer versions, we don't have to explicitly exclude the library ourselves, but instead, we do have to include it if we want to support tests using JUnit 4 features.**
-
+## A Simple Application Context Test
 Now, let’s create a simple context test:
 
 ```
@@ -75,13 +52,12 @@ public class ContextIntegrationTest {
     public void whenContextIsLoaded2_thenNoExceptions() {
         System.out.println();
     }
-    
 }
 ```
 
 **We’re used the JUnit Jupiter support here via the high-level annotation _@SpringJUnitConfig,_ and wired in the _ApplicationContext_**_._
 
-Finally, we created two simple tests, each containing a _sys out_ to be able to debug.
+Finally, we created two simple tests, each containing a _sys.out_ call to be able to debug.
 
 **Note that we're using the JUnit 5 version, so make sure to import the _@Test_ annotation from the _org.junit.jupiter.api_ package instead of _org.junit_.**
 
@@ -93,10 +69,30 @@ Bootstrapping a full context is quite an expensive operation. Because of this, w
 
 If we pay close attention to the application context instance here, we’ll notice that it’s the same instance between tests.
 
+```
+@SpringJUnitConfig
+public class ContextIntegrationTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Test
+    public void whenContextIsLoaded1_thenNoExceptions() {
+        // break point here 
+        System.out.println();
+    }
+
+    @Test
+    public void whenContextIsLoaded2_thenNoExceptions() {
+        // break point here 
+        System.out.println();
+    }
+}
+```
+
 This is due to the caching of the context kicking in.
 
 ## An Integration Test
-
 Let’s write one more test to verify some actual logic.
 
 We'll add the _ProjectServiceIntegrationTest_ class which contains a test method that verifies the _save_ operation:
