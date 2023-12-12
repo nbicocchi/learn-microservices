@@ -344,15 +344,63 @@ class EmployeeWithDateMapperTest {
 
 ## Mapping With Ignored Fields
 
-
 ### POJOs
+```
+public class Document {
+    private int id;
+    private String title;
+    private String text;
+    private Date modificationTime;
+    // default constructor, getters and setters omitted
+}
+```
+
+```
+public class DocumentDTO {
+    private int id;
+    private String title;
+    private String text;
+    private List<String> comments;
+    private String author;
+    // default constructor, getters and setters omitted
+}
+```
 
 
 ### The Mapper Interface
+```
+@Mapper(componentModel = "spring")
+public interface DocumentMapper {
 
+    @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "author", ignore = true)
+    DocumentDTO documentToDocumentDTO(Document entity);
+
+    @Mapping(target = "modificationTime", ignore = true)
+    Document documentDTOToDocument(DocumentDTO dto);
+}
+```
 
 ### Test Case
+```
+@SpringBootTest
+class DocumentMapperTest {
+    @Autowired
+    DocumentMapper mapper;
 
+    @Test
+    void documentoToDocumentDTO() throws ParseException {
+        Document entity = new Document(1, "a", "b", new SimpleDateFormat("yyyy-MM-dd").parse("2000-01-01"));
+        DocumentDTO dto = mapper.documentToDocumentDTO(entity);
+
+        assertEquals(dto.getId(), entity.getId());
+        assertEquals(dto.getTitle(), entity.getTitle());
+        assertEquals(dto.getText(), entity.getText());
+        assertNull(dto.getComments());
+        assertNull(dto.getAuthor());
+    }
+}
+```
 
 
 ## Resources
