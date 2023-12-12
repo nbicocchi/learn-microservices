@@ -2,7 +2,7 @@
 
 In this lesson, we’re going to focus on what testing support Spring Boot has, on top of the testing support in Spring, which we already discussed earlier.
 
-The relevant module for this lesson is: [testing-with-boot-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/testing-with-boot-end)
+The relevant module for this lesson is: [testing-with-boot-end](https://github.com/nbicocchi/spring-boot-course/tree/module7/testing-with-boot-end)
 
 ## The Spring Boot Test Starter
 
