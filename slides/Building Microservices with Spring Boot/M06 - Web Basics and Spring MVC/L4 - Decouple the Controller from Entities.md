@@ -1,24 +1,21 @@
 # Decouple the Controller from Entities
 
-In this lesson, **we’ll focus on exposing Resources instead of Entities from our controllers back to the client**.
+In this lesson, we’ll focus on exposing Resources instead of Entities from our controllers back to the client.
 
 The relevant module for this lesson is: [decouple-controller-from-entities-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/decouple-controller-from-entities-end)
 
 ## Reasons for Conversion
 
-On a simple domain or for a simple [POC](https://en.wikipedia.org/wiki/Proof_of_concept), doing no conversion can be a good approach.
-
-But for a real project, it can be very useful for several reasons:
-
--   entities are not resources; this means that not all entity data should be exposed to the client
--   exposing raw entities might lead to problems like security vulnerabilities due to exposing too much raw data
--   performance
--   maintainability of the system
+For simple projects, doing no conversion can be a good approach. However, for a real project, it can be very useful for several reasons:
+* entities are not resources; this means that not all entity data should be exposed to the client
+* exposing raw entities might lead to problems like security vulnerabilities due to exposing too much raw data
+* performance
+* maintainability of the system
 
 Next, let’s get to the practical aspect of exactly how to do this.
 
 
-## Converting to DTOs
+## Converting to Data Transfer Objects (DTOs)
 
 **We’re going to expose the data from our controllers by converting our entities into** [**DTO**](https://martinfowler.com/eaaCatalog/dataTransferObject.html)**s or Resources.**
 
@@ -173,8 +170,6 @@ public record TaskDto(
     TaskStatus status) {
 }
 ```
-
-It’s worth mentioning that we won't be following the same approach for projects that use the traditional Model-View-Controller framework in the course since in these cases the web framework needs to make use of DTOs setters and Records are defined as immutable data classes.
 
 ## Resources
 - [Entity To DTO Conversion for a Spring REST API](https://www.baeldung.com/entity-to-and-from-dto-for-a-java-spring-application)
