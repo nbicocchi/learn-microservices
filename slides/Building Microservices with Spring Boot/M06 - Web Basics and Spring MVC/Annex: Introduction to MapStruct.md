@@ -404,6 +404,4 @@ class DocumentMapperTest {
 
 
 ## Resources
-- [Custom Mapper with MapStruct](https://www.baeldung.com/mapstruct-custom-mapper)
-- [Ignoring Unmapped Properties with MapStruct](https://www.baeldung.com/mapstruct-ignore-unmapped-properties)
-- [Using Multiple Source Objects with MapStruct](https://www.baeldung.com/mapstruct-multiple-source-objects)
+- [MapStruct Reference Guide](https://mapstruct.org/documentation/stable/reference/html/)
