@@ -2,7 +2,7 @@
 
 In this lesson, we’ll focus on exposing Resources instead of Entities from our controllers back to the client.
 
-The relevant module for this lesson is: [decouple-controller-from-entities-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/decouple-controller-from-entities-end)
+The relevant module for this lesson is: [decouple-controller-from-entities-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/decouple-controller-from-entities-end), [decouple-controller-from-entities-mapstruct-end](https://github.com/nbicocchi/spring-boot-course/tree/module6/decouple-controller-from-entities-mapstruct-end)
 
 ## Reasons for Conversion
 
