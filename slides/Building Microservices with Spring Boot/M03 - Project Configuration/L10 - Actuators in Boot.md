@@ -2,7 +2,7 @@
 
 In this lesson, we'll focus on a core feature of Spring Boot: **actuators**.
 
-The relevant module for this lesson is: [actuators-in-boot-end](https://github.com/nbicocchi/spring-boot-course/tree/module4/actuators-in-boot-end)
+The relevant module for this lesson is: [actuators-in-boot-end](https://github.com/nbicocchi/spring-boot-course/tree/module3/actuators-in-boot-end)
 
 ## Actuators
 
