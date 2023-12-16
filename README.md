@@ -41,6 +41,3 @@
 * Deploying Microservices to Kubernetes
 * Implementing Kubernetes Features to Simplify the System Landscape
 * Using a Service Mesh to Improve Observability and Management
-
-## FAQ
-n/a
