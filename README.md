@@ -1,4 +1,4 @@
-# Distributed Edge Programming (DIEF, UNIMORE)
+# Learn Microservices
 
 ## Software
 * Frameworks: spring boot
@@ -27,24 +27,7 @@
 * [The ULTIMATE Guide to Spring Boot](https://www.youtube.com/watch?v=Nv2DERaMx-4)
 * [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
 
-
-## Exam
-* Answer general questions about the key topics of the course (1 or 2) (50% weight)
-* Discuss the structure and engineering choices of a home project (50% weight)
-
 ## Modules
-
-### Building Microservices with Spring Boot
-* Getting Started With Spring
-* Dependency Injection and the Spring Context
-* Project Configuration
-* Deep Dive Into Spring Boot
-* Persistence and Data Access
-* Web Basics and Spring MVC
-* Building a REST API
-* Advanced Features in Spring
-
-### Microservice Architectures
 * Introduction to microservices
 * Introduction to Spring Cloud
 * Service configuration
