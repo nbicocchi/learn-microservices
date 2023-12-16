@@ -11,8 +11,8 @@
 * Distributed database: cockroachdb, cassandra, debezium
 
 ## Books
-* **Spring Microservices in Action; Carnell, Sánchez**
 * **Microservices with Spring Boot 3 and Spring Cloud; Larsson**
+* **Spring Microservices in Action; Carnell, Sánchez**
 * Microservices Patterns; Richardson
 * Microservices AntiPatterns and Pitfalls; Richards
 * Cloud Native DevOps with Kubernetes; Arundel, Domingus
@@ -41,10 +41,6 @@
 * Deploying Microservices to Kubernetes
 * Implementing Kubernetes Features to Simplify the System Landscape
 * Using a Service Mesh to Improve Observability and Management
-
-### MLOps for AI-enabled Microservice Architectures
-
-n/a
 
 ## FAQ
 n/a
