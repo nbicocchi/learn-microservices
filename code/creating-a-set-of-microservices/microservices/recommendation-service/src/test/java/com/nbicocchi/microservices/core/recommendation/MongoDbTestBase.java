@@ -1,16 +1,27 @@
 package com.nbicocchi.microservices.core.recommendation;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
 
 public abstract class MongoDbTestBase {
-  private static MongoDBContainer database = new MongoDBContainer("mongo:6.0.4");
-  
-  static {
+
+  static MongoDBContainer database = new MongoDBContainer (
+          "mongo:latest"
+  );
+
+  @BeforeAll
+  static void beforeAll() {
     database.start();
-  } 
-  
+  }
+
+  @AfterAll
+  static void afterAll() {
+    database.stop();
+  }
+
   @DynamicPropertySource
   static void setProperties(DynamicPropertyRegistry registry) {
     registry.add("spring.data.mongodb.host", database::getContainerIpAddress);

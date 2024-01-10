@@ -31,7 +31,6 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
   
   @Test
   void getRecommendationsByProductId() {
-
     int productId = 1;
 
     postAndVerifyRecommendation(productId, 1, OK);
@@ -48,26 +47,22 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
 
   @Test
   void duplicateError() {
-
     int productId = 1;
     int recommendationId = 1;
 
     postAndVerifyRecommendation(productId, recommendationId, OK)
       .jsonPath("$.productId").isEqualTo(productId)
       .jsonPath("$.recommendationId").isEqualTo(recommendationId);
-
     assertEquals(1, repository.count());
 
     postAndVerifyRecommendation(productId, recommendationId, UNPROCESSABLE_ENTITY)
       .jsonPath("$.path").isEqualTo("/recommendation")
       .jsonPath("$.message").isEqualTo("Duplicate key, Product Id: 1, Recommendation Id:1");
-
     assertEquals(1, repository.count());
   }
 
   @Test
   void deleteRecommendations() {
-
     int productId = 1;
     int recommendationId = 1;
 
@@ -82,7 +77,6 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
 
   @Test
   void getRecommendationsMissingParameter() {
-
     getAndVerifyRecommendationsByProductId("", BAD_REQUEST)
       .jsonPath("$.path").isEqualTo("/recommendation")
       .jsonPath("$.message").isEqualTo("Required query parameter 'productId' is not present.");
@@ -90,7 +84,6 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
 
   @Test
   void getRecommendationsInvalidParameter() {
-
     getAndVerifyRecommendationsByProductId("?productId=no-integer", BAD_REQUEST)
       .jsonPath("$.path").isEqualTo("/recommendation")
       .jsonPath("$.message").isEqualTo("Type mismatch.");
@@ -98,14 +91,12 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
 
   @Test
   void getRecommendationsNotFound() {
-
-    getAndVerifyRecommendationsByProductId("?productId=113", OK)
-      .jsonPath("$.length()").isEqualTo(0);
+    getAndVerifyRecommendationsByProductId("?productId=113", NOT_FOUND)
+      .jsonPath("$.message").isEqualTo("No recommendations found for productId: 113");
   }
 
   @Test
   void getRecommendationsInvalidParameterNegativeValue() {
-
     int productIdInvalid = -1;
 
     getAndVerifyRecommendationsByProductId("?productId=" + productIdInvalid, UNPROCESSABLE_ENTITY)
@@ -147,5 +138,4 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
       .expectStatus().isEqualTo(expectedStatus)
       .expectBody();
   }
-    
 }

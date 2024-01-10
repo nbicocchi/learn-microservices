@@ -16,7 +16,7 @@ import com.nbicocchi.api.core.review.Review;
 import com.nbicocchi.microservices.core.review.persistence.ReviewRepository;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class ReviewServiceApplicationTests extends MySqlTestBase {
+class ReviewServiceApplicationTests extends PostgresTestBase {
 
   @Autowired
   private WebTestClient client;

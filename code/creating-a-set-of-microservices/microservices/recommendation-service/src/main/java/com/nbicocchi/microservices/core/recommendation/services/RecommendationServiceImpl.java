@@ -1,6 +1,9 @@
 package com.nbicocchi.microservices.core.recommendation.services;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.nbicocchi.api.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +56,17 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
     
     List<RecommendationEntity> entityList = repository.findByProductId(productId);
-    List<Recommendation> list = mapper.entityListToApiList(entityList);
-    list.forEach(e -> e.setServiceAddress(serviceUtil.getServiceAddress()));
+    if (entityList.isEmpty()) {
+      throw new NotFoundException("No recommendations found for productId: " + productId);
+    }
 
-    LOG.debug("getRecommendations: response size: {}", list.size());
+    List<Recommendation> recommendationList = mapper.entityListToApiList(entityList);
+    recommendationList.forEach(e -> e.setServiceAddress(serviceUtil.getServiceAddress()));
 
-    return list;
+    LOG.debug("getRecommendations: response size: {}", recommendationList.size());
+
+    return recommendationList;
+
   }
 
   @Override

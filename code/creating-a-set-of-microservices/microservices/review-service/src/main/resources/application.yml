@@ -5,11 +5,11 @@ server.error.include-message: always
 spring.jpa.hibernate.ddl-auto: update
 
 spring.datasource:
-  url: jdbc:mysql://localhost/review-db
+  url: jdbc:postgresql://localhost:5432/review-db
   username: user
   password: pwd
 
-spring.datasource.hikari.initializationFailTimeout: 60000
+# spring.datasource.hikari.initializationFailTimeout: 60000
 
 logging:
   level:

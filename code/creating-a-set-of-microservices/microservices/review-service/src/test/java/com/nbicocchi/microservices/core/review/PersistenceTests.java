@@ -20,7 +20,7 @@ import com.nbicocchi.microservices.core.review.persistence.ReviewRepository;
 @DataJpaTest
 @Transactional(propagation = NOT_SUPPORTED)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class PersistenceTests extends MySqlTestBase {
+class PersistenceTests extends PostgresTestBase {
 
   @Autowired
   private ReviewRepository repository;
