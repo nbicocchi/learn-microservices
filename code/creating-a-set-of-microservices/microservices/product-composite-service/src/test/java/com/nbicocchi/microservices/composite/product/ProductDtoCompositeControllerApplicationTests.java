@@ -22,7 +22,7 @@ import com.nbicocchi.api.core.product.ProductDto;
 import com.nbicocchi.api.core.review.ReviewDto;
 import com.nbicocchi.api.exceptions.InvalidInputException;
 import com.nbicocchi.api.exceptions.NotFoundException;
-import com.nbicocchi.microservices.composite.product.services.ProductCompositeIntegration;
+import com.nbicocchi.microservices.composite.product.controller.ProductCompositeIntegration;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class ProductDtoCompositeControllerApplicationTests {

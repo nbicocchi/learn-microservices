@@ -1,4 +1,4 @@
-package com.nbicocchi.microservices.composite.product.services;
+package com.nbicocchi.microservices.composite.product.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,16 +16,12 @@ import com.nbicocchi.util.http.ServiceUtil;
 
 @RestController
 public class ProductCompositeControllerImpl implements ProductCompositeController {
-
   private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeControllerImpl.class);
-
-  private final ServiceUtil serviceUtil;
+  private ServiceUtil serviceUtil;
   private ProductCompositeIntegration integration;
 
   @Autowired
-  public ProductCompositeControllerImpl(
-    ServiceUtil serviceUtil, ProductCompositeIntegration integration) {
-    
+  public ProductCompositeControllerImpl(ServiceUtil serviceUtil, ProductCompositeIntegration integration) {
     this.serviceUtil = serviceUtil;
     this.integration = integration;
   }
@@ -34,7 +30,6 @@ public class ProductCompositeControllerImpl implements ProductCompositeControlle
   public void createProduct(ProductAggregateDto body) {
 
     try {
-
       LOG.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
 
       ProductDto productDto = new ProductDto(body.getProductId(), body.getName(), body.getWeight(), null);
@@ -53,46 +48,34 @@ public class ProductCompositeControllerImpl implements ProductCompositeControlle
           integration.createReview(reviewDto);
         });
       }
-
       LOG.debug("createCompositeProduct: composite entities created for productId: {}", body.getProductId());
-
     } catch (RuntimeException re) {
       LOG.warn("createCompositeProduct failed", re);
       throw re;
     }
   }
 
-
   @Override
   public ProductAggregateDto getProduct(int productId) {
-
     LOG.debug("getCompositeProduct: lookup a product aggregate for productId: {}", productId);
-
     ProductDto productDto = integration.getProduct(productId);
     if (productDto == null) {
       throw new NotFoundException("No product found for productId: " + productId);
     }
 
     List<RecommendationDto> recommendationDtos = integration.getRecommendations(productId);
-
     List<ReviewDto> reviewDtos = integration.getReviews(productId);
 
     LOG.debug("getCompositeProduct: aggregate entity found for productId: {}", productId);
-
     return createProductAggregate(productDto, recommendationDtos, reviewDtos, serviceUtil.getServiceAddress());
   }
 
   @Override
   public void deleteProduct(int productId) {
-
     LOG.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
-
     integration.deleteProduct(productId);
-
     integration.deleteRecommendations(productId);
-
     integration.deleteReviews(productId);
-
     LOG.debug("deleteCompositeProduct: aggregate entities deleted for productId: {}", productId);
   }
 

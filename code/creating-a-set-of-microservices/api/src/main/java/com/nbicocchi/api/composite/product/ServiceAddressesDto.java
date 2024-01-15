@@ -1,43 +1,38 @@
 package com.nbicocchi.api.composite.product;
 
 public class ServiceAddressesDto {
-  private final String cmp;
-  private final String pro;
-  private final String rev;
-  private final String rec;
+  private final String compositeService;
+  private final String productService;
+  private final String reviewService;
+  private final String recommendationService;
 
   public ServiceAddressesDto() {
-    cmp = null;
-    pro = null;
-    rev = null;
-    rec = null;
+    this.compositeService = null;
+    this.productService = null;
+    this.reviewService = null;
+    this.recommendationService = null;
   }
 
-  public ServiceAddressesDto(
-    String compositeAddress,
-    String productAddress,
-    String reviewAddress,
-    String recommendationAddress) {
-
-    this.cmp = compositeAddress;
-    this.pro = productAddress;
-    this.rev = reviewAddress;
-    this.rec = recommendationAddress;
+  public ServiceAddressesDto(String compositeService, String productService, String reviewService, String recommendationService) {
+    this.compositeService = compositeService;
+    this.productService = productService;
+    this.reviewService = reviewService;
+    this.recommendationService = recommendationService;
   }
 
-  public String getCmp() {
-    return cmp;
+  public String getCompositeService() {
+    return compositeService;
   }
 
-  public String getPro() {
-    return pro;
+  public String getProductService() {
+    return productService;
   }
 
-  public String getRev() {
-    return rev;
+  public String getReviewService() {
+    return reviewService;
   }
 
-  public String getRec() {
-    return rec;
+  public String getRecommendationService() {
+    return recommendationService;
   }
 }

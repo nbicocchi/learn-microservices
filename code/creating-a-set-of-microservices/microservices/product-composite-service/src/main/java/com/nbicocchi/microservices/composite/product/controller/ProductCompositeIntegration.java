@@ -1,4 +1,4 @@
-package com.nbicocchi.microservices.composite.product.services;
+package com.nbicocchi.microservices.composite.product.controller;
 
 import static org.springframework.http.HttpMethod.GET;
 
