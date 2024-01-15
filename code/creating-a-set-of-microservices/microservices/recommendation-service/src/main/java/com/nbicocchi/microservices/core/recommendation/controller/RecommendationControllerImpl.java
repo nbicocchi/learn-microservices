@@ -1,25 +1,24 @@
-package com.nbicocchi.microservices.core.recommendation.services;
+package com.nbicocchi.microservices.core.recommendation.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.nbicocchi.api.core.recommendation.RecommendationDto;
 import com.nbicocchi.api.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
-import com.nbicocchi.api.core.recommendation.Recommendation;
-import com.nbicocchi.api.core.recommendation.RecommendationService;
+import com.nbicocchi.api.core.recommendation.RecommendationController;
 import com.nbicocchi.api.exceptions.InvalidInputException;
 import com.nbicocchi.microservices.core.recommendation.persistence.RecommendationEntity;
 import com.nbicocchi.microservices.core.recommendation.persistence.RecommendationRepository;
 import com.nbicocchi.util.http.ServiceUtil;
 
 @RestController
-public class RecommendationServiceImpl implements RecommendationService {
+public class RecommendationControllerImpl implements RecommendationController {
 
-  private static final Logger LOG = LoggerFactory.getLogger(RecommendationServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(RecommendationControllerImpl.class);
 
   private final RecommendationRepository repository;
 
@@ -28,14 +27,14 @@ public class RecommendationServiceImpl implements RecommendationService {
   private final ServiceUtil serviceUtil;
 
   @Autowired
-  public RecommendationServiceImpl(RecommendationRepository repository, RecommendationMapper mapper, ServiceUtil serviceUtil) {
+  public RecommendationControllerImpl(RecommendationRepository repository, RecommendationMapper mapper, ServiceUtil serviceUtil) {
     this.repository = repository;
     this.mapper = mapper;
     this.serviceUtil = serviceUtil;
   }
 
   @Override
-  public Recommendation createRecommendation(Recommendation body) {
+  public RecommendationDto createRecommendation(RecommendationDto body) {
     try {
       RecommendationEntity entity = mapper.apiToEntity(body);
       RecommendationEntity newEntity = repository.save(entity);
@@ -49,7 +48,7 @@ public class RecommendationServiceImpl implements RecommendationService {
   }
 
   @Override
-  public List<Recommendation> getRecommendations(int productId) {
+  public List<RecommendationDto> getRecommendations(int productId) {
 
     if (productId < 1) {
       throw new InvalidInputException("Invalid productId: " + productId);
@@ -60,12 +59,12 @@ public class RecommendationServiceImpl implements RecommendationService {
       throw new NotFoundException("No recommendations found for productId: " + productId);
     }
 
-    List<Recommendation> recommendationList = mapper.entityListToApiList(entityList);
-    recommendationList.forEach(e -> e.setServiceAddress(serviceUtil.getServiceAddress()));
+    List<RecommendationDto> recommendationDtoList = mapper.entityListToApiList(entityList);
+    recommendationDtoList.forEach(e -> e.setServiceAddress(serviceUtil.getServiceAddress()));
 
-    LOG.debug("getRecommendations: response size: {}", recommendationList.size());
+    LOG.debug("getRecommendations: response size: {}", recommendationDtoList.size());
 
-    return recommendationList;
+    return recommendationDtoList;
 
   }
 

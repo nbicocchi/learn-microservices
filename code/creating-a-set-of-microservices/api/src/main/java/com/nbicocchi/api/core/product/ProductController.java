@@ -2,7 +2,7 @@ package com.nbicocchi.api.core.product;
 
 import org.springframework.web.bind.annotation.*;
 
-public interface ProductService {
+public interface ProductController {
 
   /**
    * Sample usage, see below.
@@ -18,7 +18,7 @@ public interface ProductService {
     value    = "/product",
     consumes = "application/json",
     produces = "application/json")
-  Product createProduct(@RequestBody Product body);
+  ProductDto createProduct(@RequestBody ProductDto body);
 
   /**
    * Sample usage: "curl $HOST:$PORT/product/1".
@@ -29,7 +29,7 @@ public interface ProductService {
   @GetMapping(
     value = "/product/{productId}",
     produces = "application/json")
-  Product getProduct(@PathVariable int productId);
+  ProductDto getProduct(@PathVariable int productId);
 
   /**
    * Sample usage: "curl -X DELETE $HOST:$PORT/product/1".

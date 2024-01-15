@@ -6,17 +6,17 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static reactor.core.publisher.Mono.just;
 
+import com.nbicocchi.api.core.review.ReviewDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import com.nbicocchi.api.core.review.Review;
 import com.nbicocchi.microservices.core.review.persistence.ReviewRepository;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class ReviewServiceApplicationTests extends PostgresTestBase {
+class ReviewDtoControllerApplicationTests extends PostgresTestBase {
 
   @Autowired
   private WebTestClient client;
@@ -132,10 +132,10 @@ class ReviewServiceApplicationTests extends PostgresTestBase {
   }
 
   private WebTestClient.BodyContentSpec postAndVerifyReview(int productId, int reviewId, HttpStatus expectedStatus) {
-    Review review = new Review(productId, reviewId, "Author " + reviewId, "Subject " + reviewId, "Content " + reviewId, "SA");
+    ReviewDto reviewDto = new ReviewDto(productId, reviewId, "Author " + reviewId, "Subject " + reviewId, "Content " + reviewId, "SA");
     return client.post()
       .uri("/review")
-      .body(just(review), Review.class)
+      .body(just(reviewDto), ReviewDto.class)
       .accept(APPLICATION_JSON)
       .exchange()
       .expectStatus().isEqualTo(expectedStatus)

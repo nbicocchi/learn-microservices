@@ -7,17 +7,17 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static reactor.core.publisher.Mono.just;
 
+import com.nbicocchi.api.core.product.ProductDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import com.nbicocchi.api.core.product.Product;
 import com.nbicocchi.microservices.core.product.persistence.ProductRepository;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class ProductServiceApplicationTests extends MongoDbTestBase {
+class ProductDtoControllerApplicationTests extends MongoDbTestBase {
 
   @Autowired private WebTestClient client;
 
@@ -110,10 +110,10 @@ class ProductServiceApplicationTests extends MongoDbTestBase {
   }
 
   private WebTestClient.BodyContentSpec postAndVerifyProduct(int productId, HttpStatus expectedStatus) {
-    Product product = new Product(productId, "Name " + productId, productId, "SA");
+    ProductDto productDto = new ProductDto(productId, "Name " + productId, productId, "SA");
     return client.post()
       .uri("/product")
-      .body(just(product), Product.class)
+      .body(just(productDto), ProductDto.class)
       .accept(APPLICATION_JSON)
       .exchange()
       .expectStatus().isEqualTo(expectedStatus)

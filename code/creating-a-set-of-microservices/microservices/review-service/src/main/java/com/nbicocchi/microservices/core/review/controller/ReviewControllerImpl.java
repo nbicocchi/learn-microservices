@@ -1,22 +1,23 @@
-package com.nbicocchi.microservices.core.review.services;
+package com.nbicocchi.microservices.core.review.controller;
 
 import java.util.List;
+
+import com.nbicocchi.api.core.review.ReviewDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestController;
-import com.nbicocchi.api.core.review.Review;
-import com.nbicocchi.api.core.review.ReviewService;
+import com.nbicocchi.api.core.review.ReviewController;
 import com.nbicocchi.api.exceptions.InvalidInputException;
 import com.nbicocchi.microservices.core.review.persistence.ReviewEntity;
 import com.nbicocchi.microservices.core.review.persistence.ReviewRepository;
 import com.nbicocchi.util.http.ServiceUtil;
 
 @RestController
-public class ReviewServiceImpl implements ReviewService {
+public class ReviewControllerImpl implements ReviewController {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ReviewServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ReviewControllerImpl.class);
 
   private final ReviewRepository repository;
 
@@ -25,14 +26,14 @@ public class ReviewServiceImpl implements ReviewService {
   private final ServiceUtil serviceUtil;
 
   @Autowired
-  public ReviewServiceImpl(ReviewRepository repository, ReviewMapper mapper, ServiceUtil serviceUtil) {
+  public ReviewControllerImpl(ReviewRepository repository, ReviewMapper mapper, ServiceUtil serviceUtil) {
     this.repository = repository;
     this.mapper = mapper;
     this.serviceUtil = serviceUtil;
   }
 
   @Override
-  public Review createReview(Review body) {
+  public ReviewDto createReview(ReviewDto body) {
     try {
       ReviewEntity entity = mapper.apiToEntity(body);
       ReviewEntity newEntity = repository.save(entity);
@@ -46,14 +47,14 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   @Override
-  public List<Review> getReviews(int productId) {
+  public List<ReviewDto> getReviews(int productId) {
 
     if (productId < 1) {
       throw new InvalidInputException("Invalid productId: " + productId);
     }
     
     List<ReviewEntity> entityList = repository.findByProductId(productId);
-    List<Review> list = mapper.entityListToApiList(entityList);
+    List<ReviewDto> list = mapper.entityListToApiList(entityList);
     list.forEach(e -> e.setServiceAddress(serviceUtil.getServiceAddress()));
 
     LOG.debug("getReviews: response size: {}", list.size());

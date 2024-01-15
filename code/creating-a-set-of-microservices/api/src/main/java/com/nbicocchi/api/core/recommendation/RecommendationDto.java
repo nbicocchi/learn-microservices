@@ -1,34 +1,34 @@
-package com.nbicocchi.api.core.review;
+package com.nbicocchi.api.core.recommendation;
 
-public class Review {
+public class RecommendationDto {
   private int productId;
-  private int reviewId;
+  private int recommendationId;
   private String author;
-  private String subject;
+  private int rate;
   private String content;
   private String serviceAddress;
 
-  public Review() {
+  public RecommendationDto() {
     productId = 0;
-    reviewId = 0;
+    recommendationId = 0;
     author = null;
-    subject = null;
+    rate = 0;
     content = null;
     serviceAddress = null;
   }
 
-  public Review(
+  public RecommendationDto(
     int productId,
-    int reviewId,
+    int recommendationId,
     String author,
-    String subject,
+    int rate,
     String content,
     String serviceAddress) {
 
     this.productId = productId;
-    this.reviewId = reviewId;
+    this.recommendationId = recommendationId;
     this.author = author;
-    this.subject = subject;
+    this.rate = rate;
     this.content = content;
     this.serviceAddress = serviceAddress;
   }
@@ -37,16 +37,16 @@ public class Review {
     return productId;
   }
 
-  public int getReviewId() {
-    return reviewId;
+  public int getRecommendationId() {
+    return recommendationId;
   }
 
   public String getAuthor() {
     return author;
   }
 
-  public String getSubject() {
-    return subject;
+  public int getRate() {
+    return rate;
   }
 
   public String getContent() {
@@ -61,16 +61,16 @@ public class Review {
     this.productId = productId;
   }
 
-  public void setReviewId(int reviewId) {
-    this.reviewId = reviewId;
+  public void setRecommendationId(int recommendationId) {
+    this.recommendationId = recommendationId;
   }
 
   public void setAuthor(String author) {
     this.author = author;
   }
 
-  public void setSubject(String subject) {
-    this.subject = subject;
+  public void setRate(int rate) {
+    this.rate = rate;
   }
 
   public void setContent(String content) {

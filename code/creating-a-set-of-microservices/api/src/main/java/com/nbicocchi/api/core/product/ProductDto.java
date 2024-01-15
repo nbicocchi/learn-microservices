@@ -1,19 +1,19 @@
 package com.nbicocchi.api.core.product;
 
-public class Product {
+public class ProductDto {
   private int productId;
   private String name;
   private int weight;
   private String serviceAddress;
 
-  public Product() {
+  public ProductDto() {
     productId = 0;
     name = null;
     weight = 0;
     serviceAddress = null;
   }
 
-  public Product(int productId, String name, int weight, String serviceAddress) {
+  public ProductDto(int productId, String name, int weight, String serviceAddress) {
     this.productId = productId;
     this.name = name;
     this.weight = weight;

@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static reactor.core.publisher.Mono.just;
 
+import com.nbicocchi.api.core.recommendation.RecommendationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import com.nbicocchi.api.composite.product.ProductAggregate;
-import com.nbicocchi.api.composite.product.RecommendationSummary;
-import com.nbicocchi.api.composite.product.ReviewSummary;
-import com.nbicocchi.api.core.product.Product;
-import com.nbicocchi.api.core.recommendation.Recommendation;
-import com.nbicocchi.api.core.review.Review;
+import com.nbicocchi.api.composite.product.ProductAggregateDto;
+import com.nbicocchi.api.composite.product.RecommendationSummaryDto;
+import com.nbicocchi.api.composite.product.ReviewSummaryDto;
+import com.nbicocchi.api.core.product.ProductDto;
+import com.nbicocchi.api.core.review.ReviewDto;
 import com.nbicocchi.api.exceptions.InvalidInputException;
 import com.nbicocchi.api.exceptions.NotFoundException;
 import com.nbicocchi.microservices.composite.product.services.ProductCompositeIntegration;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class ProductCompositeServiceApplicationTests {
+class ProductDtoCompositeControllerApplicationTests {
 
   private static final int PRODUCT_ID_OK = 1;
   private static final int PRODUCT_ID_NOT_FOUND = 2;
@@ -39,11 +39,11 @@ class ProductCompositeServiceApplicationTests {
   void setUp() {
 
     when(compositeIntegration.getProduct(PRODUCT_ID_OK))
-      .thenReturn(new Product(PRODUCT_ID_OK, "name", 1, "mock-address"));
+      .thenReturn(new ProductDto(PRODUCT_ID_OK, "name", 1, "mock-address"));
     when(compositeIntegration.getRecommendations(PRODUCT_ID_OK))
-      .thenReturn(singletonList(new Recommendation(PRODUCT_ID_OK, 1, "author", 1, "content", "mock address")));
+      .thenReturn(singletonList(new RecommendationDto(PRODUCT_ID_OK, 1, "author", 1, "content", "mock address")));
     when(compositeIntegration.getReviews(PRODUCT_ID_OK))
-      .thenReturn(singletonList(new Review(PRODUCT_ID_OK, 1, "author", "subject", "content", "mock address")));
+      .thenReturn(singletonList(new ReviewDto(PRODUCT_ID_OK, 1, "author", "subject", "content", "mock address")));
 
     when(compositeIntegration.getProduct(PRODUCT_ID_NOT_FOUND))
       .thenThrow(new NotFoundException("NOT FOUND: " + PRODUCT_ID_NOT_FOUND));
@@ -58,25 +58,25 @@ class ProductCompositeServiceApplicationTests {
   @Test
   void createCompositeProduct1() {
 
-    ProductAggregate compositeProduct = new ProductAggregate(1, "name", 1, null, null, null);
+    ProductAggregateDto compositeProduct = new ProductAggregateDto(1, "name", 1, null, null, null);
 
     postAndVerifyProduct(compositeProduct, OK);
   }
 
   @Test
   void createCompositeProduct2() {
-    ProductAggregate compositeProduct = new ProductAggregate(1, "name", 1,
-      singletonList(new RecommendationSummary(1, "a", 1, "c")),
-      singletonList(new ReviewSummary(1, "a", "s", "c")), null);
+    ProductAggregateDto compositeProduct = new ProductAggregateDto(1, "name", 1,
+      singletonList(new RecommendationSummaryDto(1, "a", 1, "c")),
+      singletonList(new ReviewSummaryDto(1, "a", "s", "c")), null);
 
     postAndVerifyProduct(compositeProduct, OK);
   }
 
   @Test
   void deleteCompositeProduct() {
-    ProductAggregate compositeProduct = new ProductAggregate(1, "name", 1,
-      singletonList(new RecommendationSummary(1, "a", 1, "c")),
-      singletonList(new ReviewSummary(1, "a", "s", "c")), null);
+    ProductAggregateDto compositeProduct = new ProductAggregateDto(1, "name", 1,
+      singletonList(new RecommendationSummaryDto(1, "a", 1, "c")),
+      singletonList(new ReviewSummaryDto(1, "a", "s", "c")), null);
 
     postAndVerifyProduct(compositeProduct, OK);
 
@@ -119,10 +119,10 @@ class ProductCompositeServiceApplicationTests {
       .expectBody();
   }
 
-  private void postAndVerifyProduct(ProductAggregate compositeProduct, HttpStatus expectedStatus) {
+  private void postAndVerifyProduct(ProductAggregateDto compositeProduct, HttpStatus expectedStatus) {
     client.post()
       .uri("/product-composite")
-      .body(just(compositeProduct), ProductAggregate.class)
+      .body(just(compositeProduct), ProductAggregateDto.class)
       .exchange()
       .expectStatus().isEqualTo(expectedStatus);
   }

@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 class GlobalControllerExceptionHandler {
 
-  private static final Logger LOG = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
-
   @ResponseStatus(BAD_REQUEST)
   @ExceptionHandler(BadRequestException.class)
   public @ResponseBody HttpErrorInfo handleBadRequestExceptions(
     ServerHttpRequest request, BadRequestException ex) {
 
-    return createHttpErrorInfo(BAD_REQUEST, request, ex);
+    return new HttpErrorInfo(BAD_REQUEST,
+            request.getPath().pathWithinApplication().value(),
+            ex.getMessage());
   }
 
   @ResponseStatus(NOT_FOUND)
@@ -35,7 +35,9 @@ class GlobalControllerExceptionHandler {
   public @ResponseBody HttpErrorInfo handleNotFoundExceptions(
     ServerHttpRequest request, NotFoundException ex) {
 
-    return createHttpErrorInfo(NOT_FOUND, request, ex);
+    return new HttpErrorInfo(NOT_FOUND,
+            request.getPath().pathWithinApplication().value(),
+            ex.getMessage());
   }
 
   @ResponseStatus(UNPROCESSABLE_ENTITY)
@@ -43,16 +45,8 @@ class GlobalControllerExceptionHandler {
   public @ResponseBody HttpErrorInfo handleInvalidInputException(
     ServerHttpRequest request, InvalidInputException ex) {
 
-    return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
-  }
-
-  private HttpErrorInfo createHttpErrorInfo(
-    HttpStatus httpStatus, ServerHttpRequest request, Exception ex) {
-
-    final String path = request.getPath().pathWithinApplication().value();
-    final String message = ex.getMessage();
-
-    LOG.debug("Returning HTTP status: {} for path: {}, message: {}", httpStatus, path, message);
-    return new HttpErrorInfo(httpStatus, path, message);
+    return new HttpErrorInfo(UNPROCESSABLE_ENTITY,
+            request.getPath().pathWithinApplication().value(),
+            ex.getMessage());
   }
 }

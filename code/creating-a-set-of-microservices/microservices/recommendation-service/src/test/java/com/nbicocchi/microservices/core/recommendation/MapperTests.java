@@ -4,11 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.List;
+
+import com.nbicocchi.api.core.recommendation.RecommendationDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import com.nbicocchi.api.core.recommendation.Recommendation;
 import com.nbicocchi.microservices.core.recommendation.persistence.RecommendationEntity;
-import com.nbicocchi.microservices.core.recommendation.services.RecommendationMapper;
+import com.nbicocchi.microservices.core.recommendation.controller.RecommendationMapper;
 
 class MapperTests {
 
@@ -19,7 +20,7 @@ class MapperTests {
 
     assertNotNull(mapper);
 
-    Recommendation api = new Recommendation(1, 2, "a", 4, "C", "adr");
+    RecommendationDto api = new RecommendationDto(1, 2, "a", 4, "C", "adr");
 
     RecommendationEntity entity = mapper.apiToEntity(api);
 
@@ -29,7 +30,7 @@ class MapperTests {
     assertEquals(api.getRate(), entity.getRating());
     assertEquals(api.getContent(), entity.getContent());
 
-    Recommendation api2 = mapper.entityToApi(entity);
+    RecommendationDto api2 = mapper.entityToApi(entity);
 
     assertEquals(api.getProductId(), api2.getProductId());
     assertEquals(api.getRecommendationId(), api2.getRecommendationId());
@@ -44,8 +45,8 @@ class MapperTests {
 
     assertNotNull(mapper);
 
-    Recommendation api = new Recommendation(1, 2, "a", 4, "C", "adr");
-    List<Recommendation> apiList = Collections.singletonList(api);
+    RecommendationDto api = new RecommendationDto(1, 2, "a", 4, "C", "adr");
+    List<RecommendationDto> apiList = Collections.singletonList(api);
 
     List<RecommendationEntity> entityList = mapper.apiListToEntityList(apiList);
     assertEquals(apiList.size(), entityList.size());
@@ -58,10 +59,10 @@ class MapperTests {
     assertEquals(api.getRate(), entity.getRating());
     assertEquals(api.getContent(), entity.getContent());
 
-    List<Recommendation> api2List = mapper.entityListToApiList(entityList);
+    List<RecommendationDto> api2List = mapper.entityListToApiList(entityList);
     assertEquals(apiList.size(), api2List.size());
 
-    Recommendation api2 = api2List.get(0);
+    RecommendationDto api2 = api2List.get(0);
 
     assertEquals(api.getProductId(), api2.getProductId());
     assertEquals(api.getRecommendationId(), api2.getRecommendationId());

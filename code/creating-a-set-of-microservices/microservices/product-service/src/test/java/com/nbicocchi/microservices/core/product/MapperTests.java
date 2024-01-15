@@ -2,11 +2,11 @@ package com.nbicocchi.microservices.core.product;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.nbicocchi.api.core.product.ProductDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import com.nbicocchi.api.core.product.Product;
 import com.nbicocchi.microservices.core.product.persistence.ProductEntity;
-import com.nbicocchi.microservices.core.product.services.ProductMapper;
+import com.nbicocchi.microservices.core.product.controller.ProductMapper;
 
 class MapperTests {
 
@@ -17,7 +17,7 @@ class MapperTests {
 
     assertNotNull(mapper);
 
-    Product api = new Product(1, "n", 1, "sa");
+    ProductDto api = new ProductDto(1, "n", 1, "sa");
 
     ProductEntity entity = mapper.apiToEntity(api);
 
@@ -26,7 +26,7 @@ class MapperTests {
     assertEquals(api.getName(), entity.getName());
     assertEquals(api.getWeight(), entity.getWeight());
 
-    Product api2 = mapper.entityToApi(entity);
+    ProductDto api2 = mapper.entityToApi(entity);
 
     assertEquals(api.getProductId(), api2.getProductId());
     assertEquals(api.getProductId(), api2.getProductId());

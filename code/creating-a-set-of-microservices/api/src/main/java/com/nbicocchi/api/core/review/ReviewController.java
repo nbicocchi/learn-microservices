@@ -3,7 +3,7 @@ package com.nbicocchi.api.core.review;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
-public interface ReviewService {
+public interface ReviewController {
 
   /**
    * Sample usage, see below.
@@ -19,7 +19,7 @@ public interface ReviewService {
       value    = "/review",
       consumes = "application/json",
       produces = "application/json")
-  Review createReview(@RequestBody Review body);
+  ReviewDto createReview(@RequestBody ReviewDto body);
 
   /**
    * Sample usage: "curl $HOST:$PORT/review?productId=1".
@@ -30,7 +30,7 @@ public interface ReviewService {
   @GetMapping(
     value = "/review",
     produces = "application/json")
-  List<Review> getReviews(@RequestParam(value = "productId", required = true) int productId);
+  List<ReviewDto> getReviews(@RequestParam(value = "productId", required = true) int productId);
 
   /**
    * Sample usage: "curl -X DELETE $HOST:$PORT/review?productId=1".

@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "ProductComposite", description = "REST API for composite product information.")
-public interface ProductCompositeService {
+public interface ProductCompositeController {
 
   /**
    * Sample usage, see below.
@@ -28,7 +28,7 @@ public interface ProductCompositeService {
   @PostMapping(
     value    = "/product-composite",
     consumes = "application/json")
-  void createProduct(@RequestBody ProductAggregate body);
+  void createProduct(@RequestBody ProductAggregateDto body);
 
   /**
    * Sample usage: "curl $HOST:$PORT/product-composite/1".
@@ -48,7 +48,7 @@ public interface ProductCompositeService {
   @GetMapping(
     value = "/product-composite/{productId}",
     produces = "application/json")
-  ProductAggregate getProduct(@PathVariable int productId);
+  ProductAggregateDto getProduct(@PathVariable int productId);
 
   /**
    * Sample usage: "curl -X DELETE $HOST:$PORT/product-composite/1".

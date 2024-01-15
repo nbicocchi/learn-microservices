@@ -2,37 +2,37 @@ package com.nbicocchi.api.composite.product;
 
 import java.util.List;
 
-public class ProductAggregate {
+public class ProductAggregateDto {
   private final int productId;
   private final String name;
   private final int weight;
-  private final List<RecommendationSummary> recommendations;
-  private final List<ReviewSummary> reviews;
-  private final ServiceAddresses serviceAddresses;
+  private final List<RecommendationSummaryDto> recommendations;
+  private final List<ReviewSummaryDto> reviews;
+  private final ServiceAddressesDto serviceAddressesDto;
 
-  public ProductAggregate() {
+  public ProductAggregateDto() {
     productId = 0;
     name = null;
     weight = 0;
     recommendations = null;
     reviews = null;
-    serviceAddresses = null;
+    serviceAddressesDto = null;
   }
 
-  public ProductAggregate(
+  public ProductAggregateDto(
     int productId,
     String name,
     int weight,
-    List<RecommendationSummary> recommendations,
-    List<ReviewSummary> reviews,
-    ServiceAddresses serviceAddresses) {
+    List<RecommendationSummaryDto> recommendations,
+    List<ReviewSummaryDto> reviews,
+    ServiceAddressesDto serviceAddressesDto) {
 
     this.productId = productId;
     this.name = name;
     this.weight = weight;
     this.recommendations = recommendations;
     this.reviews = reviews;
-    this.serviceAddresses = serviceAddresses;
+    this.serviceAddressesDto = serviceAddressesDto;
   }
 
   public int getProductId() {
@@ -47,15 +47,15 @@ public class ProductAggregate {
     return weight;
   }
 
-  public List<RecommendationSummary> getRecommendations() {
+  public List<RecommendationSummaryDto> getRecommendations() {
     return recommendations;
   }
 
-  public List<ReviewSummary> getReviews() {
+  public List<ReviewSummaryDto> getReviews() {
     return reviews;
   }
 
-  public ServiceAddresses getServiceAddresses() {
-    return serviceAddresses;
+  public ServiceAddressesDto getServiceAddresses() {
+    return serviceAddressesDto;
   }
 }

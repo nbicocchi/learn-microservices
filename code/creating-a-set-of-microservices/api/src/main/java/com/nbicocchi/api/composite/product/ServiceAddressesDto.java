@@ -1,19 +1,19 @@
 package com.nbicocchi.api.composite.product;
 
-public class ServiceAddresses {
+public class ServiceAddressesDto {
   private final String cmp;
   private final String pro;
   private final String rev;
   private final String rec;
 
-  public ServiceAddresses() {
+  public ServiceAddressesDto() {
     cmp = null;
     pro = null;
     rev = null;
     rec = null;
   }
 
-  public ServiceAddresses(
+  public ServiceAddressesDto(
     String compositeAddress,
     String productAddress,
     String reviewAddress,

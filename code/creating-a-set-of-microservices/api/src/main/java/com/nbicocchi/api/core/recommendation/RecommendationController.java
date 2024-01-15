@@ -3,7 +3,7 @@ package com.nbicocchi.api.core.recommendation;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
-public interface RecommendationService {
+public interface RecommendationController {
 
   /**
    * Sample usage, see below.
@@ -19,7 +19,7 @@ public interface RecommendationService {
     value    = "/recommendation",
     consumes = "application/json",
     produces = "application/json")
-  Recommendation createRecommendation(@RequestBody Recommendation body);
+  RecommendationDto createRecommendation(@RequestBody RecommendationDto body);
 
   /**
    * Sample usage: "curl $HOST:$PORT/recommendation?productId=1".
@@ -30,7 +30,7 @@ public interface RecommendationService {
   @GetMapping(
     value = "/recommendation",
     produces = "application/json")
-  List<Recommendation> getRecommendations(
+  List<RecommendationDto> getRecommendations(
     @RequestParam(value = "productId", required = true) int productId);
 
   /**

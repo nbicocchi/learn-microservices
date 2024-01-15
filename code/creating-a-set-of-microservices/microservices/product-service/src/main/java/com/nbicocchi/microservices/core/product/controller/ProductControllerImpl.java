@@ -1,12 +1,12 @@
-package com.nbicocchi.microservices.core.product.services;
+package com.nbicocchi.microservices.core.product.controller;
 
+import com.nbicocchi.api.core.product.ProductDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
-import com.nbicocchi.api.core.product.Product;
-import com.nbicocchi.api.core.product.ProductService;
+import com.nbicocchi.api.core.product.ProductController;
 import com.nbicocchi.api.exceptions.InvalidInputException;
 import com.nbicocchi.api.exceptions.NotFoundException;
 import com.nbicocchi.microservices.core.product.persistence.ProductEntity;
@@ -14,9 +14,9 @@ import com.nbicocchi.microservices.core.product.persistence.ProductRepository;
 import com.nbicocchi.util.http.ServiceUtil;
 
 @RestController
-public class ProductServiceImpl implements ProductService {
+public class ProductControllerImpl implements ProductController {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ProductServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ProductControllerImpl.class);
 
   private final ServiceUtil serviceUtil;
 
@@ -25,14 +25,14 @@ public class ProductServiceImpl implements ProductService {
   private final ProductMapper mapper;
 
   @Autowired
-  public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil) {
+  public ProductControllerImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil) {
     this.repository = repository;
     this.mapper = mapper;
     this.serviceUtil = serviceUtil;
   }
 
   @Override
-  public Product createProduct(Product body) {
+  public ProductDto createProduct(ProductDto body) {
     try {
       ProductEntity entity = mapper.apiToEntity(body);
       ProductEntity newEntity = repository.save(entity);
@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Product getProduct(int productId) {
+  public ProductDto getProduct(int productId) {
 
     if (productId < 1) {
       throw new InvalidInputException("Invalid productId: " + productId);
@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
     ProductEntity entity = repository.findByProductId(productId)
       .orElseThrow(() -> new NotFoundException("No product found for productId: " + productId));
 
-    Product response = mapper.entityToApi(entity);
+    ProductDto response = mapper.entityToApi(entity);
     response.setServiceAddress(serviceUtil.getServiceAddress());
 
     LOG.debug("getProduct: found productId: {}", response.getProductId());

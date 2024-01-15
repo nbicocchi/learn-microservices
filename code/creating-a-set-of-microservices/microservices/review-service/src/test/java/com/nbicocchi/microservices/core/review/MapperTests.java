@@ -4,11 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.List;
+
+import com.nbicocchi.api.core.review.ReviewDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import com.nbicocchi.api.core.review.Review;
 import com.nbicocchi.microservices.core.review.persistence.ReviewEntity;
-import com.nbicocchi.microservices.core.review.services.ReviewMapper;
+import com.nbicocchi.microservices.core.review.controller.ReviewMapper;
 
 
 class MapperTests {
@@ -20,7 +21,7 @@ class MapperTests {
 
     assertNotNull(mapper);
 
-    Review api = new Review(1, 2, "a", "s", "C", "adr");
+    ReviewDto api = new ReviewDto(1, 2, "a", "s", "C", "adr");
 
     ReviewEntity entity = mapper.apiToEntity(api);
 
@@ -30,7 +31,7 @@ class MapperTests {
     assertEquals(api.getSubject(), entity.getSubject());
     assertEquals(api.getContent(), entity.getContent());
 
-    Review api2 = mapper.entityToApi(entity);
+    ReviewDto api2 = mapper.entityToApi(entity);
 
     assertEquals(api.getProductId(), api2.getProductId());
     assertEquals(api.getReviewId(), api2.getReviewId());
@@ -45,8 +46,8 @@ class MapperTests {
 
     assertNotNull(mapper);
 
-    Review api = new Review(1, 2, "a", "s", "C", "adr");
-    List<Review> apiList = Collections.singletonList(api);
+    ReviewDto api = new ReviewDto(1, 2, "a", "s", "C", "adr");
+    List<ReviewDto> apiList = Collections.singletonList(api);
 
     List<ReviewEntity> entityList = mapper.apiListToEntityList(apiList);
     assertEquals(apiList.size(), entityList.size());
@@ -59,10 +60,10 @@ class MapperTests {
     assertEquals(api.getSubject(), entity.getSubject());
     assertEquals(api.getContent(), entity.getContent());
 
-    List<Review> api2List = mapper.entityListToApiList(entityList);
+    List<ReviewDto> api2List = mapper.entityListToApiList(entityList);
     assertEquals(apiList.size(), api2List.size());
 
-    Review api2 = api2List.get(0);
+    ReviewDto api2 = api2List.get(0);
 
     assertEquals(api.getProductId(), api2.getProductId());
     assertEquals(api.getReviewId(), api2.getReviewId());
