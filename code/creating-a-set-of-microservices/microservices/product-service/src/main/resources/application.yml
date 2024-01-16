@@ -1,16 +1,16 @@
 server.port: 7001
 server.error.include-message: always
 
-spring.data.mongodb:
-  host: localhost
-  port: 27017
-  database: product-db
-
 logging:
   level:
     root: INFO
     com.nbicocchi: DEBUG
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+spring.data.mongodb:
+  host: localhost
+  port: 27017
+  database: product-db
 
 ---
 spring.config.activate.on-profile: docker

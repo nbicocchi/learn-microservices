@@ -1,11 +1,7 @@
-#springdoc:
-#  swagger-ui.path: /openapi/swagger-ui.html
-#  api-docs.path: /openapi/v3/api-docs
-#  packagesToScan: com.nbicocchi.microservices.composite.product
-#  pathsToMatch: /**
+springdoc:
+  packagesToScan: com.nbicocchi.microservices.composite.product
 
 api:
-
   common:
     version: 1.0.0
     title: Sample API
@@ -30,8 +26,8 @@ api:
   product-composite:
 
     get-composite-product:
-      description: Returns a composite view of the specified product id
-      notes: |
+      summary: Returns a composite view of the specified product id
+      description: |
         # Normal response
         If the requested product id is found the method will return information regarding:
         1. Product information
@@ -44,8 +40,8 @@ api:
         1. In no recommendations or reviews are found for a product, a partial response will be returned
 
     create-composite-product:
-      description: Creates a composite product
-      notes: |
+      summary: Creates a composite product
+      description: |
         # Normal response
         The composite product information posted to the API will be split up and stored as separate product-info, recommendation and review entities.
 
@@ -54,15 +50,15 @@ api:
            an **422 - Unprocessable Entity** error with a "duplicate key" error message will be returned
 
     delete-composite-product:
-      description: Deletes a product composite
-      notes: |
+      summary: Deletes a product composite
+      description: |
         # Normal response
         Entities for product information, recommendations and reviews related to the specified productId will be deleted.
         The implementation of the delete method is idempotent, i.e. it can be called several times with the same response.
 
         This means that a delete request of a non-existing product will return **200 Ok**.
 
-server.port: 7000
+server.port: 8080
 server.error.include-message: always
 
 app:

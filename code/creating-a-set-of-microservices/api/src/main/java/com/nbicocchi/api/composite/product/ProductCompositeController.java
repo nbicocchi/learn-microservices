@@ -19,8 +19,8 @@ public interface ProductCompositeController {
    * @param body A JSON representation of the new composite product
    */
   @Operation(
-    summary = "${api.product-composite.create-composite-product.description}",
-    description = "${api.product-composite.create-composite-product.notes}")
+    summary = "${api.product-composite.create-composite-product.summary}",
+    description = "${api.product-composite.create-composite-product.description}")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
     @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
@@ -37,8 +37,8 @@ public interface ProductCompositeController {
    * @return the composite product info, if found, else null
    */
   @Operation(
-    summary = "${api.product-composite.get-composite-product.description}",
-    description = "${api.product-composite.get-composite-product.notes}")
+    summary = "${api.product-composite.get-composite-product.summary}",
+    description = "${api.product-composite.get-composite-product.description}")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
     @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
@@ -56,8 +56,8 @@ public interface ProductCompositeController {
    * @param productId Id of the product
    */
   @Operation(
-    summary = "${api.product-composite.delete-composite-product.description}",
-    description = "${api.product-composite.delete-composite-product.notes}")
+    summary = "${api.product-composite.delete-composite-product.summary}",
+    description = "${api.product-composite.delete-composite-product.description}")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
     @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
