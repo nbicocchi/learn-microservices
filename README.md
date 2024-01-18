@@ -26,6 +26,7 @@
 * [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
 * [The ULTIMATE Guide to Spring Boot](https://www.youtube.com/watch?v=Nv2DERaMx-4)
 * [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
+* https://www.youtube.com/@DefogTech/videos
 
 ## Modules
 * Introduction to microservices
