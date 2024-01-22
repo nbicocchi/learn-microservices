@@ -1,6 +1,7 @@
 package com.nbicocchi.api.core.product;
 
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 public interface ProductController {
 
@@ -18,7 +19,7 @@ public interface ProductController {
     value    = "/product",
     consumes = "application/json",
     produces = "application/json")
-  ProductDto createProduct(@RequestBody ProductDto body);
+  Mono<ProductDto> createProduct(@RequestBody ProductDto body);
 
   /**
    * Sample usage: "curl $HOST:$PORT/product/1".
@@ -29,7 +30,7 @@ public interface ProductController {
   @GetMapping(
     value = "/product/{productId}",
     produces = "application/json")
-  ProductDto getProduct(@PathVariable int productId);
+  Mono<ProductDto> getProduct(@PathVariable int productId);
 
   /**
    * Sample usage: "curl -X DELETE $HOST:$PORT/product/1".
@@ -37,5 +38,5 @@ public interface ProductController {
    * @param productId Id of the product
    */
   @DeleteMapping(value = "/product/{productId}")
-  void deleteProduct(@PathVariable int productId);
+  Mono<Void> deleteProduct(@PathVariable int productId);
 }

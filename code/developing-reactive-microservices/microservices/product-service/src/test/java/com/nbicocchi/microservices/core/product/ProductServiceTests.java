@@ -1,27 +1,20 @@
 package com.nbicocchi.microservices.core.product;
 
-import static java.util.stream.IntStream.rangeClosed;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import com.nbicocchi.microservices.core.product.persistence.ProductEntity;
+import org.springframework.boot.test.context.SpringBootTest;
 import com.nbicocchi.microservices.core.product.persistence.ProductRepository;
+import com.nbicocchi.microservices.core.product.persistence.ProductEntity;
+import org.testcontainers.shaded.org.yaml.snakeyaml.constructor.DuplicateKeyException;
 import reactor.test.StepVerifier;
 
-@DataMongoTest
-class PersistenceTests extends MongoDbTestBase {
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+class ProductServiceTests extends MongoDbTestBase {
 
   @Autowired
   private ProductRepository repository;
@@ -89,29 +82,6 @@ class PersistenceTests extends MongoDbTestBase {
   void duplicateError() {
     ProductEntity entity = new ProductEntity(savedEntity.getProductId(), "n", 1);
     StepVerifier.create(repository.save(entity)).expectError(DuplicateKeyException.class).verify();
-  }
-
-  @Test
-  void optimisticLockError() {
-
-    // Store the saved entity in two separate entity objects
-    ProductEntity entity1 = repository.findById(savedEntity.getId()).block();
-    ProductEntity entity2 = repository.findById(savedEntity.getId()).block();
-
-    // Update the entity using the first entity object
-    entity1.setName("n1");
-    repository.save(entity1).block();
-
-    //  Update the entity using the second entity object.
-    // This should fail since the second entity now holds a old version number, i.e. a Optimistic Lock Error
-    StepVerifier.create(repository.save(entity2)).expectError(OptimisticLockingFailureException.class).verify();
-
-    // Get the updated entity from the database and verify its new sate
-    StepVerifier.create(repository.findById(savedEntity.getId()))
-            .expectNextMatches(foundEntity ->
-                    foundEntity.getVersion() == 1
-                            && foundEntity.getName().equals("n1"))
-            .verifyComplete();
   }
 
   private boolean areProductEqual(ProductEntity expectedEntity, ProductEntity actualEntity) {

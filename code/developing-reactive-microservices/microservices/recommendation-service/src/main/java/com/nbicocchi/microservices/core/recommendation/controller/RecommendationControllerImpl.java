@@ -1,6 +1,7 @@
 package com.nbicocchi.microservices.core.recommendation.controller;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import com.nbicocchi.api.core.recommendation.RecommendationDto;
 import com.nbicocchi.api.exceptions.NotFoundException;
@@ -14,6 +15,8 @@ import com.nbicocchi.api.exceptions.InvalidInputException;
 import com.nbicocchi.microservices.core.recommendation.persistence.RecommendationEntity;
 import com.nbicocchi.microservices.core.recommendation.persistence.RecommendationRepository;
 import com.nbicocchi.util.http.ServiceUtil;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 public class RecommendationControllerImpl implements RecommendationController {
@@ -34,43 +37,39 @@ public class RecommendationControllerImpl implements RecommendationController {
   }
 
   @Override
-  public RecommendationDto createRecommendation(RecommendationDto body) {
-    try {
-      RecommendationEntity entity = mapper.apiToEntity(body);
-      RecommendationEntity newEntity = repository.save(entity);
-
-      LOG.debug("createRecommendation: created a recommendation entity: {}/{}", body.getProductId(), body.getRecommendationId());
-      return mapper.entityToApi(newEntity);
-
-    } catch (DuplicateKeyException dke) {
-      throw new InvalidInputException("Duplicate key, Product Id: " + body.getProductId() + ", Recommendation Id:" + body.getRecommendationId());
-    }
+  public Mono<RecommendationDto> createRecommendation(RecommendationDto body) {
+    RecommendationEntity entity = mapper.apiToEntity(body);
+    return repository.save(entity)
+            .log(LOG.getName(), Level.FINE)
+            .onErrorMap(
+                    DuplicateKeyException.class,
+                    ex -> new InvalidInputException("Duplicate key, Product Id: " + body.getProductId() + ", Recommendation Id:" + body.getRecommendationId()))
+            .map(e -> mapper.entityToApi(e));
   }
 
   @Override
-  public List<RecommendationDto> getRecommendations(int productId) {
-
+  public Flux<RecommendationDto> getRecommendations(int productId) {
     if (productId < 1) {
       throw new InvalidInputException("Invalid productId: " + productId);
     }
-    
-    List<RecommendationEntity> entityList = repository.findByProductId(productId);
-    if (entityList.isEmpty()) {
-      throw new NotFoundException("No recommendations found for productId: " + productId);
-    }
 
-    List<RecommendationDto> recommendationDtoList = mapper.entityListToApiList(entityList);
-    recommendationDtoList.forEach(e -> e.setServiceAddress(serviceUtil.getServiceAddress()));
-
-    LOG.debug("getRecommendations: response size: {}", recommendationDtoList.size());
-
-    return recommendationDtoList;
-
+    LOG.info("Will get recommendations for product with id={}", productId);
+    return repository.findByProductId(productId)
+            .log(LOG.getName(), Level.FINE)
+            .map(e -> mapper.entityToApi(e))
+            .map(e -> {
+              e.setServiceAddress(serviceUtil.getServiceAddress());
+              return e;
+            });
   }
 
   @Override
-  public void deleteRecommendations(int productId) {
+  public Mono<Void> deleteRecommendations(int productId) {
+    if (productId < 1) {
+      throw new InvalidInputException("Invalid productId: " + productId);
+    }
+
     LOG.debug("deleteRecommendations: tries to delete recommendations for the product with productId: {}", productId);
-    repository.deleteAll(repository.findByProductId(productId));
+    return repository.deleteAll(repository.findByProductId(productId));
   }
 }
