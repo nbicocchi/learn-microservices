@@ -2,6 +2,8 @@ package com.nbicocchi.api.core.review;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface ReviewController {
 
@@ -19,7 +21,7 @@ public interface ReviewController {
       value    = "/review",
       consumes = "application/json",
       produces = "application/json")
-  ReviewDto createReview(@RequestBody ReviewDto body);
+  Mono<ReviewDto> createReview(@RequestBody ReviewDto body);
 
   /**
    * Sample usage: "curl $HOST:$PORT/review?productId=1".
@@ -30,7 +32,7 @@ public interface ReviewController {
   @GetMapping(
     value = "/review",
     produces = "application/json")
-  List<ReviewDto> getReviews(@RequestParam(value = "productId", required = true) int productId);
+  Flux<ReviewDto> getReviews(@RequestParam(value = "productId", required = true) int productId);
 
   /**
    * Sample usage: "curl -X DELETE $HOST:$PORT/review?productId=1".
@@ -38,5 +40,5 @@ public interface ReviewController {
    * @param productId Id of the product
    */
   @DeleteMapping(value = "/review")
-  void deleteReviews(@RequestParam(value = "productId", required = true)  int productId);
+  Mono<Void> deleteReviews(@RequestParam(value = "productId", required = true)  int productId);
 }
