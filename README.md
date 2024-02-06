@@ -13,7 +13,7 @@
 ## Books
 * **Microservices with Spring Boot 3 and Spring Cloud; Larsson**
 * **Spring Microservices in Action; Carnell, Sánchez**
-* Microservices Patterns; Richardson
+* **Microservices Patterns; Richardson**
 * Microservices AntiPatterns and Pitfalls; Richards
 * Cloud Native DevOps with Kubernetes; Arundel, Domingus
 * Modern DevOps Practices; Agarwal
@@ -28,6 +28,9 @@
 * [Defog Tech YouTube Channel](https://www.youtube.com/@DefogTech/videos)
 
 ## Modules
+
+These topics assume a decent understanding of Spring Boot 3. A dedicated course can be found at [https://github.com/nbicocchi/learn-spring-boot](https://github.com/nbicocchi/learn-spring-boot).
+
 * Introduction to microservices
 * Reactive microservices
 * Event-driven async microservices
