@@ -1,0 +1,50 @@
+server.port: 8080
+spring.application.name: gateway-service
+app.eureka-server: localhost
+
+management.endpoint.gateway.enabled: true
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+
+management.zipkin.tracing.endpoint: http://localhost:9411/api/v2/spans
+management.tracing.sampling.probability: 1.0
+logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
+    org.springframework.cloud.gateway: TRACE
+
+spring.cloud.gateway.routes:
+  - id: composite-service
+    uri: lb://composite-service
+    predicates:
+      - Path=/time/**
+  - id: eureka-web-start
+    uri: http://${app.eureka-server}:8761
+    predicates:
+      - Path=/eureka/web
+    filters:
+      - SetPath=/
+  - id: eureka-web-other
+    uri: http://${app.eureka-server}:8761
+    predicates:
+      - Path=/eureka/**
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+app.eureka-server: eureka
+management.zipkin.tracing.endpoint: http://zipkin:9411/api/v2/spans
+

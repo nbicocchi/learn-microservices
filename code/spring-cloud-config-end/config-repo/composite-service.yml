@@ -1,0 +1,7 @@
+server.port: 9000
+spring.application.name: composite-service
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+

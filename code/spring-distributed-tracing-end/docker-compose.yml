@@ -1,0 +1,37 @@
+version: '2.1'
+
+services:
+  zipkin:
+    image: openzipkin/zipkin:3.0.5
+    restart: always
+    mem_limit: 512m
+    environment:
+      - STORAGE_TYPE=mem
+    ports:
+      - 9411:9411
+
+  eureka:
+    build: eureka-server
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+
+  composite:
+    build: composite-service-end
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  date:
+    build: date-service-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  time:
+    build: time-service-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker

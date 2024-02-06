@@ -1,0 +1,7 @@
+server.port: 9002
+spring.application.name: time-service
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+

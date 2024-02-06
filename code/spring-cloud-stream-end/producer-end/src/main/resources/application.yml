@@ -1,0 +1,26 @@
+server.port: 8081
+
+spring.rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  username: guest
+  password: guest
+
+spring.cloud.stream:
+  defaultBinder: rabbit
+  default.contentType: application/json
+  bindings:
+    message-out-0:
+      destination: messages
+      #producer:
+      #  required-groups: auditGroup
+---
+spring.config.activate.on-profile: docker
+spring.rabbitmq.host: rabbitmq
+
+---
+spring.config.activate.on-profile: streaming_partitioned
+
+spring.cloud.stream.bindings.message-out-0.producer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 2

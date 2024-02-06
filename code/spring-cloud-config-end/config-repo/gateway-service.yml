@@ -1,0 +1,32 @@
+server.port: 8080
+spring.application.name: gateway-service
+
+management.endpoint.gateway.enabled: true
+spring.cloud.gateway.routes:
+  - id: composite-service
+    uri: lb://composite-service
+    predicates:
+      - Path=/datetime/**
+  - id: time-service
+    uri: lb://time-service
+    predicates:
+      - Path=/time/**
+  - id: date-service
+    uri: lb://date-service
+    predicates:
+      - Path=/date/**
+  - id: eureka-web-start
+    uri: http://${app.eureka-server}:8761
+    predicates:
+      - Path=/eureka/web
+    filters:
+      - SetPath=/
+  - id: eureka-web-other
+    uri: http://${app.eureka-server}:8761
+    predicates:
+      - Path=/eureka/**
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+

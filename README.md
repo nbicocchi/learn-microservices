@@ -2,7 +2,7 @@
 
 ## Software
 * Frameworks: spring boot
-* Orchestration: docker, kubernetes
+* Orchestration: docker, podman, kubernetes
 * Service discovery: eureka, consul
 * Service mesh: istio, linkerd, dapr, envoy
 * Message queue: kafka, rabbitmq
@@ -24,21 +24,18 @@
 * [Fallacies of Distributed Systems](https://www.youtube.com/watch?v=8fRzZtJ_SLk&list=PL1DZqeVwRLnD3EjyciYAO82dT9Owiq8I5)
 * [Visualising software architecture with the C4 model](https://www.youtube.com/watch?v=x2-rSnhpw0g&t=11s)
 * [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
-* [The ULTIMATE Guide to Spring Boot](https://www.youtube.com/watch?v=Nv2DERaMx-4)
 * [Spring Boot Microservice Project Full Course](https://www.youtube.com/watch?v=mPPhcU7oWDU)
-* https://www.youtube.com/@DefogTech/videos
+* [Defog Tech YouTube Channel](https://www.youtube.com/@DefogTech/videos)
 
 ## Modules
 * Introduction to microservices
-* Introduction to Spring Cloud
-* Service configuration
+* Reactive microservices
+* Event-driven async microservices
 * Service discovery
-* Resiliency patterns (Resilience4j)
 * Service routing
-* Event-driven architectures
-* Distributed tracing
-* Deploying microservices
-* Introduction to Kubernetes
+* Centralized configuration
+* Resiliency patterns (Resilience4j)
+* Observability (Tracing, Metrics, Log aggregation)
 * Deploying Microservices to Kubernetes
-* Implementing Kubernetes Features to Simplify the System Landscape
+* Implementing Kubernetes Features to Simplify the Microservices Landscape
 * Using a Service Mesh to Improve Observability and Management
