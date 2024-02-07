@@ -11,23 +11,15 @@
 * Distributed database: cockroachdb, cassandra, debezium
 
 ## Books
-* **Microservices with Spring Boot 3 and Spring Cloud; Larsson**
-* **Spring Microservices in Action; Carnell, Sánchez**
 * **Microservices Patterns; Richardson**
+* **Spring Microservices in Action; Carnell, Sánchez**
+* **Microservices with Spring Boot 3 and Spring Cloud; Larsson**
 * Microservices AntiPatterns and Pitfalls; Richards
 * Cloud Native DevOps with Kubernetes; Arundel, Domingus
 * Modern DevOps Practices; Agarwal
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 
-## Videos
-* [What is 12-Factor App?](https://www.youtube.com/watch?v=1OhmRmMsGdQ)
-* [Fallacies of Distributed Systems](https://www.youtube.com/watch?v=8fRzZtJ_SLk&list=PL1DZqeVwRLnD3EjyciYAO82dT9Owiq8I5)
-* [Visualising software architecture with the C4 model](https://www.youtube.com/watch?v=x2-rSnhpw0g&t=11s)
-* [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
-* [Defog Tech YouTube Channel](https://www.youtube.com/@DefogTech/videos)
-
 ## Modules
-
 These topics assume a decent understanding of Spring Boot 3. A dedicated course can be found at [https://github.com/nbicocchi/learn-spring-boot](https://github.com/nbicocchi/learn-spring-boot).
 
 * Introduction to microservices
