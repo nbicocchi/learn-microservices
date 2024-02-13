@@ -36,9 +36,11 @@ public class MessageSender {
 
     private void sendMessage(String bindingName, OrganizationChangeModel event) {
         LOG.debug("Sending message {} to {}", event, bindingName);
-        Message<OrganizationChangeModel> message = MessageBuilder.withPayload(event)
-                .setHeader("partitionKey", event)
-                .build();
-        streamBridge.send(bindingName, message);
+        for (int i = 0; i < 5; i++) {
+            Message<OrganizationChangeModel> message = MessageBuilder.withPayload(event)
+                    .setHeader("partitionKey", event.getOrganizationId())
+                    .build();
+            streamBridge.send(bindingName, message);
+        }
     }
 }
