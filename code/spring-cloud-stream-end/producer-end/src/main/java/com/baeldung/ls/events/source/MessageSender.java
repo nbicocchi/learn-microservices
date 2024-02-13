@@ -1,6 +1,6 @@
 package com.baeldung.ls.events.source;
 
-import com.baeldung.ls.events.model.OrganizationChangeModel;
+import com.baeldung.ls.events.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -9,8 +9,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.random.RandomGenerator;
 
@@ -26,19 +24,20 @@ public class MessageSender {
 
     @Scheduled(fixedRate = 1000)
     public void randomMessage() {
-        List<String> types = Arrays.asList("CREATE", "UPDATE", "DELETE");
-        OrganizationChangeModel event = new OrganizationChangeModel(
-                types.get(RANDOM.nextInt(3)),
-                UUID.randomUUID().toString()
+        int index = RANDOM.nextInt(Event.Type.class.getEnumConstants().length);
+        Event<String, Integer> event = new Event(
+                Event.Type.class.getEnumConstants()[index],
+                UUID.randomUUID().toString(),
+                RANDOM.nextInt(100)
         );
         sendMessage("message-out-0", event);
     }
 
-    private void sendMessage(String bindingName, OrganizationChangeModel event) {
+    private void sendMessage(String bindingName, Event<String, Integer> event) {
         LOG.debug("Sending message {} to {}", event, bindingName);
         for (int i = 0; i < 5; i++) {
-            Message<OrganizationChangeModel> message = MessageBuilder.withPayload(event)
-                    .setHeader("partitionKey", event.getOrganizationId())
+            Message<Event<String, Integer>> message = MessageBuilder.withPayload(event)
+                    .setHeader("partitionKey", event.getKey())
                     .build();
             streamBridge.send(bindingName, message);
         }

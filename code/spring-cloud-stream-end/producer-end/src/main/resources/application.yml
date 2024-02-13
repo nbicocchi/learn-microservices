@@ -16,7 +16,7 @@ spring.cloud.stream:
       #  required-groups: auditGroup
 ---
 spring.config.activate.on-profile: docker
-spring.rabbitmq.host: rabbitmq
+spring.rabbitmq.host: lavinmq
 
 ---
 spring.config.activate.on-profile: streaming_partitioned

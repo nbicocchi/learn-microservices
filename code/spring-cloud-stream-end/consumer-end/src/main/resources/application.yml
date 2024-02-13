@@ -1,9 +1,5 @@
 server.port: 8082
 
-app:
-  threadPoolSize: 10
-  taskQueueSize: 100
-
 spring.rabbitmq:
   host: 127.0.0.1
   port: 5672
@@ -31,7 +27,7 @@ spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
 
 ---
 spring.config.activate.on-profile: docker
-spring.rabbitmq.host: rabbitmq
+spring.rabbitmq.host: lavinmq
 
 ---
 spring.config.activate.on-profile: streaming_partitioned
