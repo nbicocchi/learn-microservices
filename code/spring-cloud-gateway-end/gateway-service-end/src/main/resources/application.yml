@@ -45,6 +45,26 @@ spring.cloud.gateway.routes:
     uri: http://${app.eureka-server}:8761
     predicates:
       - Path=/eureka/**
+  - id: host_route_200
+    uri: http://httpstat.us
+    predicates:
+      - Host=i.feel.lucky
+      - Path=/headerrouting/**
+    filters:
+      - SetPath=/200
+  - id: host_route_418
+    uri: http://httpstat.us
+    predicates:
+      - Host=im.a.teapot
+      - Path=/headerrouting/**
+    filters:
+      - SetPath=/418
+  - id: host_route_501
+    uri: http://httpstat.us
+    predicates:
+      - Path=/headerrouting/**
+    filters:
+      - SetPath=/501
 
 ---
 spring.config.activate.on-profile: docker
