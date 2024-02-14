@@ -13,8 +13,13 @@ spring.cloud.stream:
   default.contentType: application/json
   bindings.messageProcessor-in-0:
     destination: messages
-    group: messagesGroup
 
+---
+spring.config.activate.on-profile: docker
+spring.rabbitmq.host: lavinmq
+
+---
+spring.config.activate.on-profile: auditgroup
 spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
   maxAttempts: 3
   backOffInitialInterval: 500
@@ -26,21 +31,27 @@ spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
 #  republishToDlq: true
 
 ---
-spring.config.activate.on-profile: docker
-spring.rabbitmq.host: lavinmq
+spring.config.activate.on-profile: groups
+spring.cloud.stream:
+  bindings:
+    messageProcessor-in-0:
+      group: messagesGroup
 
 ---
-spring.config.activate.on-profile: streaming_partitioned
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
-  partitioned: true
-  instanceCount: 2
+spring.config.activate.on-profile: partitioned
+spring.cloud.stream:
+  bindings:
+    messageProcessor-in-0:
+      consumer:
+        partitioned: true
+        instanceCount: 2
 
 ---
-spring.config.activate.on-profile: streaming_instance_0
+spring.config.activate.on-profile: partitioned_instance_0
 spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
   instanceIndex: 0
 
 ---
-spring.config.activate.on-profile: streaming_instance_1
+spring.config.activate.on-profile: partitioned_instance_1
 spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
   instanceIndex: 1

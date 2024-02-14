@@ -29,7 +29,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-stream-rabbit</artifactId>
-			<version>4.1.0</version>
 		</dependency>
 
 		<dependency>

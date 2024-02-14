@@ -5,7 +5,7 @@ services:
     build: producer-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,partitioned
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       lavinmq:
         condition: service_healthy
@@ -14,7 +14,7 @@ services:
     build: consumer-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,groups,partitioned,partitioned_instance_0
+      - SPRING_PROFILES_ACTIVE=docker,groups
     depends_on:
       lavinmq:
         condition: service_healthy
@@ -23,7 +23,7 @@ services:
     build: consumer-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,groups,partitioned,partitioned_instance_1
+      - SPRING_PROFILES_ACTIVE=docker,groups
     depends_on:
       lavinmq:
         condition: service_healthy

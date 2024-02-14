@@ -15,6 +15,21 @@ public class MessageReceiver {
 
     @Bean
     public Consumer<Event<String, Integer>> messageProcessor() {
-        return event -> LOG.info(String.format("--> %s", event));
+        return event -> {
+            switch (event.getEventType()) {
+                case CREATE:
+                    LOG.info(String.format("[CREATE] --> %s", event));
+                    break;
+                case DELETE:
+                    LOG.info(String.format("[DELETE] --> %s", event));
+                    break;
+                case UPDATE:
+                    LOG.info(String.format("[UPDATE] --> %s", event));
+                    break;
+                default:
+                    String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE/DELETE/UPDATE event";
+                    throw new RuntimeException(errorMessage);
+            }
+        };
     }
 }
