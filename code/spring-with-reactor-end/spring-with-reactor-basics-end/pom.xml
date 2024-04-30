@@ -6,7 +6,7 @@
     <name>spring-with-reactor-end</name>
 
     <groupId>com.baeldung</groupId>
-    <artifactId>spring-with-reactor-end</artifactId>
+    <artifactId>spring-with-reactor-basics-end</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 

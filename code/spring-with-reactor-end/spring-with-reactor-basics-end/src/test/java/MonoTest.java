@@ -1,5 +1,3 @@
-package com.baeldung.lsd;
-
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -24,8 +22,8 @@ public class MonoTest {
 
     @Test
     public void subscribeMono() {
-        Mono<String> message = Mono.just("Welcome to Jstobigdata")
-                .map(msg -> msg.concat(".com")).log();
+        Mono<String> message = Mono.just("Welcome to this")
+                .map(msg -> msg.concat(" course")).log();
 
         message.subscribe(new Subscriber<String>() {
             @Override
@@ -50,7 +48,7 @@ public class MonoTest {
         });
 
         StepVerifier.create(message)
-                .expectNext("Welcome to Jstobigdata.com")
+                .expectNext("Welcome to this course")
                 .verifyComplete();
     }
 
@@ -80,7 +78,7 @@ public class MonoTest {
         });
 
         StepVerifier.create(noSignal)
-                .expectTimeout(Duration.ofSeconds(5))
+                .expectTimeout(Duration.ofSeconds(2))
                 .verify();
     }
 
@@ -90,9 +88,11 @@ public class MonoTest {
 
         message.subscribe(
                 value -> {
+                    System.out.println("===== Value received =====");
                     System.out.println(value);
                 },
                 err -> {
+                    System.out.println("===== Error detected =====");
                     err.printStackTrace();
                 },
                 () -> {
@@ -118,14 +118,15 @@ public class MonoTest {
 
     @Test
     public void filterMono(){
-        Supplier<String> stringSupplier = ()-> "Hello World";
+        Supplier<String> stringSupplier = () -> "Hello World";
         Mono<String> filteredMono = Mono.fromSupplier(stringSupplier)
-                .filter(str ->str.length()>5)
+                .filter(str -> str.length() > 5)
                 .log();
 
         filteredMono.subscribe(System.out::println);
 
         StepVerifier.create(filteredMono)
-                .expectComplete();
+                .expectNext("Hello World")
+                .verifyComplete();
     }
 }

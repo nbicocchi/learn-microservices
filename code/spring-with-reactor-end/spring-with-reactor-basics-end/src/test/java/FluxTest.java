@@ -1,5 +1,3 @@
-package com.baeldung.lsd;
-
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -11,7 +9,6 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class FluxTest {
     @Test
@@ -31,7 +28,7 @@ public class FluxTest {
 
     @Test
     public void subscribeFlux() {
-        Flux<String> messages = Flux.just("Welcome", "to", "Jstobigdata").log();
+        Flux<String> messages = Flux.just("Welcome", "to", "this", "course").log();
 
         messages.subscribe(new Subscriber<String>() {
 
@@ -59,7 +56,8 @@ public class FluxTest {
         StepVerifier.create(messages)
                 .expectNext("Welcome")
                 .expectNext("to")
-                .expectNext("Jstobigdata")
+                .expectNext("this")
+                .expectNext("course")
                 .verifyComplete();
     }
 
@@ -133,11 +131,10 @@ public class FluxTest {
         Flux<String> flux = Flux.fromIterable(names)
                 .filter(name -> name.length() > 5)
                 .map(name -> name.toUpperCase())
-                .repeat(1) // Just repeat once
                 .log();
 
         StepVerifier.create(flux)
-                .expectNext("GOOGLE", "STACKOVERFLOW", "GOOGLE", "STACKOVERFLOW")
+                .expectNext("GOOGLE", "STACKOVERFLOW")
                 .verifyComplete();
     }
 
