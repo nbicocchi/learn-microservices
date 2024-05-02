@@ -7,14 +7,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 @SpringBootApplication
-@EnableMongoRepositories
 public class LsApp implements CommandLineRunner{
-	private static final Logger log = LoggerFactory.getLogger(LsApp.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LsApp.class);
 	IProjectRepository IProjectRepository;
+
+	@Bean
+	public Scheduler jdbcScheduler() {
+		int threadPoolSize = 10;
+		int taskQueueSize = 100;
+		LOG.info("Creates a jdbcScheduler with thread pool size = {}", threadPoolSize);
+		return Schedulers.newBoundedElastic(threadPoolSize, taskQueueSize, "jdbc-pool");
+	}
 
 	public LsApp(IProjectRepository IProjectRepository) {
 		this.IProjectRepository = IProjectRepository;
@@ -25,14 +34,16 @@ public class LsApp implements CommandLineRunner{
 	}
 	
 	public void run(String... args) {
-		IProjectRepository.deleteAll().block();
+		IProjectRepository.deleteAll();
 
-		IProjectRepository.save(new Project("P01", "Project 01", "About Project 01")).block();
-		IProjectRepository.save(new Project("P02", "Project 02", "About Project 02")).block();
-		IProjectRepository.save(new Project("P03", "Project 03", "About Project 03")).block();
+		IProjectRepository.save(new Project("P01", "Project 01", "About Project 01"));
+		IProjectRepository.save(new Project("P02", "Project 02", "About Project 02"));
+		IProjectRepository.save(new Project("P03", "Project 03", "About Project 03"));
 
-		Flux<Project> projects = IProjectRepository.findAll();
-		projects.subscribe(System.out::println);
+		Iterable<Project> projects = IProjectRepository.findAll();
+		for (Project project : projects) {
+			System.out.println(project);
+		}
 	}
 }
 

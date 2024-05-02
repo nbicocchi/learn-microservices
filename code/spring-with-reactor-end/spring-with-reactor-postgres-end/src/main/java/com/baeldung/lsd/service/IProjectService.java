@@ -13,5 +13,5 @@ public interface IProjectService {
 
     Mono<Project> save(Project project);
 
-    void deleteById(String id);
+    Mono<Void> deleteById(String id);
 }
