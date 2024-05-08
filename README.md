@@ -48,6 +48,8 @@ Design Patterns
 
 Benchmarking protocols/architectures
 * https://httpd.apache.org/docs/2.4/programs/ab.html
+* [Java Flight Recorder](https://www.baeldung.com/java-flight-recorder-monitoring)
+* https://iperf.fr/
 
 Kubernetes
 * Introduction to Kubernetes
