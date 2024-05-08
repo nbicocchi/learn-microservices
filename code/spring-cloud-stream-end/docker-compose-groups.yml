@@ -1,5 +1,3 @@
-version: '2.1'
-
 services:
   producer:
     build: producer-end
