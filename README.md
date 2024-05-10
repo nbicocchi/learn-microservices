@@ -1,6 +1,14 @@
 # Learn Microservices
 
+## Prerequisites
+These topics assume a decent understanding of both Java and Spring Boot 3. Dedicated courses can be found:
+* [https://github.com/nbicocchi/learn-java-core](https://github.com/nbicocchi/learn-java-core)
+* [https://github.com/nbicocchi/learn-spring-boot](https://github.com/nbicocchi/learn-spring-boot)
+
 ## Software
+* [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
+* [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 * Frameworks: spring boot
 * Orchestration: docker, podman, kubernetes
 * Service discovery: eureka, consul
@@ -19,9 +27,13 @@
 * Modern DevOps Practices; Agarwal
 * Practical MLOps: Operationalizing Machine Learning Models; Gift, Deza; O'Reilly
 
-## Modules
-These topics assume a decent understanding of Spring Boot 3. A dedicated course can be found at [https://github.com/nbicocchi/learn-spring-boot](https://github.com/nbicocchi/learn-spring-boot).
+## Videos
+* [Mark Richards' YouTube Channel](https://www.youtube.com/@markrichards5014/videos)
 
+## Contributing
+Your pull requests are very welcome! To contribute, please refer to [this](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) guide. For a more general introduction to GitHub, refer to [this](https://github.com/skills/) page. By contributing to this repository, you agree that your contributions will be licensed under the LICENSE file in the root directory of this source tree.
+
+## Modules
 * Introduction to microservices
 * Reactive microservices
 * Event-driven async microservices
@@ -34,33 +46,3 @@ These topics assume a decent understanding of Spring Boot 3. A dedicated course 
 * Implementing Kubernetes Features to Simplify the Microservices Landscape
 * Using a Service Mesh to Improve Observability and Management
 
-## Project Ideas
-Alternative microservices frameworks: 
-* Quarkus
-* Micronaut
-* https://gokit.io/
-* https://github.com/python-microservices/pyms
-
-Design Patterns
-* Patterns for container-based distributed systems https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/45406.pdf
-* Patterns for data management (SAGAs, API composition, CQRS, ...) https://microservices.io/patterns/data/saga.html)
-* Patterns for distributed caching (Redis/Memcached)
-
-Benchmarking protocols/architectures
-* https://httpd.apache.org/docs/2.4/programs/ab.html
-* [Java Flight Recorder](https://www.baeldung.com/java-flight-recorder-monitoring)
-* https://iperf.fr/
-
-Kubernetes
-* Introduction to Kubernetes
-* Service mesh: istio, linkerd, dapr, envoy
-* https://chaos-mesh.org/
-
-Communications
-* https://graphql.org/
-* https://protobuf.dev/
-* https://avro.apache.org/
-
-Ops
-* MLOps: investigate how to develop/deploy/maintain ML models within a microservices ecosystem
-* SECops: see [here](https://www.practical-devsecops.com/securing-microservices-architecture-with-devsecops-and-kubernetes/) for inspiration
