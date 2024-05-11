@@ -32,3 +32,9 @@ Communications
 Ops
 * MLOps: investigate how to develop/deploy/maintain ML models within a microservices ecosystem
 * SECops: see [here](https://www.practical-devsecops.com/securing-microservices-architecture-with-devsecops-and-kubernetes/) for inspiration
+
+Load Balancing
+* [Netflix ribbon](https://github.com/Netflix/ribbon)
+* [Netflix zuul](https://github.com/Netflix/zuul)
+
+Algorithms:
