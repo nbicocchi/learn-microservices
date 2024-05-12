@@ -1,4 +1,4 @@
-server.port: 8080
+server.port: 8081
 spring.application.name: gateway-service
 app.eureka-server: localhost
 
