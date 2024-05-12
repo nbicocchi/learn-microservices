@@ -8,31 +8,33 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @RestController
 public class CompositeController {
     private static final Logger LOG = LoggerFactory.getLogger(CompositeController.class);
-
-    WebClient webClient;
+    private WebClient webClient;
 
     public CompositeController(WebClient.Builder builder) {
         webClient = builder.build();
     }
 
     @GetMapping(value = "/datetime")
-    public Mono<LocalDateTime> dateTime() throws InterruptedException {
+    public Mono<LocalDateTimeWithTimestamp> dateTime() throws InterruptedException {
         String urlTime = "http://TIME-SERVICE/time";
         String urlDate = "http://DATE-SERVICE/date";
 
         LOG.info("Calling time API on URL: {}", urlTime);
-        Mono<LocalTime> localTimeMono = webClient.get().uri(urlTime).retrieve().bodyToMono(LocalTime.class);
+        Mono<LocalTimeWithTimestamp> localTimeMono = webClient.get().uri(urlTime).retrieve()
+                .bodyToMono(LocalTime.class)
+                .map(time -> new LocalTimeWithTimestamp(time, LocalTime.now()));
 
         LOG.info("Calling time API on URL: {}", urlDate);
-        Mono<LocalDate> localDateMono = webClient.get().uri(urlDate).retrieve().bodyToMono(LocalDate.class);
+        Mono<LocalDateWithTimestamp> localDateMono = webClient.get().uri(urlDate).retrieve()
+                .bodyToMono(LocalDate.class)
+                .map(date -> new LocalDateWithTimestamp(date, LocalTime.now()));
 
         return Mono.zip(localDateMono, localTimeMono,
-                (localDate, localTime) -> LocalDateTime.of(localDate, localTime));
+                (localDate, localTime) -> new LocalDateTimeWithTimestamp(localDate, localTime));
     }
 }

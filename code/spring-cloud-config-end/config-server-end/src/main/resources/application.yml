@@ -6,8 +6,9 @@ spring.config.name: configserver
 spring.security.user:
   name: ${CONFIG_SERVER_USR}
   password: ${CONFIG_SERVER_PWD}
-#spring.profiles.active: native
-spring.cloud.config.server.native.searchLocations: file:${PWD}/code/learn-spring-m6/spring-cloud-config-end/config-repo
+
+spring.profiles.active: native
+spring.cloud.config.server.native.searchLocations: file:${PWD}/code/spring-cloud-config-end/config-repo
 encrypt.key: ${CONFIG_SERVER_ENCRYPT_KEY}
 
 eureka:
