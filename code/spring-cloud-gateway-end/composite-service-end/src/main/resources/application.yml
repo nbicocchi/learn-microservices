@@ -1,12 +1,10 @@
-server.port: 9000
+server.port: 8080
 spring.application.name: composite-service
-
-app.eureka-server: localhost
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
   instance:
@@ -16,5 +14,5 @@ eureka:
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
-app.eureka-server: eureka
+eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka/
 
