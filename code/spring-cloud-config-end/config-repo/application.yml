@@ -1,9 +1,9 @@
-app.eureka-server: localhost
+app.eureka.server: localhost:8761
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
+      defaultZone: http://${app.eureka.server}/eureka/
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
   instance:
@@ -16,5 +16,4 @@ management.endpoints.web.exposure.include: "*"
 
 ---
 spring.config.activate.on-profile: docker
-spring.cloud.config.uri: http://config-server:8888
-app.eureka-server: eureka-server
+app.eureka.server: eureka:8761

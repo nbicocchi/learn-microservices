@@ -11,6 +11,8 @@ Design Patterns
 * Patterns for container-based distributed systems https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/45406.pdf
 * Patterns for data management (SAGAs, API composition, CQRS, ...) https://microservices.io/patterns/data/saga.html)
 * Patterns for distributed caching (Redis/Memcached)
+* Patterns for event-sourcing
+* Microservices decomposition strategies
 
 Benchmarking protocols/architectures
 * https://httpd.apache.org/docs/2.4/programs/ab.html

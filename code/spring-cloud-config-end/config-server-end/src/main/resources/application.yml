@@ -1,20 +1,18 @@
 server.port: 8888
 spring.application.name: config-server
-app.eureka-server: localhost
 
-spring.config.name: configserver
 spring.security.user:
   name: ${CONFIG_SERVER_USR}
   password: ${CONFIG_SERVER_PWD}
 
 spring.profiles.active: native
-spring.cloud.config.server.native.searchLocations: file:${PWD}/code/spring-cloud-config-end/config-repo
+spring.cloud.config.server.native.searchLocations: file:/home/nicolab/IdeaProjects/learn-microservices/code/spring-cloud-config-end/config-repo
 encrypt.key: ${CONFIG_SERVER_ENCRYPT_KEY}
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
   instance:
@@ -31,5 +29,5 @@ logging:
 
 ---
 spring.config.activate.on-profile: docker
+eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka/
 spring.cloud.config.server.native.searchLocations: file:/config-repo
-app.eureka-server: eureka-server

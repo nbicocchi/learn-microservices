@@ -1,5 +1,9 @@
 services:
-  config-server:
+  eureka:
+    build: eureka-server-end
+    mem_limit: 512m
+
+  config:
     build: config-server-end
     mem_limit: 512m
     environment:
@@ -7,43 +11,49 @@ services:
       - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
       - SPRING_SECURITY_USER_NAME=${CONFIG_SERVER_USR}
       - SPRING_SECURITY_USER_PASSWORD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     volumes:
-      - $PWD/config-repo:/config-repo
-
-  eureka-server:
-    build: eureka-server-end
-    mem_limit: 512m
+      - /home/nicolab/IdeaProjects/learn-microservices/code/spring-cloud-config-end/config-repo:/config-repo
 
   gateway:
     build: gateway-service-end
     mem_limit: 512m
     ports:
-      - "8080:8080"
+      - 8080:8080
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,connect
+      - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
 
   composite:
     build: composite-service-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,connect
+      - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
 
   date:
     build: date-service-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,connect
+      - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
 
   time:
     build: time-service-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,connect
+      - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}

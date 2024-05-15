@@ -16,13 +16,13 @@ spring.cloud.gateway.routes:
     predicates:
       - Path=/date/**
   - id: eureka-web-start
-    uri: http://${app.eureka-server}:8761
+    uri: http://${app.eureka.server}
     predicates:
       - Path=/eureka/web
     filters:
       - SetPath=/
   - id: eureka-web-other
-    uri: http://${app.eureka-server}:8761
+    uri: http://${app.eureka.server}
     predicates:
       - Path=/eureka/**
 
