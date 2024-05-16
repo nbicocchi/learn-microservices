@@ -26,6 +26,10 @@ resilience4j.retry:
     time:
       maxAttempts: 3
       waitDuration: 500
+      # enableExponentialBackoff: true
+      # exponentialBackoffMultiplier: 2
+      # enableRandomizedWait: true
+      # randomizedWaitFactor: 0.5
       retryExceptions:
         - org.springframework.web.reactive.function.client.WebClientResponseException$InternalServerError
 
