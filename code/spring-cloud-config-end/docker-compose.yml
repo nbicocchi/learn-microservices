@@ -2,6 +2,11 @@ services:
   eureka:
     build: eureka-server-end
     mem_limit: 512m
+    healthcheck:
+      test: "curl -f localhost:8761/actuator/health"
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   config:
     build: config-server-end
@@ -14,7 +19,15 @@ services:
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     volumes:
-      - /home/nicolab/IdeaProjects/learn-microservices/code/spring-cloud-config-end/config-repo:/config-repo
+      - ./config-repo:/config-repo
+    healthcheck:
+      test: "curl -u ${CONFIG_SERVER_USR}:${CONFIG_SERVER_PWD} -f localhost:8888/actuator/health"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      eureka:
+        condition: service_healthy
 
   gateway:
     build: gateway-service-end
@@ -27,6 +40,11 @@ services:
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    depends_on:
+      eureka:
+        condition: service_healthy
+      config:
+        condition: service_healthy
 
   composite:
     build: composite-service-end
@@ -37,6 +55,11 @@ services:
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    depends_on:
+      eureka:
+        condition: service_healthy
+      config:
+        condition: service_healthy
 
   date:
     build: date-service-end
@@ -47,6 +70,11 @@ services:
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    depends_on:
+      eureka:
+        condition: service_healthy
+      config:
+        condition: service_healthy
 
   time:
     build: time-service-end
@@ -57,3 +85,8 @@ services:
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    depends_on:
+      eureka:
+        condition: service_healthy
+      config:
+        condition: service_healthy
