@@ -7,7 +7,7 @@ These topics assume a decent understanding of both Java and Spring Boot 3. Dedic
 
 ## Software
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
-* [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+* [IntelliJ IDEA](https://www.jetbrains.com/idea/) + [Envfile Plugin](https://plugins.jetbrains.com/plugin/7861-envfile)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 * Frameworks: spring boot
 * Orchestration: docker, podman, kubernetes
@@ -34,15 +34,18 @@ These topics assume a decent understanding of both Java and Spring Boot 3. Dedic
 Your pull requests are very welcome! To contribute, please refer to [this](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) guide. For a more general introduction to GitHub, refer to [this](https://github.com/skills/) page. By contributing to this repository, you agree that your contributions will be licensed under the LICENSE file in the root directory of this source tree.
 
 ## Modules
-* Introduction to microservices
-* Reactive microservices
-* Event-driven async microservices
-* Service discovery
-* Service routing
-* Centralized configuration
-* Resiliency patterns (Resilience4j)
-* Observability (Tracing, Metrics, Log aggregation)
-* Deploying Microservices to Kubernetes
-* Implementing Kubernetes Features to Simplify the Microservices Landscape
-* Using a Service Mesh to Improve Observability and Management
+[M1] Introduction to microservices
 
+[M2] Reactive microservices
+
+[M3] Event-driven async architectures
+
+[M4] Service discovery
+
+[M5] Service routing
+
+[M6] Centralized configuration
+
+[M7] Microservices resiliency
+
+[M8] Microservices observability (Distributed tracing, log and metrics aggregation)
