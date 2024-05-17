@@ -7,7 +7,7 @@ These topics assume a decent understanding of both Java and Spring Boot 3. Dedic
 
 ## Software
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
-* [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+* [IntelliJ IDEA](https://www.jetbrains.com/idea/) + [Envfile Plugin](https://plugins.jetbrains.com/plugin/7861-envfile)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 * Frameworks: spring boot
 * Orchestration: docker, podman, kubernetes
@@ -42,7 +42,3 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Centralized configuration
 * Resiliency patterns (Resilience4j)
 * Observability (Tracing, Metrics, Log aggregation)
-* Deploying Microservices to Kubernetes
-* Implementing Kubernetes Features to Simplify the Microservices Landscape
-* Using a Service Mesh to Improve Observability and Management
-
