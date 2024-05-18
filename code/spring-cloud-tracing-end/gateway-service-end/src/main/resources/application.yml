@@ -1,6 +1,7 @@
 server.port: 8080
 spring.application.name: gateway-service
 app.eureka-server: localhost
+app.zipkin-server: localhost
 
 management.endpoint.gateway.enabled: true
 management.endpoint.health.show-details: "ALWAYS"
@@ -41,10 +42,21 @@ spring.cloud.gateway.routes:
     uri: http://${app.eureka-server}:8761
     predicates:
       - Path=/eureka/**
+  - id: zipkin-web-start
+    uri: http://${app.zipkin-server}:9411
+    predicates:
+      - Path=/zipkin/web
+    filters:
+      - SetPath=/
+  - id: zipkin-web-other
+    uri: http://${app.zipkin-server}:9411
+    predicates:
+      - Path=/zipkin/**
 
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
 app.eureka-server: eureka
+app.zipkin-server: zipkin
 management.zipkin.tracing.endpoint: http://zipkin:9411/api/v2/spans
 
