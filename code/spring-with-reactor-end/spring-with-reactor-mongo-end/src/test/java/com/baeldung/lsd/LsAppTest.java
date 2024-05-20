@@ -3,10 +3,9 @@ package com.baeldung.lsd;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-public class SpringContextIntegrationTest {
+class LsAppTest {
 
     @Test
-    public void whenContextIsLoaded_thenNoExceptions() {
+    void contextLoads() {
     }
 }

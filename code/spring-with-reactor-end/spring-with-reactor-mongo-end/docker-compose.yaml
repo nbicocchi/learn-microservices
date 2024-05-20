@@ -11,18 +11,5 @@ services:
     volumes:
       - mongo-data:/data/db
 
-  postgres:
-    image: postgres:latest
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: projects
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-
 volumes:
   mongo-data:
-  pg-data:
