@@ -1,10 +1,10 @@
-package com.baeldung.time;
+package com.baeldung.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TimeServiceApplicationTests {
+class GatewayApplicationTests {
 
 	@Test
 	void contextLoads() {
