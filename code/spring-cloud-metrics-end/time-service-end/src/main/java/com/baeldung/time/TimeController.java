@@ -22,7 +22,6 @@ public class TimeController {
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
     ) {
-        LOG.info("Returning time...");
         LocalTime now = LocalDateTime.now().toLocalTime();
         LOG.info("Returning {}...", now);
         return Mono.just(now)
