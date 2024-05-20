@@ -1,10 +1,10 @@
-package com.baeldung.time;
+package com.baeldung.composite;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TimeServiceApplicationTests {
+class CompositeApplicationTests {
 
 	@Test
 	void contextLoads() {
