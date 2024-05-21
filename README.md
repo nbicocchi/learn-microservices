@@ -9,6 +9,7 @@ These topics assume a decent understanding of both Java and Spring Boot 3. Dedic
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/) + [Envfile Plugin](https://plugins.jetbrains.com/plugin/7861-envfile)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* [Apache JMeter](https://jmeter.apache.org/)
 * Frameworks: spring boot
 * Orchestration: docker, podman, kubernetes
 * Service discovery: eureka, consul
