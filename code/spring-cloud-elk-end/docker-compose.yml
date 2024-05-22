@@ -1,38 +1,75 @@
+volumes:
+  es01data:
+  kibanadata:
+  logstashdata:
+
+networks:
+  default:
+    name: elastic
+    external: false
+
 services:
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
-    mem_limit: 512m
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    mem_limit: ${ES_MEM_LIMIT}
     volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
+      - es01data:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - ${ELASTIC_PORT}:9200
     environment:
-      ELASTIC_PASSWORD: password
-      discovery.type: single-node
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.15.2
-    mem_limit: 512m
-    volumes:
-      - ./data/logstash:/usr/share/logstash/pipeline:ro
-    ports:
-      - "5044:5044"
-      - "5000:5000/tcp"
-      - "5000:5000/udp"
-      - "9600:9600"
-      - "4560:4560"
-    depends_on:
-      - elasticsearch
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.15.2
-    mem_limit: 512m
-    ports:
-      - "5601:5601"
     depends_on:
-      - elasticsearch
+      - es01
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    volumes:
+      - kibanadata:/usr/share/kibana/data
+    ports:
+      - ${KIBANA_PORT}:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - XPACK_APM_SERVICEMAPENABLED="true"
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+    mem_limit: ${KB_MEM_LIMIT}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 60s
+      timeout: 50s
+      retries: 5
+
+  logstash:
+    depends_on:
+      - es01
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
+    volumes:
+      - logstashdata:/usr/share/logstash/data
+      - ./data/logstash:/usr/share/logstash/pipeline:ro
+    environment:
+      - XPACK_MONITORING_ELASTICSEARCH_HOSTS=http://es01:9200
+    ports:
+      - "5044:5044"
+    mem_limit: ${KB_MEM_LIMIT}
+    healthcheck:
+      test: bin/logstash -t
+      interval: 60s
+      timeout: 50s
+      retries: 5
 
   eureka:
     build: eureka-server-end
@@ -67,6 +104,3 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - logstash
-
-volumes:
-  elasticsearch:
