@@ -38,9 +38,22 @@ spring.cloud.gateway.routes:
     uri: http://${app.eureka-server}:8761
     predicates:
       - Path=/eureka/**
+  - id: grafana
+    uri: http://${app.grafana-server}:3000
+    predicates:
+      - Path=/grafana/**
+    filters:
+      - RewritePath=/grafana/(?<remaining>.+), /$\{remaining}
+  - id: prometheus
+    uri: http://${app.prometheus-server}:9090
+    predicates:
+      - Path=/prometheus/**
+    filters:
+      - RewritePath=/prometheus/(?<remaining>.+), /$\{remaining}
 
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
 app.eureka-server: eureka
-
+app.prometheus-server: prometheus
+app.grafana-server: grafana
