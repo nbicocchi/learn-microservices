@@ -4,18 +4,14 @@ services:
     mem_limit: 512m
     ports:
       - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
 
   composite:
     build: composite-service-end
     mem_limit: 512m
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-
-  date:
-    build: date-service-end
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 
