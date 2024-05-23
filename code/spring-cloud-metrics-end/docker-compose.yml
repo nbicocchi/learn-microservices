@@ -6,8 +6,6 @@ services:
       - ./data/prometheus/config:/etc/prometheus/
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
-    ports:
-      - 9090:9090
 
   grafana:
     image: grafana/grafana-oss:8.5.2
@@ -21,8 +19,9 @@ services:
       # Enabled for logging
       - GF_LOG_MODE=console file
       - GF_LOG_FILTERS=alerting.notifier.slack:debug alertmanager:debug ngalert:debug
-    ports:
-      - 3000:3000
+      # Enabled for reverse proxy
+      - GF_SERVER_ROOT_URL=http://localhost:8080/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
 
   eureka:
     build: eureka-server-end
