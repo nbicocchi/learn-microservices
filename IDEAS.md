@@ -44,3 +44,12 @@ Famous third-party services
 
 Algorithms:
 * RAFT
+
+Software:
+* Orchestration: docker, podman, kubernetes
+* Service discovery: zookeeper, consul
+* Service mesh: istio, linkerd, dapr, envoy
+* Message queue: kafka, rabbitmq
+* Caching: redis, memcached
+* Observability: kibana/jaeger
+* Distributed database: cockroachdb, cassandra, debezium

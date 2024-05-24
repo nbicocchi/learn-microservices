@@ -9,15 +9,8 @@ These topics assume a decent understanding of both Java and Spring Boot 3. Dedic
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/) + [Envfile Plugin](https://plugins.jetbrains.com/plugin/7861-envfile)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* [minikube](https://minikube.sigs.k8s.io/)
 * [Apache JMeter](https://jmeter.apache.org/)
-* Frameworks: spring boot
-* Orchestration: docker, podman, kubernetes
-* Service discovery: eureka, consul
-* Service mesh: istio, linkerd, dapr, envoy
-* Message queue: kafka, rabbitmq
-* Caching: redis, memcached 
-* Observability: prometheus/grafana, jaeger, zipkin, elasticsearch/kibana (ELK)
-* Distributed database: cockroachdb, cassandra, debezium
 
 ## Books
 * **Microservices Patterns; Richardson**
@@ -36,17 +29,47 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 
 ## Modules
 [M1] Introduction to microservices
+* Monolithic and distributed architectural styles
+* The transition towards microservices architectures
+* The *Twelve Factor App*
+* *#8 Fallacies of distributed computing*
 
 [M2] Reactive microservices
+* The dangers of *one-thread-per-request* design pattern
+* What is a reactive microservice ?
+* Java virtual threads and the *Reactor* pattern
+* Implementing reactive microservice with *Project Reactor*'s *Mono* and *Flux*
 
 [M3] Event-driven async architectures
+* Issues of synchronous communications
+* Asynchronous messaging systems, their advantages and limitations
+* Introduction to *Kafka* and *RabbitMQ* messaging systems
+* *Spring Cloud Stream* and its abstraction over messaging systems
 
 [M4] Service discovery
+* DNS-based vs cloud-native service discovery
+* Server-side vs client-side load-balancing
+* Implementing service discovery with *Netflix Eureka*
+* Implementing client-side load-balancing with *Spring WebClient*
 
 [M5] Service routing
+* Implementing cross-cutting concerns with a library or gateway service
+* *Spring Cloud Gateway* and its architecture
+* *Spring Cloud Gateway* routing rules
 
 [M6] Centralized configuration
+* Configuration management architecture
+* Key principles behind configuration management
+* Centralize microservices configuration with *Spring Cloud Config*
 
 [M7] Microservices resiliency
+* What is resiliency and why it is relevant for microservices
+* Client-side resiliency patterns
+* Server-side resiliency patterns
+* *Resilience4j* and its integration with Spring Boot
 
-[M8] Microservices observability (Distributed tracing, log and metrics aggregation)
+[M8] Microservices observability
+* What is observability and why it is relevant for microservices
+* Metrics aggregation with *Micrometer*, *Prometheus* and *Grafana*
+* Distributed tracing with *Micrometer* and *Zipkin*
+* Log aggregation with the *ELK* Stack
