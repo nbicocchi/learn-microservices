@@ -22,6 +22,7 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - xpack.security.enrollment.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
     ulimits:
       memlock:
         soft: -1
