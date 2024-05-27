@@ -25,12 +25,13 @@ Benchmarking protocols/architectures
 
 Kubernetes
 * Introduction to Kubernetes
-* Service mesh: istio, linkerd, dapr, envoy
+* Service mesh: istio, linkerd, dapr, envoy, traefik, nginx
 * https://chaos-mesh.org/
 
 Communications
 * https://graphql.org/
 * https://protobuf.dev/, https://avro.apache.org/
+* https://grpc.io/
 * Brokerless async communications: ZeroMQ (https://zeromq.org/)
 * In depth introduction to RabbitMQ/Kafka (with examples)
 
@@ -46,10 +47,10 @@ Algorithms:
 * RAFT
 
 Software:
-* Orchestration: docker, podman, kubernetes
+* Orchestration: docker, podman, kubernetes, nomad
 * Service discovery: zookeeper, consul
-* Service mesh: istio, linkerd, dapr, envoy
+* Service mesh: istio, linkerd, dapr, envoy, traefik, nginx
 * Message queue: kafka, rabbitmq
 * Caching: redis, memcached
-* Observability: kibana/jaeger
+* Observability: ELK stack, jaeger, prometheus/grafana stack
 * Distributed database: cockroachdb, cassandra, debezium
