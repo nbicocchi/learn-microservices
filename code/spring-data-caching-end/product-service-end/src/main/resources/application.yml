@@ -30,6 +30,10 @@ spring:
       database: products
       auto-index-creation: true
 
+cache:
+  config:
+    entryTtl: 60
+
 logging:
   level:
     root: INFO
