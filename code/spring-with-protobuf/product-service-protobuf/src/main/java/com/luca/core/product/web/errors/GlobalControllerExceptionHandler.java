@@ -1,0 +1,65 @@
+package com.luca.core.product.web.errors;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.luca.core.product.web.exceptions.BadRequestException;
+import com.luca.core.product.web.exceptions.InvalidInputException;
+import com.luca.core.product.web.exceptions.NotFoundException;
+import com.luca.error.protobuf.ErrorInfoProto.ErrorInfo;
+
+import java.time.ZonedDateTime;
+
+@RestControllerAdvice
+class GlobalControllerExceptionHandler {
+
+  private static final Logger LOG = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
+
+  @ResponseStatus(BAD_REQUEST)
+  @ExceptionHandler(BadRequestException.class)
+  public byte[] handleBadRequestExceptions(
+          ServerHttpRequest request, BadRequestException ex) {
+
+    return createHttpErrorInfo(BAD_REQUEST, request, ex);
+  }
+
+  @ResponseStatus(NOT_FOUND)
+  @ExceptionHandler(NotFoundException.class)
+  public byte[] handleNotFoundExceptions(
+          ServerHttpRequest request, NotFoundException ex) {
+
+    return createHttpErrorInfo(NOT_FOUND, request, ex);
+  }
+
+  @ResponseStatus(UNPROCESSABLE_ENTITY)
+  @ExceptionHandler(InvalidInputException.class)
+  public byte[] handleInvalidInputException(
+          ServerHttpRequest request, InvalidInputException ex) {
+
+    return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
+  }
+
+  private byte[] createHttpErrorInfo(
+          HttpStatus httpStatus, ServerHttpRequest request, Exception ex) {
+
+    final String path = request.getPath().pathWithinApplication().value();
+    final String message = ex.getMessage();
+
+    LOG.debug("Returning HTTP status: {} for path: {}, message: {}", httpStatus, path, message);
+
+    return ErrorInfo.newBuilder()
+            .setTimestamp(ZonedDateTime.now().toString())
+            .setPath(path)
+            .setMessage(message)
+            .setHttpStatus(httpStatus.value()).
+            build( ).toByteArray();
+  }
+}

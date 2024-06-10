@@ -1,0 +1,47 @@
+type Product {
+    productId: Int!
+    name: String!
+    weight: Int!
+}
+
+input ProductInput {
+    productId: Int!
+    name: String!
+    weight: Int!
+}
+
+type ProductAggregate {
+    productId: Int!
+    name: String!
+    weight: Int!
+    reviews: [ReviewSummary]
+}
+
+input ProductAggregateInput {
+    productId: Int!
+    name: String!
+    weight: Int!
+    reviewId: Int!
+    author: String!
+    subject: String!
+    content: String!
+}
+
+type ReviewSummary {
+    reviewId: Int!
+    author: String!
+    subject: String!
+    content: String!
+}
+
+type Query {
+    getProduct(productId: Int!): Product!
+    getProductAggregate(productId: Int!): ProductAggregate!
+}
+
+type Mutation {
+    createProduct(input: ProductInput!): Product!
+    deleteProduct(productId: Int!): Boolean
+    createProductAggregate(input: ProductAggregateInput!): ProductAggregate!
+    deleteProductAggregate(productId: Int!): Boolean
+}
