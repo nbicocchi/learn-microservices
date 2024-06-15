@@ -15,6 +15,10 @@ spring.cloud.stream:
     destination: messages
 
 ---
+spring.config.activate.on-profile: dlq
+spring.cloud.stream.bindings.messageProcessor-in-0.destination: messages.dl
+
+---
 spring.config.activate.on-profile: docker
 spring.rabbitmq.host: lavinmq
 
