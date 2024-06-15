@@ -26,9 +26,11 @@ spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
   backOffMaxInterval: 1000
   backOffMultiplier: 2.0
 
-#spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer:
-#  autoBindDlq: true
-#  republishToDlq: true
+spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer:
+  autoBindDlq: true
+  republishToDlq: true
+  dead-letter-exchange: messages.dl
+  dead-letter-queue-name: messages.dlq
 
 ---
 spring.config.activate.on-profile: groups
