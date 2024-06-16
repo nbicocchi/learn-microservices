@@ -12,7 +12,7 @@ services:
     build: consumer-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker, auditgroup
     depends_on:
       lavinmq:
         condition: service_healthy
@@ -21,7 +21,16 @@ services:
     build: consumer-end
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker, auditgroup
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  consumer-dlq:
+    build: consumer-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker ,dlq, auditgroup
     depends_on:
       lavinmq:
         condition: service_healthy

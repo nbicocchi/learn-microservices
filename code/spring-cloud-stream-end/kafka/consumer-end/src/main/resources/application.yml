@@ -1,0 +1,20 @@
+server.port: 8082
+
+spring:
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: messages-group
+      auto-offset-reset: earliest
+      value-deserializer: com.baeldung.ls.common.EventDeserializer
+    producer:
+      acks: all
+      value-serializer: com.baeldung.ls.common.EventSerializer
+
+
+spring.cloud.stream:
+  defaultBinder: kafka
+  default.contentType: application/json
+  bindings:
+    message-out-0:
+      destination: messages
