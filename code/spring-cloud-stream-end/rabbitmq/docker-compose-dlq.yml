@@ -1,0 +1,60 @@
+services:
+  producer:
+    build: producer-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  consumer-0:
+    build: consumer-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker, auditgroup
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  consumer-1:
+    build: consumer-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker, auditgroup
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  consumer-dlq:
+    build: consumer-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker ,dlq, auditgroup
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+#  rabbitmq:
+#    image: rabbitmq:latest
+#    mem_limit: 512m
+#    ports:
+#      - 5672:5672
+#      - 15672:15672
+#    healthcheck:
+#      test: ["CMD", "rabbitmqctl", "status"]
+#      interval: 5s
+#      timeout: 2s
+#      retries: 60
+
+  lavinmq:
+    image: cloudamqp/lavinmq:latest
+    mem_limit: 512m
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: [ "CMD", "lavinmqctl", "status" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60
