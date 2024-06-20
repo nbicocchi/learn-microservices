@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  publisher:
+    build: ./publisher
+    container_name: publisher
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
+  subscriber-0:
+    build: ./subscriber
+    container_name: subscriber-0
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - TOPIC_NAMES=topic-0,topic-1
+    depends_on:
+      publisher:
+        condition: service_healthy
+
+  subscriber-1:
+    build: ./subscriber
+    container_name: subscriber-1
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - TOPIC_NAMES=topic-1,topic-2
+    depends_on:
+      publisher:
+        condition: service_healthy
