@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  dealer:
+    build: ./dealer
+    container_name: dealer
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - IDENTITY=dealer-0
+      - ROUTERS_NAMES=router-0,router-1
+      - DELIMITER=,
+    depends_on:
+      router-0:
+          condition: service_healthy
+      router-1:
+        condition: service_healthy
+
+  router-0:
+    build: ./router
+    container_name: router-0
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
+  router-1:
+    build: ./router
+    container_name: router-1
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD", "true" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60
