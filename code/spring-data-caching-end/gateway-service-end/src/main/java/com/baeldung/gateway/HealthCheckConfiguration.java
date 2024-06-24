@@ -27,12 +27,8 @@ public class HealthCheckConfiguration {
 
     @Bean
     ReactiveHealthContributor healthcheckMicroservices() {
-
         final Map<String, ReactiveHealthIndicator> registry = new LinkedHashMap<>();
-
-        registry.put("time", () -> getHealth("http://TIME-SERVICE"));
-        registry.put("composite", () -> getHealth("http://COMPOSITE-SERVICE"));
-
+        registry.put("product", () -> getHealth("http://PRODUCT-SERVICE"));
         return CompositeReactiveHealthContributor.fromMap(registry);
     }
 
