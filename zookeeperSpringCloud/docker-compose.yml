@@ -1,0 +1,47 @@
+services:
+  zookeeper:
+    image: zookeeper:3.7
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  time-service:
+    build:
+      context: ./time-service
+      dockerfile: Dockerfile
+    image: time-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
+    depends_on:
+      - zookeeper
+
+  date-service:
+    build:
+      context: ./date-service
+      dockerfile: Dockerfile
+    image: date-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
+    depends_on:
+      - zookeeper
+
+  datetime-composite-service:
+    build:
+      context: ./datetime-composite-service
+      dockerfile: Dockerfile
+    image: datetime-composite-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
+    depends_on:
+      - time-service
+      - date-service
+      - zookeeper
