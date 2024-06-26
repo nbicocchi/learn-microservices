@@ -12,7 +12,7 @@ The namespace provided by Zookeeper is very similar to that of a standard file s
 
 The main difference between Zookeeper and standard file systems is that znodes are limited in the amount of data they can have. Zookeeper is designed to store coordination data: information about status, configuration, location, etc. This type of meta-information is usually measured in kilobytes. To prevent Zookeeper from being used as a large data store, it has a built-in integrity check of 1M.
 
-![](/images/overview.png)
+![](/zookeeperSpringCloud/images/overview.png)
 
 The service itself is replicated to a set of component machines. These machines maintain an in-memory image of the data tree, along with transaction logs and snapshots in a persistent archive. Because the data is stored in memory, Zookeeper is able to achieve very high throughput and low latency values. The cons, however, of an in-memory database is that the size of the database that Zookeeper can handle is limited. This limitation is another reason for keeping the amount of data stored in the znodes small.
 
@@ -28,7 +28,7 @@ The order is very important for Zookeeper. Zookeeper marks each update with a nu
 
 **Zookeeper is replicated**. Like the distributed processes it coordinates, Zookeeper is intended to be replicated on a set of hosts called an ensemble.
 
-![](/images/designGoals.jpg)
+![](/zookeeperSpringCloud/images/designGoals.jpg)
 
 The servers that make up the Zookeeper service must know about each other: they maintain an in-memory image of the state, along with transaction logs and snapshots in a persistent repository. Because of this, as long as most of the servers are available, the Zookeeper service will be available.
 
@@ -40,7 +40,7 @@ The servers that make up the Zookeeper service must know about each other: they 
 
 In Zookeeper, data are stored in a hierarchical namespace, similar to that of a file system: a name is a sequence of path elements separated by a slash (/); in addition, each node in the Zookeeper namespace is identified by a path.
 
-![](/images/dataModel.jpg)
+![](/zookeeperSpringCloud/images/dataModel.jpg)
 
 Each namespace node is called a Znode and can store data and have children. Znodes are similar to files and directories in a file system. Zookeeper provides a simple API for creating, reading, writing, and deleting Znodes.
 
@@ -70,7 +70,7 @@ Zookeeper providing a very simple programming interface. As a result, it support
 
 With the exception of the request processor, each server that makes up the Zookeeper service replicates its own copy of each of the components.
 
-![](/images/zookeeper_ensemble.jpg)
+![](/zookeeperSpringCloud/images/zookeeper_ensemble.jpg)
 
 The replicated database is an in-memory database that contains the entire data tree. Updates are recorded to disk to ensure retrievability, and writes are serialized to disk before being applied to the in-memory database.
 
