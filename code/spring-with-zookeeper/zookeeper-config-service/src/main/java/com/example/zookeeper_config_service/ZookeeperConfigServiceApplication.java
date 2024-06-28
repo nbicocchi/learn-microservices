@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 @SpringBootApplication
 public class ZookeeperConfigServiceApplication {
 
-	@Value("${zookeeper.connect-string}")
+	@Value("${spring.cloud.zookeeper.connect-string}")
 	private String connectString;
 
 	private static final int SESSION_TIMEOUT = 3000;
