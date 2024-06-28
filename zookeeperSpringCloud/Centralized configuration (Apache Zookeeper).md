@@ -192,13 +192,34 @@ To do this, we have to start Zookeeper:
 docker-compose up -d zookeeper
 ```
 
-Then we have to connect to the ZooKeeper instance using the ZooKeeper command line interface (CLI):
+To ensure that Zookeeper is up, we can connect to the ZooKeeper instance using the ZooKeeper command line interface (CLI):
 
 ```
 docker exec -it zookeeper zkCli.sh -server localhost:2181
 ```
 
-Now in ZooKeeper, create a root node for configurations:
+Now, we have to run [zookeeper-config-service](/zookeeper-config-service) to populate the /config node on Zookeeper. In this way, our services can start and take the configuration information.
+
+In the directory of zookeeper-config-service:
+
+```
+mvn spring-boot:run
+```
+
+To ensure that the /config node is populated, we can use zkCli.sh:
+
+```
+[zk: localhost:2181(CONNECTED) 1] ls /
+[config, zookeeper]
+[zk: localhost:2181(CONNECTED) 2] get /config/time-service/configuration
+I am time-service
+```
+
+Finally, we can [Run the project](#run-the-project).
+
+**Note**: if we want to populate the Zookeeper /config node manually, we can do the following steps:
+
+In ZooKeeper, create a root node for configurations:
 
 ```
 create /config
@@ -219,39 +240,13 @@ Verify that the configuration has been set correctly:
 get /config/time-service/configuration
 ```
 
-**Note**: in this example we have manually configured our service via zkCli. It is possible to automate the configuration by, for example, creating a Java script using the [Zookeeper API](Overview%20of%20Apache%20Zookeeper.md#api).
-
-For example, if we want to create a zkNode, set a value and read it, we can use the Zookeeper API like this:
-```
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.ZooDefs.Ids;
-
-public class ZookeeperConfig {
-
-    ...
-    
-    if (zk.exists(path, false) == null) {
-                zk.create(path, data, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            } else {
-                zk.setData(path, data, zk.exists(path, false).getVersion());
-            }
-    
-            byte[] readData = zk.getData(path, false, null);
-            
-    
-    ...
-
-}
-```
-
 ## Run the project
 
-Once everything in set up, we can run the example project with:
+Once everything in set up, we can run the time-service example with:
 
 ```
 mvn clean package
-docker-compose up --build
+docker-compose up -d time-service
 ```
 
 ## Test

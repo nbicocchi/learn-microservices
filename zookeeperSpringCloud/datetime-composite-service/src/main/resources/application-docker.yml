@@ -1,0 +1,27 @@
+server:
+    port: 8082
+
+time:
+    service:
+        url: http://time-service:8080/time
+
+date:
+    service:
+        url: http://date-service:8081/date
+
+spring:
+    application:
+        name: datetime-composite-service
+
+    cloud:
+        zookeeper:
+            connect-string: zookeeper:2181
+            discovery:
+                enabled: true
+                root: /services
+            config:
+                enabled: true
+                root: /config
+
+    config:
+        import: "optional:zookeeper:"
