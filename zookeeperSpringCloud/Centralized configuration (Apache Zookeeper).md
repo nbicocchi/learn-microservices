@@ -206,7 +206,7 @@ In the directory of zookeeper-config-service:
 mvn spring-boot:run
 ```
 
-To ensure that the /config node is populated, we can use zkCli.sh:
+To ensure that the /config node is populated, we can use zkCli.sh in this way:
 
 ```
 [zk: localhost:2181(CONNECTED) 1] ls /
