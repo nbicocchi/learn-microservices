@@ -198,7 +198,7 @@ To ensure that Zookeeper is up, we can connect to the ZooKeeper instance using t
 docker exec -it zookeeper zkCli.sh -server localhost:2181
 ```
 
-Now, we have to run [zookeeper-config-service](/zookeeper-config-service) to populate the /config node on Zookeeper. In this way, our services can start and take the configuration information.
+Now, we have to run zookeeper-config-service to populate the /config node on Zookeeper. In this way, our services can start and take the configuration information.
 
 In the directory of zookeeper-config-service:
 
