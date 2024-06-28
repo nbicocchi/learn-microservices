@@ -1,0 +1,19 @@
+server:
+    port: 8080
+
+spring:
+    application:
+        name: time-service
+
+    cloud:
+        zookeeper:
+            connect-string: localhost:2181
+            discovery:
+                enabled: true
+                root: /services
+        config:
+            enabled: true
+            root: /config
+
+    config:
+        import: "optional:zookeeper:"
