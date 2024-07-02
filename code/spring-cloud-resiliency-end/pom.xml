@@ -11,6 +11,7 @@
 
     <modules>
         <module>time-service-end</module>
+        <module>date-service-end</module>
         <module>composite-service-end</module>
         <module>eureka-server</module>
     </modules>
