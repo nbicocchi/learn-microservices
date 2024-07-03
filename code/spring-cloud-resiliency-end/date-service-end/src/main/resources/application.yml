@@ -13,6 +13,17 @@ eureka:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
 
+resilience4j:
+  ratelimiter:
+    instances:
+      dateRateLimiter:
+        limit-for-period: 20
+        limit-refresh-period: 60s
+        # Quanto tempo un thread aspetta prima di restituire 429
+        timeout-duration: 0s
+    metrics:
+      enabled: true
+
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
