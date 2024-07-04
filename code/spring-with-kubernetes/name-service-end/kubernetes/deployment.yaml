@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: name-service-end
+  labels:
+    app: name-service-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: name-service-end
+  template:
+    metadata:
+      labels:
+        app: name-service-end
+    spec:
+      containers:
+        - name: name-service-end
+          image: name:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9001
