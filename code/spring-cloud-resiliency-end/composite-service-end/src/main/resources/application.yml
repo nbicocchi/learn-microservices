@@ -22,6 +22,14 @@ server:
       max: 4
 
 resilience4j:
+
+  bulkhead:
+    instances:
+      time:
+        maxConcurrentCalls: 2
+      date:
+        maxConcurrentCalls: 2
+
   timelimiter:
     instances:
       time:

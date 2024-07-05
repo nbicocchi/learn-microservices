@@ -44,4 +44,20 @@ public class CompositeController {
     ) {
         return blockingDateTimeIntegration.getDate(delay, faultPercent);
     }
+
+    @GetMapping(value = "/datetime/timeBulkhead")
+    public LocalTime dateTimeBulkhead(
+            @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
+            @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
+    ) {
+        return blockingDateTimeIntegration.getTimeWithBulkhead(delay, faultPercent);
+    }
+
+    @GetMapping(value = "/datetime/dateBulkhead")
+    public LocalDate dateBulkhead(
+            @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
+            @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
+    ) {
+        return blockingDateTimeIntegration.getDateWithBulkhead(delay, faultPercent);
+    }
 }

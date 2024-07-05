@@ -1,5 +1,6 @@
 package com.baeldung.composite;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,16 @@ public class BlockingDateTimeIntegration {
 
         LOG.info("Getting date on URL: {}", url);
         return restTemplate.getForObject(url, LocalDate.class);
+    }
+
+    @Bulkhead(name = "time")
+    public LocalTime getTimeWithBulkhead(int delay, int faultPercent) {
+        return getTime(delay, faultPercent);
+    }
+
+    @Bulkhead(name = "date")
+    public LocalDate getDateWithBulkhead(int delay, int faultPercent) {
+        return getDate(delay, faultPercent);
     }
 
 }
