@@ -1,0 +1,28 @@
+server:
+    port: 8083
+
+spring:
+    application:
+        name: config-service
+
+    cloud:
+        zookeeper:
+            connect-string: localhost:2181
+
+
+---
+
+
+server:
+    port: 8083
+
+spring:
+    profiles:
+        active: docker
+
+    application:
+        name: config-service
+
+    cloud:
+        zookeeper:
+            connect-string: zookeeper:2181

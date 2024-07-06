@@ -4,19 +4,26 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181"
+    healthcheck:
+      test: [ "CMD", "zkServer.sh", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-  zookeeper-config-service:
+  config-service:
     build:
-      context: ./zookeeper-config-service
+      context: ./config-service
       dockerfile: Dockerfile
-    image: zookeeper-config-service
+    image: config-service
     ports:
       - "8083:8083"
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8083/health || exit 1" ]
       interval: 10s
@@ -35,7 +42,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
     depends_on:
-      zookeeper-config-service:
+      config-service:
         condition: service_healthy
 
   date-service:
@@ -49,19 +56,19 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
     depends_on:
-      zookeeper-config-service:
+      config-service:
         condition: service_healthy
 
-  datetime-composite-service:
+  composite-service:
     build:
-      context: ./datetime-composite-service
+      context: ./composite-service
       dockerfile: Dockerfile
-    image: datetime-composite-service
+    image: composite-service
     ports:
       - "8082:8082"
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
     depends_on:
-      zookeeper-config-service:
+      config-service:
         condition: service_healthy
