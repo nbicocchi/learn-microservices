@@ -14,13 +14,12 @@ public class CompositeController {
     public CompositeController(WebClient.Builder builder) {
 
         webClient = builder.build();
-        //ETCD!!!!
     }
 
     @GetMapping("/test")
     public Mono<String> getTest() {
         // Return a static string without calling other services
-        return Mono.just("John Doe");
+        return Mono.just("Test OK");
     }
 
     @GetMapping("/complete-name")
@@ -32,18 +31,5 @@ public class CompositeController {
         Mono<String> surnameMono = webClient.get().uri(urlSurname).retrieve().bodyToMono(String.class);
 
         return Mono.zip(nameMono, surnameMono, (name, surname) -> name + " " + surname);
-
-
-        /*return Mono.zip(nameMono, surnameMono, (name, surname) -> name + " " + surname)
-                .flatMap(completeName -> {
-                    String uuid = UUID.randomUUID().toString();
-                    return etcdConfigService.saveConfig(uuid, completeName).thenReturn(uuid);
-                });*/
     }
-
-    /*
-    @GetMapping("/complete-name/{uuid}")
-    public Mono<String> getCompleteNameById(@PathVariable String uuid) throws Exception {
-        return etcdConfigService.getConfig(uuid);
-    }*/
 }
