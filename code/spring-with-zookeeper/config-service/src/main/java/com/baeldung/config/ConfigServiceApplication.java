@@ -1,4 +1,4 @@
-package com.example.zookeeper_config_service;
+package com.baeldung.config;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 
 @SpringBootApplication
-public class ZookeeperConfigServiceApplication {
+public class ConfigServiceApplication {
 
 	@Value("${spring.cloud.zookeeper.connect-string}")
 	private String connectString;
@@ -25,7 +25,7 @@ public class ZookeeperConfigServiceApplication {
 	private static final int SESSION_TIMEOUT = 3000;
 
 	public static void main(String[] args) {
-		SpringApplication.run(ZookeeperConfigServiceApplication.class, args);
+		SpringApplication.run(ConfigServiceApplication.class, args);
 	}
 
 	@Bean

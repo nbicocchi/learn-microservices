@@ -1,4 +1,4 @@
-package com.example.zookeeper_config_service;
+package com.baeldung.config;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;

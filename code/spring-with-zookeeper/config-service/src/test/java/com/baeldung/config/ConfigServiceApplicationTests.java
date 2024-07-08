@@ -1,10 +1,10 @@
-package com.example.zookeeper_config_service;
+package com.baeldung.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ZookeeperConfigServiceApplicationTests {
+class ConfigServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
