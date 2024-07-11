@@ -22,10 +22,10 @@ public class CompositeController {
         return Mono.just("Test OK");
     }
 
-    @GetMapping("/complete-name")
+    @GetMapping("/full-name")
     public Mono<String> getCompleteName() throws Exception {
-        String urlName = "http://name-service-end:9001/name";
-        String urlSurname = "http://surname-service-end:9002/surname";
+        String urlName = "http://name-service-end/name";
+        String urlSurname = "http://surname-service-end/surname";
 
         Mono<String> nameMono = webClient.get().uri(urlName).retrieve().bodyToMono(String.class);
         Mono<String> surnameMono = webClient.get().uri(urlSurname).retrieve().bodyToMono(String.class);

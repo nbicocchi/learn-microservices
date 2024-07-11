@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: surname-service-end
-          image: surname:latest
+          image: spring-with-kubernetes-surname:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9002

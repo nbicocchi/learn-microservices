@@ -7,5 +7,5 @@ spec:
     app: surname-service-end
   ports:
     - protocol: TCP
-      port: 9002
+      port: 80
       targetPort: 9002

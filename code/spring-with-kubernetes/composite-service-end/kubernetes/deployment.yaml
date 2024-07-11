@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: composite-service-end
-          image: composite:latest
+          image: spring-with-kubernetes-composite:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

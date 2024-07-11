@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: composite-service-end
+  cloud:
+    etcd:
+      endpoints:
+        - http://etcd:2379
 
 ---
 spring.config.activate.on-profile: docker
