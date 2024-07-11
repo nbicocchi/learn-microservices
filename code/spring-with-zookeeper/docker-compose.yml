@@ -4,11 +4,37 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181"
+    healthcheck:
+      test: [ "CMD", "zkServer.sh", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  config-service:
+    build:
+      context: ./config-service
+      dockerfile: Dockerfile
+    image: config-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8083/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   time-service:
     build:
-      context: time-service
-      dockerfile: time-service/Dockerfile
+      context: ./time-service
+      dockerfile: Dockerfile
     image: time-service
     ports:
       - "8080:8080"
@@ -16,12 +42,13 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
     depends_on:
-      - zookeeper
+      config-service:
+        condition: service_healthy
 
   date-service:
     build:
-      context: date-service
-      dockerfile: date-service/Dockerfile
+      context: ./date-service
+      dockerfile: Dockerfile
     image: date-service
     ports:
       - "8081:8081"
@@ -29,19 +56,19 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
     depends_on:
-      - zookeeper
+      config-service:
+        condition: service_healthy
 
-  datetime-composite-service:
+  composite-service:
     build:
-      context: datetime-composite-service
-      dockerfile: datetime-composite-service/Dockerfile
-    image: datetime-composite-service
+      context: ./composite-service
+      dockerfile: Dockerfile
+    image: composite-service
     ports:
       - "8082:8082"
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING: zookeeper:2181
     depends_on:
-      - time-service
-      - date-service
-      - zookeeper
+      config-service:
+        condition: service_healthy

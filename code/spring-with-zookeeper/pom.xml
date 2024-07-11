@@ -13,6 +13,7 @@
         <module>time-service</module>
         <module>date-service</module>
         <module>composite-service</module>
+        <module>config-service</module>
     </modules>
 
 </project>
