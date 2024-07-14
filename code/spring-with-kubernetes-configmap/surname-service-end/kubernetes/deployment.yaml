@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: surname-service-end
+  labels:
+    app: surname-service-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: surname-service-end
+  template:
+    metadata:
+      labels:
+        app: surname-service-end
+    spec:
+      containers:
+        - name: surname-service-end
+          image: spring-with-kubernetes-configmap-surname:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9002
+          env:
+            - name: surnames
+              valueFrom:
+                configMapKeyRef:
+                  name: surname-config
+                  key: surnames
+            - name: delayMillis
+              valueFrom:
+                configMapKeyRef:
+                  key: delayMillis
+                  name: surname-config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: surname-config
