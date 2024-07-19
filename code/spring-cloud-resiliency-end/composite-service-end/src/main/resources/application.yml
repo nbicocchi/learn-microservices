@@ -16,35 +16,46 @@ management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 management.health.circuitbreakers.enabled: true
 
-resilience4j.timelimiter:
-  instances:
-    time:
-      timeoutDuration: 3s
+server:
+  tomcat:
+    threads:
+      max: 4
 
-resilience4j.retry:
-  instances:
-    time:
-      maxAttempts: 3
-      waitDuration: 500
-      # enableExponentialBackoff: true
-      # exponentialBackoffMultiplier: 2
-      # enableRandomizedWait: true
-      # randomizedWaitFactor: 0.5
-      retryExceptions:
-        - org.springframework.web.reactive.function.client.WebClientResponseException$InternalServerError
+resilience4j:
 
-resilience4j.circuitbreaker:
-  instances:
-    time:
-      allowHealthIndicatorToFail: false
-      registerHealthIndicator: true
-      slidingWindowType: COUNT_BASED
-      slidingWindowSize: 5
-      failureRateThreshold: 50
-      waitDurationInOpenState: 10000
-      permittedNumberOfCallsInHalfOpenState: 3
-      automaticTransitionFromOpenToHalfOpenEnabled: true
-      ignoreExceptions:
+  bulkhead:
+    instances:
+      time:
+        maxConcurrentCalls: 2
+      date:
+        maxConcurrentCalls: 2
+
+  timelimiter:
+    instances:
+      time:
+        timeoutDuration: 3s
+  retry:
+    instances:
+      time:
+        maxAttempts: 3
+        waitDuration: 500
+        # enableExponentialBackoff: true
+        # exponentialBackoffMultiplier: 2
+        # enableRandomizedWait: true
+        # randomizedWaitFactor: 0.5
+
+  circuitbreaker:
+    instances:
+      time:
+        allowHealthIndicatorToFail: false
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        ignoreExceptions:
 
 ---
 spring.config.activate.on-profile: docker
