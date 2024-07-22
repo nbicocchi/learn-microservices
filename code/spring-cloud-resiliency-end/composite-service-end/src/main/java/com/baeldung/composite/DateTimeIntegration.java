@@ -22,26 +22,27 @@ public class DateTimeIntegration {
     WebClient webClient;
 
     public DateTimeIntegration(WebClient.Builder builder) {
-        webClient = builder.build();
+        this.webClient = builder.build();
     }
 
     @Retry(name = "time")
     @TimeLimiter(name = "time")
     @CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
-    public Mono<LocalTime> getTime(int delay, int faultPercent) {
-        URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
+    public Mono<LocalTime> getTimeWithResilience(int delay, int faultPercent) {
+        URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "?delay={delay}&faultPercent={faultPercent}")
+                .build(delay, faultPercent);
 
         LOG.info("Getting time on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToMono(LocalTime.class)
-                .doOnError(ex -> handleException(ex));
+                .doOnError(this::handleException);
     }
 
     private Mono<LocalTime> getTimeFallbackValue(int delay, int faultPercent, CallNotPermittedException ex) {
         LOG.warn("Creating a fail-fast fallback date, delay = {}, faultPercent = {} and exception = {} ", delay, faultPercent, ex.toString());
-        return Mono.just(LocalTime.of(00, 00, 00));
+        return Mono.just(LocalTime.of(0, 0, 0));
     }
 
     private void handleException(Throwable ex) {
-        LOG.warn("Attempt --> " + ex.getMessage());
+        LOG.warn("Attempt --> {}", ex.getMessage());
     }
 }
