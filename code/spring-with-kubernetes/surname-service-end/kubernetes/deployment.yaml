@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: surname-service-end
+  labels:
+    app: surname-service-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: surname-service-end
+  template:
+    metadata:
+      labels:
+        app: surname-service-end
+    spec:
+      containers:
+        - name: surname-service-end
+          image: spring-with-kubernetes-surname:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9002

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: composite-config
+data:
+  name-service-url: "http://name-service-end/name"
+  surname-service-url: "http://surname-service-end/surname"

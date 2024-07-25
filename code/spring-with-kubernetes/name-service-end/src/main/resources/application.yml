@@ -1,0 +1,11 @@
+server:
+  port: 9001
+
+spring:
+  application:
+    name: name-service-end
+
+---
+spring.config.activate.on-profile: docker
+server:
+  port: 8080

@@ -1,0 +1,18 @@
+services:
+  composite:
+    build: composite-service-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  name:
+    build: name-service-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  surname:
+    build: surname-service-end
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker

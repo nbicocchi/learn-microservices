@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: name-service-end
+  labels:
+    app: name-service-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: name-service-end
+  template:
+    metadata:
+      labels:
+        app: name-service-end
+    spec:
+      containers:
+        - name: name-service-end
+          image: spring-with-kubernetes-configmap-name:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9001
+          env:
+            - name: names
+              valueFrom:
+                configMapKeyRef:
+                  name: name-config
+                  key: names
+            - name: delayMillis
+              valueFrom:
+                configMapKeyRef:
+                  key: delayMillis
+                  name: name-config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: name-config
