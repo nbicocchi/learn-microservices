@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: name-config
+data:
+  names: |-
+    Luca, Marco, Giulia, Francesca, Matteo, Elena, Davide, Silvia, Alessandro, Chiara
+  delayMillis: "1000"

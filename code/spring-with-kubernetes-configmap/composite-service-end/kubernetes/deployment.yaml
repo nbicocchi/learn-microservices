@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: composite-service-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: composite-service-end
+  template:
+    metadata:
+      labels:
+        app: composite-service-end
+    spec:
+      containers:
+        - name: composite-service-end
+          image: spring-with-kubernetes-configmap-composite:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: name-service-url
+              valueFrom:
+                configMapKeyRef:
+                  name: composite-config
+                  key: name-service-url
+            - name: surname-service-url
+              valueFrom:
+                configMapKeyRef:
+                  name: composite-config
+                  key: surname-service-url
+      volumes:
+        - name: config-volume
+          configMap:
+            name: composite-config
