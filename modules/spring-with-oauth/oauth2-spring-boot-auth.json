@@ -1,0 +1,439 @@
+{
+	"info": {
+		"_postman_id": "2a2685eb-1826-45de-bf75-8cb1473c3eee",
+		"name": "oauth spring boot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26186192"
+	},
+	"item": [
+		{
+			"name": "grades",
+			"item": [
+				{
+					"name": "get grades by student id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{grades}}/:student",
+							"host": [
+								"{{grades}}"
+							],
+							"path": [
+								":student"
+							],
+							"variable": [
+								{
+									"key": "student",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "insert grade for student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"grade\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{grades}}/:student",
+							"host": [
+								"{{grades}}"
+							],
+							"path": [
+								":student"
+							],
+							"variable": [
+								{
+									"key": "student",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all grades",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{grades}}/",
+							"host": [
+								"{{grades}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "students",
+			"item": [
+				{
+					"name": "get student by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{students}}/:student",
+							"host": [
+								"{{students}}"
+							],
+							"path": [
+								":student"
+							],
+							"variable": [
+								{
+									"key": "student",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{students}}/",
+							"host": [
+								"{{students}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Emiliano\",\n    \"surname\": \"Maccaferri\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{students}}/",
+							"host": [
+								"{{students}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "oauth2",
+			"item": [
+				{
+					"name": "get token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "example-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "d5CeGgwrN9My7Wy4XywTjqkkpA5WIn16",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "403def4a-a6c4-4217-80ac-73544711738e.3f1e019b-0a82-4ab5-ab24-71a22b14ed6e.a0d425f9-41ff-4134-811a-6a0c24e0d43b",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{idp}}/realms/master/protocol/openid-connect/token",
+							"host": [
+								"{{idp}}"
+							],
+							"path": [
+								"realms",
+								"master",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get token service account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "aggregator",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "F2gMYzEXhxyZjqRaWjiU7jma4U5mCWDP",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "96ce1b38-9374-4b83-b305-ed92c055b044.3f3ecd93-b227-478f-8884-46f17f720efd.6607e8eb-0fe5-40ad-9249-2100f0047f97",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{idp}}/realms/master/protocol/openid-connect/token",
+							"host": [
+								"{{idp}}"
+							],
+							"path": [
+								"realms",
+								"master",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "example-spring",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI1NDVkNzUyNC1hMzg1LTRiOWItYjRhNy03ZTYwNDczYmU5YTIifQ.eyJleHAiOjE3MTk4MzMxMTYsImlhdCI6MTcxOTgzMTMxNiwianRpIjoiNTY4ZjZlOTYtOGY5Zi00ODVmLTlhY2MtYjAzOWM2ZjI5MTAzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3Nzc3L3JlYWxtcy9tYXN0ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0Ojc3NzcvcmVhbG1zL21hc3RlciIsInN1YiI6IjNlNDgxZjM0LTcxNGUtNGRkNS1hZWFmLTUyNWRmYjMzOWVkMCIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJleGFtcGxlLXNwcmluZyIsInNpZCI6IjNiMWQwZmVhLTdhM2ItNDc1Ni1iMTYwLTAzNDYwMzljMDQxYSIsInNjb3BlIjoiYWNyIHByb2ZpbGUgZW1haWwgb3BlbmlkIHdlYi1vcmlnaW5zIHJvbGVzIGJhc2ljIn0.076hTS8zi7kK7gsCW7xQz6ZEG0K3DoLnES_BoyKmnvfm7zd3I4uws3ZumYP62aBjj2scf6uXp57am9rwVLaYJA",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "zknSaGTc8lUGBvvxphaxq48Nw19XFshH",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{idp}}/realms/master/protocol/openid-connect/token",
+							"host": [
+								"{{idp}}"
+							],
+							"path": [
+								"realms",
+								"master",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "userinfo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI4a19pZk9jdFVHR1NGc2QzOVJ4ZzRhZ3phMmNDdVY4bjhuZTI1clNGbFlRIn0.eyJleHAiOjE3MTk1ODQ0MTEsImlhdCI6MTcxOTU4NDM1MSwiYXV0aF90aW1lIjoxNzE5NTc5NjQzLCJqdGkiOiI5YWExMGMyZS01N2NlLTQ1NTgtOGI2YS04ZGY1NjYxYzI3OWUiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0Ojc3NzcvcmVhbG1zL21hc3RlciIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzZTQ4MWYzNC03MTRlLTRkZDUtYWVhZi01MjVkZmIzMzllZDAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJleGFtcGxlLXNwcmluZyIsInNpZCI6ImZiMzE3YzhjLWNmMGUtNGZmNC04ZTYxLTEyYTk2OGI2NjQ1ZSIsImFjciI6IjAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLW1hc3RlciIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInByZWZlcnJlZF91c2VybmFtZSI6Im1hY2NhIiwiZW1haWwiOiJpbmJveEBlbWlsaWFub21hY2NhZmVycmkuY29tIn0.oy7vGrfIe-H1PrTjSGv4XgUUbhtr--4O0WzGRelZm5y6cJraspuTQDHlZCX0A8VzGGSgNS1QfMqJ41oc2ZKLTlrUUafAv-CDrLFqmGGt4SobguAjmW-QuDESu0uoln7OGuwbZz-NiKbLpi0XXWtDIFHUBAE5uCO5QZG-ExVhSh28A1cEOfTQAuLUjtvFGLDHB_On9ZkOQTwZl3NGR3MRFnEioe19UngWJt7K2cVqZHBDTJ_1du-lmLm_lqkQ7nYIn4xs4mYheYaCc_n0FnN2opgl8zFbrDBX8iO3H89jWwxAtC54GY4t-MCLNW4RlsvyM9zNPBF8WBoJ3M-ByXYgWg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "example-spring",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "zknSaGTc8lUGBvvxphaxq48Nw19XFshH",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{idp}}/realms/master/protocol/openid-connect/userinfo",
+							"host": [
+								"{{idp}}"
+							],
+							"path": [
+								"realms",
+								"master",
+								"protocol",
+								"openid-connect",
+								"userinfo"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "students",
+			"value": "http://localhost:7776",
+			"type": "string"
+		},
+		{
+			"key": "grades",
+			"value": "http://localhost:7777",
+			"type": "string"
+		},
+		{
+			"key": "idp",
+			"value": ""
+		}
+	]
+}

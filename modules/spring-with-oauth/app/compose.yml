@@ -1,0 +1,110 @@
+networks:
+  microservices-net:
+    name: microservices-net
+
+services:
+  aggregator:
+    depends_on:
+      - students
+      - grades
+      - keycloak
+    network_mode: host
+    build:
+      context: microservices/aggregator
+      dockerfile: Dockerfile
+    mem_limit: 512m
+    environment:
+      - STUDENTS_URI=http://localhost:8089/students/
+      - GRADES_URI=http://localhost:8089/grades/
+      - AUTH_URI=http://192.168.1.108:7777/realms/master/protocol/openid-connect/token
+      - CLIENT_SECRET=252OWf0A21BXKAnu0rFefDhRd27RYS6l
+      - CLIENT_ID=aggregator
+
+  students:
+    depends_on:
+      students_pg:
+        condition: service_healthy
+    networks:
+      - microservices-net
+    build:
+      context: microservices/students
+      dockerfile: Dockerfile
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_CONNECTION_STRING=postgresql://test:test@students_pg:5432/students
+
+  grades:
+    depends_on:
+      grades_pg:
+        condition: service_healthy
+    networks:
+      - microservices-net
+    build:
+      context: microservices/grades
+      dockerfile: Dockerfile
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_CONNECTION_STRING=postgresql://test:test@students_pg:5432/grades
+
+  students_pg:
+    image: postgres
+    environment:
+      - POSTGRES_DB=students
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d students -U test" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-net
+
+  grades_pg:
+    image: postgres
+    environment:
+      - POSTGRES_DB=grades
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d grades -U test" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-net
+
+  keycloak:
+    build:
+      context: .
+      dockerfile: ./keycloak/Dockerfile
+      network: host
+    entrypoint: ["/opt/keycloak/bin/kc.sh", "start-dev"]
+    environment:
+      - KC_HOSTNAME=192.168.1.108
+      - KC_HOSTNAME_PORT=7777
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - 7777:8080
+    networks:
+      - microservices-net
+
+  proxy:
+    image: nginx:mainline
+    networks:
+      - microservices-net
+    volumes:
+      - ./nginx/gateway.conf:/etc/nginx/conf.d/proxy.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/js:/etc/nginx/js
+    ports:
+      - 8089:14000
+    depends_on:
+      - students
+      - grades
+
