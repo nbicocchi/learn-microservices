@@ -1,0 +1,24 @@
+{
+  "createdBy": "",
+  "updatedBy": "",
+  "name": "product_sale",
+  "description": "Check number of credit card",
+  "retryCount": 3,
+  "timeoutSeconds": 1200,
+  "inputKeys": [
+    "integer"
+  ],
+  "outputKeys": [
+    "sum"
+  ],
+  "timeoutPolicy": "TIME_OUT_WF",
+  "retryLogic": "FIXED",
+  "retryDelaySeconds": 60,
+  "responseTimeoutSeconds": 600,
+  "inputTemplate": {},
+  "rateLimitPerFrequency": 0,
+  "rateLimitFrequencyInSeconds": 1,
+  "ownerEmail": "yes.in.a.jiffy@gmail.com",
+  "backoffScaleFactor": 1
+}
+

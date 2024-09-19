@@ -1,0 +1,83 @@
+#version: "3.8"
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_container_prog
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: jdbc_schema
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d jdbc_schema" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  conductor:
+    image: orkesio/orkes-conductor-community-standalone:latest
+    container_name: conductor
+    init: true
+    ports:
+      - "8080:8080"
+      - "1234:5000"
+    volumes:
+      - redis:/redis
+      - postgres:/pgdata
+    restart: always
+
+  cart:
+    build: cart-service
+    mem_limit: 512m
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  purchase:
+    build: purchase-service
+    mem_limit: 512m
+    ports:
+      - "9001:9001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  warehouse:
+    build: warehouse-service
+    mem_limit: 512m
+    ports:
+      - "9002:9002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg-data:
+  pgadmin-data:
+  redis:
+  postgres:
