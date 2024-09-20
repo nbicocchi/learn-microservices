@@ -63,7 +63,7 @@ To help us in these operations we can use **DevOps**'s practices.
 
 The shift to DevOps is critical for organizations to support the ever-**accelerating** development speeds that customers and internal stakeholders demand. With the help of cloud-native technologies, open source solutions, and agile APIs, teams can now deliver and maintain code more **efficiently** than ever.
 
-![DevOps](../../../slides/images/devops-devops.png)
+![DevOps](images/devops-devops.avif)
 
 ### How does DevOps works?
 
@@ -82,7 +82,7 @@ Implementing DevOps often goes hand in hand with **continuous integration** (**C
 
 **CI** enables developers to **discover** integration issues and bugs earlier in the process and streamline code branches and builds.
 
-![Continuos Integration](../../../slides/images/devops-ci.png)
+![Continuos Integration](images/devops-ci.avif)
 
 ### Continuous Delivery and Deployment
 
@@ -114,7 +114,7 @@ To help us in these operations we can use **DevSecOps**'s practices.
 
 **Release better software faster**, and **detect and respond to software flaws** in production faster and more efficiently.
 
-![DevSecOps](../../../slides/images/devops-devsecops.png)
+![](images/devops-devsecops.avif)
 
 ### Historically
 
@@ -157,7 +157,3 @@ To make the work production more **efficient** we can implement some **pre-commi
 We run our hooks on every commit to automatically point out issues in code such as missing semicolons, trailing whitespace, and debug statements.
 
 By pointing these issues out before code review, this allows a code reviewer to focus on the architecture of a change while not wasting time with trivial style nitpicks.
-
-## Hands-on
-
-A small example of DevSecOps pipeline project can be found at [M12.2 - DevOps, DevSecOps & Pre-commit hooks (GitLab CI, GitGuardian, SemGrep, Trivy, Google Cloud VM)](M12.2%20-%20DevOps,%20DevSecOps%20&%20Pre-commit%20hooks%20(GitLab%20CI,%20GitGuardian,%20SemGrep,%20Trivy,%20Google%20Cloud%20VM).md) file.

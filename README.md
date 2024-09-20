@@ -30,11 +30,18 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * The transition towards microservices architectures
 * #8 Fallacies of distributed computing
 
-[M2 Tools: Java, Maven, Spring Boot](modules/spring-boot)
+[M2 Tools: Java, Maven, Spring Boot, JMeter](modules/tools)
+* Java recap: generics, functional programming
+* Building a basic layered microservice with Spring Boot
+* Project packaging with Maven (one or multiple services per project)
+* Testing microservices with JMeter
 
 [M3 Containerization and orchestration](modules/containerization)
+* Containerization vs virtualization
+* Building *docker* images (single-layer, multi-layer, Buildpacks, Jib)
+* Container orchestration with *docker compose*
 
-[M4 Communications](modules/communication)
+[M4 Communication](modules/communication)
 * Synchronous communications (REST/GraphQL/Protobuf) and their limitations
 * Asynchronous messaging systems (*Kafka* and *RabbitMQ*), their advantages and limitations
 * *Spring Cloud Stream* and its abstraction over messaging systems
@@ -50,14 +57,22 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Server-side resiliency patterns
 * *Resilience4j* and its integration with Spring Boot
 
-[M6 Observability](modules/resiliency)
+[M6 Observability](modules/observability)
 * What is observability and why it is relevant for microservices
 * Metrics aggregation with *Micrometer*, *Prometheus* and *Grafana*
 * Distributed tracing with *Micrometer* and *Zipkin*
 * Log aggregation with the *ELK* Stack
 
 [M8 Data management](modules/data-management)
+* Issues of database transactions in distributed contexts
+* The SAGA pattern
+* The *Conductor* orchestration framework
 
 [M9 Distributed caching](modules/caching)
+* What is caching and why it is relevant
+* Introduction to Redis
+* Implementing a Redis cache with Spring Boot
 
 [M10 DevSecOps](modules/devsecops)
+* DevOps and their benefits in distributed contexts
+* Automating security tests before deployment
