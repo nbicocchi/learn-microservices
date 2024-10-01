@@ -11,7 +11,7 @@ services:
     network_mode: host
     build:
       context: microservices/aggregator
-      dockerfile: Dockerfile
+      dockerfile: microservices/aggregator/Dockerfile
     mem_limit: 512m
     environment:
       - STUDENTS_URI=http://localhost:8089/students/
@@ -28,7 +28,7 @@ services:
       - microservices-net
     build:
       context: microservices/students
-      dockerfile: Dockerfile
+      dockerfile: microservices/students/Dockerfile
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -42,7 +42,7 @@ services:
       - microservices-net
     build:
       context: microservices/grades
-      dockerfile: Dockerfile
+      dockerfile: microservices/grades/Dockerfile
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
