@@ -1,12 +1,6 @@
-# Maven and Spring
+# Maven
 
-In this lesson, we'll have a look at how our Spring Boot project is set up with Maven. Note that this is not an intro to Maven itself. If you’re new to Maven, have a look at the Resources section for some helpful guides.
-
-The relevant module for this lesson is: [real-world-project](../code/learn-spring-m1/real-world-project-end).
-
-## Maven pom.xml
-
-Let's start by opening up the pom of our project here and see exactly how everything is set up.
+## Project configuration (pom.xml)
 
 First, we've defined the basic identifying information about our project: the _groupId_, _artifactId_, _version_ and then _packaging_:
 
@@ -17,8 +11,6 @@ First, we've defined the basic identifying information about our project: the _g
 <name>real-world-project</name>
 <description>Demo project for Spring Boot</description>
 ```
-
-These have little impact on how we’ll build the project but they will determine the final output of that build, which is a _jar_ file.
 
 Next, we have a core part of the pom here, namely the _parent_:
 
@@ -31,11 +23,9 @@ Next, we have a core part of the pom here, namely the _parent_:
 </parent>
 ```
 
-Of course, **we’re using the Boot parent here**, which defines dependencies, plugins, properties that our project will inherit.
+We are using the Boot parent, which defines dependencies, plugins, properties that our project will inherit. This greatly simplifies the configuration of our project, as no longer have to define all these explicitly.
 
-This greatly simplifies the configuration of our project, as no longer have to define all these explicitly.
-
-Now we’re reached the _dependencies_ section, which is where things get interesting. As we can see, **we actually have a single dependency at this stage**:
+Now we’re reached the _dependencies_ section:
 
 ```
 <dependencies>
@@ -46,9 +36,7 @@ Now we’re reached the _dependencies_ section, which is where things get intere
 </dependencies>
 ```
 
-However, as we've seen, this is a fully running, functional project.
-
-This is because **this one dependency is actually pulling in quite a large number of other artifacts using the transitive dependencies Maven functionality**.
+We have a single dependency at this stage because it is pulling in quite a large number of other artifacts using the **transitive dependencies** Maven functionality.
 
 We can view all the transitive dependencies either by using the _Dependency Hierarchy_ tab (inside an IDE), or with the Maven command:
 
@@ -136,11 +124,9 @@ com.fasterxml.jackson.core:jackson-databind:jar:2.9.9.3:compile
 org.hibernate.validator:hibernate-validator:jar:6.0.17.Final:compile
 ```
 
-These are dependencies that allows us to use logging, annotation, serialization and database-related functionality that we'll usually need in any reasonable application. If we were using pure Spring, we would have to add those artifacts manually to our _pom.xml_.
+These are dependencies that allows us to use basic functionalities that we'll need in any reasonable application. If we were using pure Spring, we would have to add those artifacts manually to our _pom.xml_.
 
-Next, in the pom file, we have the _plugins_ section.
-
-The only plugin we need to define explicitly at this stage is the Spring Boot Maven Plugin:
+Next, we have the _plugins_ section. The only plugin we need to define explicitly at this stage is the Spring Boot Maven Plugin:
 
 ```
 <build>
@@ -162,7 +148,7 @@ Finally, we have a handful of properties which override what’s defined in the 
 </properties>
 ```
 
-And this completes our Maven pom configuration. As we can see, this is quite simple, but there’s still quite a lot here. Now let's run a simple build. We can do this via the IDE, or by using the command:
+And this completes our Maven pom.xml configuration. As we can see, this is quite simple, but there’s still quite a lot here. Now let's run a simple build. We can do this via the IDE, or by using the command:
 
 ```
 $ mvn clean

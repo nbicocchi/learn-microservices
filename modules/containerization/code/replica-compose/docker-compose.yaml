@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+  flask:
+    build: ./app
+    ports:
+      - "5000"
+    deploy:
+      replicas: 3

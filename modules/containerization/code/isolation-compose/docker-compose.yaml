@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  frontend:
+    image: nginx
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf  # Custom NGINX config
+    networks:
+      - front_net
+    ports:
+      - "80:80"  # Expose the frontend on port 80
+
+  backend:
+    build:
+      context: ./backend  # Build backend from the local directory
+    networks:
+      - front_net
+      - back_net
+    environment:
+      - DATABASE_URL=postgresql://user:password@database:5432/mydb
+
+  database:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    networks:
+      - back_net
+    volumes:
+      - db_data:/var/lib/postgresql/data  # Persist database data
+
+networks:
+  front_net:
+    driver: bridge
+  back_net:
+    driver: bridge
+
+volumes:
+  db_data:

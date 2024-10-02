@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_user
+      - db_password
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  flask_app:
+    build:
+      context: ./app
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    secrets:
+      - db_user
+      - db_password
+    environment:
+      FLASK_ENV: development
+
+secrets:
+  db_user:
+    file: db_user.txt
+  db_password:
+    file: db_password.txt
+
+volumes:
+  pg_data:

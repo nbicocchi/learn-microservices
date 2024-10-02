@@ -1,0 +1,20 @@
+general:
+  seed: <seed>
+
+model:
+
+service:
+
+controller:
+  app:
+    host: "<host>"
+    port: <port>
+    debug: False
+    base_url: "/<base_url>"
+    service_url: "/<service_url>"
+  db:
+    host: "<host>"
+    port: <port>
+    name: "<db_name>"
+    user: "<user>"
+    password: "<password>"

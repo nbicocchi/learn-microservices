@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  web:
+    build: ./app
+    ports:
+      - "5000:5000"
+    secrets:
+      - api_key  # Monta il secret come file
+
+secrets:
+  api_key:
+    file: ./api_key.txt  # Collega il secret al file locale

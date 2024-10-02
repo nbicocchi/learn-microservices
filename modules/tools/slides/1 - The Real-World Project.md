@@ -2,26 +2,18 @@
 
 ## Creating the Project
 
-Now that we have a broad understanding of Spring, we can start building our project. The example application we've chosen to serve as the code base for the course is **a task management application**.
-
-Let’s start by creating a simple project. **We’ll use the highly useful** [**Spring Initializr**](https://start.spring.io/) **project,**  a quickstart generator for Spring projects.
+The example application we've chosen to serve as the code base for the course is a task management application. [**Spring Initializr**](https://start.spring.io/) is useful a quickstart generator for Spring projects.
 
 We'll choose a Maven project using Java, and we need to fill in the project details:
 
 -   Group: com.baeldung
 -   Artifact: real-world-project
 
-We can also enter a custom package name.
-
-For the dependencies section, we'll choose the “Spring Web” dependency. Even though we won't be focusing on web aspects in the first modules of the course, we include it at this point since it allows us to start the application and keep it running.
+For the dependencies section, we'll choose the "Spring Web" dependency. Even though we won't be focusing on web aspects in this module, we include it since it allows us to start the application and keep it running.
 
 ![](images/m1-start-spring-io.png)
 
-Now we can click the “Generate” button to download the project, unzip it and import it into an IDE.
-
-## Importing the Project in the IDE
-
-For Eclipse, we can click on File > Import > Maven > Existing Maven Projects, “Browse” the directory where we extracted the Maven Project and select “Finish” to import the project:
+Now we can click the "Generate" button to download the project, unzip it and import it into an IDE.
 
 If you are using IntelliJ, you can import the project by navigating to the main menu, select File > Open, and then navigating to the path where our project is present to add it as a Project.
 
@@ -232,7 +224,7 @@ public class ProjectController implements IProjectController {
 }
 ```
 
-## _ApplicationRunner_/_CommandLineRunner_ Interfaces
+## _ApplicationRunner_ and _CommandLineRunner_ Interfaces
 
 In Spring Boot, _CommandLineRunner_ and _ApplicationRunner_ are two interfaces that allow you to execute code when a Spring Boot application starts. They are typically used to perform some initialization or setup tasks before the application starts processing requests. Both interfaces have a single run method that you need to implement.
 

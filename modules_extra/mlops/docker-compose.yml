@@ -1,0 +1,51 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: ml_model_monitoring_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: "wines_database"
+      MYSQL_ROOT_PASSWORD: "pass"
+      MYSQL_PASSWORD: "pass"
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=pass --execute \"SHOW DATABASES;\""
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
+  simulator:
+    build: ./microservices/simulator
+    container_name: ml_model_monitoring_simulator
+    ports:
+      - "5000:5000"
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ml:
+    build: ./microservices/ml
+    container_name: ml_model_monitoring_ml
+    ports:
+      - "5001:5000"
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  monitoring:
+    build: ./microservices/monitoring
+    container_name: ml_model_monitoring_monitoring
+    ports:
+      - "5002:5000"
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy

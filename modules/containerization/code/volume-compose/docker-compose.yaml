@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  web:
+    build: ./app
+    ports:
+      - "5000:5000"
+    volumes:
+      - logs:/data  # Volume assignment on the path /data
+
+volumes:
+  logs:  # Volume definition

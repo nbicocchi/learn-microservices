@@ -1,0 +1,2 @@
+flask
+psycopg2-binary  # For connecting to PostgreSQL
