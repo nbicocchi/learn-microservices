@@ -1,9 +1,6 @@
-# Containerization
+# Labs
 
-## Labs
-Here’s the combined version of the three labs using **Java** for consistency:
-
-### Lab 1: Writing a Dockerfile for a Java Environment
+## Lab 1: Writing a Dockerfile for a Java Environment
 **Objective:** Create a Dockerfile that sets up a container with a Java environment.
 
 **Instructions:**
@@ -17,7 +14,7 @@ Here’s the combined version of the three labs using **Java** for consistency:
 - Verify the environment by running `java HelloWorld` inside the container to print the expected output.
 
 
-### Lab 2: Writing a Docker Compose File for a Java Spring Boot Web Application and Database
+## Lab 2: Writing a Docker Compose File for a Java Spring Boot Web Application and Database
 **Objective:** Write a Docker Compose file to define two containers: one for a Java Spring Boot web application and another for a PostgreSQL database.
 
 **Instructions:**
@@ -30,7 +27,7 @@ Here’s the combined version of the three labs using **Java** for consistency:
 - Students should be able to write a Docker Compose file to manage a multi-container application.
 - They should connect the Spring Boot app to the database, query the database, and ensure data persistence using Docker volumes.
 
-### Lab 3: Resource Limiting and Monitoring for Java Containers
+## Lab 3: Resource Limiting and Monitoring for Java Containers
 **Objective:** Set CPU and memory limits on a Java container and monitor its usage.
 
 **Instructions:**
@@ -42,7 +39,7 @@ Here’s the combined version of the three labs using **Java** for consistency:
 - Students should understand how to define CPU and memory limits for Java containers.
 - They will monitor resource consumption using `docker stats` and evaluate how limiting resources affects container performance.
 
-## Relevant Questions
+# Questions
 1. What are the main differences between bare-metal, virtual machines, and container-based deployments?
 2. Can you define CPU and memory limits for a container? If so, how is it done?
 3. Describe the life cycle of a container from creation to termination.
