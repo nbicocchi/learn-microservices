@@ -1,0 +1,12 @@
+services:
+  product:
+    build: rest-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  consumer:
+    build: rest-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
