@@ -1,7 +1,5 @@
 # Communication styles (REST)
 
-## Introduction to Microservices Architecture
-
 **REST** is an architectural style that leverages the existing protocols of the web, specifically HTTP. It emphasizes stateless communication and a uniform interface for resource manipulation. The core HTTP methods used in RESTful communication are:
 
 - **GET**: Retrieve information from the server.
