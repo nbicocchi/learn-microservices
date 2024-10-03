@@ -41,8 +41,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Container orchestration with *docker compose*
 
 [M4 Communication](modules/communication)
-* #8 Fallacies of distributed computing
-* Synchronous communications (REST) and their limitations
+* Synchronous communications and their limitations (*RestClient*)
 * Asynchronous messaging systems (*RabbitMQ*)
 * *Spring Cloud Stream* and its abstraction over messaging systems
 
