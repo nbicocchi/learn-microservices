@@ -2,12 +2,6 @@
 
 ## Introduction to Microservices Architecture
 
-Microservices architecture is a modern approach to software development that structures an application as a collection of small, independent services. Each service corresponds to a specific business capability and can be developed, deployed, and scaled independently. This architecture promotes flexibility, scalability, and maintainability.
-
-In a microservices environment, communication between services is critical, and one of the most common methods for this communication is through **Representational State Transfer (REST)**. RESTful APIs use standard HTTP methods for interaction, making them widely adopted for microservices communication.
-
-## Understanding RESTful Communication
-
 **REST** is an architectural style that leverages the existing protocols of the web, specifically HTTP. It emphasizes stateless communication and a uniform interface for resource manipulation. The core HTTP methods used in RESTful communication are:
 
 - **GET**: Retrieve information from the server.
@@ -147,9 +141,5 @@ try {
     // Handle the error, e.g., log it or throw a custom exception
 }
 ```
-
-## Conclusion
-
-In this lecture, we explored REST communications between microservices using Spring Boot, focusing on building RESTful services and consuming them with `RestClient`. This approach facilitates efficient communication between independent services, enabling a scalable and maintainable microservices architecture.
 
 ## Resources
