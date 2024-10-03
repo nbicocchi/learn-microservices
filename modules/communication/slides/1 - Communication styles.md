@@ -1,52 +1,102 @@
 # Communication styles
 
-In a monolithic application running on a single process, components invoke one another using language-level method or function calls. These can be strongly coupled if you're creating objects with code (for example, new ClassName()), or can be invoked in a decoupled way if you're using Dependency Injection by referencing abstractions rather than concrete object instances. Either way, the objects are running within the same process. **The biggest challenge when changing from a monolithic application to a microservices-based application lies in changing the communication mechanism. A direct conversion from in-process method calls into RPC calls to services will cause a chatty and not efficient communication that won't perform well in distributed environments.**
+In a monolithic application running on a single process, components invoke one another using language-level method or function calls. These can be strongly coupled if you're creating objects with code (for example, new ClassName()), or can be invoked in a decoupled way if you're using Dependency Injection by referencing abstractions rather than concrete object instances. Either way, the objects are running within the same process. 
+
+**The biggest challenge when changing from a monolithic application to a microservices-based application lies in changing the communication mechanism. A direct conversion from in-process method calls into RPC calls to services will cause a chatty and not efficient communication that won't perform well in distributed environments.**
 
 The challenges of designing distributed system properly are well enough known that there's even a canon known as the [Fallacies of distributed computing](https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing) that lists assumptions that developers often make when moving from monolithic to distributed designs.
 
-The microservice community promotes the philosophy of **smart endpoints and dumb pipes** encouraging a design that's as decoupled as possible between microservices, and as cohesive as possible within a single microservice.
+The microservice community promotes the philosophy of **smart endpoints and dumb pipes**. The principle means that intelligence, such as business logic and processing, is handled at the service level (smart endpoints), while communication between services (dumb pipes) is kept simple, typically using lightweight protocols like HTTP, gRPC, or messaging systems like Kafka or RabbitMQ.
 
-### Message formats
+This approach avoids complex middleware (like ESBs in traditional SOA) by making the pipes solely responsible for message transport, not transformation or orchestration. The result is loose coupling, better scalability, resilience, and decentralized governance, as services can evolve independently without relying on a complex communication layer.
 
-#### Text-based formats
-The first category is text-based formats such as JSON and XML. An advantage of these formats is that not only are they human-readable, they’re self describing. They also enable consumers to pick out the values of interest and ignore the rest. Consequently, many changes to the message schema can easily be backward-compatible.
+## Message formats
 
-A downside of using a text-based messages format is that the messages tend to be verbose and imply the overhead of parsing text. Consequently, **if efficiency and performance are important, you may want to consider using a binary format**.
+In the realm of distributed systems and microservices, communication protocols play a crucial role in determining the efficiency, performance, and flexibility of data exchange. Text-based REST protocols, which primarily use formats such as JSON and XML, are widely adopted for their simplicity and ease of use. In contrast, binary protocols like Protocol Buffers (Protobuf) and Apache Avro are gaining traction for their performance advantages and compact data representation. 
 
-#### Binary formats
-There are several different binary formats to choose from. Popular formats include [Protocol Buffers](https://developers.google.com/protocol-buffers/docs/overview) and [Avro](https://avro.apache.org). Both formats provide a typed IDL for defining the structure of your messages.
+### Data Representation and Size
 
-Several tests, for example [this one](https://softwaremill.com/data-serialization-tools-comparison-avro-vs-protobuf/), show that Protobuf is better when it comes to speed of serialization and deserialization. On the other hand, Avro provides with little bit more compacted serialized data. If performance is a critical concern, then Protobuf's speed and efficiency may make it a better choice. If you need more complex data structures or built-in compression options, then Avro may be a better fit.
+**Text-Based REST Protocols** commonly utilize JSON or XML for data serialization. While JSON is lightweight compared to XML, both formats are text-based, resulting in larger payload sizes compared to binary formats. Example: A JSON representation of a simple user object can be verbose, making it less efficient for network transmission:
+
+  ```json
+  {
+      "name": "John Doe",
+      "age": 30,
+      "email": "john.doe@example.com"
+  }
+  ```
+
+**Binary Protocols (Protobuf and Avro)** serialize data into a compact binary format, significantly reducing the size of transmitted messages. This efficiency is particularly beneficial for applications with limited bandwidth or high-volume data transfer. Example: The same user object in Protobuf can be serialized into a much smaller binary representation, which is not human-readable but offers substantial size savings.
+
+### Performance and Speed
+
+**Text-Based REST Protocols** involve parsing text, which is generally slower compared to binary formats. The overhead of handling text data can introduce latency, especially in high-throughput applications. Additionally, the increased size of JSON or XML payloads can lead to longer transmission times over the network, affecting overall performance.
+
+**Binary Protocols (Protobuf and Avro)** are designed for speed. They employ efficient encoding and decoding algorithms that minimize processing time. As a result, both protocols typically provide faster serialization and deserialization compared to their text-based counterparts. The compact nature of binary formats also means that less data needs to be transmitted, further enhancing performance by reducing network latency.
+
+### Schema Management and Compatibility
+
+**Text-Based REST Protocols**: often lack a formal schema, which can lead to challenges in data integrity and versioning. While documentation tools like OpenAPI can provide some level of schema definition, they do not enforce compliance at the serialization level. This flexibility can introduce risks, such as unexpected data structures or changes that break existing clients, complicating the management of API versions over time.
+
+**Binary Protocols (Protobuf and Avro)**: require a predefined schema, which helps enforce strong typing and data integrity. This schema is used to validate data during serialization and deserialization, reducing the likelihood of errors.
+
+### Use Cases and Applications
+
+**Text-Based REST Protocols** are widely used for web services, CRUD operations, and applications where human interaction is essential. Their simplicity and ease of integration make them suitable for scenarios requiring interoperability among diverse clients and platforms.
+
+**Binary Protocols (Protobuf and Avro)** are well-suited for high-performance applications, microservices architectures, and big data processing environments. Their efficiency in data transmission and ability to handle large volumes of data make them ideal for scenarios such as IoT, real-time analytics, and data streaming.
+
+### Summary
+
+| Feature                        | Text-Based REST Protocols            | Binary Protocols (Protobuf/Avro)   |
+|--------------------------------|--------------------------------------|-------------------------------------|
+| **Data Representation**        | JSON/XML (text-based, larger size)  | Binary (compact, smaller size)      |
+| **Performance and Speed**      | Slower serialization/deserialization | Faster due to efficient encoding     |
+| **Schema Management**          | Flexible but lacks enforced schema   | Strongly typed, predefined schema    |
+| **Compatibility**              | Potential issues with data integrity | Backward and forward compatibility    |
+| **Interoperability**           | Human-readable and easy to debug     | Not human-readable, but tools available for representation |
+| **Use Cases**                  | Web services, public APIs, CRUD ops  | High-performance applications, microservices, big data processing |
+| **Client Integration**         | Simple integration with various clients | Requires handling of binary data for serialization/deserialization |
+| **Network Efficiency**         | Higher latency due to larger payloads | Lower latency due to smaller payloads  |
+
+Here’s an elaboration on the topic of client-service interaction styles, expanding on the dimensions and types of interactions you provided:
 
 
-### Interaction styles
-There are a variety of client-service interaction styles, they can be categorized in two dimensions. The first dimension is whether the interaction is **one-to-one** or **one-to-many**:
+## Interaction Styles
 
-* **One-to-one**: Each client request is processed by exactly one service.
-* **One-to-many**: Each request is processed by multiple services.
+Client-service interactions form the backbone of distributed systems, enabling communication between different components and facilitating various functionalities. These interactions can be categorized along two key dimensions: 
+* **the relationship between the client and the service (one-to-one vs. one-to-many)**  
+* **the nature of the response timing (synchronous vs. asynchronous)**
 
-The second dimension is whether the interaction is **synchronous** or **asynchronous**:
+### Relationship between the client and the service
 
-* **Synchronous**: The client expects a timely response from the service and might even block while it waits. 
-* **Asynchronous**: The client doesn't block, and the response, if any, isn’t necessarily sent immediately.
+- **One-to-One**: In this interaction style, each client request is directed to a specific service, and the response comes from that same service. This approach is straightforward and simplifies the relationship between clients and services but can lead to tight coupling. **Example**: A user requests their account information from a banking service; the request is processed by the account service, which retrieves and sends the relevant data back.
 
-The following are the different types of main interactions:
-* **Request/response**: (one-to-one, sync) A service client makes a request to a service and waits for a response. The client expects the response to arrive in a timely fashion. This is an interaction style that generally results in services being tightly coupled.
-* **Asynchronous request/response**: (one to one, async) A service client sends a request to a service, which replies asynchronously. The client doesn't block while waiting, because the service might not send the response for a long time.
-* **Publish/subscribe**: (one-to-many, async) A client publishes a notification message, which is consumed by zero or more interested services. 
-* **Publish/async responses**: (one-to-many, async) A client publishes a request message and then waits for a certain amount of time for responses from interested services.
+- **One-to-Many**: In this model, a single client request can invoke multiple services. This is useful in scenarios where multiple services need to collaborate to fulfill a request. This approach allows for greater flexibility and scalability, as different services can be updated or replaced independently. **Example**: A request for a travel itinerary might be sent to a service that interacts with multiple services: a flight booking service, a hotel booking service, and a car rental service.
 
-### Evolving APIs
-APIs invariably change over time as new features are added, existing features are changed, and (perhaps) old features are removed. In a monolithic application, it’s relatively straightforward to change an API and update all the callers.
+### Response timing
 
-In a microservices-based application, changing a service’s API is a lot more difficult.
-* A service’s clients are other services, which are often developed by other teams.
-* The clients may even be other applications outside the organization.
-* Modern applications are usually never down for maintenance, you’ll typically perform a rolling upgrade of your service, so both old and new versions of a service will be running simultaneously.
+- **Synchronous**: In synchronous interactions, the client sends a request and waits for a response, often blocking further actions until the response is received. This model is intuitive but can lead to delays if the service takes time to process the request. **Example**: A client submits a form on a website and waits for the server to confirm the submission before continuing. This tight coupling can lead to performance bottlenecks if the service is slow to respond.
 
-**It’s important to have a strategy for dealing with API changes**.
+- **Asynchronous**: Asynchronous interactions allow the client to continue processing other tasks without waiting for a response. The client may receive the response later or be notified when the response is ready. This non-blocking approach improves responsiveness and user experience but can complicate error handling and state management. **Example**: A user uploads a large file to a cloud storage service. Instead of waiting for the upload to complete, the user can continue working, and the service notifies them when the upload is finished.
 
->The Semantic Versioning specification (http://semver.org) is a useful guide to versioning APIs. It’s a set of rules that specify how version numbers are used and incremented. Semantic versioning was originally intended to be used for versioning of software packages, but you can use it for versioning APIs in a distributed system.
+### Types of Interactions
+
+**Request/Response (One-to-One, Synchronous)**: In this classic interaction style, a client sends a request to a service and waits for a direct response. The expectation is for a timely reply, which can lead to tight coupling between the client and the service. This pattern is common in traditional web applications and APIs where immediate feedback is required. **Example**: An API call to retrieve user details where the client waits for the service to return the data before proceeding.
+
+**Asynchronous Request/Response (One-to-One, Asynchronous)**: In this interaction, a client sends a request but does not wait for an immediate response. Instead, it can continue processing other tasks. The service will eventually respond, but the client does not block while waiting. This pattern helps improve user experience by preventing UI freezes or delays. **Example**: A mobile app that sends a message to a server and receives a notification when the message is processed, allowing the user to continue using the app without interruption.
+
+**Publish/Subscribe (One-to-Many, Asynchronous)**: This interaction model allows a client to publish messages to a topic or channel that can be consumed by multiple services. Interested services subscribe to these messages, which can be processed independently of the publisher. This decouples clients from services, enabling a more flexible architecture. **Example**: A news application publishes articles to a channel that multiple subscribers (e.g., different news feeds or alerts) can consume and display to users without direct knowledge of each other.
+
+**Publish/Async Responses (One-to-Many, Asynchronous)**: **Description**: In this variation, a client publishes a request message to multiple services and waits for responses for a specified amount of time. This allows the client to receive inputs from various services while still not blocking its operation, enhancing its efficiency. **Example**: An e-commerce platform publishes a request for inventory availability from multiple suppliers and waits a short duration for responses, enabling it to aggregate and display the best options to users without unnecessary delays.
+
+| Interaction Type                      | Client-Service Relationship | Response Timing   | Description                                                                                                                                                   | Example                                                                                                    |
+|---------------------------------------|-----------------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| **Request/Response**                  | One-to-One                  | Synchronous         | A client sends a request to a service and waits for an immediate response. This style often leads to tight coupling between the client and the service.     | A user requests their account information from a banking API and waits for the response.                  |
+| **Asynchronous Request/Response**     | One-to-One                  | Asynchronous        | A client sends a request but does not wait for an immediate response, allowing other processing to continue. The service responds at a later time.         | A mobile app sends a message to a server and continues working while waiting for a notification of completion. |
+| **Publish/Subscribe**                 | One-to-Many                 | Asynchronous        | A client publishes a message to a topic, which can be consumed by multiple interested services, promoting loose coupling.                                     | A news application publishes articles to a channel that multiple subscribers can consume.                 |
+| **Publish/Async Responses**           | One-to-Many                 | Asynchronous        | A client publishes a request message and waits for responses from multiple services for a limited time, allowing for aggregated feedback.                     | An e-commerce platform requests inventory availability from multiple suppliers and collects responses within a specified time. |
+
 
 
 ## Synchronous communications
@@ -188,125 +238,6 @@ Using messages in a microservice-based application requires more than understand
 Using messages in microservices often means a mix of synchronous service calls and asynchronous service processing. The asynchronous nature of messages means they might not be received or processed in proximity to when the message is published or consumed. Having things like correlation IDs for tracking a user’s transactions across service invocations is critical to understanding and debugging what’s going on in our application.
 
 Also, debugging message-based applications can involve wading through the logs of several different services, where user transactions can be executed out of order and at different times.
-
-## Overview of RabbitMQ and Apache Kafka
-
-### Apache Kafka
-**Apache Kafka** is an `open-source distributed event streaming platform` used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications.
-
-**Event streaming** is the practice of capturing data in real-time from event sources like databases, sensors, mobile devices, cloud services, and software applications in the form of streams of events; storing these event streams durably for later retrieval; manipulating, processing, and reacting to the event streams in real-time as well as retrospectively; and routing the event streams to different destination technologies as needed. Event streaming thus ensures a continuous flow and interpretation of data so that the right information is at the right place, at the right time.
-
-Kafka combines three key capabilities:
-
-1. To **publish** (write) and **subscribe to** (read) streams of events, including continuous import/export of your data from other systems.
-2. To **store** streams of events durably and reliably for as long as you want.
-3. To **process** streams of events as they occur or retrospectively.
-
-Kafka can be deployed on bare-metal hardware, virtual machines, and containers, and on-premises as well as in the cloud. You can choose between self-managing your Kafka environments and using fully managed services offered by a variety of vendors.
-
-Kafka is a distributed system consisting of servers and clients that communicate via a high-performance TCP network protocol:
-
-- **Servers**: Kafka is run as a cluster of one or more servers that can span multiple datacenters or cloud regions. Some of these servers form the storage layer, called the brokers. Other servers run Kafka Connect to continuously import and export data as event streams to integrate Kafka with your existing systems such as relational databases as well as other Kafka clusters. To let you implement mission-critical use cases, a Kafka cluster is highly scalable and fault-tolerant: if any of its servers fails, the other servers will take over their work to ensure continuous operations without any data loss.
-- **Clients**: They allow you to write distributed applications and microservices that read, write, and process streams of events in parallel, at scale, and in a fault-tolerant manner even in the case of network problems or machine failures. Kafka ships with some such clients included, which are augmented by dozens of clients provided by the Kafka community: clients are available for Java and Scala including the higher-level Kafka Streams library, for Go, Python, C/C++, and many other programming languages as well as REST APIs.
-
-An `event` records the fact that "something happened" in the world or in your business. When you read or write data to Kafka, you do this in the form of events. Conceptually, an event has a key, value, timestamp, and optional metadata headers.
-
-`Producers` are those client applications that publish (write) events to Kafka, and consumers are those that subscribe to (read and process) these events. In Kafka, producers and consumers are fully decoupled and agnostic of each other, which is a key design element to achieve the high scalability that Kafka is known for. For example, producers never need to wait for consumers. Kafka provides various guarantees such as the ability to process events exactly-once.
-
-Events are organized and durably stored in `topics`. Very simplified, a topic is similar to a folder in a filesystem, and the events are the files in that folder.  Topics in Kafka are always **multi-producer** and **multi-subscriber**: a topic can have zero, one, or many producers that write events to it, as well as zero, one, or many consumers that subscribe to these events. Events in a topic can be read as often as needed—unlike traditional messaging systems, events are not deleted after consumption. Instead, you define for how long Kafka should retain your events through a per-topic configuration setting, after which old events will be discarded. Kafka's performance is effectively constant with respect to data size, so storing data for a long time is perfectly fine.
-
-Topics are partitioned, meaning a topic is spread over a number of "buckets" located on different Kafka brokers. This distributed placement of your data is very important for scalability because it allows client applications to both read and write the data from/to many brokers at the same time. When a new event is published to a topic, it is actually appended to one of the topic's partitions. Events with the same event key (e.g., a customer or vehicle ID) are written to the same partition, and Kafka guarantees that any consumer of a given topic-partition will always read that partition's events in exactly the same order as they were written.
-
-![](images/kafka-example.png)
-
-*This example topic has four partitions P1–P4. Two different producers are publishing new events to the topic by writing events over the network to the topic's partitions. Events with the same key (denoted by their color in the figure) are written to the same partition. Note that both producers can write to the same partition if appropriate.*
-
-To make your data fault-tolerant and highly-available, every topic can be **replicated**, even across geo-regions or datacenters, so that there are always multiple brokers that have a copy of the data just in case things go wrong, you want to do maintenance on the brokers, and so on. A common production setting is a replication factor of 3, i.e., there will always be three copies of your data. This replication is performed at the level of topic-partitions.
-
-Kafka **use cases**:
-1. `Messaging`: in comparison to most messaging systems Kafka has better throughput, built-in partitioning, replication, and fault-tolerance which makes it a good solution for large scale message processing applications.<br>
-   Messaging uses are often comparatively low-throughput, but may require low end-to-end latency and often depend on the strong durability guarantees Kafka provides.<br>
-   In this domain Kafka is comparable to traditional messaging systems such as ActiveMQ or RabbitMQ.
-2. `Website Activity Tracking`: the original use case for Kafka was to be able to rebuild a user activity tracking pipeline as a set of real-time publish-subscribe feeds. This means site activity (page views, searches, or other actions users may take) is published to central topics with one topic per activity type.<br>
-   These feeds are available for subscription for a range of use cases including real-time processing, real-time monitoring, and loading into Hadoop or offline data warehousing systems for offline processing and reporting.<br>
-   Activity tracking is often very high volume as many activity messages are generated for each user page view.
-3. `Metrics`: often used for operational monitoring data. This involves aggregating statistics from distributed applications to produce centralized feeds of operational data.
-4. `Stream Processing`: many users of Kafka process data in processing pipelines consisting of multiple stages, where raw input data is consumed from Kafka topics and then aggregated, enriched, or otherwise transformed into new topics for further consumption or follow-up processing.
-5. `Event Sourcing`: is a style of application design where state changes are logged as a time-ordered sequence of records. Kafka's support for very large stored log data makes it an excellent backend for an application built in this style.
-6. `Commit Log`: Kafka can serve as a kind of external commit-log for a distributed system. The log helps replicate data between nodes and acts as a re-syncing mechanism for failed nodes to restore their data. The log compaction feature in Kafka helps support this usage.
-
-### RabbitMQ
-RabbitMQ is a reliable and mature messaging and streaming broker, which is easy to deploy on cloud environments, on-premises, and on your local machine. It is currently used by millions worldwide.
-
-One of RabbitMQ's main strengths is its adherence to the `Advanced Message Queuing Protocol` (AMQP). This standardized protocol was designed to ensure that messages are reliably delivered between applications, regardless of their location or the platform they are running on. AMQP defines precise rules for message formatting, delivery, and acknowledgment, ensuring that every message sent through an AMQP-based system, such as RabbitMQ, reaches its destination as expected.
-
-Distinctive features of RabbitMQ:
-1. **Reliable Messaging**: RabbitMQ ensures that sent messages are not lost, thanks to its persistence and delivery confirmations.
-2. **Advanced Routing**: with multiple exchange types, RabbitMQ can precisely determine how and where a message should be delivered, enabling complex routing scenarios.
-3. **Persistence**: messages in RabbitMQ can be saved to disk, ensuring that they are not lost even in the event of system failures.
-4. **Extended Features**: RabbitMQ is not limited to the AMQP protocol. With the use of plugins, it can support other protocols such as MQTT and STOMP, making it extremely versatile.
-
-![](images/rabbitmq-architecture.png)
-
-The **RabbitMQ architecture** includes:
-
-- `Publisher`: is the entity or component responsible for sending messages to RabbitMQ. It can be an application, a service or any other system that needs to transmit data.<br>
-  It takes care of initiating the communication and does not worry about how or where the message will be delivered, it simply sends it to the appropriate exchange.
-- `Consumer`: it is the entity that actively listens to one or more queues waiting for messages to be processed.<br>
-  Once a message arrives in a queue to which the consumer is subscribed, the consumer picks it up, processes it, and, if necessary, sends a confirmation of receipt or processing.
-- `Exchange`: is a crucial component in RabbitMQ that acts as a router for messages sent by producers.<br>
-  It does not hold messages, but relies on rules and criteria (such as the routing key) to determine which queue to forward a message to. There are several types of exchanges in RabbitMQ that determine how messages are forwarded:
-    - **Direct Exchange**: it acts as a unique router for messages based on a routing key.
-      When a producer sends a message to a Direct Exchange, it specifies a routing key. The exchange then forwards the message to the queue that has a binding to that specific routing key. This ensures targeted and precise delivery of the message.
-    - **Fanout Exchange**: it is the equivalent of a broadcast in terms of messaging. It does not take into account routing keys or other message attributes.
-      When a message arrives at a Fanout Exchange, it is forwarded to all queues connected to that exchange, without discrimination. It is ideal for scenarios where you want a message to reach as many consumers as possible.
-    - **Topic Exchange**: it offers greater flexibility than Direct Exchange, allowing messages to be forwarded based on routing key schemes rather than exact keys.
-      Routing keys in a Topic Exchange can contain special characters, such as * (matching one word) and # (matching zero or more words). This allows you to create complex patterns that can correspond to multiple queues, making message delivery more dynamic and flexible.
-    - **Headers Exchange**: unlike other exchanges that rely on routing keys, the Headers Exchange uses message header attributes to determine delivery.
-      When a message is sent to a Headers Exchange, the exchange evaluates the message headers and compares them to the binding criteria of the attached queues. If the headers match the criteria, the message is forwarded to the appropriate queue. This type of exchange offers a level of granularity and complexity in message delivery based on multiple attributes.
-- `Queue`: it is essentially a buffer that holds messages until they are consumed by a consumer.<br>
-  Every message sent through RabbitMQ is held in a queue waiting to be processed. Queues ensure that messages are not lost and are processed in order.
-- `Binding`: is a rule or set of instructions that determines how a message should be forwarded from the exchange to the queue.<br>
-  It serves as a bridge between exchange and queue, ensuring that messages are forwarded correctly based on the needs of the application.
-
-RabbitMQ **use cases**:
-1. `Application integration`: refers to RabbitMQ's ability to act as a bridge between different applications or systems.
-   Applications can communicate with each other without directly depending on each other (**decoupling**). RabbitMQ provides a uniform interface for sending and receiving messages, regardless of the platform or programming language of the integrated applications (**uniformity**).
-2. `Distributed processing`: refers to RabbitMQ's ability to distribute tasks or jobs to different workers or nodes for parallel processing: optimization of resources and reduction of processing times.
-3. `Buffering`: refers to its ability to temporarily hold messages awaiting processing. In the event of traffic spikes or system overload, RabbitMQ ensures that messages are not lost (**resiliency**). Messages can be processed when resources become available, ensuring smooth, uninterrupted processing (**delayed processing**).
-4. `Logs and monitoring`: can be used to track and monitor activities or events within an application or system.
-
-### Comparison between RabbitMQ and Kafka
-RabbitMQ and Apache Kafka move data from producers to consumers in different ways:
-- RabbitMQ is a general-purpose message broker that prioritizes end-to-end message delivery;
-- Kafka is a distributed event streaming platform that supports the real-time exchange of continuous big data.
-
-In RabbitMQ, the broker ensures that consumers receive the message. The consumer application takes a passive role and waits for the RabbitMQ broker to push the message into the queue. For example, a banking application might wait for SMS alerts from central transaction processing software.
-
-Kafka consumers, however, are more proactive in reading and monitoring information. As messages are added to physical log files, Kafka consumers track the last message read and update their offset tracker accordingly. An offset tracker is a counter that is incremented each time a message is read. With Kafka, the producer is unaware of message retrieval by consumers.
-
-A RabbitMQ broker routes the message to the destination queue. Once read, the consumer sends an acknowledgment response (ACK) to the broker, who then deletes the message from the queue.
-
-Unlike RabbitMQ, Apache Kafka adds the message to a log file, which remains until the retention period expires. This way, consumers can reprocess the streamed data at any time within the stipulated period.
-
-**Key differences:**
-
-|                                   | RabbitMQ                                                                                              | Kafka                                                                                                                                                                 |
-|-----------------------------------|-------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Architecture                      | complex message routing, push model, producers send messages to consumers with different rules.       | partition-based design for real-time, high-throughput stream processing, pull model, producers publish messages to topics and partitions that consumers subscribe to. |
-| Message management                | monitor message consumption, delete messages after they are consumed, and support message priorities. | consumers track message retrieval with an offset tracker, Kafka retains messages based on the retention policy and there is no priority for messages.                 |
-| Performance                       | low latency, sends thousands of messages per second.                                                  | transmits up to millions of messages per second in real time.                                                                                                         |
-| Programming language and protocol | supports a wide range of legacy languages ​​and protocols.                                            | it has a limited choice of programming languages ​​and uses the binary protocol over TCP for data transmission.                                                       |
-
-**When to use:**
-
-| Use case                      | Technology   | Why                                                                                                                                                                                                                                                         |
-|-------------------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Replay of the event stream    | **Kafka**    | Kafka is suitable for applications that need to re-analyze the received data. You can process streaming data multiple times during the retention period or collect log files for analysis.                                                                  |
-| Real-time data processing     | **Kafka**    | Kafka transmits messages with very low latency and is suitable for analyzing streaming data in real time.                                                                                                                                                   |
-| Complex routing architecture  | **RabbitMQ** | RabbitMQ offers great flexibility to customers with vague requirements or complex routing scenarios.                                                                                                                                                        |
-| Effective message delivery    | **RabbitMQ** | RabbitMQ adopts the push model, which ensures that the producer is notified when a client application has consumed a message. It is suitable for applications that must meet specific sequences and delivery guarantees when exchanging and analyzing data. |
-| Language and protocol support | **RabbitMQ** | Developers use RabbitMQ for customer applications that require compatibility with legacy protocols such as MQTT and STOMP.                                                                                                                                  |
 
 ## Resources
 - Microservices Patterns (Chapter 3)

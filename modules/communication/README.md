@@ -6,12 +6,12 @@
 **Instructions:**
 - Create a Spring Boot application that exposes a REST endpoint (e.g., `/greet`) that returns a greeting message.
 - Implement another Spring Boot application that consumes the `/greet` endpoint and displays the response.
-- Use `RestTemplate` to make HTTP requests from the consumer service to the provider service.
+- Use `RestClient` to make HTTP requests from the consumer service to the provider service.
 - Test the communication between the two services to verify that the greeting message is returned correctly.
 
 **Expected Outcomes:**
 - Students should be able to set up a Spring Boot application with REST communication.
-- They will understand how to use `RestTemplate` to call external REST APIs and handle responses.
+- They will understand how to use `RestClient` to call external REST APIs and handle responses.
 
 ## Lab 2: Implementing Asynchronous Communication with RabbitMQ
 **Objective:** Set up asynchronous communication between microservices using RabbitMQ.
@@ -42,7 +42,7 @@
 # Questions
 1. What are the key differences between synchronous and asynchronous communication in microservices?
 2. How can you implement RESTful communication between two Spring Boot applications?
-3. Explain the role of `RestTemplate` in a Spring Boot application for REST communication.
+3. Explain the role of `RestClient` in a Spring Boot application for REST communication.
 4. What are the advantages of using RabbitMQ for asynchronous communication between microservices?
 5. How can you configure a Spring Boot application to use RabbitMQ for message publishing and consumption?
 6. What is Apache Kafka, and how does it facilitate event-driven communication in microservices?

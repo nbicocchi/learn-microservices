@@ -1,16 +1,8 @@
-# Actuators in Boot
+# Actuators
 
-In this lesson, we'll focus on a core feature of Spring Boot: **actuators**.
+Simply put, **actuators are monitoring tools**. They bring production ready features into our app for very low effort. 
 
-The relevant module for this lesson is: [working-with-actuators-end](../code/learn-spring-m2/working-with-actuators-end)
-
-## Actuators
-
-Simply put, **actuators are monitoring tools**. They bring production ready features into our app for very low effort.
-
-More specifically, they provide various endpoints mainly exposed via HTTP which basically help in monitoring and, to some extent, managing our application.
-
-Through actuators, Spring Boot provides these built-in endpoints focused on auditing, health checks, and displaying metrics information.
+Actuators provide various endpoints mainly exposed via HTTP which basically help in monitoring and, to some extent, managing our application. Through actuators, Spring Boot provides these built-in endpoints focused on auditing, health checks, and displaying metrics information.
 
 **The best way to enable actuators is to add the _spring-boot-starter-actuator_ dependency**:
 
@@ -23,10 +15,15 @@ Through actuators, Spring Boot provides these built-in endpoints focused on audi
 
 Boot provides a number of built-in endpoints, well documented in the [official reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints).
 
-Let’s go to _http://localhost:8080/actuator_ and view a list of available endpoints. We can modify the list of available endpoints with the following property:
+## GET operations
+
+Let’s go to _http://localhost:8080/actuator_ and view a list of available endpoints. 
+
+
+We can modify the list of available endpoints with the following property:
 
 ```
-management.endpoints.web.exposure.include=loggers,info, health
+management.endpoints.web.exposure.include=loggers,info,health
 ```
 
 We should see:
@@ -62,7 +59,7 @@ We should see:
 }
 ```
 
-### The _/health_ Endpoint
+### _/health_ endpoint
 
 Let’s run the application and have a look at the _/health_ endpoint first. We can open up the browser and access this at: [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health).
 
@@ -99,7 +96,7 @@ management.endpoint.health.show-details=ALWAYS
 }
 ```
 
-### The _/info_ Endpoint
+### _/info_ endpoint
 
 Let’s hit the /info endpoint: [http://localhost:8080/actuator/info](http://localhost:8080/actuator/info)
 
@@ -129,7 +126,7 @@ Now, when we hit the _info_ endpoint, we’ll see:
 }
 ```
 
-### The _/loggers_ Endpoint
+### _/loggers_ endpoint
 
 **Spring Boot Actuator also exposes a _/loggers_ endpoint which allows us to view and configure logging levels of our app at runtime.**
 
@@ -165,7 +162,7 @@ Since we have changed the actuator context path to _/monitoring_ in our app, we 
 }
 ```
 
-## POST to Spring Boot Actuator
+## POST operations
 
 If you want to update/set the environment property while the application is running, you have to set:
 
