@@ -28,7 +28,6 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 [M1 Software architectures](modules/software-architectures)
 * Monolithic and distributed architectural styles
 * The transition towards microservices architectures
-* #8 Fallacies of distributed computing
 
 [M2 Tools: Java, Maven, Spring Boot, JMeter](modules/tools)
 * Java recap: generics, functional programming
@@ -42,8 +41,9 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Container orchestration with *docker compose*
 
 [M4 Communication](modules/communication)
-* Synchronous communications (REST/GraphQL/Protobuf) and their limitations
-* Asynchronous messaging systems (*Kafka* and *RabbitMQ*), their advantages and limitations
+* #8 Fallacies of distributed computing
+* Synchronous communications (REST) and their limitations
+* Asynchronous messaging systems (*RabbitMQ*)
 * *Spring Cloud Stream* and its abstraction over messaging systems
 
 [M4 Infrastructure](modules/infrastructure) 
