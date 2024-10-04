@@ -1,6 +1,6 @@
 services:
   producer:
-    build: producer-end
+    build: event-producer
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -9,7 +9,7 @@ services:
         condition: service_healthy
 
   consumer-0:
-    build: consumer-end
+    build: event-consumer
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -18,7 +18,7 @@ services:
         condition: service_healthy
 
   consumer-1:
-    build: consumer-end
+    build: event-consumer
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker

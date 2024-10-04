@@ -107,8 +107,6 @@ Therefore, in a microservice architecture you’ll probably use this communicati
 
 A popular architectural style for request/response communication is REST. This approach is based on the HTTP protocol, embracing HTTP verbs like GET, POST, and PUT. REST is the most commonly used architectural communication approach when creating services. 
 
-There’s additional value when using HTTP REST services as your interface definition language. For instance, if you use Swagger metadata to describe your service API, you can use tools that generate client stubs that can directly discover and consume your services.
-
 ![](images/sync-comms-availability.avif)
 
 
