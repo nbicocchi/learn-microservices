@@ -11,7 +11,6 @@
 
 	<groupId>com.baeldung</groupId>
 	<artifactId>product-service-no-db</artifactId>
-	<name>product-service-no-db</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>Demo product for Spring Boot</description>
 
@@ -45,6 +44,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.4.3</version>
+				<configuration>
+					<to>
+						<image>product-service-no-db</image>
+					</to>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

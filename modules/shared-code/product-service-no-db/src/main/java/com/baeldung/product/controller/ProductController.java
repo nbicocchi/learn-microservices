@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/products")
 public class ProductController {
     ProductService productService;
 

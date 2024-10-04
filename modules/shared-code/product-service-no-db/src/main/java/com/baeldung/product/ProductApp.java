@@ -8,15 +8,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ProductServiceApp implements ApplicationRunner {
+public class ProductApp implements ApplicationRunner {
     ProductRepository productRepository;
 
-    public ProductServiceApp(ProductRepository productRepository) {
+    public ProductApp(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
     public static void main(final String... args) {
-        SpringApplication.run(ProductServiceApp.class, args);
+        SpringApplication.run(ProductApp.class, args);
     }
 
     @Override
