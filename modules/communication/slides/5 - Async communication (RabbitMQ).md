@@ -9,16 +9,29 @@ RabbitMQ is a widely used open-source message broker that facilitates communicat
 Before diving into the types of queues and exchanges, it is essential to understand the key components of RabbitMQ:
 
 - **Producer**: The application that sends messages to the broker.
-- **Queue**: A buffer that stores messages until they are consumed by a consumer.
 - **Consumer**: The application that receives messages from a queue.
+- **Queue**: A buffer that stores messages until they are consumed by a consumer.
 - **Exchange**: A routing mechanism that determines how messages are distributed to queues.
 - **Binding**: A link between an exchange and a queue that defines the routing rules for messages.
+- **Routing Key**: The routing key is a message attribute taken into account by the exchange when deciding how to route a message.
+
+## Basic RabbitMQ Message Cycle
+With the basics of the RabbitMQ message cycle in place, let’s now have a look at how the RabbitMQ message cycle works.
+
+* Step 1: An exchange message is sent out by the producer.
+* Step 2: After the communication has been received, the exchange is responsible for sending it. It uses information from the RabbitMQ exchange type to direct the message to the relevant queues and exchanges.
+* Step 3: The queue receives the message and stores it until the consumer receives it.
+* Step 4: Finally, the consumer handles the message.
+
+![](images/rabbitMQ-message-cycle.png)
 
 ## Types of Exchanges
 
 RabbitMQ provides several types of exchanges that determine how messages are routed to queues. The main types of exchanges are:
 
 ### 1. Direct Exchange
+
+![](images/exchange-direct.png)
 
 - **Description**: A direct exchange routes messages with a specific routing key to the queues that are bound to the exchange with the same routing key.
 - **Use Case**: Useful for point-to-point communication where messages must be routed to a specific queue.
@@ -27,6 +40,8 @@ RabbitMQ provides several types of exchanges that determine how messages are rou
 
 ### 2. Fanout Exchange
 
+![](images/exchange-fanout.png)
+
 - **Description**: A fanout exchange routes messages to all queues that are bound to it, regardless of the routing key. It broadcasts messages to multiple consumers.
 - **Use Case**: Useful for scenarios where messages need to be delivered to multiple subscribers.
 
@@ -34,12 +49,16 @@ RabbitMQ provides several types of exchanges that determine how messages are rou
 
 ### 3. Topic Exchange
 
+![](images/exhange-topic.png)
+
 - **Description**: A topic exchange routes messages to one or more queues based on wildcard patterns in the routing key. This allows for more complex routing logic.
 - **Use Case**: Useful for scenarios where messages need to be filtered based on multiple criteria.
 
 **Example**: A news service where articles can be tagged with multiple categories (e.g., sports, politics), allowing subscribers to receive only the articles of interest.
 
 ### 4. Headers Exchange
+
+![](images/exchange-header.png)
 
 - **Description**: A headers exchange routes messages based on the message's header attributes rather than the routing key. It matches the headers against specified criteria.
 - **Use Case**: Useful for scenarios requiring routing based on multiple attributes rather than a single routing key.
