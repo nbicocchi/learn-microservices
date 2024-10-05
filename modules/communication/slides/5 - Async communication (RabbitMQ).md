@@ -1,6 +1,4 @@
-# Lecture Notes on RabbitMQ: Types of Queues and Exchanges
-
-## Introduction to RabbitMQ
+# Asynchronous communications (RabbitMQ)
 
 RabbitMQ is a widely used open-source message broker that facilitates communication between different parts of a distributed system. It enables applications to send and receive messages through a robust and flexible messaging system based on the Advanced Message Queuing Protocol (AMQP). RabbitMQ supports various messaging patterns, making it suitable for various use cases, such as microservices communication, event sourcing, and task queuing.
 

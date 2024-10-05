@@ -1,4 +1,4 @@
-# Communication styles (REST)
+# Communication styles (RESTClient)
 
 ## Key Principles of REST
 

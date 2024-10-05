@@ -1,4 +1,4 @@
-# Communication styles (Spring Cloud Stream)
+# Asynchronous communications (Spring Cloud Stream)
 
 ## Introduction
 Spring Cloud Stream also allows to abstract away the implementation details of the messaging platform that we’re using. We can use multiple message platforms, including Apache Kafka and RabbitMQ, and the platform’s implementation-specific details are kept out of the application code. The implementation of message publication and consumption in your application is done through platform-neutral Spring interfaces.
