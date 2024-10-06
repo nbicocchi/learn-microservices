@@ -1,15 +1,14 @@
 # Learn Microservices
 
 ## Prerequisites
-These topics assume a decent understanding of both Java and Spring Boot 3. Dedicated courses can be found:
-* [https://github.com/nbicocchi/learn-java-core](https://github.com/nbicocchi/learn-java-core)
-* [https://github.com/nbicocchi/learn-spring-boot](https://github.com/nbicocchi/learn-spring-boot)
+The course requires a decent understanding of Java. A dedicated course can be found [here](https://github.com/nbicocchi/learn-java-core).
 
 ## Software
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/) + [Envfile Plugin](https://plugins.jetbrains.com/plugin/7861-envfile)
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* [Apache Maven](https://maven.apache.org/)
 * [Apache JMeter](https://jmeter.apache.org/)
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## Books
 * Microservices Patterns; Richardson
