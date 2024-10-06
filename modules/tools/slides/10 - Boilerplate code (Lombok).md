@@ -1,7 +1,5 @@
 # Boilerplate Code Reduction with Lombok
 
-## Introduction
-
 In this guide, we will explore how to significantly reduce the amount of boilerplate code in Java. While Java is a powerful language, it often becomes verbose when handling routine tasks or complying with framework practices. This verbosity doesn't add much business value, and that's where Lombok comes in to make us more productive. Lombok simplifies code by auto-generating common parts during the build process through intuitive annotations.
 
 ## Project Dependencies

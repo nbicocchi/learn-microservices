@@ -6,10 +6,10 @@ The example application we've chosen to serve as the code base for the course is
 
 We'll choose a Maven project using Java, and we need to fill in the project details:
 
--   Group: com.baeldung
--   Artifact: real-world-project
+-   Group: com.nbicocchi
+-   Artifact: product-service-no-db
 
-For the dependencies section, we'll choose the "Spring Web" dependency. Even though we won't be focusing on web aspects in this module, we include it since it allows us to start the application and keep it running.
+For the dependencies section, we'll choose the *Spring Web* dependency. Even though we won't be focusing on web aspects in this module, we include it since it allows us to start the application and keep it running.
 
 ![](images/m1-start-spring-io.png)
 
@@ -18,164 +18,111 @@ Now we can click the "Generate" button to download the project, unzip it and imp
 If you are using IntelliJ, you can import the project by navigating to the main menu, select File > Open, and then navigating to the path where our project is present to add it as a Project.
 
 ## Adding the Persistence Layer
-We'll create a simple [persistence layer](https://en.wikipedia.org/wiki/Persistence_(computer_science)#Persistence_layers) under the package _com.baeldung.persistence.model_, by adding a _Project_ class.
+We'll create a simple [persistence layer](https://en.wikipedia.org/wiki/Persistence_(computer_science)#Persistence_layers) under the package _com.nbicocchi.product.persistence.model_, by adding a _Product_ class.
 
 ```
-public class Project {
+package com.nbicocchi.product.persistence.model;
 
+import lombok.*;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class Product {
     private Long id;
-
     private String name;
+    private Double weight;
 
-    private LocalDate dateCreated;
-
-    public Project() {
+    public Product(String name, Double weight) {
+        this(null, name, weight);
     }
 
-    public Project(Long id, String name, LocalDate dateCreated) {
-        this.id = id;
-        this.name = name;
-        this.dateCreated = dateCreated;
-    }
-    
-    public Project(String name, LocalDate dateCreated) {
-        this(null, name, dateCreated);
-    }
-
-    public Project(Project project) {
-        this(project.getId(), project.getName(), project.getDateCreated());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDate getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(LocalDate dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Project project = (Project) o;
-        return Objects.equals(id, project.id) && Objects.equals(name, project.name) && Objects.equals(dateCreated, project.dateCreated);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, dateCreated);
-    }
-
-    @Override
-    public String toString() {
-        return "Project{" + "id=" + id + ", name='" + name + '\'' + ", dateCreated=" + dateCreated + '}';
+    public Product(Product product) {
+        this(product.getId(), product.getName(), product.getWeight());
     }
 }
 ```
-This class will have 3 basic attributes: the _id_, _name_ and _dateCreated_.
 
-Next, we'll add the [repository](https://martinfowler.com/eaaCatalog/repository.html) under the package _com.baeldung.persistence.repository_:
+This class will have 3 basic attributes: the _id_, _name_ and _weight_.
 
-```
-public interface IProjectRepository {
-    Optional<Project> findById(Long id);
-    Collection<Project> findAll();
-    Project save(Project project);
-}
-```
-
-For now, we can simulate persistence for these simple operations, with an in-memory _ArrayList_ under the package _com.baeldung.persistence.repository.impl_:
+Next, we'll add the [repository](https://martinfowler.com/eaaCatalog/repository.html) under the package _com.nbicocchi.product.persistence.repository_:
 
 ```
+package com.nbicocchi.product.persistence.repository;
+
+import com.nbicocchi.product.persistence.model.Product;
+import org.springframework.stereotype.Repository;
+
+import java.util.*;
+
 @Repository
-public class ProjectRepositoryImpl implements IProjectRepository {
+public class ProductRepository {
+    private final List<Product> products = new ArrayList<>();
 
-    private final List<Project> projects = new ArrayList<>();
-
-    @Override
-    public Optional<Project> findById(Long id) {
-        return projects.stream().filter(p -> p.getId().equals(id)).findFirst();
+    public Optional<Product> findById(Long id) {
+        return products.stream().filter(p -> p.getId().equals(id)).findFirst();
     }
 
-    @Override
-    public Collection<Project> findAll() {
-        return projects;
+    public Iterable<Product> findAll() {
+        return products;
     }
 
-    @Override
-    public Project save(Project project) {
-        Project toSave = new Project(project);
+    public Product save(Product product) {
+        Product toSave = new Product(product);
         if (Objects.isNull(toSave.getId())) {
             toSave.setId(new Random().nextLong(1_000_000L));
         }
-        Optional<Project> existingProject = findById(project.getId());
-        if (existingProject.isPresent()) {
-            projects.remove(existingProject);
-        }
-        projects.add(toSave);
+        Optional<Product> existingProject = findById(product.getId());
+        existingProject.ifPresent(products::remove);
+
+        products.add(toSave);
         return toSave;
     }
+
+    public void delete(Product product) {
+        products.remove(product);
+    }
 }
+
 ```
 
 ## Adding the Service Layer
-Moving on to the [service layer](https://en.wikipedia.org/wiki/Multitier_architecture#Common_layers), we'll add a similar service interface under the package _com.baeldung.service_ and class name as _IProjectService_ with an implementation under the package _com.baeldung.service.impl_:
+Moving on to the [service layer](https://en.wikipedia.org/wiki/Multitier_architecture#Common_layers), we'll add a similar service interface under the package _com.nbicocchi.product.service_ and class name as _ProductService_:
 
 ```
-public interface IProjectService {
-    Optional<Project> findById(Long id);
-    Collection<Project> findAll();
-    Project save(Project project);
-}
-```
+package com.nbicocchi.product.service;
 
-```
+import java.util.Optional;
+
+import com.nbicocchi.product.persistence.model.Product;
+import com.nbicocchi.product.persistence.repository.ProductRepository;
+import org.springframework.stereotype.Service;
+
 @Service
-public class ProjectServiceImpl implements IProjectService {
+public class ProductService {
+    private final ProductRepository productRepository;
 
-    private IProjectRepository projectRepository;
-
-    public ProjectServiceImpl(IProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
-    @Override
-    public Optional<Project> findById(Long id) {
-        return projectRepository.findById(id);
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
     }
 
-    @Override
-    public Collection<Project> findAll() {
-        return projectRepository.findAll();
+    public Iterable<Product> findAll() {
+        return productRepository.findAll();
     }
 
-    @Override
-    public Project save(Project project) {
-        return projectRepository.save(project);
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
+
+    public void delete(Product product) {
+        productRepository.delete(product);
     }
 }
 ```
-
-Here, we’re simply autowiring the Project Repository and implementing the exact same operations and just delegating to the repository.
 
 The _@Repository, @Service_ and _@Autowired_ annotations we've used are Spring annotations that define and connect the 2 classes. 
 
@@ -230,26 +177,25 @@ In Spring Boot, _CommandLineRunner_ and _ApplicationRunner_ are two interfaces t
 
 ```
 @SpringBootApplication
-public class LsApp implements ApplicationRunner {
-    IProjectRepository projectRepository;
+public class App implements ApplicationRunner {
+    ProductRepository productRepository;
 
-    public LsApp(IProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public App(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     public static void main(final String... args) {
-        SpringApplication.run(LsApp.class, args);
+        SpringApplication.run(App.class, args);
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        projectRepository.save(new Project("P1", LocalDate.now()));
-        projectRepository.save(new Project("P2", LocalDate.now()));
-        projectRepository.save(new Project("P3", LocalDate.now()));
+    public void run(ApplicationArguments args) {
+        productRepository.save(new Product("Laptop", 2.2));
+        productRepository.save(new Product("Bike", 5.5));
+        productRepository.save(new Product("Shirt", 0.2));
     }
 }
 ```
 
 ## Resources
-- [Refactor Operations in Eclipse](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fref-menu-refactor.htm)
-- [Refactor Operations in IntelliJ](https://www.jetbrains.com/help/idea/refactoring-source-code.html)
+

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.baeldung</groupId>
+	<groupId>com.nbicocchi</groupId>
 	<artifactId>product-service-postgres</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>Demo product for Spring Boot</description>
