@@ -8,7 +8,11 @@ In this lesson, we'll focus on understanding the concept of Dependency Injection
 
 In contrast with traditional programming, in which our custom code makes calls to a library, IoC enables a framework to take control of the flow of a program and make calls to our custom code. To enable this, frameworks use abstractions with additional behavior built in. **If we want to add our own behavior, we need to extend the classes of the framework or plugin our own classes.**
 
-We can achieve Inversion of Control through various mechanisms such as: Strategy design pattern, Service Locator pattern, Factory pattern, and Dependency Injection (DI).
+We can achieve Inversion of Control through various mechanisms: 
+* Strategy design pattern
+* Service Locator pattern
+* Factory pattern
+* Dependency Injection (DI)
 
 ## The Spring IoC Container
 The interface `org.springframework.context.ApplicationContext` represents the Spring IoC container which is **responsible for instantiating, configuring, and assembling beans**. It allows you to express the objects that compose your application and the rich interdependencies between such objects.
@@ -23,13 +27,11 @@ The following diagram is a high-level view of how Spring works. Your application
 
 ## Dependency Injection
 
-Before we can talk about Dependency Injection, let’s first define what a dependency is. Understanding this concept is critical not only for Spring, but for developing software in general. 
-
 _Class A has a dependency on Class B when it interacts with it in any way_
 
 One option is for Class A to take on the responsibility of instantiating B by itself:
 
-```
+```java
 public class A {
     private B bDependency;
   
@@ -41,7 +43,7 @@ public class A {
 
 Alternatively, that responsibility can be external, meaning the dependency comes from the outside:
 
-```
+```java
 public class A {
     private B bDependency;
     
@@ -51,8 +53,6 @@ public class A {
 }
 ```
 
-That is, in a nutshell, Dependency Injection (not to be confused with the the Dependency Inversion principle from SOLID).
-
 **Injection is simply the process of injecting the dependency B in the object of type A.** Since the instantiation of the B dependency is no longer done in A, that responsibility will now belong to the framework. Separating the responsibility of instantiating a class from the logic in that class is a very useful concept:
 
 * Leads to **a more loosely coupled system and to a lot of flexibility in the design** of that system, as now the dependency can be decided (or swapped out) at runtime.
@@ -60,176 +60,216 @@ That is, in a nutshell, Dependency Injection (not to be confused with the the De
 
 ## Dependency Injection Types
 
-Now that we have a good understanding of how to create beans and make sure they get into the the Application Context, let’s have a look at defining relations between these beans. There are primarily **three ways to define or inject dependencies**:
+There are **three main ways to inject dependencies**:
 
-* constructor injection
-* setter injection
-* field injection
+* Constructor injection
+* Setter injection
+* Field injection
 
-### Constructor-Based DI
+### Constructor Injection
 
-In constructor-based injection **we inject dependencies in a class via its constructor arguments**. Each constructor argument represents a dependency.
+In this case, we inject dependencies in a class via its constructor arguments. Each constructor argument represents a dependency and Spring will inject those dependencies automatically.
 
-Spring will inject those dependencies in our class automatically.
+Let’s take a look at our _ProductService_ where an object of _ProductRepository_ class is injected via a constructor argument:
 
-Let’s take our _ProjectServiceImpl_ class as an example and inject _IProjectRepository_ in this class via a constructor argument:
-
-```
+```java
 @Service
-public class ProjectServiceImpl implements IProjectService {
-
-    private IProjectRepository projectRepository;
+public class ProductService {
+    private final ProductRepository productRepository;
 
     @Autowired
-    public ProjectServiceImpl(IProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
-    
-    // ...
+
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
+    }
+
+    public Iterable<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
+
+    public void delete(Product product) {
+        productRepository.delete(product);
+    }
 }
 ```
 
-The Spring container will fetch the _projectRepository_ bean for us and inject it in our service class.
+Note that since we have a single constructor, the _@Autowired_ annotation is optional. If we define more than one constructor and we want one of them to inject dependencies on creating the bean, then we need to add _@Autowired_ on the required constructor.
 
-Note that **since we have a single constructor, the _@Autowired_ annotation is optional. If we define more than one constructor and we want one of them to inject dependencies on creating the bean, then we need to add _@Autowired_ on the required constructor.**
-
-Overall, constructor based dependency injection is clean and doesn't introduce any container specific classes, annotations or other dependencies.
-
-### Setter-Based DI
+### Setter Injection
 
 In setter-based injection, **we inject dependencies using the setter methods** of the required dependencies declared as fields.
 
-Let’s create a new service class implementation that will inject the repository dependency using setter injection:
-
-```
+```java
 @Service
-public class ProjectServiceImplSetterInjection implements IProjectService {
+public class ProductService {
+    private ProductRepository productRepository;
 
-    private IProjectRepository projectRepository;
-    
     @Autowired
-    public void setProjectRepository(IProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public void setProductRepository(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
-    
-    // ...
+
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
+    }
+
+    public Iterable<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
+
+    public void delete(Product product) {
+        productRepository.delete(product);
+    }
 }
 ```
 
-The _setProjectRepository_ setter will be used to inject the appropriate _projectRepository_ bean in our class using the _@Autowired_ annotation added to the setter.
+The container will inject the _productRepository_ dependency after calling the service constructor.
 
-The container will inject the _projectRepository_ dependency after calling the service constructor.
-
-### Field-Based DI
+### Field Injection
 
 In field-based dependency injection **we inject dependencies using the _@Autowired_ annotation directly on fields**.
 
-Let’s create a new service class implementation that will inject the repository dependency using _@Autowired_:
-
-```
+```java
 @Service
-public class ProjectServiceImplAutowiring implements IProjectService {
-
+public class ProductService {
     @Autowired
-    private IProjectRepository projectRepository;
-    
-    // ...
-}
-```
+    private ProductRepository productRepository;
 
-This is all we need to do. The Spring container will fetch the appropriate bean _projectRepository_ and inject it in our service class.
-
-The default way _@Autowired_ works is it matches the bean by-type, i.e. it will fetch the bean of type _IProjectRepository_ and inject it in our class.
-
-### The _@Qualifier_ Annotation
-
-Let's see what would happen if we had two repositories that implement our project repository interface.
-
-We'll add a second implementation of the _ProjectRepository_ interface, similar to the first one, named _ProjectRepositoryImpl2_.
-
-If we try to run the project now, the startup will fail, with a helpful error message, that shows us exactly what the issue is:
-
-_"Parameter 0 of constructor in com.baeldung.ls.service.impl.ProjectServiceImpl required a single bean, but 2 were found."_
-
-The framework also gives us a suggestion for how to fix the problem: either making one of the beans primary, or using the _@Qualifier_ annotation.
-
-If there are multiple beans of a type, then we can control the specific bean that we have to inject by using the additional _@Qualifier_ annotation and give it the specific bean name to inject:
-
-```
-@Service
-public class ProjectServiceImpl implements IProjectService {
-
-    private IProjectRepository projectRepository;
-
-    public ProjectServiceImpl(@Qualifier("projectRepositoryImpl2") IProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
     }
-    
-    //...
-}
-```
 
-Note that we're using the bean name: "_projectRepositoryImpl2_" even though we haven't defined this name explicitly.
+    public Iterable<Product> findAll() {
+        return productRepository.findAll();
+    }
 
-This is because **Spring will generate a default name for each bean, based on the class name**, if we don't define one.
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
 
-This name is simply the name of the class, starting with a lowercase. For example, for our _ProjectRepositoryImpl2_ class, the container will create a bean called “_projectRepositoryImpl2_”.
-
-We’ve also learned how to define beans using the _@Bean_ annotation on factory methods. In this case, the method name becomes the bean name.
-
-### The _@Primary_ Annotation
-
-Another way to fix the issue above is to add the _@Primary_ annotation to one of our repository implementations.
-
-**We use _@Primary_ to give higher preference to a bean when there are multiple beans of the same type.**
-
-If we remove the _@Qualifier_ annotation from all our service implementations, and mark the _ProjectRepositoryImpl2_ class with _@Primary_, this bean will be injected into the services.
-
-### Advantages and Disadvantages of the Injection Methods
-
-There's no "absolute rule" here - all three injection methods are viable, but there is a simple rule of thumb you can follow:
-
--   use Constructor injection for all required dependencies
--   use Setter injection for optional dependencies, if any
-
-**Constructor injection is slightly more verbose, but it has an important advantage over the others - it leads to more testable code**. The reason is simply that, with constructor injection, all the collaborators of the object are defined explicitly and need to be passed in during instantiation.  The other two methods make collaborators easy to miss.
-
-**While field-based injection appears to be a very convenient way to inject dependencies into private fields, it should be avoided because it makes the dependent class tightly coupled to the Spring container for injecting the dependency.**
-
-Let's see this with an example:
-
-```
-@Service
-public class ProjectServiceImplAutowiring implements IProjectService {
-    @Autowired
-    private IProjectRepository projectRepository;
-//..
-}
-```
-
-In this case, if we want to instantiate _ProjectServiceImplAutowiring_ outside of Spring, we won’t be able to inject the dependency _IProjectRepository_ as we are heavily dependent on the Spring container to do it for us. By comparison, when using constructor or setter-based injection, we can use the constructor or the setter method to manually inject the dependency.
-
-**This is a very common issue we face when we have to write a plain JUnit test for our class.**
-
-Consider the example below, where we’re testing the _ProjectServiceImpl_ class:
-
-```
-public class ProjectServiceImplTest {
-
-    private ProjectServiceImpl projectServiceImpl = new ProjectServiceImpl(new ProjectRepositoryImpl());
-
-    @Test
-    public void givenNewProject_thenSavedSuccess() {
-        Project newProject = new Project("First Project", LocalDate.now());
-
-        assertNotNull(projectServiceImpl.save(newProject));
+    public void delete(Product product) {
+        productRepository.delete(product);
     }
 }
 ```
 
-Since we’re using constructor based injection in _ProjectServiceImpl,_ we’re able to manually inject the instance of _ProjectRepositoryImpl_ into _ProjectServiceImpl_ and easily test our code.
+This is all we need to do. The Spring container will fetch the appropriate bean _productRepository_ and inject it in our service class.
 
-However, if we had to write a similar test for _ProjectServiceImplAutowiring,_ where we're using field based injection, there is no easy way to inject _ProjectRepositoryImpl,_ hence making our code untestable without using the Spring container.
+## The _@Qualifier_ and _@Primary_ Annotations
+
+`@Qualifier` and `@Primary` are annotations used to handle the injection of dependencies when there are multiple beans of the same type, allowing more control over which specific bean is chosen by the framework.
+
+`@Qualifier` is used to disambiguate between multiple beans of the same type. When Spring finds multiple beans that match a dependency, it throws an error unless you specify which one to use. By using `@Qualifier`, you can indicate the specific bean you want to inject.
+
+Suppose you have two implementations of an interface `Vehicle`:
+
+```java
+public interface Vehicle {
+    void start();
+}
+
+@Component
+public class Car implements Vehicle {
+    @Override
+    public void start() {
+        System.out.println("Car is starting");
+    }
+}
+
+@Component
+public class Bike implements Vehicle {
+    @Override
+    public void start() {
+        System.out.println("Bike is starting");
+    }
+}
+```
+
+If you want to inject the `Car` bean into a class, you can use `@Qualifier`:
+
+```java
+@Component
+public class Driver {
+    private final Vehicle vehicle;
+
+    @Autowired
+    public Driver(@Qualifier("car") Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void drive() {
+        vehicle.start();
+    }
+}
+```
+
+`@Primary` is used to specify which bean should be preferred when no `@Qualifier` is specified. If you have multiple beans of the same type and one is marked as `@Primary`, Spring will use that bean by default unless told otherwise.
+
+
+```java
+@Component
+@Primary
+public class Car implements Vehicle {
+    @Override
+    public void start() {
+        System.out.println("Car is starting");
+    }
+}
+
+@Component
+public class Bike implements Vehicle {
+    @Override
+    public void start() {
+        System.out.println("Bike is starting");
+    }
+}
+```
+
+Here, `Car` is marked with `@Primary`, so if you inject a `Vehicle` without specifying a `@Qualifier`, Spring will automatically choose the `Car` bean:
+
+```java
+@Component
+public class Driver {
+    private final Vehicle vehicle;
+
+    @Autowired
+    public Driver(Vehicle vehicle) { // No @Qualifier needed
+        this.vehicle = vehicle;
+    }
+
+    public void drive() {
+        vehicle.start();
+    }
+}
+```
+
+## General Best Practices for Dependency Injection:
+
+1. **Prefer Constructor Injection**:
+    - Constructor injection makes the object’s dependencies clear and enforces immutability. It also makes unit testing easier since dependencies can be mocked and injected via the constructor.
+
+2. **Avoid Field Injection in Business Logic**:
+    - Field injection hides the object’s dependencies, increasing coupling and making the class harder to test. Use setter or constructor injection instead.
+
+3. **Handle Optional Dependencies with Setter Injection**:
+    - Setter injection is ideal when some dependencies are optional. Constructor injection should be used for mandatory dependencies, while setter injection can be used for those that might not always be provided.
+
+4. **Use `@Qualifier` and `@Primary` for Multiple Beans**:
+    - When you have multiple beans of the same type, use `@Qualifier` to specify which one to inject, or mark one of them with `@Primary` to make it the default.
+
+5. **Avoid Circular Dependencies**:
+    - Circular dependencies can cause issues with injection, especially with constructor injection. Spring will throw an error if it detects circular dependencies at runtime, so design your beans to avoid this.
 
 ## Resources
 - [Inversion of Control and Dependency Injection with Spring](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)

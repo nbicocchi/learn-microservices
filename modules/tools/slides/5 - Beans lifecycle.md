@@ -12,7 +12,7 @@ Basically, **the lifecycle of a Spring bean consists of 3 phases:**
 * use phase
 * destroy phase
 
-**We focus on the _initialization_ and _destroy_ phases**, as they’re the most interesting ones from the point of view of dependency injection. Our goal here is to understand the lifecycle but also the [hooks](https://en.wikipedia.org/wiki/Hooking) in the framework connected to that lifecycle. The _use_ phase is a phase in which an application normally spends the most of its time, and it’s the point of interest for the business logic.
+**We focus on the _initialization_ and _destroy_ phases**, as they’re the most interesting ones from the point of view of dependency injection. Our goal here is to understand the lifecycle but also the [hooks](https://en.wikipedia.org/wiki/Hooking) in the framework connected to that lifecycle. 
 
 ### Initialization Phase
 
