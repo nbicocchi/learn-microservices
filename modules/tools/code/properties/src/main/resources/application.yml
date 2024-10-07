@@ -1,0 +1,18 @@
+server:
+  port: 7000
+
+app:
+  name: My Application
+  version: 1.0.0
+  max-users: 1000
+
+---
+spring.config.activate.on-profile: docker
+server:
+  port: 8080
+
+---
+spring.config.activate.on-profile: no-banner
+spring:
+  main:
+    banner-mode: off

@@ -1,266 +1,196 @@
-# Working with Properties
+# Properties
 
-## Configuration Using Properties
-By now we have a basic understanding that we can create configurable Spring Boot applications using its support for flexible externalized configuration.
+## Properties
+In Spring Boot, `src/manin/resources/application.yml` configures the application settings. YAML (YAML Ain’t Markup Language) provides a structured and human-readable way of defining hierarchical configurations compared to the previous key-value format of `application.properties`.
 
-In our examples, we'll focus on using a properties file for configuration, as it's the most common format. However, other formats like [yaml](https://en.wikipedia.org/wiki/YAML) files, environment variables and command lines arguments can also be used to configure our app.
+Here's an example of a basic `application.yml` file:
 
-Configuration using properties files helps in changing the behaviour of an application through a properties file. We can change and control the value of fields in a class using properties files. The entries in properties file are defined as key-value pairs, for e.g.:
+```yaml
+server:
+  port: 7000
 
-```
-propertyName=propertyValue
-```
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydb
+    username: user
+    password: pass
 
-Then, these value can be injected in our class fields:
-
-```
-@Value("${propertyName}")
-```
-
-To understand all of this, we'll use an example of a repository which, before saving a new *Project* object, will create an *internalId* by adding a prefix and a suffix to user given *id.*
-
-By default, Spring Boot reads properties from the *application.properties* file placed in the *src/main/resources* folder of a Maven app.
-
-We'll create the *application.properties* file, and add the properties:
-
-```
-project.prefix=PRO 
-project.suffix=123
+logging:
+  level:
+    root: INFO
+    com:
+      example: DEBUG
 ```
 
-## Using the @Value Annotation to Inject Properties
-To read the values of *project.prefix* and *project.suffix* from the properties file, we'll declare the fields in our class that should hold these values and annotate them with the *@Value* annotation.
+## Standard Properties
 
-Let's declare the fields that should hold the values of prefix and suffix in our *ProjectRepositoryImpl* class:
+1. Server Configuration:
+   ```yaml
+   server:
+     port: 7000
+   ```
 
-```
-@Repository
-public class ProjectRepositoryImpl implements IProjectRepository {
+2. Datasource Configuration:
+   ```yaml
+   spring:
+     datasource:
+       url: jdbc:mysql://localhost:3306/mydb
+       username: myuser
+       password: mypass
+   ```
 
-    @Value("${project.prefix}")
-    private String prefix;
-
-    @Value("${project.suffix}")
-    private Integer suffix;
-    
-    // ...
-}
-```
-We can inject different types of properties, such as: *String, boolean, int, float*, *Date, Collections, Map.* Note that here we've used *prefix* as a *String* type and *suffix* as an *Integer*.
-
-Let's also add the logic of creating a new *id*:
-
-```
-private void updateInternalId(Project project) {
-    LOG.info("Prepending Prefix " + prefix);
-    LOG.info("Appending Suffix " + suffix);
-
-    project.setInternalId(prefix + "-" + project.getId() + "-" + suffix);
-
-    LOG.info("Generated internal id " + project.getInternalId());
-}
+3. Logging Configuration:
+```yaml
+logging:
+  level:
+  root: INFO
+  com:
+    example: DEBUG
 ```
 
-And that's it; the Spring container will automatically inject the values of these properties in our fields by reading them from the properties file.
+## Custom Properties
 
-Let's test our properties injection, by creating a new *Project* object and see if we are able to generate the internal id by appending the *prefix* and *suffix*.
+In **Spring Boot**, custom properties allow you to define application-specific settings that are loaded from external configuration files such as `application.yml`. These properties can then be injected into your Spring-managed beans using the `@Value` annotation. This approach decouples configuration from code, making the application more flexible and easier to maintain.
 
-We'll modify our *LsApp* class to create a new *Project* object and save it:
+### Defining Custom Properties
 
-```
-@SpringBootApplication
-public class LsApp implements ApplicationRunner {
-    public static final RandomGenerator RND = RandomGenerator.getDefault();
+You can define custom properties in `application.yml` files. These properties can be anything that is required by your application, such as API keys, URLs, timeouts, or any other configuration data.
 
-    IProjectRepository projectRepository;
-
-    public LsApp(IProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
-    }
-
-    public static void main(final String... args) {
-        SpringApplication.run(LsApp.class, args);
-    }
-
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        projectRepository.save(new Project("P1", LocalDate.now()));
-        projectRepository.save(new Project("P2", LocalDate.now()));
-        projectRepository.save(new Project("P3", LocalDate.now()));
-    }
-}
-
-```
-
-Now, when we run our app, we'll see the logs:
-
-```
-Prepending Prefix PRO
-Appending Suffix 123
-Generated internal id PRO-1-123
-```
-
-This shows that our properties were correctly injected.
-
-## Spring Environment
-The [*Environment*](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/Environment.html) interface represents *the environment in which the current application is running*. **It contains information about the application's properties and profiles**. We can use the *Environment* API to search properties that are available in the application's environment:
-
-```
-@Configuration
-public class AppConfig {
-    private static final Logger LOG = LoggerFactory.getLogger(AppConfig.class);
-    
-    @Autowired
-    private Environment environment;
-    
-    @PostConstruct
-    private void postConstruct(){
-        LOG.info("project prefix: {}", environment.getProperty("project.prefix"));
-        LOG.info("project suffix: {}", environment.getProperty("project.suffix"));  
-    }
-}
-```
-
-In this example, the *Environment* object performs a search over a set of *PropertySource* objects to find the value of *"project.suffix".*
-
-The *Environment* object is configured with 2 default *PropertySource* (an abstraction of any source of key value pairs) objects:
-
--   the JVM system properties - *System.getProperties()*
--   the system environment variables -  *System.getenv()*
-
-A Spring Boot application is configured with even more property sources; for example
-
--   *application.properties* and yaml variants
--   *application-{profile}.properties*
-
-These are only a few of a multitude of other property sources that Spring supports, implementing a well-thought ordering to allow sensible overriding. The [official documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-external-config) lists all these property sources.
-
-## Spring Boot Default Properties
-
-At this point, we know Spring Boot helps an application get up and running really quickly by providing a default configuration. We’ve also learned that the framework supports externalizing the configuration of our application using properties.
-
-Well, in order to be flexible and able to back off and allow for the definition of custom behavior, **Spring Boot itself bases most of its autoconfiguration aspects on application properties that we can define or override ourselves.**
-
-### Default Boot Properties: Port Number
-
-With this file being empty for the moment, let’s launch our application and check the console output. Among various messages, we can easily find the following one:
-
-_\[main\] o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat initialized with port(s):_ **_8080_** _(http)_
-
-Spring Boot is the one managing the embedded servlet, and therefore, the one configuring the exposed port, using 8080 even though we haven’t specified this in our application. **This demonstrates that, out of the box, Spring Boot provides a reasonable set of default configurations.** One of them is the Tomcat server port number, and it establishes a property on top of that configuration to allow us to modify the behavior without having to meddle with the application codebase. Let’s change this value to be 8081.
-
-To this end, we should specify the new value of the server port number in the _application.properties_ file. Now we come across a problem here. How do we know the exact name that Boot expects the property to have? Well, as you would expect at this point, **Boot offers clear documentation on this, exhaustively listing all the properties it supports to customize its default behavior.**
-
-We’ve included a link in the Resources section of this lesson to explore these Common Application Properties in detail.
-
-We can see the properties are conveniently presented into categories. In this case, we can navigate to the Server Properties, where we’ll find the _server.port_ property introduced:
-
-![](images/m3-common-application-properties.png)
-
-As we can appreciate, **the documentation shows not only the properties we can use, but also a description of its intention and the value represented by the default behavior.**
-
-So let’s set it in our _application.properties_ file:
-
-```
-server.port=8081
-```
-
-If we restart the application, we’ll be able to see that it now binds the service to the new port number:
-
-_\[main\] o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat initialized with port(s):_ **_8081_** _(http)_
-
-### Default Boot Properties: Banner
-
-Now let’s see another example of a default behavior we can customize with properties, Boot’s start-up banner.
-
-You’ve probably noticed in the console the ASCII art banner shown when the application starts, similar to the following one:
-
-```
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (<version>)
-```
-
-Even this behavior can be customized with a simple property. Let’s completely disable it in our application:
-
-```
-spring.main.banner-mode=off
-```
-
-We can also change the default banner with:
-
-```
-spring.banner.location=banner.txt
-```
-
-You can find plenty of [Online Spring Boot Banner Generator](https://devops.datenkollektiv.de/banner.txt/index.html)s.
-
-### Common Application Properties
-
-It’s worth mentioning that **Boot also makes the metadata of the properties it defines available.** Of course, **it’s up to the IDE or plugin to provide support for these features.** For example, Spring Tool Suite (STS) provides such support.
-
-Even if we count on this helpful tool, we might have difficulties finding the right entry among the large list of supported properties.
-
-Of course, it’s hardly possible to remember all of them either, so we encourage you to become familiar with the official Common Application Properties document and keep it handy, as you’ll most likely use it on several occasions. Remember, you can find the corresponding link in the Resources section below.
-
-## Working with @PropertySource
-
-As we already know, in a Spring Boot application the default property file is _application.properties._
-
-With the _@PropertySource_ annotation we can define additional properties files. This will help us structure our properties better, and can be used in any configuration class.
-
-In order to see how it works, **we'll create a custom property file called _additional.properties_ in the resource folder** (_src/main/resources):_
-
-```
-additional.info=Additional Info
-```
-
-**And introduce this property source in our _AppConfig_ class by using the _@PropertySource_ annotation:**
-
-```
-@PropertySource("classpath:additional.properties")
-@Configuration
-public class AppConfig {
+```yaml
+server:
+  port: 7000
   
-    // ...
-    
+spring:
+  main:
+    banner: "off"
+
+app:
+  name: My Application
+  version: 1.0.0
+  max-users: 1000
+```
+
+### Injecting Custom Properties with `@Value`
+
+The `@Value` annotation allows you to inject the values of these custom properties directly into fields in your Spring-managed components such as `@Service`, `@Controller`, `@Component`, etc.
+
+```java
+package com.nbicocchi.beans;
+
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AppService {
+    private final String appName;
+    private final String appVersion;
+    private final Integer maxUsers;
+
+    public AppService(
+            @Value("${app.name}") String appName,
+            @Value("${app.version}") String appVersion,
+            @Value("${app.max-users}") Integer maxUsers) {
+        this.appName = appName;
+        this.appVersion = appVersion;
+        this.maxUsers = maxUsers;
+    }
+
+    @PostConstruct
+    public void printAppDetails() {
+        System.out.println("Application Name: " + appName);
+        System.out.println("Version: " + appVersion);
+        System.out.println("Max Users: " + maxUsers);
+    }
 }
 ```
 
-With this configuration, we can inject the newly defined property in our beans using the _@Value_ annotation.
+The constructor of AppService takes three arguments: appName, appVersion, and maxUsers. These values are injected from the `application.yml` file using the `@Value` annotation.
 
-To demonstrate that the value has been injected, we'll log its value:
+* `@Value("${app.name}")`: Injects the value of the app.name property.
+* `@Value("${app.version}")`: Injects the value of the app.version property.
+* `@Value("${app.max-users}")`: Injects the value of the app.max-users property.
 
+This approach uses constructor injection, which is a recommended practice in Spring as it makes the dependencies explicit and supports immutability (since fields are final).
+
+## Profiles
+
+In **Spring Boot**, **profiles** provide a way to segregate parts of your application configuration and make it adaptable to different environments, such as **development**, **testing**, **staging**, and **production**. By using profiles, you can define multiple configurations for different environments and switch between them easily, depending on the context in which the application is running.
+
+* **Profile-specific properties**: You can define different property files for different profiles.
+* **Profile activation**: Profiles can be activated via environment variables, command-line arguments, or within code.
+* **Conditional Beans**: You can define beans that should only be loaded for specific profiles using the `@Profile` annotation.
+
+```yaml
+server:
+  port: 7000
+
+app:
+  name: My Application
+  version: 1.0.0
+  max-users: 1000
+
+---
+spring.config.activate.on-profile: docker
+server:
+  port: 8080
+
+---
+spring.config.activate.on-profile: no-banner
+spring:
+   main:
+    banner-mode: off
 ```
-@Repository
-public class ProjectRepositoryImpl implements IProjectRepository {
-    public static final Logger LOG = LoggerFactory.getLogger(ProjectRepositoryImpl.class);
 
-    @Value("${project.prefix}")
-    private String prefix;
+In this file:
+- The default profile (active if no other profile is activated) has basic configuration (`server.port`, `app.name`, `app.version`, `app.max-users`).
+- When the **docker** profile is active, it overrides the `server.port` property.
+- When the **no-banner** profile is active, it disables the Spring Boot startup banner.
 
-    @Value("${project.suffix}")
-    private Integer suffix;
+If no profile is explicitly activated, Spring Boot uses the configuration defined in the main `application.yml` (default profile).
 
-    @Value("${additional.info}")
-    private String additional;
 
-    private final List<Project> projects = new ArrayList<>();
+## Activating Profiles
 
-    ...
+Profiles can be activated in various ways:
 
-    private void updateInternalId(Project project) {
-        LOG.info("Additional Info " + additional);
-        LOG.info("Prepending Prefix " + prefix);
-        LOG.info("Appending Suffix " + suffix);
+### Via `application.yml`
+You can specify which profile is active by setting the `spring.profiles.active` property in the `application.yml` file.
 
-        project.setInternalID(prefix + "-" + project.getId() + "-" + suffix);
+```yaml
+spring:
+  profiles:
+    active: docker
+```
 
-        LOG.info("Generated internal id " + project.getInternalID());
+### Via Command-Line Arguments
+You can activate a profile when starting your application by passing the `--spring.profiles.active` argument in the command line.
+
+```bash
+$ mvn clean package
+$ java -jar target/properties-0.0.1-SNAPSHOT.jar --spring.profiles.active=docker,no-banner
+```
+
+This will activate the **production** profile.
+
+### Via Environment Variables
+You can set the `spring.profiles.active` property as an environment variable:
+
+```bash
+$ mvn clean package
+$ SPRING_PROFILES_ACTIVE=docker,no-banner java -jar target/properties-0.0.1-SNAPSHOT.jar --spring.profiles.active=docker,no-banner
+```
+
+### Programmatically
+You can also set the active profile programmatically by calling `setAdditionalProfiles()` in the `SpringApplication` object.
+
+```java
+@SpringBootApplication
+public class App {
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(App.class);
+        app.setAdditionalProfiles("dev");
+        app.run(args);
     }
 }
 ```

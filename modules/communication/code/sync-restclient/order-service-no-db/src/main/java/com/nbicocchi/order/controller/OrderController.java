@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
-    RestClient restClient;
     String productServiceUrl;
 
     public OrderController(
