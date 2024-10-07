@@ -18,7 +18,7 @@ services:
       retries: 60
 
   simulator:
-    build: ./microservices/simulator
+    build: microservices/simulator
     container_name: ml_model_monitoring_simulator
     ports:
       - "5000:5000"
@@ -29,7 +29,7 @@ services:
         condition: service_healthy
 
   ml:
-    build: ./microservices/ml
+    build: microservices/ml
     container_name: ml_model_monitoring_ml
     ports:
       - "5001:5000"
@@ -40,7 +40,7 @@ services:
         condition: service_healthy
 
   monitoring:
-    build: ./microservices/monitoring
+    build: microservices/monitoring
     container_name: ml_model_monitoring_monitoring
     ports:
       - "5002:5000"

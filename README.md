@@ -44,18 +44,18 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Asynchronous messaging systems (*RabbitMQ*)
 * *Spring Cloud Stream* and its abstraction over messaging systems
 
-[M4 Infrastructure](modules/infrastructure) 
+[M5 Infrastructure](modules/infrastructure) 
 * Service discovery
 * Service routing 
 * Centralized configuration
 
-[M5 Resiliency](modules/resiliency)
+[M6 Resiliency](modules/resiliency)
 * What is resiliency and why it is relevant
 * Client-side resiliency patterns
 * Server-side resiliency patterns
 * *Resilience4j* and its integration with Spring Boot
 
-[M6 Observability](modules/observability)
+[M7 Observability](modules/observability)
 * What is observability and why it is relevant for microservices
 * Metrics aggregation with *Micrometer*, *Prometheus* and *Grafana*
 * Distributed tracing with *Micrometer* and *Zipkin*
@@ -66,11 +66,10 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * The SAGA pattern
 * The *Conductor* orchestration framework
 
-[M9 Distributed caching](modules/caching)
-* What is caching and why it is relevant
-* Introduction to Redis
-* Implementing a Redis cache with Spring Boot
-
-[M10 DevSecOps](modules/devsecops)
+[M9 DevSecOps](modules/devsecops)
 * DevOps and their benefits in distributed contexts
 * Automating security tests before deployment
+
+[M10 MLOps](modules/devsecops)
+* MLOps and their benefits in distributed contexts
+* Automating model observability with Evidently
