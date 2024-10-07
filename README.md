@@ -61,7 +61,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Distributed tracing with *Micrometer* and *Zipkin*
 * Log aggregation with the *ELK* Stack
 
-[M8 Data management](modules/data-management)
+[M8 Distributed transaction management](modules/data-management)
 * Issues of database transactions in distributed contexts
 * The SAGA pattern
 * The *Conductor* orchestration framework
