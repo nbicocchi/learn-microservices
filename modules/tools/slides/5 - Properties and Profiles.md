@@ -181,6 +181,14 @@ $ mvn clean package
 $ SPRING_PROFILES_ACTIVE=docker,no-banner java -jar target/properties-0.0.1-SNAPSHOT.jar --spring.profiles.active=docker,no-banner
 ```
 
+### Via Environment Variables (Docker)
+
+```bash
+$ mvn clean package
+$ docker buildx build -t $(basename $(pwd)) .
+$ docker run -e SPRING_PROFILES_ACTIVE='docker,no-banner' properties
+```
+
 ### Programmatically
 You can also set the active profile programmatically by calling `setAdditionalProfiles()` in the `SpringApplication` object.
 
