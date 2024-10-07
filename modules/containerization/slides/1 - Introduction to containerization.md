@@ -2,6 +2,8 @@
 
 ## Types of Deployment
 
+![Containers vs VMs](images/containers-vms.avif)
+
 ### Bare Metal Deployment
 
 Initially, applications were deployed on physical servers where multiple applications shared the same hardware resources. This led to conflicts between libraries, dependencies, and performance needs. One solution was to allocate separate physical servers for each application, but this resulted in high costs, underutilized resources, and increased maintenance overhead.
@@ -16,7 +18,6 @@ Containers are lightweight, standalone software units that run directly on the h
 
 The following diagram illustrates the difference in resource usage between virtual machines and containers, showing that containers can run more efficiently on the same server since they don't need a full operating system.
 
-![Containers vs VMs](images/containers-vms.avif)
 
 ### Key Differences:
 - **VMs** run a full OS, whereas **containers** share the host OS.
@@ -83,7 +84,8 @@ Several container image formats are in use today, each with its advantages:
 Docker is an open-source platform that enables developers to automate the deployment, scaling, and management of applications within lightweight, portable containers. This guarantees that applications run consistently across different environments, regardless of the underlying machine's customized settings. Consequently, developers can write code and test it in a container that behaves the same way on any machine, leading to fewer deployment issues.
 
 ### Docker Architecture
-![](images/docker-architecture.avif)
+![](images/docker-architecture.png)
+![Container Lifecycle](images/container-lifecycle.avif)
 
 The Docker architecture consists of several key components that work together to create and manage containers effectively:
 
@@ -93,126 +95,121 @@ The Docker architecture consists of several key components that work together to
 
 - **Docker Daemon (Docker Engine)**: The core component of Docker that runs on the host machine. The Daemon is responsible for creating, running, and managing containers. It listens for Docker API requests and manages Docker objects such as images, containers, networks, and volumes.
 
-- **Applications**: Applications that run inside containers are isolated from each other. Multiple applications can run concurrently within their containers, providing a robust environment for development and production.
+- **Containers**: Applications that run inside containers are isolated from each other. Multiple applications can run concurrently within their containers, providing a robust environment for development and production.
 
 - **Images**: Docker images are lightweight, standalone, and executable packages that include everything needed to run a piece of software, such as the application code, runtime, libraries, environment variables, and configuration files. Images are immutable and can be versioned.
 
-- **Namespaced Process**: Containers run as namespaced processes, which means that they operate in isolated environments. Namespaces provide distinct views of system resources (such as process IDs, network access, user IDs, and file systems) for each container. This isolation ensures that containers do not interfere with one another or the host system.
+- **Docker Registry**: A Docker registry is a service for storing and distributing Docker images. It acts as a repository where users can push, pull, and manage Docker images. Public registries like Docker Hub are available, and users can also set up private registries for internal use within organizations.
 
-### Container Lifecycle
 
-The typical lifecycle of a container is:
 
-- **Created**: The container is created but not yet running.
-  - Command: `docker create <image>`
-- **Running**: The container is actively executing processes.
-  - Command: `docker start <container_id>`
-- **Paused**: The container is suspended, with processes stopped temporarily.
-  - Command: `docker pause <container_id>`
-- **Stopped/Restarting**: The container is stopped and can be restarted.
-  - Command: `docker stop <container_id>`, `docker restart <container_id>`
-- **Deleted**: The container is removed entirely, along with its filesystem.
-  - Command: `docker rm <container_id>`
-
-![Container Lifecycle](images/container-lifecycle.avif)
 
 ### Key Elements
 - **Dockerfile**: A Dockerfile is a script containing a series of commands to build a Docker image. It specifies the base image, the commands to install dependencies, the files to copy, environment variables to set, and the command to run the application. The Dockerfile serves as a blueprint for creating images.
 
+```dockerfile
+FROM eclipse-temurin:21-jre-ubi9-minimal
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+ENTRYPOINT ["java","-jar","/application.jar"]
+```
+
 - **docker-compose.yml**: Docker Compose is a tool that simplifies the management of multi-container Docker applications through a YAML configuration file. This file defines the services (containers) that comprise your application, including their configurations, such as images to use, ports to expose, network settings, and volume mounts. With Docker Compose, you can start and manage all services with a single terminal command, making it easier to replicate and manage complex applications across different environments.
 
+```yaml
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: jdbc_schema
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d jdbc_schema" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@domain.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  product-service:
+    build: product-service-postgres
+    image: product-service-postgres
+    mem_limit: 512m
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+volumes:
+  pg-data:
+  pgadmin-data:
+
+```
 ### Terminal Commands (Bash)
 
 The Docker CLI provides several commands for managing images and containers. Here are some of the most important commands:
 
-#### Managing Images
+**Build an Image**: Creates a new Docker image from a Dockerfile located in the specified context (directory).
 
-- **Build an Image**:
-  ```bash
-  docker build -t <image-name> <context>
-  ```
-  - **Purpose**: Creates a new Docker image from a Dockerfile located in the specified context (directory).
-  - **Example**:
-    ```bash
-    docker build -t my_app .
-    ```
-    This command builds an image named `my_app` using the Dockerfile in the current directory.
+```bash
+docker buildx build -t <image-name> <context>
+```
 
-- **Pull an Image**:
-  ```bash
-  docker pull <image-name>
-  ```
-  - **Purpose**: Downloads a specified image from a Docker registry, such as Docker Hub.
-  - **Example**:
-    ```bash
-    docker pull ubuntu:20.04
-    ```
-    This command pulls the `ubuntu:20.04` image from Docker Hub.
+**Pull an Image**: Downloads a specified image from a Docker registry, such as Docker Hub.
 
-#### Managing Containers
+```bash
+docker pull <image-name>
+```
 
-- **Run a Container**:
-  ```bash
-  docker run <image-name>
-  ```
-  - **Purpose**: Creates and starts a container from the specified image.
-  - **Example**:
-    ```bash
-    docker run -it ubuntu:20.04
-    ```
-    This command runs an interactive terminal in a new container based on the `ubuntu:20.04` image.
+**Run a Container**: Creates and starts a container from the specified image.
 
-- **List Running Containers**:
-  ```bash
-  docker ps
-  ```
-  - **Purpose**: Displays a list of currently running containers.
-  - **Example**:
-    ```bash
-    docker ps -a
-    ```
-    The `-a` option shows all containers, including those that are stopped.
+```bash
+docker run <image-name>
+```
 
-- **Start and Stop a Container**:
-  - **Start**:
-    ```bash
-    docker start <container-id>
-    ```
-    - **Purpose**: Starts a previously created (but stopped) container.
+**List Running Containers**: Displays a list of currently running containers.
 
-  - **Stop**:
-    ```bash
-    docker stop <container-id>
-    ```
-    - **Purpose**: Stops a running container.
+```bash
+docker ps
+```
 
-- **Remove a Container**:
-  ```bash
-  docker rm <container-id>
-  ```
-  - **Purpose**: Deletes a specified container. The container must be stopped before it can be removed.
+**Start and Stop a Container**:  Starts/Stops a previously created container.
 
-- **Execute a Command in a Running Container**:
-  ```bash
-  docker exec -it <container-id> bash
-  ```
-  - **Purpose**: Runs a specified command inside a running container. The `-it` flags enable an interactive terminal session.
-  - **Example**:
-    ```bash
-    docker exec -it my_container bash
-    ```
-    This command opens an interactive Bash shell inside the container named `my_container`.
+```bash
+docker start <container-id>
+docker stop <container-id>
+```
 
+**Remove a Container**: Deletes a specified container. The container must be stopped before it can be removed.
+
+```bash
+docker rm <container-id>
+```
+
+**Execute a Command in a Running Container**: Runs a specified command inside a running container. The `-it` flags enable an interactive terminal session.
+
+```bash
+docker exec -it <container-id> bash
+```
 
 ## Resources
-- https://www.oracle.com/it/cloud/cloud-native/container-registry/what-is-docker/
-- https://www.geeksforgeeks.org/what-is-docker-image/
-- https://www.redhat.com/it/topics/cloud-native-apps/what-is-a-container-registry
 - https://docs.docker.com
 - https://octopus.com/blog/top-8-container-registries
-- https://bluelight.co/blog/how-to-choose-a-container-registry#what-is-a-container-registry
-- https://sysdig.com/learn-cloud-native/what-is-a-container-registry/
 - https://www.linkedin.com/advice/1/what-common-container-image-formats-standards-how
 
 

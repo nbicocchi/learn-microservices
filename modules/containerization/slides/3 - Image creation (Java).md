@@ -4,7 +4,7 @@
 
 The most standard approach to convert the fat jars produced by Maven and Spring Boot into Docker images, is to create a *Dockerfile* that looks like this:
 
-```
+```dockerfile
 FROM eclipse-temurin:21-jdk
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} application.jar
@@ -13,19 +13,20 @@ ENTRYPOINT ["java","-jar","/application.jar"]
 
 First, create your jar artifact inside the *target/* directory.
 
-```
+```bash
+$ cd product-service-no-db
 $ mvn clean package
 ```
 
 Then, create a docker image and submit it to your local daemon. The following command gives to the image the same name of the folder containing the *Dockerfile*.
 
-```
+```bash
 $ docker buildx build -t $(basename $(pwd)) .
 ```
 
 **If we change something in our application, repackage it and rebuild the image we'll be able to see the build is using the cached layers except for the application layer:**
 
-```
+```bash
 $ docker images                              
 REPOSITORY              TAG       IMAGE ID       CREATED         SIZE
 product-service-no-db   latest    9883188cab8e   4 seconds ago   478MB
@@ -34,7 +35,7 @@ product-service-no-db   latest    9883188cab8e   4 seconds ago   478MB
 
 Now let’s run our image. We will bind the port 8080 in the container to 8080 in our host machine:
 
-```
+```bash
 $ docker run -e SPRING_PROFILES_ACTIVE=docker -p 8080:8080 product-service-no-db
 ```
 
@@ -45,7 +46,7 @@ This is what we can infer from the command:
 
 Now let's list our running containers:
 
-```
+```bash
 docker ps                                                                     
 CONTAINER ID   IMAGE                   COMMAND                  CREATED         STATUS         PORTS                    NAMES
 f5c2c01a895a   product-service-no-db   "java -cp @/app/jib-…"   7 seconds ago   Up 7 seconds   0.0.0.0:8080->8080/tcp   youthful_dijkstra
@@ -79,19 +80,19 @@ Add the Spring Boot plugin to the *pom.xml* configuration file.
 
 Create your jar artifact inside the *target/* directory.
 
-```
+```bash
 $ mvn clean package
 ```
 
 Then, create a docker image and submit it to your local daemon.
 
-```
+```bash
 $ mvn spring-boot:build-image
 ```
 
 After the build is done, we can list our Docker images in the terminal to verify the images have been created as expected:
 
-```
+```bash
 $ docker images
 REPOSITORY                            TAG              IMAGE ID       CREATED        SIZE
 paketobuildpacks/run-jammy-base       latest           def0c6bb7994   8 days ago     104MB
@@ -105,7 +106,7 @@ The image size is substantially reduced when compared to plain docker, but the p
 
 We can of course **add the execution of this particular _spring-boot:build-image_ goal to the _spring-boot-maven-plugin_** setup to build the image each time we build the project artifact:
 
-```
+```xml
 <build>
     <plugins>
         <plugin>
@@ -130,7 +131,7 @@ We can of course **add the execution of this particular _spring-boot:build-image
 
 Let’s build the image this time by triggering the Maven build process from the command line. All Spring Boot plugin executions are configured to run in the _package_ phase by default, so adding the _build-image_ to the executions will run this goal automatically in this same phase:
 
-```
+```bash
 $ mvn package
 ```
 
@@ -168,7 +169,7 @@ $ mvn compile jib:dockerBuild
 
 We can list our Docker images in the terminal to verify the images have been created as expected:
 
-```
+```bash
 $ docker images
 REPOSITORY                            TAG              IMAGE ID       CREATED        SIZE
 paketobuildpacks/run-jammy-base       latest           def0c6bb7994   8 days ago     104MB
@@ -210,11 +211,7 @@ By default, **Jib makes a number of reasonable guesses about what we want**, lik
 </configuration>
 ```
 
-We configure tags, volumes, and [several other Docker directives](https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#extended-usage) in the same way.
-
-### Customizing Java Aspects
-
-And, by association, Jib supports numerous Java runtime configurations, too:
+We configure tags, volumes, and [several other Docker directives](https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#extended-usage) in the same way. Jib supports numerous Java runtime configurations, too:
 
 -   _jvmFlags_ is for indicating what startup flags to pass to the JVM.
 -   _mainClass_ is for indicating the main class, which **Jib will attempt to infer automatically by default.**

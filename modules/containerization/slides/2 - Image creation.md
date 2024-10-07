@@ -4,7 +4,7 @@ A `Dockerfile` is a simple text file that contains a series of instructions on h
 
 ## Key commands
 
-### 1. `FROM`
+### `FROM`
 
 The `FROM` instruction specifies the base image from which your image will be built. It’s usually the first line in any Dockerfile.
 
@@ -14,7 +14,20 @@ FROM ubuntu:20.04
 
 This command sets the base image to Ubuntu 20.04. The base image provides the environment for the application, and it is important to choose one that includes all necessary libraries and dependencies.
 
-### 2. `COPY`
+Here are the descriptions for **ARG** and **ENTRYPOINT** following the same format:
+
+### `ARG`
+ 
+The `ARG` instruction defines a variable that users can pass at build time to the Docker image with the `--build-arg` flag. ARG variables are only available during the build process and cannot be accessed after the image is built.
+
+Example:
+```dockerfile
+ARG NODE_VERSION=14
+```
+
+This command defines a build-time variable `NODE_VERSION` with a default value of 14. You can override this value when building the image by using `--build-arg NODE_VERSION=16`.
+
+### `COPY`
 
 The `COPY` instruction copies files or directories from your local machine into the Docker image.
 
@@ -24,7 +37,7 @@ COPY . /app
 
 This command copies everything from the current directory on your local machine to the `/app` directory in the Docker image. It is commonly used to transfer application code and resources.
 
-### 3. `RUN`
+### `RUN`
 
 The `RUN` instruction executes commands inside the image during the build process, typically used for installing software or setting up your environment.
 
@@ -34,17 +47,7 @@ RUN apt-get update && apt-get install -y python3
 
 This command updates the package list and installs Python 3 inside the image. Multiple commands can be combined into a single `RUN` instruction to reduce the number of layers in the image.
 
-### 4. `WORKDIR`
-
-The `WORKDIR` instruction sets the working directory inside the image. All subsequent instructions will be executed from this directory.
-
-```dockerfile
-WORKDIR /app
-```
-
-This command sets the working directory to `/app`. If the directory does not exist, it will be created automatically.
-
-### 5. `CMD`
+### `CMD`
 
 The `CMD` instruction specifies the command that will run when the container starts. It is typically written in the exec form, which is an array format: `CMD ["executable", "param1", "param2"]`.
 
@@ -54,9 +57,30 @@ CMD ["python3", "app.py"]
 
 This command runs `app.py` using Python 3 when the container starts.
 
+> **NOTE**: The key difference between `CMD` and `RUN` is the timing of the command execution. `RUN` is executed during the build time, while `CMD` is executed during container startup.
 > **IMPORTANT**: There can only be one `CMD` instruction in a Dockerfile. If you list more than one `CMD`, only the last one takes effect.
 
-### 6. `EXPOSE`
+### `ENTRYPOINT`
+The `ENTRYPOINT` instruction specifies the command that will run as the main process of the container. Unlike the `CMD` instruction, `ENTRYPOINT` commands are not overridden when the container is started with additional arguments. It is used to ensure the container runs the specified process by default.
+
+Example:
+```dockerfile
+ENTRYPOINT ["python", "app.py"]
+```
+
+This command makes `python app.py` the default process to run whenever the container starts. Any arguments passed during container startup will be appended to the **ENTRYPOINT** command.
+
+### `WORKDIR`
+
+The `WORKDIR` instruction sets the working directory inside the image. All subsequent instructions will be executed from this directory.
+
+```dockerfile
+WORKDIR /app
+```
+
+This command sets the working directory to `/app`. If the directory does not exist, it will be created automatically.
+
+### `EXPOSE`
 
 The `EXPOSE` instruction tells Docker which port your application will use so that it can be accessed from outside the container.
 
@@ -66,7 +90,7 @@ EXPOSE 8080
 
 This exposes port 8080 for access. Note that `EXPOSE` does not publish the port; it merely indicates that the application will listen on that port.
 
-### 7. `ENV`
+### `ENV`
 
 The `ENV` instruction sets environment variables in the container. These variables can be used by applications or scripts running inside the container.
 
@@ -76,11 +100,7 @@ ENV ENVIRONMENT=production
 
 This command sets the `ENVIRONMENT` variable to `production`. Environment variables can influence the behavior of applications within the container.
 
-> **IMPORTANT**: Choosing the base image of your container is a critical step; find one that provides what you need and stick to trusted and official distributors.
-
-> **NOTE**: The key difference between `CMD` and `RUN` is the timing of the command execution. `RUN` is executed during the build time, while `CMD` is executed during container startup.
-
-## 1. Creating a Docker Image for a Simple Python Application
+## Creating a Docker Image for a Simple Python Application
 
 ### Step 1: Write the Python Application
 
@@ -125,9 +145,8 @@ docker run python-app
 
 **Expected Output**: `Hello, Docker!`
 
----
 
-## 2. Creating a Docker Image for a Simple Java Application
+## Creating a Docker Image for a Simple Java Application
 
 ### Step 1: Write the Java Application
 
@@ -177,9 +196,8 @@ docker run java-app
 
 **Expected Output**: `Hello, Docker!`
 
----
 
-## 3. Creating a Docker Image with the `ls` Command
+## Creating a Docker Image with the `ls` Command
 
 ### Step 1: Create the Dockerfile
 
@@ -207,9 +225,8 @@ docker run ls-command
 
 **Expected Output**: A detailed list of the root directory contents.
 
----
 
-## 4. Creating a Docker Image for a Flask Echo Server
+## Creating a Docker Image for a Flask Echo Server
 
 In this section, we will create and containerize a simple Echo server using Flask, which echoes back any data sent to it.
 
