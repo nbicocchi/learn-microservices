@@ -134,7 +134,7 @@ CMD ["python", "app.py"]
 Run the following command in your terminal:
 
 ```bash
-docker build -t python-app .
+docker buildx build -t python-app:latest .
 ```
 
 ### Step 4: Run the Docker Container
@@ -166,8 +166,8 @@ public class App {
 Create a `Dockerfile` in the same directory:
 
 ```Dockerfile
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:17-jdk-slim
+# OpenJDK runtime as a parent image
+FROM eclipse-temurin:21-jre-ubi9-minimal
 
 # Set the working directory in the container
 WORKDIR /app
@@ -185,7 +185,7 @@ CMD ["java", "App"]
 ### Step 3: Build the Docker Image
 
 ```bash
-docker build -t java-app .
+docker buildx build -t java-app:latest .
 ```
 
 ### Step 4: Run the Docker Container
@@ -208,19 +208,23 @@ Create a `Dockerfile`:
 FROM alpine:3.18
 
 # Run the ls command
-CMD ["ls", "-la"]
+CMD ["ls", "-al"]
 ```
 
 ### Step 2: Build the Docker Image
 
 ```bash
-docker build -t ls-command .
+docker buildx build -t ls-command:latest .
 ```
 
 ### Step 3: Run the Docker Container
 
 ```bash
 docker run ls-command
+```
+
+```bash
+docker run -it --entrypoint=/bin/sh ls-command
 ```
 
 **Expected Output**: A detailed list of the root directory contents.
@@ -305,7 +309,7 @@ This Dockerfile does the following:
 Build the Docker image:
 
 ```bash
-docker build -t flask-echo-server .
+docker buildx build -t flask-echo-server:latest .
 ```
 
 ### Step 6: Run the Docker Container
@@ -327,8 +331,3 @@ Test the Echo server using a tool like `curl` or Postman.
 ```bash
 curl -X POST http://localhost:5000/echo -H "Content-Type: application/json" -d '{"message": "Hello, Echo Server!"}'
 ```
-
-For `Windows` command prompt, use escape characters `\` around the strings:
-
-```bash
-curl -X POST http://localhost:5000/echo -H "Content-Type: application/json" -d "{\"

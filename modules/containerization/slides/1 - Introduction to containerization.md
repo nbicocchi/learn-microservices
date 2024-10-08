@@ -158,17 +158,36 @@ services:
 volumes:
   pg-data:
   pgadmin-data:
+```
+
+### First Docker commands
+Let’s try to start a container by launching an Ubuntu server using Docker’s run command:
 
 ```
+$ docker run -it --rm alpine
+```
+
+With the preceding command, we ask Docker to create a container that runs Alpine, based on the latest version that’s available. The -it option is used so that we can interact with the container using Terminal, and the --rm option tells Docker to remove the container once we exit the Terminal session.
+
+The first time we use a Docker image that we haven’t built ourselves, Docker will download it from a Docker registry, which is Docker Hub by default (https://hub.docker.com). This will take some time, but for subsequent usage of that Docker image, the container will start in just a few seconds!
+
+Once the Docker image has been downloaded and the container has been started up, it should respond with a prompt such as the following:
+
+```
+$ docker run -it --rm alpine
+/ # 
+```
+
+We can try out the container by, for example, asking what version of Ubuntu it runs:
+
+```
+# cat /etc/os-release | grep 'VERSION'
+VERSION_ID=3.20.3
+```
+
 ### Terminal Commands (Bash)
 
 The Docker CLI provides several commands for managing images and containers. Here are some of the most important commands:
-
-**Build an Image**: Creates a new Docker image from a Dockerfile located in the specified context (directory).
-
-```bash
-docker buildx build -t <image-name> <context>
-```
 
 **Pull an Image**: Downloads a specified image from a Docker registry, such as Docker Hub.
 

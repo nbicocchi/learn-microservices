@@ -1,15 +1,15 @@
 # Image creation (Java)
 
-## Multi-Layer Jars
+## Multi-Layer JARS
 
-Whilst this approach works fine, and it’s nice and concise, there are a few things that are sub-optimal.
+```dockerfile
+FROM eclipse-temurin:21-jre-ubi9-minimal
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+ENTRYPOINT ["java","-jar","/application.jar"]
+```
 
-The first problem with above file is that the jar file is not unpacked. There’s always a certain amount of overhead when running a fat jar, and in a containerized environment this can be noticeable. It’s generally best to unpack your jar and run in an exploded form.
-
-The second issue with the file is that it isn’t very efficient if you frequently update your application. Docker images are built in layers, and in this case your application and all its dependencies are put into a single layer. Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more. If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
-
-
-**A Docker image is made up of layers. Each layer represents a certain instruction written in a Dockerfile.** This layered approach is useful because layers from one image can be reused in other images.
+The issue with the file is that it isn’t very efficient if you frequently update your application. Docker images are built in layers, and in this case your application and all its dependencies are put into a single layer. Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more. If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
 
 By default, Spring defines four layers after we package the JAR. **We can inspect these layers using the _layertools_ mechanism** added by the Spring team:
 
@@ -34,15 +34,15 @@ The [official documentation](https://docs.spring.io/spring-boot/docs/current/ref
 
 For instance, let's have a look at the Dockerfile included in this project:
 
-```
-FROM eclipse-temurin:21 as builder
-WORKDIR extracted
+```dockerfile
+FROM eclipse-temurin:21-jre-ubi9-minimal AS builder
+WORKDIR /extracted
 ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} application.jar
-RUN java -Djarmode=layertools -jar application.jar extract
+COPY ${JAR_FILE} /application.jar
+RUN java -Djarmode=layertools -jar /application.jar extract
 
-FROM eclipse-temurin:21
-WORKDIR application
+FROM eclipse-temurin:21-jre-ubi9-minimal
+WORKDIR /application
 COPY --from=builder extracted/dependencies/ ./
 COPY --from=builder extracted/spring-boot-loader/ ./
 COPY --from=builder extracted/snapshot-dependencies/ ./
@@ -51,47 +51,16 @@ COPY --from=builder extracted/application/ ./
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
 ```
 
-Let’s go through the main instructions. The first line indicates we’re using _openjdk_ as builder. We are using a feature in Docker called multi-stage builds, please note you can only do this in Docker v17+. Doing this will keep the size of our build down because we can make builders copy its content to other stages and then discard them on the final stage. As you can see, we’re using _layertools_ to extract the layers we just saw. Then we run our actual build accessing the extracted content in the next stage. Finally, we are using the Spring _JarLauncher_ to execute the Spring Boot application.
+We are using a feature in Docker called multi-stage builds. Doing this will keep the size of our build down because we can make builders copy its content to other stages and then discard them on the final stage. As you can see, we’re using _layertools_ to extract the layers. Then we run our actual build accessing the extracted content in the next stage. Finally, we are using the Spring _JarLauncher_ to execute the Spring Boot application.
 
-Let’s now build the image from the project root directory using the Docker CLI:
-
-```
+```bash
 $ mvn clean package
-$ docker build -f docker/Dockerfile --tag spring-with-docker-end-dockerfile-layers:0.1.0-SNAPSHOT .
-
-Step 8/12 : COPY --from=builder application/dependencies/ ./
- ---> Using cache
- ---> d65f759258a2
-Step 9/12 : COPY --from=builder application/spring-boot-loader/ ./
- ---> Using cache
- ---> d96dc51846be
-Step 10/12 : COPY --from=builder application/snapshot-dependencies/ ./
- ---> Using cache
- ---> 5b749d9b6d50
-Step 11/12 : COPY --from=builder application/application/ ./
- ---> 948e098fa982
-...
+$ docker buildx build -f "Dockerfile.multi-layer" -t $(basename $(pwd)) .
 ```
 
-**If we change something in our application, repackage it and rebuild the image we'll be able to see the build is using the cached layers except for the application layer:**
+**If we change something in our application, repackage it and rebuild the image we'll be able to see the build is using the cached layers except for the application layer**
 
-
-```
-$ docker images
-
-spring-with-docker-end-dockerfile-layers   0.1.0-SNAPSHOT   ced0604ee6d0   9 seconds ago        483MB
-spring-with-docker-end-dockerfile-simple   0.1.0-SNAPSHOT   64d2ceaa7d8c   About a minute ago   483MB
-...
-```
-
-To run the image:
-
-```
-$ docker run --name spring-with-docker-end-dockerfile-layers -p 8080:8080 spring-with-docker-end-dockerfile-layers:0.1.0-SNAPSHOT
-```
-
-
-## Thin JARs with Spring Boot
+## Thin JARs
 
 ![](images/jar-types.webp)
 
@@ -110,7 +79,7 @@ The [Spring Boot Thin Launcher](https://github.com/spring-projects-experimental/
 
 So, when we build a project with the library, we get a JAR file with our code, a file enumerating its dependencies, and the main class from the library that performs the above tasks.
 
-In a Maven project, we have to modify the declaration of the Boot plugin to include a dependency on the custom “thin” layout:
+In a Maven project, we have to modify the declaration of the Boot plugin to include a dependency on the custom *thin* layout:
 
 ```
 <plugin>
@@ -187,85 +156,5 @@ To have Maven package the dependencies for us, we use the resolve goal of the sp
 ```
 
 After building the project, we’ll find a directory target/thin/root/ with the structure that we’ve discussed in the previous section.
-
-## GraalVM Native Image Support
-[GraalVM Native Images](https://www.graalvm.org/native-image/) are standalone executables that can be generated by processing compiled Java applications ahead-of-time. Compared to the Java Virtual Machine, native images can run with a smaller memory footprint and with much faster startup times. They are well suited to applications that are deployed using container images and are especially interesting when combined with "Function as a service" (FaaS) platforms.
-
-A GraalVM Native Image is a complete, platform-specific executable. You do not need to ship a Java Virtual Machine in order to run a native image.
-
-### Key Differences with JVM Deployments
-Unlike traditional applications written for the JVM, GraalVM Native Image applications require ahead-of-time processing in order to create an executable. This involves statically analyzing your application code from its main entry point. The fact that GraalVM Native Images are produced ahead-of-time means that there are some key differences between native and JVM based applications. 
-
-The main differences are:
-* Static analysis of your application is performed at build-time from the main entry point.
-* Code that cannot be reached when the native image is created will be removed and won’t be part of the executable.
-* GraalVM is not directly aware of dynamic elements of your code and must be told about reflection, resources, serialization, and dynamic proxies.
-* The application classpath is fixed at build time and cannot change.
-* There is no lazy class loading, everything shipped in the executables will be loaded in memory on startup.
-* There are some limitations around some aspects of Java applications that are not fully supported. 
-
-On top of those differences, Spring uses a process called Spring Ahead-of-Time processing, which imposes further limitations. Please make sure to read at least the beginning of the next section to learn about those.
-
-### Building a Native Image Using Buildpacks
-Spring Boot includes buildpack support for native images directly for both Maven and Gradle. This means you can just type a single command and quickly get a sensible image into your locally running Docker daemon. The resulting image doesn’t contain a JVM, instead the native image is compiled statically. This leads to smaller images.
-
-To build a native image container using Maven you should ensure that your `pom.xml` file uses the `spring-boot-starter-parent` and the `org.graalvm.buildtools:native-maven-plugin`. You should have a `<parent>` section that looks like this:
-
-```xml
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.1</version>
-</parent>
-```
-
-You additionally should have this in the `<build> <plugins>` section:
-
-```xml
-<plugin>
-    <groupId>org.graalvm.buildtools</groupId>
-    <artifactId>native-maven-plugin</artifactId>
-</plugin>
-```
-
-The `spring-boot-starter-parent` declares a `native` profile that configures the executions that need to run in order to create a native image. You can activate profiles using the `-P` flag on the command line.
-
-To build the image, you can run the `spring-boot:build-image` goal with the `native` profile active:
-
-```shell
-$ mvn -Pnative spring-boot:build-image
-```
-
-Once you have run the appropriate build command, a Docker image should be available. You can start your application using `docker run`:
-
-
-```
-$ docker run --rm -p 8080:8080 docker.io/library/spring-with-docker-end:0.1.0-SNAPSHOT
-```
-
-### Building a Native Image using Native Build Tools
-
-You can also use GraalVM Native Build Tools. Native Build Tools are plugins shipped by GraalVM for both Maven and Gradle. You can use them to perform a variety of GraalVM tasks, including generating a native image.
-
-To build a native image using the Native Build Tools, you’ll need a GraalVM distribution on your machine. You can either download it manually on the [Liberica Native Image Kit page](https://bell-sw.com/pages/downloads/native-image-kit/#/nik-22-17), or you can use a download manager like SDKMAN!.
-
-Verify that the correct version has been configured by checking the output of `java -version`:
-
-```shell
-$ java -version
-openjdk version "17.0.5" 2022-10-18 LTS
-OpenJDK Runtime Environment GraalVM 22.3.0 (build 17.0.5+8-LTS)
-OpenJDK 64-Bit Server VM GraalVM 22.3.0 (build 17.0.5+8-LTS, mixed mode)
-```
-
-As with the [buildpack support](https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html#native-image.developing-your-first-application.buildpacks.maven), you need to make sure that you’re using `spring-boot-starter-parent` in order to inherit the `native` profile and that the `org.graalvm.buildtools:native-maven-plugin` plugin is used.
-
-With the `native` profile active, you can invoke the `native:compile` goal to trigger `native-image` compilation:
-
-```shell
-$ mvn -Pnative native:compile
-```
-
-The native image executable can be found in the `target` directory.
 
 ## Resources

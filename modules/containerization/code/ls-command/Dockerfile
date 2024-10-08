@@ -2,4 +2,4 @@
 FROM alpine:3.18
 
 # Run the ls command
-CMD ["ls", "-la"]
+CMD ["ls", "-al"]
