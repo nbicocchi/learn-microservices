@@ -8,6 +8,7 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/) [Plugins: [Envfile](https://plugins.jetbrains.com/plugin/7861-envfile)]
 * [Apache Maven](https://maven.apache.org/)
 * [Apache JMeter](https://jmeter.apache.org/)
+* [EvidentlyAI](https://github.com/evidentlyai/evidently)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## Books
