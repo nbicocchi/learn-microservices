@@ -3,36 +3,11 @@
 
 ## What is software architecture exactly?
 
-There are numerous definitions of [software architecture](https://en.wikiquote.org/wiki/Software_architecture). Software architecture refers to all the fundamental parts that establish the structure, operation, and interaction between the software components. 
-* It enables multiple people (or multiple teams) with possibly specialized knowledge to work productively together on an application.
-* It defines how the software elements interact.
+[Len Bass and colleagues](https://books.google.it/books?id=-II73rBDXCYC&printsec=frontcover&redir_esc=y#v=onepage&q&f=false) defined it as: *The software architecture of a computing system is the set of structures needed to reason about the system, which comprise software elements, relations among them, and properties of both.*
 
-Len Bass and colleagues defined it as: *The software architecture of a computing system is the set of structures needed to reason about the system, which comprise software elements, relations among them, and properties of both. - Documenting Software Architectures by Bass et al.*
+[David Garlan and colleagues](https://books.google.it/books/about/Software_Architecture.html?id=fh_kjgEACAAJ&redir_esc=y) defined it as: *something that defines a family of such systems in terms of a pattern of structural organization. More specifically, an architectural style determines the vocabulary of components and connectors that can be used in instances of that style, together with a set of constraints on how they can be combined.*
 
-In the physical world, a building’s architecture often follows a particular style, such as Victorian, American Craftsman, or Art Deco. Each style is a package of design decisions that constrains a building’s features and building materials. 
-
-[David Garlan and Mary Shaw - An Introduction to Software Architecture, January 1994](https://www.cs.cmu.edu/afs/cs/project/able/ftp/intro_softarch/intro_softarch.pdf), pioneers in the discipline of software architecture, and defines an **architectural style** as follows: 
-
-*An architectural style, then, defines a family of such systems in terms of a pattern of structural organization. More specifically, an architectural style determines the vocabulary of components and connectors that can be used in instances of that style, together with a set of constraints on how they can be combined.*
-
-### The 4+1 view model of software architecture
-
-An application’s architecture can be viewed from multiple perspectives, in the same way that a building’s architecture can be viewed from structural, plumbing, electrical, and other perspectives (www.cs.ubc.ca/~gregor/teaching/papers/4+1view-architecture.pdf). The 4+1 model, defines four different views of a software architecture. Each describes a particular aspect of the architecture and consists of a particular set of software elements and relationships between them.
-
-![](images/swarch-4+1model.avif)
-
-The 4+1 view model is an excellent way to describe an applications’s architecture. Each view describes an important aspect of the architecture, and the scenarios illustrate how the elements of a view collaborate.
-
-### Why change the way we build applications?
-With a broader global customer base also comes worldwide competition. More competition impacts the way developers need to think about building applications. For example:
-* **Complexity has gone way up**: Customers expect that all parts of an organization know who they are. But “siloed” applications that talk to a single database and don’t integrate with other applications are no longer the norm. 
-* **Customers want faster delivery**: Customers no longer want to wait for the next annual release of a software package. Instead, they expect the features in a soft- ware productDto to be unbundled so that new functionality can be released quickly in a matter of weeks (or even days).
-* **Customers also demand reliable performance and scalability**: Global applications make it extremely difficult to predict how many transactions are going to be handled by an application and when that transaction volume is going to hit. Applications need to scale up quickly across multiple servers, then scale back down seamlessly when the volume has passed.
-* **Customers expect their applications to be available**: Because customers are one click away from a competitor, a company’s applications must be highly resilient. Failures or problems in one part of the application shouldn’t bring down the entire application.
-
-### Monolithic VS Distributed Architectures
-
-Architecture styles can be classified into two main types: **monolithic** (single deployment unit of all code) and **distributed** (multiple deployment units connected through remote access protocols). 
+In software, architecture styles can be classified into two main types: **monolithic** (single deployment unit of all code) and **distributed** (multiple deployment units connected through remote access protocols). 
 
 **Monolithic**
 * Layered architecture
