@@ -1,0 +1,15 @@
+server.port: 7002
+
+app:
+  greet-service:
+    host: localhost
+    port: 7001
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+
+app:
+  greet-service:
+    host: greet-service
+    port: 8080

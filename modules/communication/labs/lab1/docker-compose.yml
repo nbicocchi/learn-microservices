@@ -1,0 +1,16 @@
+services:
+  greet-service:
+    build: greet-service
+    image: greet-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  client-service:
+    build: client-service
+    image: client-service
+    mem_limit: 512m
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
