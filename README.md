@@ -5,7 +5,7 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 
 ## Software
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
-* [IntelliJ IDEA](https://www.jetbrains.com/idea/) + [Envfile Plugin](https://plugins.jetbrains.com/plugin/7861-envfile)
+* [IntelliJ IDEA](https://www.jetbrains.com/idea/) [Plugins: [Envfile](https://plugins.jetbrains.com/plugin/7861-envfile)]
 * [Apache Maven](https://maven.apache.org/)
 * [Apache JMeter](https://jmeter.apache.org/)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
