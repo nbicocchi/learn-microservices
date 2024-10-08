@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: jdbc_schema
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - my_custom_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d jdbc_schema" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  backend:
+    build:
+      context: backend
+    depends_on:
+      - postgres
+    ports:
+      - "5000:5000"
+    networks:
+      - my_custom_network
+    environment:
+      - DATABASE_URL=postgresql://user:secret@postgres:5432/jdbc_schema
+
+volumes:
+  pg-data:
+
+networks:
+  my_custom_network:
+    driver: bridge

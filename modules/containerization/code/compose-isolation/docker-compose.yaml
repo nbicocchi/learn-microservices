@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   frontend:
     image: nginx
@@ -8,27 +6,34 @@ services:
     networks:
       - front_net
     ports:
-      - "80:80"  # Expose the frontend on port 80
+      - "8080:8080"  # Expose the frontend on port 80
 
   backend:
     build:
-      context: ./backend  # Build backend from the local directory
+      context: backend  # Build backend from the local directory
     networks:
       - front_net
       - back_net
     environment:
-      - DATABASE_URL=postgresql://user:password@database:5432/mydb
+      - DATABASE_URL=postgresql://user:secret@postgres:5432/jdbc_schema
 
-  database:
-    image: postgres
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: jdbc_schema
+    volumes:
+      - pg-data:/var/lib/postgresql/data
     networks:
       - back_net
-    volumes:
-      - db_data:/var/lib/postgresql/data  # Persist database data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d jdbc_schema" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   front_net:
@@ -37,4 +42,4 @@ networks:
     driver: bridge
 
 volumes:
-  db_data:
+  pg-data:

@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 import datetime
 import os
 
-
 app = Flask(__name__)
 
 LOG_FILE_PATH = '/data/log.txt'
