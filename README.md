@@ -13,8 +13,7 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 ## Books
 * Microservices Patterns; Richardson
 * Spring Microservices in Action; Carnell, Sánchez
-* Microservices AntiPatterns and Pitfalls; Richards
-* Modern DevOps Practices; Agarwal
+* Microservices with Spring Boot 3 and Spring Cloud; Larsson
 
 ## Videos
 * [Mark Richards' YouTube Channel](https://www.youtube.com/@markrichards5014/videos)
