@@ -332,10 +332,11 @@ Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to 
 
 The problem is, each event is received by only one consumer. However, we do have any guarantee that all the messages concerning the same ID (e.g. the same product) reach the same consumer instance. This might lead to misbehaviour. To solve this issue, we can activate the use of *partitions* with Spring profiles.
 
-```
-  ...
-  producer:
-    build: producer-end
+```yaml
+services:
+  publisher:
+    image: async-rabbitmq-publisher
+    build: async-rabbitmq-publisher
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,partitioned
@@ -344,69 +345,103 @@ The problem is, each event is received by only one consumer. However, we do have
         condition: service_healthy
 
   consumer-0:
-    build: consumer-end
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,groups,partitioned,partitioned_instance_0
+      - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_0
     depends_on:
       lavinmq:
         condition: service_healthy
 
   consumer-1:
-    build: consumer-end
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,groups,partitioned,partitioned_instance_1
+      - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_1
     depends_on:
       lavinmq:
         condition: service_healthy
-  ...
+
+  consumer-2:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_2
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  lavinmq:
+    image: cloudamqp/lavinmq:latest
+    mem_limit: 512m
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: [ "CMD", "lavinmqctl", "status" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
 ```
 
 The *partitioned* profile, adds the following configurations.
 
-Producer-side:
-```
+Publisher-side:
+```yaml
 spring.config.activate.on-profile: partitioned
 
 spring.cloud.stream.bindings.message-out-0.producer:
   partition-key-expression: headers['partitionKey']
-  partition-count: 2
+  partition-count: 3
 ```
 
 Consumer-side:
-```
-spring.config.activate.on-profile: partitioned
-spring.cloud.stream:
-  bindings:
-    messageProcessor-in-0:
-      consumer:
-        partitioned: true
-        instanceCount: 2
-
----
+```yaml
 spring.config.activate.on-profile: partitioned_instance_0
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
-  instanceIndex: 0
+spring.cloud.stream.bindings:
+  messageProcessor-in-0:
+    consumer:
+      partitioned: true
+      instanceIndex: 0
+      instanceCount: 3
 
 ---
 spring.config.activate.on-profile: partitioned_instance_1
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
-  instanceIndex: 1
+spring.cloud.stream.bindings:
+  messageProcessor-in-0:
+    consumer:
+      partitioned: true
+      instanceIndex: 1
+      instanceCount: 3
+
+---
+spring.config.activate.on-profile: partitioned_instance_2
+spring.cloud.stream.bindings:
+  messageProcessor-in-0:
+    consumer:
+      partitioned: true
+      instanceIndex: 2
+      instanceCount: 3
 ```
+
+The `instanceCount` value represents the total number of application instances between which the data should be partitioned. The `instanceIndex` must be a unique value across the multiple instances, with a value between 0 and `instanceCount` - 1. The instance index helps each application instance to identify the unique partition(s) from which it receives data. It is required by binders using technology that does not support partitioning natively. For example, with RabbitMQ, there is a queue for each partition, with the queue name containing the instance index. With Kafka, if `autoRebalanceEnabled` is true (default), Kafka takes care of distributing partitions across instances, and these properties are not required.
 
 Start the system landscape with the following commands:
 
 ```
-$ mvn clean package -Dmaven.test.skip=true 
-$ docker compose build
 $ export COMPOSE_FILE=docker-compose-partitions.yml
-$ docker compose up -d
+$ mvn clean package
+$ docker compose build
+$ docker compose up --detach
 ```
 
-Using the [web interface](http://localhost:15672/) of LavinMQ/RabbitMQ it is possible to observe that the messages exchange receives 5 events/s and publishes the same events on one (named) queue. Each event is consumed once by only one consumer. Thus, the output rate is 5 events/s. However, by checking the logs, it is possible to observe how each consumer receive *all* five messages pertaining to same ID.
+Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to observe that the messages exchange receives 5 events/s and publishes the same events on three different (named) queues. Each event is consumed once by only one consumer. Thus, the output rate is 5 events/s. However, by checking the logs, it is possible to observe how each consumer receives *all* five messages pertaining to same ID.
 
-![](images/rabbitmq-two-partitions.avif)
+![](images/rabbitmq-partitions.png)
 
 ### Retries and dead-letter queues
 The `auditgroup` profile implements retries and a dead-letter queue.

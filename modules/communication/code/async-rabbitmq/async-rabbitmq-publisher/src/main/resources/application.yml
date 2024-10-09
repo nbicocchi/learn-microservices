@@ -18,16 +18,20 @@ spring.config.activate.on-profile: docker
 spring.rabbitmq.host: lavinmq
 
 ---
+spring.config.activate.on-profile: partitioned
+
+spring.cloud.stream:
+  bindings:
+    message-out-0:
+      producer:
+        partitioned: true
+        partition-key-expression: headers['partitionKey']
+        partition-count: 3
+
+---
 spring.config.activate.on-profile: auditgroup
 spring.cloud.stream:
   bindings:
     message-out-0:
       producer:
         required-groups: auditGroup
-
----
-spring.config.activate.on-profile: partitioned
-
-spring.cloud.stream.bindings.message-out-0.producer:
-  partition-key-expression: headers['partitionKey']
-  partition-count: 2
