@@ -232,7 +232,7 @@ For even greater simplicity, the `@Data` annotation bundles `@ToString`, `@Equal
 public class Event<K, T> {
     public enum Type {CREATE, DELETE, UPDATE}
     @NonNull private Type eventType;
-    private final K key;
+    private K key;
     private T data;
     private ZonedDateTime eventCreatedAt;
 }

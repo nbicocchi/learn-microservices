@@ -1,6 +1,7 @@
 services:
-  producer:
-    build: event-producer
+  publisher:
+    image: async-rabbitmq-publisher
+    build: async-rabbitmq-publisher
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -8,17 +9,9 @@ services:
       lavinmq:
         condition: service_healthy
 
-  consumer-0:
-    build: event-consumer
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      lavinmq:
-        condition: service_healthy
-
-  consumer-1:
-    build: event-consumer
+  consumer:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
