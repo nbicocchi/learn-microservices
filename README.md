@@ -72,4 +72,4 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 
 [M10 MLOps](modules/devsecops)
 * MLOps and their benefits in distributed contexts
-* Automating model observability with Evidently
+* Automating model observability with EvidentlyAI
