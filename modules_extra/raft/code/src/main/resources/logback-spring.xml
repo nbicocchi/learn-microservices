@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Import Spring properties -->
+    <springProperty scope="context" name="nodeId" source="node.id"/>
+    <springProperty scope="context" name="nodePort" source="server.port"/>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Using Spring property placeholders for nodeId and nodePort -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [${nodeId:-UNKNOWN}] [:${nodePort:-0}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <!-- Using Spring property placeholders for nodeId and nodePort -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [${nodeId:-UNKNOWN}] [:${nodePort:-0}] [%thread] %logger{36} -
+                %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger for com.baeldung.Raft_Implementation_with_Spring_Boot package -->
+    <logger name="com.baeldung.raft" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Root Logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
