@@ -127,7 +127,7 @@ public class EventSender {
 
 We also need to set up the configuration for the messaging system, to be able to publish events. In particular, we need to provide RabbitMQ as the default messaging system (including connectivity information), JSON as the default content type, and which topics should be used.
 
-```
+```yaml
 server.port: 8081
 
 spring.rabbitmq:
@@ -184,7 +184,7 @@ public class EventReceiver {
 
 We also need to set up a configuration for the messaging system to be able to consume events. To do this, we need to complete the following steps:
 
-```
+```yaml
 server.port: 8082
 
 spring.rabbitmq:
@@ -205,8 +205,6 @@ spring.cloud.stream:
 ## Trying out the messaging system
 
 
-### LavinMQ
-
 In this section, we will test the microservices together with [LavinMQ](https://lavinmq.com/). LavinMQ is an extremely fast Message Broker that handles a large amounts of messages and connections. It implements the AMQP protocol and runs on a single node in order to maximize performance, yet without compromising availability.
 
 The default *docker-compose.yml* is used for this configuration. 
@@ -222,6 +220,9 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 1
 
   consumer:
     image: async-rabbitmq-consumer
@@ -232,6 +233,9 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 1
 
   lavinmq:
     image: cloudamqp/lavinmq:latest
@@ -244,7 +248,6 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
-
 ```
 
 Start the system landscape with the following commands:
@@ -259,7 +262,9 @@ Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/gues
 
 ![](images/rabbitmq-two-queues.avif)
 
-### LavinMQ with consumer groups
+### Replicas
+
+### Consumer groups
 The problem is, if we scale up the number of instances of a message consumer, both instances of the product microservice will consume the same messages. We can avoid this issue by making use of *consumer groups*. The *docker-compose-groups.yml* embeds the needed configuration. Particularly, it activates the *groups* profile to change the configuration of both message consumers.
 
 ```
@@ -307,7 +312,7 @@ Using the [web interface](http://localhost:15672/) of LavinMQ/RabbitMQ it is pos
 
 ![](images/rabbitmq-one-group.avif)
 
-### LavinMQ with partitions
+### Partitions
 
 The problem is, each event is received by only one consumer. However, we do have any guarantee that all the messages concerning the same ID (e.g. the same product) reach the same consumer instance. This might lead to misbehaviour. To solve this issue, we can activate the use of *partitions* with Spring profiles.
 
@@ -445,89 +450,4 @@ We take the names defined in the application.yml and create the dead-letter exch
 
 By connecting to the link http://localhost:15672/#/queues (if you use LavinMQ) you can see the queues created and the messages inserted into the queue.
 
-## Apache Kafka
-To set up a Kafka cluster using Docker Compose, it is essential to define the two main services in the YAML file: ZooKeeper and Kafka, using the images provided by Confluent.
-```
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.2.2
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-
-  kafka:
-    image: confluentinc/cp-kafka:7.2.2
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-      - "29092:29092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-    healthcheck:
-      test: [ "CMD-SHELL", "nc -zv localhost 9092 || exit 1" ]
-      interval: 5s
-      timeout: 2s
-      retries: 60
-```
-This example uses a producer to send messages to a topic `messages` and two consumers who consume the topic's messages. At startup, each consumer will be assigned a list of topic partitions from which to read data.
-
-As configured, a partition can only be read by one consumer. If you associate other microservices listening on that topic, the Kafka broker will automatically update the list of partitions associated with consumers.
-
-In the `application.yml` (or `application.properties`) we indicate the microservice configurations for the kafka broker.
-```
-spring:
-  kafka:
-    bootstrap-servers: kafka:9092
-    consumer:
-      group-id: messages-group
-      auto-offset-reset: earliest
-      value-deserializer: com.baeldung.ls.common.EventDeserializer
-    producer:
-      acks: all
-      value-serializer: com.baeldung.ls.common.EventSerializer
-```
-**Consumer configuration**:
-- `bootstrap-servers` specifies the address of the Kafka server to which the application connects;
-- `group-id defines` the consumer group to which this consumer belongs;
-- `auto-offset-reset: earliest` tells Kafka to start reading messages from the oldest available offset if no initial offset exists for the consumer group. Other options are `latest` (to read from the most recent) and `none` (to throw an error if no leading offset exists).
-- `value-deserializer`specifies the class to use to deserialize the message values consumed by Kafka
-
-**Producer configuration**:
-- `acks: all` producers consider messages as "written successfully" when the message is accepted by all in-sync replicas;
-- `value-serializer` specifies the class to use to serialize the values of messages sent to Kafka.
-
-Topics are created and errors are handled in the `KafkaConfig.java` file.
-
-**Creating a topic with 1 replica and 5 partitions**
-```
-@Bean
-public NewTopic topicOrders() {
-    return TopicBuilder.name(TOPIC_MESSAGES)
-            .partitions(5)
-            .replicas(1)
-            .build();
-}
-```
-
-**Error handling and posting messages to a Dead Letter Topic (DLT)**
-```
-@Bean
-public CommonErrorHandler errorHandler(KafkaOperations<Object, Object> template) {
-    return new DefaultErrorHandler(
-            new DeadLetterPublishingRecoverer(template), new FixedBackOff(1000L, 2));
-}
-```
-The DLT topic is not created automatically and must be created manually with the notation `<topic_name>.DLT`.
-Before publishing the messages to the DLT, I set two retries at an interval of 1000ms.
-
-To be able to consume the messages of `messages` topic, insert the following notation to a java receive function.
-```
-@KafkaListener(topics = KafkaConfig.TOPIC_MESSAGES, groupId = KafkaConfig.GROUP_ID)
-```
+## Resources
