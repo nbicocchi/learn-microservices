@@ -17,13 +17,13 @@ services:
     build: async-rabbitmq-consumer
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,groups
     depends_on:
       lavinmq:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
 
 #  rabbitmq:
 #    image: rabbitmq:latest

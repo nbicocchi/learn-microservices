@@ -205,11 +205,11 @@ spring.cloud.stream:
 ## Trying out the messaging system
 
 
-In this section, we will test the microservices together with [LavinMQ](https://lavinmq.com/). LavinMQ is an extremely fast Message Broker that handles a large amounts of messages and connections. It implements the AMQP protocol and runs on a single node in order to maximize performance, yet without compromising availability.
+In this section, we will test the microservices together with [LavinMQ](https://lavinmq.com/). LavinMQ is an extremely fast Message Broker that handles a large amounts of messages and connections. It implements the AMQP protocol and can run on both a single node or a cluster (more details [here](https://github.com/cloudamqp/lavinmq)).
 
-The default *docker-compose.yml* is used for this configuration. 
+### One publisher, one consumer
 
-```
+```yaml
 services:
   publisher:
     image: async-rabbitmq-publisher
@@ -256,40 +256,57 @@ Start the system landscape with the following commands:
 $ mvn clean package
 $ docker compose build
 $ docker compose up --detach
+...
+$ docker compose down 
 ```
 
-Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/guest) it is possible to observe that the *messages* exchange receives 5 events/s and publishes the same events on two separate (anonymous) queues. The output rate is, as a consequence, 10 events/s.
+Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/guest) we can see the *messages* exchange receiving 5 events/s and publishing the same events on one (anonymous) queue. 
 
-![](images/rabbitmq-two-queues.avif)
+![](images/rabbitmq-one-consumer.png)
 
-### Replicas
+### One publisher, many consumers (publish-subscribe)
+
+```yaml
+  consumer:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 3
+```
+
+Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/guest) we can see the *messages* exchange receiving 5 events/s and publishing 15 same events on three different (anonymous) queue.
+
+![](images/rabbitmq-three-consumers.png)
+
 
 ### Consumer groups
-The problem is, if we scale up the number of instances of a message consumer, both instances of the product microservice will consume the same messages. We can avoid this issue by making use of *consumer groups*. The *docker-compose-groups.yml* embeds the needed configuration. Particularly, it activates the *groups* profile to change the configuration of both message consumers.
+The problem is, if we scale up the number of instances of a message consumer, both instances of the product microservice will consume the same messages. We can avoid this issue by making use of *consumer groups*. Each consumer binding can use the `spring.cloud.stream.bindings.<bindingName>.group` property to specify a group name. Consumers within the same group compete for the same messages.
 
-```
-  ...
-  consumer-0:
-    build: consumer-end
+Modify `docker-compose.yml` to activate the *groups* profile for the consumers.
+
+```yaml
+  consumer:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups
     depends_on:
       lavinmq:
         condition: service_healthy
-
-  consumer-1:
-    build: consumer-end
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker,groups
-    depends_on:
-      lavinmq:
-        condition: service_healthy
-  ...
+    deploy:
+      mode: replicated
+      replicas: 3
 ```
 
-The *groups* profile, add the following configurations in both the consumers (see *application.yml*):
+The *groups* profile, adds the following configurations (see *application.yml*):
 
 ```
 spring.config.activate.on-profile: groups
@@ -299,18 +316,17 @@ spring.cloud.stream:
       group: messagesGroup
 ```
 
-Start the system landscape with the following commands:
+Start the landscape with the following commands:
 
 ```
-$ mvn clean package -Dmaven.test.skip=true 
+$ mvn clean package
 $ docker compose build
-$ export COMPOSE_FILE=docker-compose-groups.yml
-$ docker compose up -d
+$ docker compose up --detach
 ```
 
-Using the [web interface](http://localhost:15672/) of LavinMQ/RabbitMQ it is possible to observe that the messages exchange receives 5 events/s and publishes the same events on one (named) queue. Each event is consumed once by only one consumer. Thus, the output rate is 5 events/s.
+Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to observe that the messages exchange receives 5 events/s and publishes them to a single message group having three consumers. Thus, the output rate is 5 events/s.
 
-![](images/rabbitmq-one-group.avif)
+![](images/rabbitmq-consumer-group.png)
 
 ### Partitions
 
