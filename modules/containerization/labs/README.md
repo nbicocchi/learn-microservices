@@ -4,28 +4,20 @@
 **Objective:** Create a Dockerfile that sets up a container with a Java environment.
 
 **Instructions:**
-- Write a Dockerfile that uses an official `openjdk` base image (e.g., `openjdk:17-jdk`).
+- Write a Dockerfile that uses an official `openjdk` base image (e.g., `openjdk:21-jdk`).
 - Add a simple Java application (`HelloWorld.java`) that prints "Hello, Docker!".
 - Compile the Java file using `javac` within the Docker container.
 - Run the compiled Java program inside the container.
-
-**Expected Outcomes:**
-- Students should be able to write and build a Dockerfile to create a Java environment.
-- Verify the environment by running `java HelloWorld` inside the container to print the expected output.
-
+- Build a different image producing the same output (prints "Hello, Docker!") but using Python.
 
 ## Lab 2: Writing a Docker Compose File for a Java Spring Boot Web Application and Database
 **Objective:** Write a Docker Compose file to define two containers: one for a Java Spring Boot web application and another for a PostgreSQL database.
 
 **Instructions:**
-- Write a `docker-compose.yml` file that defines a Spring Boot web application (using `openjdk` image) and a PostgreSQL database.
+- Write a `docker-compose.yml` file that defines a Spring Boot web application and a PostgreSQL database.
 - The Spring Boot application should connect to the PostgreSQL database and retrieve data (e.g., customer info).
-- Define networking between the two containers and use volumes to persist PostgreSQL data.
+- Define networking between the two containers (the application has to be exposed while PostgreSQL runs inside the Docker network) and use volumes to persist PostgreSQL data.
 - Use Docker Compose to start the containers and test the application.
-
-**Expected Outcomes:**
-- Students should be able to write a Docker Compose file to manage a multi-container application.
-- They should connect the Spring Boot app to the database, query the database, and ensure data persistence using Docker volumes.
 
 ## Lab 3: Resource Limiting and Monitoring for Java Containers
 **Objective:** Set CPU and memory limits on a Java container and monitor its usage.
@@ -34,10 +26,6 @@
 - Create a Dockerfile that runs a Java application performing a resource-intensive task (e.g., calculating large Fibonacci numbers or processing large datasets).
 - Write a Docker Compose file to run the container with CPU and memory limits using the `cpus` and `mem_limit` directives.
 - Start the containers and use `docker stats` to monitor their resource usage and verify that the limits are applied.
-
-**Expected Outcomes:**
-- Students should understand how to define CPU and memory limits for Java containers.
-- They will monitor resource consumption using `docker stats` and evaluate how limiting resources affects container performance.
 
 # Questions
 1. What are the main differences between bare-metal, virtual machines, and container-based deployments?
