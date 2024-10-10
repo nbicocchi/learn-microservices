@@ -385,19 +385,6 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
-
-  lavinmq:
-    image: cloudamqp/lavinmq:latest
-    mem_limit: 512m
-    ports:
-      - 5672:5672
-      - 15672:15672
-    healthcheck:
-      test: [ "CMD", "lavinmqctl", "status" ]
-      interval: 5s
-      timeout: 2s
-      retries: 60
-
 ```
 
 The *partitioned* profile, adds the following configurations.
@@ -454,7 +441,98 @@ Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to 
 ![](images/rabbitmq-partitions.png)
 
 ### Routing
-TBD
+Consider a scenario where multiple consumers need to handle messages of different types, such as CREATE, UPDATE, and DELETE. This can be efficiently managed using routing techniques within a message broker. Producers can assign messages a *routing key* (a string that represents the type of message), allowing the broker to forward each message to the appropriate queue based on its key.
+
+```yaml
+services:
+  publisher:
+    image: async-rabbitmq-publisher
+    build: async-rabbitmq-publisher
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,routed
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  consumer-0:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,routed_instance_CREATE
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  consumer-1:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,routed_instance_UPDATE
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  consumer-2:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,routed_instance_DELETE
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+```
+
+The *routed* profile, adds the following configurations.
+
+Publisher-side:
+
+```yaml
+spring.config.activate.on-profile: routed
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      message-out-0:
+        producer:
+          routingKeyExpression: headers['routingKey']
+```
+
+Consumer-side:
+
+```yaml
+spring.config.activate.on-profile: routed_instance_CREATE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'CREATE'
+
+---
+spring.config.activate.on-profile: routed_instance_UPDATE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'UPDATE'
+
+---
+spring.config.activate.on-profile: routed_instance_DELETE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'DELETE'
+```
+
 
 ### gRPC
 TBD
