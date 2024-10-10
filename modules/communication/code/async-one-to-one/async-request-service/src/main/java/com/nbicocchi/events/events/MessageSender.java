@@ -5,11 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 @Component
 public class MessageSender {

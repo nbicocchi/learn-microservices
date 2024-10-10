@@ -18,7 +18,7 @@ public class ScheduledTask {
     @Scheduled(fixedRate = 1000)
     public void randomMessage() {
         int index = RANDOM.nextInt(Event.Type.class.getEnumConstants().length);
-        Event<String, Integer> event = new Event(
+        Event<String, Integer> event = new Event<>(
                 Event.Type.class.getEnumConstants()[index],
                 UUID.randomUUID().toString(),
                 RANDOM.nextInt(100)
