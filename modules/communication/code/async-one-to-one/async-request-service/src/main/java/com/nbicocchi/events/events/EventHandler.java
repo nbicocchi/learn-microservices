@@ -1,6 +1,5 @@
-package com.nbicocchi.events.events.handler;
+package com.nbicocchi.events.events;
 
-import com.nbicocchi.events.events.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -13,9 +12,7 @@ public class EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(EventHandler.class);
 
     @Bean
-    public Consumer<Event<String, Integer>> responseReceiver() {
-        return event -> {
-            LOG.info(String.format("[RESPONSE] --> %s", event));
-        };
+    public Consumer<Event<String, Integer>> mathResponse() {
+        return event -> LOG.info("[RESPONSE] -> {}", event);
     }
 }

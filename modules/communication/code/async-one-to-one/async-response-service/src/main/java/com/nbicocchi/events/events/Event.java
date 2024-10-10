@@ -1,6 +1,9 @@
-package com.nbicocchi.events.events.model;
+package com.nbicocchi.events.events;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.time.ZonedDateTime;
 
@@ -8,7 +11,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Data
 public class Event<K, T> {
-    public enum Type {FACT, SQRT, POW2}
+    public enum Type {MUL10, SQRT, POW2}
     @NonNull private Type eventType;
     private K key;
     private T data;

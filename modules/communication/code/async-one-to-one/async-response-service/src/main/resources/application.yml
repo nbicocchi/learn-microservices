@@ -2,13 +2,13 @@ server.port: 8082
 
 spring.cloud.stream:
   function:
-    definition: requestReceiver
+    definition: mathRequest
   bindings:
-    message-out-0:
+    mathResponse-out-0:
       contentType: application/json
       destination: queue.response
       binder: local_rabbit
-    requestReceiver-in-0:
+    mathRequest-in-0:
       contentType: application/json
       destination: queue.request
       binder: local_rabbit
