@@ -534,7 +534,5 @@ spring.cloud.stream:
 ```
 
 
-### gRPC
-TBD
 
 ## Resources
