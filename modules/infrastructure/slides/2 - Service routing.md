@@ -1,8 +1,27 @@
 # Service Routing
 
+In microservice architectures, usually comes a point where we’ll need to ensure that critical *cross-cutting concerns* such as security, logging, and tracking users across multiple service calls occur. **We want these functionalities to be consistently enforced across all services** without the need for each team to build their own solution. 
+
+## Implementing cross-cutting concerns with a shared library
+While it’s possible to use a common library for embedding these capabilities into service, doing so has several (negative) implications:
+* **Consistency:** It’s challenging to implement these capabilities in each service consistently. 
+* **Bug Proness:** Pushing the responsibilities to implement cross-cutting concerns like security and logging down to the individual teams greatly increases the odds that someone will not implement them properly or will forget to do them. 
+* **Flexibility:** It’s possible to create a hard dependency across all our services. The more capabilities we build into a common framework shared across all our services, the more difficult it is to change or add behavior in our common code without having to recompile and redeploy all our services. Suddenly an upgrade of core capabilities built into a shared library becomes a long migration process.
+
+## Implementing cross-cutting concerns with a gateway service
+To solve these issues, we need to abstract these cross-cutting concerns into a service that can sit independently and act as a filter and router for all the microservice calls in our architecture. We call this service a *gateway*. Clients no longer directly call a microservice. Instead, all calls are routed through the service gateway, which acts as a single *Policy Enforcement Point (PEP)*, and are then routed to a final destination.
+
+The use of a centralized *PEP* means that cross-cutting service concerns can be carried out in a single place without the individual development teams having to implement those concerns. Examples of cross-cutting concerns that can be implemented in a service gateway:
+* **Static routing** A service gateway places all service calls behind a single URL and API route. This simplifies development as we only have to know about one service endpoint for all of our services.
+* **Dynamic routing** A service gateway can inspect incoming service requests and, based on the data from the incoming request, perform intelligent routing for the service caller. For instance, customers participating in a beta program might have all calls to a service routed to a specific cluster of services that are running a different version of code.
+* **Authentication and authorization** Because all service calls route through a service gateway, the service gateway is a natural place to check whether the callers of a service have authenticated themselves.
+* **Metric collection and logging** A service gateway can be used to collect metrics and log information as a service call passes through it. You can also use the service gateway to confirm that critical pieces of information are in place for user requests, thereby ensuring that logging is uniform. 
+
+## Spring Cloud Gateway
+
 Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross-cutting concerns to them such as: security, monitoring/metrics, and resiliency.
 
-## Maven dependencies
+### Maven dependencies
 To include a Cloud Gateway service in our ecosystem, create an empty service and add the *spring-cloud-starter-gateway*, *spring-cloud-starter-netflix-eureka-client*, *spring-boot-starter-actuator* dependencies.
 
 ```
@@ -38,7 +57,7 @@ To include a Cloud Gateway service in our ecosystem, create an empty service and
 	</dependencyManagement>
 ```
 
-## Configuration
+### Configuration
 
 The following configuration:
 * configure Spring Cloud Gateway as an Eureka client.
@@ -77,12 +96,12 @@ server.port: 8080
 app.eureka-server: eureka
 ```
 
-## Routing rules
-When it comes to configuring Spring Cloud Gateway, the most important thing is setting up the routing rules. Setting up routing rules can be done in two ways: 
+### Routing rules
+When it comes to configuring Spring Cloud Gateway, the most important thing is setting up the routing rules. Setting up routing rules can be done in two ways:
 * programmatically, using a Java DSL
-* by configuration 
+* by configuration
 
-Using a Java DSL to set up routing rules programmatically can be useful in cases where the rules are stored in external storage, such as a database, or are given at runtime, for example, via a RESTful API or a message sent to the gateway. 
+Using a Java DSL to set up routing rules programmatically can be useful in cases where the rules are stored in external storage, such as a database, or are given at runtime, for example, via a RESTful API or a message sent to the gateway.
 
 In more static use cases, it is convenient to declare the routes in the configuration file. **Separating the routing rules from the Java code makes it possible to update the routing rules without having to deploy a new version of the microservice**.
 
@@ -94,7 +113,7 @@ A route is defined by the following:
 
 ![](images/gateway-predicate-filters.avif)
 
-Clients make requests to Spring Cloud Gateway. If the Gateway Handler Mapping determines that a request matches a route, it is sent to the Gateway Web Handler. This handler runs the request through a filter chain that is specific to the request. 
+Clients make requests to Spring Cloud Gateway. If the Gateway Handler Mapping determines that a request matches a route, it is sent to the Gateway Web Handler. This handler runs the request through a filter chain that is specific to the request.
 
 ### Routing requests to the composite-service API
 
@@ -142,9 +161,9 @@ spring.cloud.gateway.routes:
       - Path=/eureka/**
 ```
 
-Eureka exposes both an API and a web page for its clients. In this case, requests sent to the edge server with the path starting with /eureka/web/ should be handled as a call to the Eureka web page and routed to http://${app.eureka-server}:8761. 
+Eureka exposes both an API and a web page for its clients. In this case, requests sent to the edge server with the path starting with /eureka/web/ should be handled as a call to the Eureka web page and routed to http://${app.eureka-server}:8761.
 
-The web page will also load several web resources, such as .js, .css, and .png files. These requests will be routed to http://${app. eureka-server}:8761/eureka. 
+The web page will also load several web resources, such as .js, .css, and .png files. These requests will be routed to http://${app. eureka-server}:8761/eureka.
 
 ### Routing requests with predicates and filters
 To learn a bit more about the routing capabilities in Spring Cloud Gateway, we will try out host-based routing, where Spring Cloud Gateway uses the hostname of the incoming request to determine where to route the request. We will use a website for testing HTTP codes: http://httpstat.us/.
@@ -240,7 +259,7 @@ curl http://localhost:8080/actuator/gateway/routes | jq
   ...
 ```
 
-## Gateway Code
+### Gateway Code
 With an edge server in place, external health check requests also have to go through the edge server.
 Therefore, the edge server has to be equipped with a composite health check that checks the status of all microservices.
 
@@ -295,7 +314,7 @@ public class GatewayApplication {
 }
 ```
 
-## Docker configuration
+### Docker configuration
 Add a _Dockerfile_ to containerize the service and edit the _docker-compose.yml_ file to include the service within your ecosystem.
 
 ```
@@ -309,4 +328,5 @@ Add a _Dockerfile_ to containerize the service and edit the _docker-compose.yml_
 ```
 
 ## Resources
+- Spring Microservices in Action (Chapter 8)
 - Microservices with Spring Boot 3 and Spring Cloud (Chapter 10)

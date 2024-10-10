@@ -41,8 +41,8 @@
 
 # Questions
 1. What is service discovery, and why is it important in microservices architecture?
-2. How does Netflix Eureka facilitate service discovery in Spring Boot applications?
-3. Explain the role of the Eureka server and client in the service discovery process.
+2. Explain the key differences between client-side and server-side load balancing.
+3. Explain the role of the Eureka server and its client in the service discovery process.
 4. What is an API Gateway, and how does Zuul provide routing functionality for microservices?
 5. Describe the process of configuring routes in a Zuul API Gateway.
 6. What are the advantages of using centralized configuration management in microservices?
