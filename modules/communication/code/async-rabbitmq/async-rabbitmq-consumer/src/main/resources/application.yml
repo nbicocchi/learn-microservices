@@ -1,40 +1,33 @@
 server.port: 8082
 
-spring.rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  username: guest
-  password: guest
-
-spring.cloud.function.definition: messageProcessor
-
 spring.cloud.stream:
-  defaultBinder: rabbit
-  default.contentType: application/json
-  bindings.messageProcessor-in-0:
-    destination: messages
-
----
-spring.config.activate.on-profile: dlq
-spring.cloud.stream.bindings.messageProcessor-in-0.destination: messages.dl
+  function:
+    definition: messageProcessor
+  bindings:
+    messageProcessor-in-0:
+      binder: local_rabbit
+      contentType: application/json
+      destination: queue.messages
+  binders:
+    local_rabbit:
+      type: rabbit
+      environment:
+        spring:
+          rabbitmq:
+            host: 127.0.0.1
+            port: 5672
+            username: guest
+            password: guest
 
 ---
 spring.config.activate.on-profile: docker
-spring.rabbitmq.host: lavinmq
-
----
-spring.config.activate.on-profile: auditgroup
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
-  maxAttempts: 3
-  backOffInitialInterval: 500
-  backOffMaxInterval: 1000
-  backOffMultiplier: 2.0
-
-spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer:
-  autoBindDlq: true
-  republishToDlq: true
-  dead-letter-exchange: messages.dl
-  dead-letter-queue-name: messages.dlq
+spring.cloud.stream:
+  binders:
+    local_rabbit:
+      environment:
+        spring:
+          rabbitmq:
+            host: lavinmq
 
 ---
 spring.config.activate.on-profile: groups
@@ -69,3 +62,30 @@ spring.cloud.stream.bindings:
       partitioned: true
       instanceIndex: 2
       instanceCount: 3
+
+---
+spring.config.activate.on-profile: routed_instance_CREATE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'CREATE'
+
+---
+spring.config.activate.on-profile: routed_instance_UPDATE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'UPDATE'
+
+---
+spring.config.activate.on-profile: routed_instance_DELETE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'DELETE'

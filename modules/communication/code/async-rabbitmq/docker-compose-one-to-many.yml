@@ -1,39 +1,29 @@
 services:
-  producer:
-    build: producer-end
+  publisher:
+    image: async-rabbitmq-publisher
+    build: async-rabbitmq-publisher
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 1
 
-  consumer-0:
-    build: consumer-end
+  consumer:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker, auditgroup
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       lavinmq:
         condition: service_healthy
-
-  consumer-1:
-    build: consumer-end
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker, auditgroup
-    depends_on:
-      lavinmq:
-        condition: service_healthy
-
-  consumer-dlq:
-    build: consumer-end
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker ,dlq, auditgroup
-    depends_on:
-      lavinmq:
-        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 3
 
 #  rabbitmq:
 #    image: rabbitmq:latest

@@ -36,6 +36,7 @@ public class EventSender {
     private void sendMessage(String bindingName, Event<String, Integer> event) {
         for (int i = 0; i < 5; i++) {
             Message<Event<String, Integer>> message = MessageBuilder.withPayload(event)
+                    .setHeader("routingKey", event.getEventType().name())
                     .setHeader("partitionKey", event.getKey())
                     .build();
             LOG.info("Sending message {} to {}", event, bindingName);

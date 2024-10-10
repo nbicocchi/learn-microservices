@@ -116,6 +116,7 @@ public class EventSender {
     private void sendMessage(String bindingName, Event<String, Integer> event) {
         for (int i = 0; i < 5; i++) {
             Message<Event<String, Integer>> message = MessageBuilder.withPayload(event)
+                    .setHeader("routingKey", event.getEventType().name())
                     .setHeader("partitionKey", event.getKey())
                     .build();
             LOG.info("Sending message {} to {}", event, bindingName);
@@ -128,20 +129,22 @@ public class EventSender {
 We also need to set up the configuration for the messaging system, to be able to publish events. In particular, we need to provide RabbitMQ as the default messaging system (including connectivity information), JSON as the default content type, and which topics should be used.
 
 ```yaml
-server.port: 8081
-
-spring.rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  username: guest
-  password: guest
-
 spring.cloud.stream:
-  defaultBinder: rabbit
-  default.contentType: application/json
   bindings:
     message-out-0:
-      destination: messages
+      contentType: application/json
+      destination: queue.messages
+      binder: local_rabbit
+  binders:
+    local_rabbit:
+      type: rabbit
+      environment:
+        spring:
+          rabbitmq:
+            host: 127.0.0.1
+            port: 5672
+            username: guest
+            password: guest
 ```
 
 ## Receiving events
@@ -185,21 +188,24 @@ public class EventReceiver {
 We also need to set up a configuration for the messaging system to be able to consume events. To do this, we need to complete the following steps:
 
 ```yaml
-server.port: 8082
-
-spring.rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  username: guest
-  password: guest
-
-spring.cloud.function.definition: messageProcessor
-
 spring.cloud.stream:
-  defaultBinder: rabbit
-  default.contentType: application/json
-  bindings.messageProcessor-in-0:
-    destination: messages
+  function:
+    definition: messageProcessor
+  bindings:
+    messageProcessor-in-0:
+      binder: local_rabbit
+      contentType: application/json
+      destination: queue.messages
+  binders:
+    local_rabbit:
+      type: rabbit
+      environment:
+        spring:
+          rabbitmq:
+            host: 127.0.0.1
+            port: 5672
+            username: guest
+            password: guest
 ```
 
 ## Trying out the messaging system
@@ -248,6 +254,7 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+
 ```
 
 Start the system landscape with the following commands:
@@ -255,6 +262,7 @@ Start the system landscape with the following commands:
 ```
 $ mvn clean package
 $ docker compose build
+$ export COMPOSE_FILE=docker-compose-one-to-one.yml
 $ docker compose up --detach
 ...
 $ docker compose down 
@@ -279,6 +287,11 @@ Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/gues
     deploy:
       mode: replicated
       replicas: 3
+```
+
+```
+$ export COMPOSE_FILE=docker-compose-one-to-many.yml
+$ docker compose up --detach
 ```
 
 Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/guest) we can see the *messages* exchange receiving 5 events/s and publishing 15 same events on three different (anonymous) queue.
@@ -308,7 +321,7 @@ Modify `docker-compose.yml` to activate the *groups* profile for the consumers.
 
 The *groups* profile, adds the following configurations (see *application.yml*):
 
-```
+```yaml
 spring.config.activate.on-profile: groups
 spring.cloud.stream:
   bindings:
@@ -319,8 +332,7 @@ spring.cloud.stream:
 Start the landscape with the following commands:
 
 ```
-$ mvn clean package
-$ docker compose build
+$ export COMPOSE_FILE=docker-compose-one-to-many-groups.yml
 $ docker compose up --detach
 ```
 
@@ -433,9 +445,7 @@ The `instanceCount` value represents the total number of application instances b
 Start the system landscape with the following commands:
 
 ```
-$ export COMPOSE_FILE=docker-compose-partitions.yml
-$ mvn clean package
-$ docker compose build
+$ export COMPOSE_FILE=docker-compose-one-to-many-partitions.yml
 $ docker compose up --detach
 ```
 
@@ -443,62 +453,10 @@ Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to 
 
 ![](images/rabbitmq-partitions.png)
 
-### Retries and dead-letter queues
-The `auditgroup` profile implements retries and a dead-letter queue.
-```
-spring.config.activate.on-profile: auditgroup
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
-  maxAttempts: 3
-  backOffInitialInterval: 500
-  backOffMaxInterval: 1000
-  backOffMultiplier: 2.0
+### Routing
+TBD
 
-spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer:
-  autoBindDlq: true
-  republishToDlq: true
-  dead-letter-exchange: messages.dl
-  dead-letter-queue-name: messages.dlq
-```
-
-- `maxAttempts` maximum number of retries to consume a message in case of error;
-- `backOffInitialInterval` initial backoff interval (in milliseconds) before the first retry;
-- `backOffMaxInterval` maximum backoff interval (in milliseconds) between retries;
-- `backOffMultiplier` multiplier used to calculate the backoff interval between subsequent retries.
-
-The **DLQ** receives messages if there have been errors (queue size exceeded, runtime exception, etc.).
-- `republishToDlq` indicates that messages should be republished on the DLQ in the event of an error;
-- `dead-letter-exchange` and `dead-letter-queue-name` they specify the names of the components that we need to create in the RabbitMQConfig.java file.
-```
-@Configuration
-@Profile("auditgroup")
-public class RabbitMQConfig {
-
-    @Value("${spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer.dead-letter-exchange}")
-    private String deadLetterExchange;
-
-    @Value("${spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer.dead-letter-queue-name}")
-    private String deadLetterQueue;
-
-    @Bean
-    public FanoutExchange deadLetterExchange() {
-        return new FanoutExchange(deadLetterExchange);
-    }
-
-    @Bean
-    public Queue deadLetterQueue() {
-        return new Queue(deadLetterQueue);
-    }
-
-    @Bean
-    public Binding deadLetterBinding() {
-        return BindingBuilder.bind(deadLetterQueue())
-                .to(deadLetterExchange());
-    }
-}
-```
-
-We take the names defined in the application.yml and create the dead-letter exchange as FanoutExchange, the dead-letter queue and the binding between the two.
-
-By connecting to the link http://localhost:15672/#/queues (if you use LavinMQ) you can see the queues created and the messages inserted into the queue.
+### gRPC
+TBD
 
 ## Resources
