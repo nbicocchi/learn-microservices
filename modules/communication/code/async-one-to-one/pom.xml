@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.baeldung</groupId>
-    <artifactId>async-rabbitmq</artifactId>
+    <artifactId>async-one-to-one</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <description>Demo product for Spring Boot</description>
     <packaging>pom</packaging>
 
     <modules>
-        <module>async-rabbitmq-consumer</module>
-        <module>async-rabbitmq-publisher</module>
+        <module>async-response-service</module>
+        <module>async-request-service</module>
     </modules>
 
 </project>
