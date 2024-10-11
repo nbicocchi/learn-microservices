@@ -1,6 +1,6 @@
 services:
   eureka:
-    build: eureka-server-end
+    build: eureka-service
     mem_limit: 512m
     healthcheck:
       test: "curl -f localhost:8761/actuator/health"
@@ -9,7 +9,7 @@ services:
       retries: 20
 
   config:
-    build: config-server-end
+    build: config-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,native
@@ -30,7 +30,7 @@ services:
         condition: service_healthy
 
   gateway:
-    build: gateway-service-end
+    build: gateway-service
     mem_limit: 512m
     ports:
       - 8080:8080
@@ -46,8 +46,8 @@ services:
       config:
         condition: service_healthy
 
-  composite:
-    build: composite-service-end
+  datetime-composite:
+    build: datetime-composite-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -61,8 +61,8 @@ services:
       config:
         condition: service_healthy
 
-  date:
-    build: date-service-end
+  datetime:
+    build: datetime-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -70,23 +70,12 @@ services:
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    deploy:
+      mode: replicated
+      replicas: 3
     depends_on:
       eureka:
         condition: service_healthy
       config:
         condition: service_healthy
 
-  time:
-    build: time-service-end
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
-      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
-      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-    depends_on:
-      eureka:
-        condition: service_healthy
-      config:
-        condition: service_healthy

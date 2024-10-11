@@ -14,7 +14,6 @@
         <module>datetime-composite-service</module>
         <module>gateway-service</module>
         <module>eureka-service</module>
-        <module>config-service</module>
     </modules>
 
 </project>
