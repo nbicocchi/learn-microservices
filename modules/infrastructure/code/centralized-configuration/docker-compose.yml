@@ -68,7 +68,7 @@ services:
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
     depends_on:
       eureka:
         condition: service_healthy
