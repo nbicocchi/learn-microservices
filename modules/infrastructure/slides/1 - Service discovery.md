@@ -341,10 +341,6 @@ Now, we can connect to the Spring Eureka Dashboard at http://localhost:8761/ to 
 
 ![](images/eureka-dashboard.avif)
 
-## Trying out service discovery
-TODO:
-* experiments with adding and removing instances of time/date service
-* experiments for removing unhealthy instances
 
 ## Resources
 - Spring Microservices in Action (Chapter 6)

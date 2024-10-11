@@ -8,45 +8,34 @@
 - Develop another Spring Boot application that registers itself with the Eureka server.
 - Configure the client application to discover other services via the Eureka server.
 - Test the registration and discovery process by accessing the Eureka dashboard and verifying the registered services.
+- Using replicas, show that the heartbeats mechanism allow the system to be resilient to failing services.
 
-**Expected Outcomes:**
-- Students will understand how to implement service discovery using Eureka.
-- They will be able to set up both the Eureka server and client applications, ensuring successful registration and discovery.
-
-## Lab 2: Service Routing with Zuul
-**Objective:** Implement API Gateway functionality using Spring Cloud Zuul for routing requests to multiple microservices.
+## Lab 2: Service Routing with Spring Cloud Gateway
+**Objective:** Implement API Gateway functionality using Spring Cloud Gateway for routing requests to multiple microservices.
 
 **Instructions:**
-- Set up a Spring Boot application as a Zuul API Gateway using the `spring-cloud-starter-netflix-zuul` dependency.
+- Set up a Spring Boot application as an API Gateway using the `spring-cloud-starter-gateway` dependency.
 - Configure routes in the `application.yml` file to direct incoming requests to appropriate backend services.
-- Develop two simple microservices that the Zuul gateway will route requests to.
-- Test the gateway by sending requests through Zuul and verifying the responses from the backend services.
+- Develop two simple microservices that the gateway will route requests to.
+- Test the gateway by sending requests through it and verifying the responses from the backend services.
 
-**Expected Outcomes:**
-- Students will learn how to implement API Gateway patterns with Zuul.
-- They will understand how to configure service routes and use Zuul for routing requests to different services.
-
-## Lab 3: Centralized Configuration with Spring Cloud Config
-**Objective:** Set up centralized configuration management for microservices using Spring Cloud Config.
+## Lab 3: Service Routing with nginx
+**Objective:** Implement API Gateway functionality using nginx for routing requests to multiple microservices.
 
 **Instructions:**
-- Create a Spring Cloud Config Server using the `spring-cloud-config-server` dependency.
-- Store configuration properties in a Git repository or local file system.
-- Develop a Spring Boot microservice that retrieves its configuration from the Config Server.
-- Test the configuration retrieval by changing the properties in the repository and verifying that the microservice reflects the changes without redeployment.
-
-**Expected Outcomes:**
-- Students will understand how to implement centralized configuration management with Spring Cloud Config.
-- They will be able to set up a Config Server and connect microservices to it for dynamic configuration management.
+- Develop two simple microservices.
+- Configure a docker compose environment in which nginx routes incoming requests to appropriate backend services.
+- Test the gateway by sending requests through it and verifying the responses from the backend services.
 
 # Questions
 1. What is service discovery, and why is it important in microservices architecture?
 2. Explain the key differences between client-side and server-side load balancing.
-3. Explain the role of the Eureka server and its client in the service discovery process.
-4. What is an API Gateway, and how does Zuul provide routing functionality for microservices?
-5. Describe the process of configuring routes in a Zuul API Gateway.
-6. What are the advantages of using centralized configuration management in microservices?
-7. How does Spring Cloud Config Server work, and what are its main components?
-8. Explain how microservices can retrieve configuration properties from the Spring Cloud Config Server.
-9. What is the significance of using a Git repository for centralized configuration management?
-10. Discuss the best practices for implementing service discovery, routing, and centralized configuration in Spring Boot applications.
+3. Explain the role of heartbeats (towards a Eureka node) in client-side load balancing.
+4. Explain the role of the Eureka server and its client in the service discovery process.
+5. What is an API Gateway? Is this pattern correlated with Server-side load balancing? How?
+6. What is a cross-cutting concern and how it could be addressed with a gateway service?
+7. Discuss the differences and similarities between the API gateway and backend for frontends pattern.
+8. What are the advantages of using centralized configuration management in microservices?
+9. How does Spring Cloud Config Server work, and what are its main components?
+10. What is the significance of using a Git repository for centralized configuration management?
+

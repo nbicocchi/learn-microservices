@@ -1,14 +1,15 @@
 # Service Routing
 
+## Implementing Cross-cutting concerns
 In microservice architectures, usually comes a point where we’ll need to ensure that critical *cross-cutting concerns* such as security, logging, and tracking users across multiple service calls occur. **We want these functionalities to be consistently enforced across all services** without the need for each team to build their own solution. 
 
-## Implementing cross-cutting concerns with a shared library
+### Implementing cross-cutting concerns with a shared library
 While it’s possible to use a common library for embedding these capabilities into service, doing so has several (negative) implications:
 * **Consistency:** It’s challenging to implement these capabilities in each service consistently. 
 * **Bug Proness:** Pushing the responsibilities to implement cross-cutting concerns like security and logging down to the individual teams greatly increases the odds that someone will not implement them properly or will forget to do them. 
 * **Flexibility:** It’s possible to create a hard dependency across all our services. The more capabilities we build into a common framework shared across all our services, the more difficult it is to change or add behavior in our common code without having to recompile and redeploy all our services. Suddenly an upgrade of core capabilities built into a shared library becomes a long migration process.
 
-## Implementing cross-cutting concerns with a gateway service
+### Implementing cross-cutting concerns with a gateway service
 To solve these issues, we need to abstract these cross-cutting concerns into a service that can sit independently and act as a filter and router for all the microservice calls in our architecture. We call this service a *gateway*. Clients no longer directly call a microservice. Instead, all calls are routed through the service gateway, which acts as a single *Policy Enforcement Point (PEP)*, and are then routed to a final destination.
 
 The use of a centralized *PEP* means that cross-cutting service concerns can be carried out in a single place without the individual development teams having to implement those concerns. Examples of cross-cutting concerns that can be implemented in a service gateway:
@@ -17,12 +18,47 @@ The use of a centralized *PEP* means that cross-cutting service concerns can be 
 * **Authentication and authorization** Because all service calls route through a service gateway, the service gateway is a natural place to check whether the callers of a service have authenticated themselves.
 * **Metric collection and logging** A service gateway can be used to collect metrics and log information as a service call passes through it. You can also use the service gateway to confirm that critical pieces of information are in place for user requests, thereby ensuring that logging is uniform. 
 
+## API Gateway Pattern
+
+The **API Gateway** is a design pattern commonly used in microservices architectures to handle incoming requests from clients and route them to the appropriate backend microservices. It serves as a reverse proxy that consolidates requests, performing functions such as authentication, routing, load balancing, and request transformation. The API Gateway acts as a single entry point into the system, abstracting the complexity of individual microservices from the client.
+
+**Advantages:**
+- **Centralized Control:** The API Gateway consolidates all external traffic, simplifying the management of cross-cutting concerns like security and monitoring.
+- **Client Simplicity:** Clients interact with a single endpoint (the API Gateway), abstracting away the complexities of calling multiple microservices.
+- **Performance Optimizations:** The gateway can cache responses, compress payloads, or aggregate data from multiple services into a single response.
+
+**Challenges:**
+- **Single Point of Failure:** The API Gateway can become a bottleneck or a single point of failure if not properly managed and scaled.
+- **Increased Complexity:** The API Gateway itself becomes a critical component that needs to be maintained, monitored, and optimized.
+
+**Correlated with Server-Side Load Balancing:**
+API Gateways often implement **server-side load balancing** by distributing requests among multiple instances of the same service. This ensures even traffic distribution without burdening the client with choosing a specific service instance, providing more control over service performance.
+
+## Backend for Frontends (BFF) Pattern
+
+The **Backends for Frontends (BFF)** pattern is a variation of the API Gateway pattern that provides specialized backends for different types of clients (e.g., web, mobile, IoT devices). Instead of having a single, monolithic API Gateway, the BFF pattern creates a separate backend tailored to the specific needs of each frontend application. This allows the backend to serve optimized responses that fit the specific requirements of different client types.
+
+**Advantages:**
+- **Customization for Each Client:** Each frontend receives data in a format that is most useful to it, leading to better performance and a more efficient user experience.
+- **Reduced Latency for Frontends:** Because the BFF is tailored to specific clients, it can pre-aggregate data from various microservices, reducing the number of round trips between the client and backend.
+- **Decoupled Frontend Development:** Teams can develop and evolve frontend applications independently, without worrying about impacting other clients.
+
+**Challenges:**
+- **Increased Maintenance:** Managing multiple backends for different clients can introduce more complexity and increase the overhead of maintaining different APIs.
+- **Redundancy of Logic:** Certain business logic might need to be replicated across different BFFs, leading to code duplication.
+
+**Differences from API Gateway:**
+- **Granularity:** The API Gateway is a single entry point for all clients, while BFFs provide multiple, client-specific entry points.
+- **Client Optimization:** BFFs are focused on optimizing for the needs of specific clients (e.g., mobile vs. desktop), whereas the API Gateway is a more general-purpose solution.
+- **Complexity:** The API Gateway provides a unified control point, while BFFs offer more flexibility at the cost of increased backend complexity.
+
+The **BFF pattern** is particularly useful in scenarios where different types of clients require different types of data or functionality, allowing for more efficient and customized interactions.
+
 ## Spring Cloud Gateway
 
 Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross-cutting concerns to them such as: security, monitoring/metrics, and resiliency.
 
 ### Maven dependencies
-To include a Cloud Gateway service in our ecosystem, create an empty service and add the *spring-cloud-starter-gateway*, *spring-cloud-starter-netflix-eureka-client*, *spring-boot-starter-actuator* dependencies.
 
 ```
 	<dependencies>
@@ -61,11 +97,11 @@ To include a Cloud Gateway service in our ecosystem, create an empty service and
 
 The following configuration:
 * configure Spring Cloud Gateway as an Eureka client.
-* configure Spring Boot Actuator for development usage.
+* configure Spring Boot Actuator for development.
 * configure log levels so that we can see log messages from interesting parts of the internal processing in Spring Cloud Gateway.
 
 
-```
+```yaml
 server.port: 8081
 spring.application.name: gateway-service
 app.eureka-server: localhost
@@ -94,11 +130,13 @@ logging:
 spring.config.activate.on-profile: docker
 server.port: 8080
 app.eureka-server: eureka
+
+
 ```
 
 ### Routing rules
 When it comes to configuring Spring Cloud Gateway, the most important thing is setting up the routing rules. Setting up routing rules can be done in two ways:
-* programmatically, using a Java DSL
+* programmatically, using a Java DSL (Domain Specific Language)
 * by configuration
 
 Using a Java DSL to set up routing rules programmatically can be useful in cases where the rules are stored in external storage, such as a database, or are given at runtime, for example, via a RESTful API or a message sent to the gateway.
@@ -117,7 +155,7 @@ Clients make requests to Spring Cloud Gateway. If the Gateway Handler Mapping de
 
 ### Routing requests to the composite-service API
 
-```
+```yaml
 spring.cloud.gateway.routes:
   - id: composite-service
     uri: lb://composite-service
@@ -132,14 +170,14 @@ Some points to note from the preceding code:
 
 ### Routing requests to the date and time services APIs
 
-```
+```yaml
 spring.cloud.gateway.routes:
   - id: time-service
-    uri: lb://time-service
+    uri: lb://datetime-service
     predicates:
       - Path=/time/**
   - id: date-service
-    uri: lb://date-service
+    uri: lb://datetime-service
     predicates:
       - Path=/date/**
 ```
@@ -147,7 +185,8 @@ spring.cloud.gateway.routes:
 Despite this practice should be avoided in production, it could be useful during development and testing to expose individual services through the gateway. With the above configuration the time and date services are exposed via the */time* and */date* endpoints.
 
 ### Routing requests to the Eureka server’s web page
-```
+
+```yaml
 spring.cloud.gateway.routes:
   - id: eureka-web-start
     uri: http://${app.eureka-server}:8761
@@ -191,7 +230,7 @@ Assume that we want to route calls to http://${hostname}:8080/headerrouting as f
 
 To implement these routing rules in Spring Cloud Gateway, we can use the Host route predicate to select requests with specific hostnames, and the SetPath filter to set the desired HTTP code in the request path. This can be done as follows:
 
-```
+```yaml
 spring.cloud.gateway.routes:
     - id: host_route_200
       uri: http://httpstat.us
@@ -216,7 +255,8 @@ spring.cloud.gateway.routes:
 ```
 
 You can now test the configuration with the following commands:
-```
+
+```bash
 $ curl http://localhost:8080/headerrouting -H "Host: i.feel.lucky:8080"
 200 OK
 
@@ -231,7 +271,7 @@ Refer to the official documentation for the full list of [predicates](https://cl
 
 If we want to see the routes managed by the Gateway server, we can list the routes via the *actuator/gateway/routes* endpoint on the Gateway server. This will return a:
 
-```
+```bash
 curl http://localhost:8080/actuator/gateway/routes | jq
 
 [
@@ -267,50 +307,49 @@ Therefore, the edge server has to be equipped with a composite health check that
 @Configuration
 public class HealthCheckConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheckConfiguration.class);
-    private WebClient webClient;
+    private final RestClient restClient;
 
-    @Autowired
-    public HealthCheckConfiguration(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.build();
+    public HealthCheckConfiguration(RestClient.Builder builder) {
+        restClient = builder.build();
     }
 
     @Bean
-    ReactiveHealthContributor healthcheckMicroservices() {
-        final Map<String, ReactiveHealthIndicator> registry = new LinkedHashMap<>();
-
-        registry.put("time", () -> getHealth("http://TIME-SERVICE"));
-        registry.put("date", () -> getHealth("http://DATE-SERVICE"));
+    CompositeHealthContributor healthcheckMicroservices() {
+        final Map<String, HealthIndicator> registry = new LinkedHashMap<>();
+        registry.put("datetime", () -> getHealth("http://DATETIME-SERVICE"));
         registry.put("composite", () -> getHealth("http://COMPOSITE-SERVICE"));
-
-        return CompositeReactiveHealthContributor.fromMap(registry);
+        return CompositeHealthContributor.fromMap(registry);
     }
 
-    private Mono<Health> getHealth(String baseUrl) {
+    private Health getHealth(String baseUrl) {
         String url = baseUrl + "/actuator/health";
         LOG.debug("Setting up a call to the Health API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToMono(String.class)
-                .map(s -> new Health.Builder().up().build())
-                .onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()))
-                .log(LOG.getName(), FINE);
+        String json = restClient.get()
+                .uri(url)
+                .retrieve()
+                .body(String.class);
+        // TODO: this is always up
+        return new Health.Builder().up().build();
     }
 }
+
 ```
 
-The main application class, GatewayApplication, declares a _WebClient.Builder_ bean to be used by the implementation of the health indicator, as follows:
+The main application class, GatewayApplication, declares a _RestClient.Builder_ bean to be used by the implementation of the health indicator, as follows:
 
 ```java
 @SpringBootApplication
-public class GatewayApplication {
+public class App {
 
-	@Bean
-	@LoadBalanced
-	public WebClient.Builder loadBalancedWebClientBuilder() {
-		return WebClient.builder();
-	}
+    @Bean
+    @LoadBalanced
+    public RestClient.Builder loadBalancedRestClientBuilder() {
+        return RestClient.builder();
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(GatewayApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
 }
 ```
 
@@ -319,7 +358,7 @@ Add a _Dockerfile_ to containerize the service and edit the _docker-compose.yml_
 
 ```
   gateway:
-    build: gateway-service-end
+    build: gateway-service
     mem_limit: 512m
     ports:
       - "8080:8080"
