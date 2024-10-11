@@ -5,5 +5,6 @@ SERVICES="datetime-composite-service datetime-service eureka-service gateway-ser
 for service in $SERVICES; do
   rm -rf "$service"
   cp -r ../service-discovery-routing/"$service" .
-  echo "$service"
+  echo copying "$service"...
+  cp application.yml "$service"/src/main/resources
 done
