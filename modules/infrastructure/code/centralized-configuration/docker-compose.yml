@@ -2,6 +2,8 @@ services:
   eureka:
     build: eureka-service
     mem_limit: 512m
+    ports:
+      - 8761:8761
     healthcheck:
       test: "curl -f localhost:8761/actuator/health"
       interval: 5s
@@ -11,17 +13,17 @@ services:
   config:
     build: config-service
     mem_limit: 512m
+    ports:
+      - 8888:8888
     environment:
       - SPRING_PROFILES_ACTIVE=docker,native
       - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
-      - SPRING_SECURITY_USER_NAME=${CONFIG_SERVER_USR}
-      - SPRING_SECURITY_USER_PASSWORD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     volumes:
       - ./config-repo:/config-repo
     healthcheck:
-      test: "curl -u ${CONFIG_SERVER_USR}:${CONFIG_SERVER_PWD} -f localhost:8888/actuator/health"
+      test: "curl -f localhost:8888/actuator/health"
       interval: 5s
       timeout: 5s
       retries: 20
@@ -36,8 +38,6 @@ services:
       - 8080:8080
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
-      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     depends_on:
@@ -51,8 +51,6 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
-      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     depends_on:
@@ -66,13 +64,11 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
-      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 2
     depends_on:
       eureka:
         condition: service_healthy

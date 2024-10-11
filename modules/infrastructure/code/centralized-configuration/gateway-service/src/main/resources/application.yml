@@ -1,6 +1,6 @@
 spring:
   application:
-    name: _SERVICE_NAME_
+    name: gateway-service
   config:
     import: optional:configserver:http://${CONFIG_SERVER_HOST}:${CONFIG_SERVER_PORT}
   cloud.config:

@@ -1,10 +1,10 @@
-package com.nbicocchi.configserver;
+package com.nbicocchi.datetime;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ConfigServerApplicationTests {
+class AppTests {
 
 	@Test
 	void contextLoads() {

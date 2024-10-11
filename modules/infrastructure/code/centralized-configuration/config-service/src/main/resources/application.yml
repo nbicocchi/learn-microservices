@@ -1,12 +1,8 @@
 server.port: 8888
 spring.application.name: config-server
 
-spring.security.user:
-  name: ${CONFIG_SERVER_USR}
-  password: ${CONFIG_SERVER_PWD}
-
 spring.profiles.active: native
-spring.cloud.config.server.native.searchLocations: file:/home/nicolab/IdeaProjects/learn-microservices/code/spring-cloud-config-end/config-repo
+spring.cloud.config.server.native.searchLocations: file:/home/nicola/IdeaProjects/learn-microservices/modules/infrastructure/code/centralized-configuration/config-repo
 encrypt.key: ${CONFIG_SERVER_ENCRYPT_KEY}
 
 eureka:

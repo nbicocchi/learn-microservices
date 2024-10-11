@@ -1,5 +1,5 @@
-server.port: 9002
-spring.application.name: time-service
+server.port: 9001
+spring.application.name: datetime-service
 
 ---
 spring.config.activate.on-profile: docker
