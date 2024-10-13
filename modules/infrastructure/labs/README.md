@@ -19,12 +19,12 @@
 - Develop two simple microservices that the gateway will route requests to.
 - Test the gateway by sending requests through it and verifying the responses from the backend services.
 
-## Lab 3: Service Routing with nginx
+## Lab 3: Service Routing with Nginx
 **Objective:** Implement API Gateway functionality using nginx for routing requests to multiple microservices.
 
 **Instructions:**
-- Develop two simple microservices.
-- Configure a docker compose environment in which nginx routes incoming requests to appropriate backend services.
+- Configure routes in Nginx configuration file to direct incoming requests to appropriate backend services.
+- Develop two simple microservices that the gateway will route requests to.
 - Test the gateway by sending requests through it and verifying the responses from the backend services.
 
 # Questions

@@ -24,17 +24,6 @@ As successful applications grow, they often outgrow the monolithic architecture,
 
 ![FTGO Monolithic Hell](images/ftgo-monolitic-hell.avif)
 
-## Microservice Architecture to the Rescue
-
-**Software architecture influences quality of service requirements (nonfunctional requirements) significantly, despite having little to do with functional requirements**. A disciplined team can mitigate some issues, but they cannot escape the inherent challenges of a large team working on a single monolithic application.
-
-A growing consensus suggests that for large, complex applications, a microservice architecture should be considered. According to Adrian Cockcroft, formerly of Netflix, a **microservice architecture is a service-oriented architecture made up of loosely coupled elements with bounded contexts**.
-
-The bounded context ensures that each microservice operates within its distinct context, with clear meanings for terms and entities, avoiding confusion and conflicts, and allowing each microservice to perform its designated function seamlessly.
-
-![FTGO Microservices Architecture](images/ftgo-microservices-architecture.avif)
-
-
 ### The Scale Cube
 
 ![The Scale Cube](images/scale-cube.avif)
@@ -50,6 +39,17 @@ The bounded context ensures that each microservice operates within its distinct 
 3. **Y-axis Scaling**: Introduces functional decomposition, where each service is a mini-application implementing focused functionality.
 
    ![Y-axis Scaling](images/scale-cube-y.avif)
+
+
+## Microservice Architecture
+
+**Software architecture influences quality of service requirements (nonfunctional requirements) significantly, despite having little to do with functional requirements**. A disciplined team can mitigate some issues, but they cannot escape the inherent challenges of a large team working on a single monolithic application.
+
+A growing consensus suggests that for large, complex applications, a microservice architecture should be considered. According to Adrian Cockcroft, formerly of Netflix, a **microservice architecture is a service-oriented architecture made up of loosely coupled elements with bounded contexts**.
+
+According to Chris Richardson, **it is an architecture that structures the application as a set of two or more independently deployable, loosely coupled, components, a.k.a. services**. Each service consists of one or more subdomains and is owned by the team (or teams) that owns the subdomains. In order to be independently deployable each service typically has its own source code repository and its own deployment pipeline, which builds, tests and deploys the service.
+
+![FTGO Microservices Architecture](images/ftgo-microservices-architecture.avif)
 
 ## Benefits and Drawbacks of Microservice Architecture
 
@@ -71,11 +71,11 @@ The bounded context ensures that each microservice operates within its distinct 
 
 The [Microservices Architecture Language Pattern](https://microservices.io/patterns/) is a structured framework that provides a common vocabulary for designing and implementing microservices, addressing the challenges of distributed systems. Aligned with the principles of the [12-Factor App](https://12factor.net/), it emphasizes modularity, scalability, and the separation of concerns. The pattern offers solutions for service decomposition, communication, data management, and resiliency, ensuring that services remain loosely coupled but highly cohesive. By incorporating principles like configuration management, dependency isolation, and statelessness, the language pattern helps ensure that microservices are resilient, easy to scale, and maintainable, supporting cloud-native and continuously deployed applications.
 
+![](images/microservice-pattern-language.avif)
+
 ### Communication Patterns
 - **API Gateway**: Acts as a single entry point for client requests, routing them to the appropriate microservices.
 - **Remote Procedure Invocation (RPI)**: Services directly invoke remote services using protocols like HTTP/REST, gRPC, or SOAP.
-- **Event-Driven Architecture**: Services communicate asynchronously by publishing and consuming events using messaging systems (e.g., Kafka, RabbitMQ).
-- **Service Mesh**: A dedicated infrastructure layer for handling service-to-service communication with features like load balancing, authentication, and encryption (e.g., Istio, Linkerd).
 
 ### Service Discovery Patterns
 - Client-Side Discovery: Clients are responsible for discovering the network locations of available service instances using a service registry (e.g., Eureka, Consul).
@@ -85,12 +85,10 @@ The [Microservices Architecture Language Pattern](https://microservices.io/patte
 ### Routing Patterns
 - API Gateway: Routes requests from clients to appropriate microservices, often handling cross-cutting concerns such as authentication, rate limiting, and logging.
 - Backend for Frontend (BFF): Creates dedicated backend services tailored for different frontends (e.g., mobile apps, web apps) to improve performance and user experience.
-- Service Mesh: Provides more granular, network-level routing with advanced control features such as traffic splitting for A/B testing or canary deployments.
 
 ### Configuration Patterns
 - **Externalized Configuration**: Configuration data is stored outside the application code, often in centralized configuration servers (e.g., Spring Cloud Config, Consul).
 - **Environment-Based Configuration**: Services load specific configurations depending on the environment (e.g., development, testing, production).
-- **Feature Toggle**: Enables dynamic enabling or disabling of features without redeploying the service, useful for progressive feature rollout.
 
 ### Resiliency Patterns
 - **Circuit Breaker**: Prevents a service from repeatedly calling a failing service by breaking the circuit after a series of failures, allowing it to recover (e.g., Hystrix, Resilience4j).
@@ -107,8 +105,6 @@ The [Microservices Architecture Language Pattern](https://microservices.io/patte
 ### Distributed Transactions Patterns
 - **Saga**: Manages distributed transactions by coordinating a series of local transactions, using either event-based or command-based approaches.
 - **Two-Phase Commit (2PC)**: Ensures distributed consistency by first preparing all participating services for a transaction, then committing it only if all services are ready.
-- **Event Sourcing**: Uses events to represent state changes, allowing systems to rebuild state from a log of past events, offering strong auditability and consistency.
-- **Compensating Transaction**: Provides a "rollback" mechanism for distributed transactions, where a failure in one service triggers compensating actions to undo previous steps.
 
 ### DevOps Patterns
 - **CI/CD Pipeline**: Automates the process of code integration, testing, and deployment to ensure faster, reliable, and frequent releases (e.g., Jenkins, GitLab CI).
@@ -154,7 +150,7 @@ DevOps is a cultural and technical movement aimed at improving collaboration bet
 - **Improved Software Quality**: Automated testing and deployment pipelines ensure that new code is thoroughly tested before release, reducing the likelihood of bugs and improving the overall quality of the software. With microservices, each service can be independently tested and deployed, promoting a more agile development process.
 - **Cultural Shift**: DevOps fosters a culture of collaboration, shared responsibility, and transparency, which is essential for the successful implementation of microservices. Teams are encouraged to take ownership of their services, leading to better quality and faster innovation.
 
-### AI and Edge Computing
+### Edge AI
 
 The rise of artificial intelligence (AI) and edge computing necessitates the need for architectures that can efficiently handle distributed data processing and real-time analytics.
 
