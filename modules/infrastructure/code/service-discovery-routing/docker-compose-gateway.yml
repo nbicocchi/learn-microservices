@@ -1,6 +1,6 @@
 services:
   eureka:
-    build: eureka-server
+    build: eureka-service
     mem_limit: 512m
 
   gateway:

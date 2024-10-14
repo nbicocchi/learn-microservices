@@ -44,7 +44,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Asynchronous messaging systems (*RabbitMQ*)
 * *Spring Cloud Stream* and its abstraction over messaging systems
 
-[M5 Infrastructure](modules/infrastructure) 
+[M5 Infrastructure](modules/infrastructure)
 * Service discovery
 * Service routing 
 * Centralized configuration
