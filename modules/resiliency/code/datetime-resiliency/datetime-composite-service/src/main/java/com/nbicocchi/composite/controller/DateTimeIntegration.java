@@ -1,14 +1,13 @@
 package com.nbicocchi.composite.controller;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -26,9 +25,9 @@ public class DateTimeIntegration {
         restClient = builder.build();
     }
 
-    @Retry(name = "time")
+    //@Retry(name = "time")
     //@TimeLimiter(name = "time")
-    //@CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
+    @CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
     public LocalTime getTime(int delay, int faultPercent) {
         URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
 
@@ -37,6 +36,10 @@ public class DateTimeIntegration {
                 .uri(url)
                 .retrieve()
                 .body(LocalTime.class);
+    }
+
+    public LocalTime getTimeFallbackValue(int delay, int faultPercent, CallNotPermittedException e) {
+        return LocalTime.of(11, 11, 11);
     }
 
     public LocalDate getDate(int delay, int faultPercent) {
@@ -59,7 +62,4 @@ public class DateTimeIntegration {
         return getDate(delay, faultPercent);
     }
 
-    public LocalTime getTimeFallbackValue() {
-        return LocalTime.now();
-    }
 }

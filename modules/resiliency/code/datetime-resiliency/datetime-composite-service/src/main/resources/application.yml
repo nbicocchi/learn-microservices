@@ -1,4 +1,9 @@
-server.port: 8080
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 4
+
 spring.application.name: composite-service
 
 eureka:
@@ -22,14 +27,16 @@ management:
   health:
     circuitbreakers:
       enabled: true
+    ratelimiters:
+      enabled: true
 
-server:
-  tomcat:
-    threads:
-      max: 4
+
+resilience4j.ratelimiter:
+  configs:
+    instances:
+      registerHealthIndicator: true
 
 resilience4j:
-
   bulkhead:
     instances:
       time:
