@@ -22,15 +22,17 @@ management:
       exposure:
         include: "*"
 
-resilience4j:
-  ratelimiter:
-    instances:
-      timeRateLimiter:
-        limit-for-period: 20
-        limit-refresh-period: 60s
-        timeout-duration: 0s
-    metrics:
-      enabled: true
+resilience4j.ratelimiter:
+  configs:
+    default:
+      limit-for-period: 20
+      limit-refresh-period: 60s
+      timeout-duration: 0s
+  instances:
+      time:
+        base-config: default
+      date:
+        base-config: default
 
 ---
 spring.config.activate.on-profile: docker

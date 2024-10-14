@@ -24,55 +24,53 @@ management:
     web:
       exposure:
         include: "*"
-  health:
-    circuitbreakers:
-      enabled: true
-    ratelimiters:
-      enabled: true
 
-
-resilience4j.ratelimiter:
+resilience4j.bulkhead:
   configs:
-    instances:
-      registerHealthIndicator: true
+    default:
+      maxConcurrentCalls: 2
+  instances:
+    time:
+      base-config: default
 
-resilience4j:
-  bulkhead:
-    instances:
-      time:
-        maxConcurrentCalls: 2
+resilience4j.timelimiter:
+  configs:
+    default:
+      timeoutDuration: 3s
+  instances:
+    time:
+      base-config: default
 
-  timelimiter:
-    instances:
-      time:
-        timeoutDuration: 3s
+resilience4j.retry:
+  configs:
+    default:
+      maxAttempts: 3
+      waitDuration: 500
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      enableRandomizedWait: true
+      randomizedWaitFactor: 0.5
+      retryExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+  instances:
+    time:
+      base-config: default
 
-  retry:
-    instances:
-      time:
-        maxAttempts: 3
-        waitDuration: 500
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
-        #enableRandomizedWait: true
-        #randomizedWaitFactor: 0.5
-        retryExceptions:
-          - org.springframework.web.client.HttpServerErrorException
-
-  circuitbreaker:
-    instances:
-      time:
-        allowHealthIndicatorToFail: false
-        registerHealthIndicator: true
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10000
-        permittedNumberOfCallsInHalfOpenState: 3
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        record-exceptions:
-          - org.springframework.web.client.HttpServerErrorException
-        ignoreExceptions:
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      allowHealthIndicatorToFail: false
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 5
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      record-exceptions:
+        - org.springframework.web.client.HttpServerErrorException
+  instances:
+    time:
+      base-config: default
 
 ---
 spring.config.activate.on-profile: docker
