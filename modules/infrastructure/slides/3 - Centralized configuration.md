@@ -114,13 +114,6 @@ The config server exposes a REST API that can be used by its clients to retrieve
 ### Configuration
 
 ```yaml
-server.port: 8888
-spring.application.name: config-server
-
-spring.profiles.active: native
-spring.cloud.config.server.native.searchLocations: file:/home/nicola/IdeaProjects/learn-microservices/modules/infrastructure/code/centralized-configuration/config-repo
-encrypt.key: ${CONFIG_SERVER_ENCRYPT_KEY}
-
 eureka:
   client:
     serviceUrl:
@@ -131,10 +124,18 @@ eureka:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,refresh
+
 ---
 spring.config.activate.on-profile: docker
-eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka/
-spring.cloud.config.server.native.searchLocations: file:/config-repo
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
 ```
 
 ### Server code
@@ -162,12 +163,8 @@ public class App {
     ports:
       - 8888:8888
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,native
+      - SPRING_PROFILES_ACTIVE=docker
       - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
-      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-    volumes:
-      - ./config-repo:/config-repo
     healthcheck:
       test: "curl -f localhost:8888/actuator/health"
       interval: 5s
@@ -178,13 +175,7 @@ public class App {
         condition: service_healthy
 ```
 
-Here are the explanations for the preceding code:
-* The Spring profile _native_ is added to signal to the config server that the config repository is based on local files.
-* The environment variable _ENCRYPT_KEY_ is used to specify the symmetric encryption key that will be used by the config server to encrypt and decrypt sensitive configuration information.
-* The environment variables _CONFIG_SERVER_USR_ and _CONFIG_SERVER_PWD_ are used to specify the credentials to be used for protecting the APIs using basic HTTP authentication.
-* The volumes declaration will make the config-repo folder accessible in the Docker container at /config-repo.
-
-The values of the three preceding environment variables, marked in the Docker Compose file with ${...}, are fetched from the `.env` file:
+The values of the preceding environment variables, marked in the Docker Compose file with ${...}, are fetched from the `.env` file:
 
 ```
 CONFIG_SERVER_ENCRYPT_KEY=ninna-nanna-ninna-0h
@@ -196,7 +187,7 @@ These environmental variables can be injected in IntelliJ Configurations using t
 
 ### Config Repository
 
-After moving the configuration files from each client’s source code to the configuration repository, we will have some common configuration in many of the configuration files, for example, for the configuration of actuator endpoints and how to connect to Eureka.
+After moving the configuration files from each client’s source code to the [configuration repository](https://github.com/nbicocchi/learn-microservices-config), we will have some common configuration in many of the configuration files, for example, for the configuration of actuator endpoints and how to connect to Eureka.
 * the common parts have to be placed in a common configuration file _application.yml_
 * this file is shared by all clients
 
@@ -254,12 +245,12 @@ The response contains properties from a number of property sources, one per prop
 **Encryption** Information can be encrypted and decrypted using the /encrypt and /decrypt endpoints exposed by the config server.
 
 ```
-curl http://user:secret@localhost:8888/encrypt -d my-super-secure-password
+curl http://localhost:8888/encrypt -d my-super-secure-password
 4d28a7cb6eb9976dbeae0eb1cc0cb05672f01789140394fe4d93069d3622ab10a25ba9cf2b4ae3fcbc566dfb6cf13403%   
 ```
 
 ```
-curl http://user:secret@localhost:8888/decrypt -d 4d28a7cb6eb9976dbeae0eb1cc0cb05672f01789140394fe4d93069d3622ab10a25ba9cf2b4ae3fcbc566dfb6cf13403
+curl http://localhost:8888/decrypt -d 4d28a7cb6eb9976dbeae0eb1cc0cb05672f01789140394fe4d93069d3622ab10a25ba9cf2b4ae3fcbc566dfb6cf13403
 my-super-secure-password%    
 ```
 
@@ -324,10 +315,13 @@ This configuration will make the client do the following:
 
 This configuration is generally good for resilience against temporary connectivity problems with the config server. It is especially useful when the whole landscape of microservices and its config server are started up at once, for example, when using the docker-compose up command. In this scenario, many of the clients will be trying to connect to the config server before it is ready, and the retry logic will make the clients connect to the config server successfully once it is up and running.
 
-## TODO
-- Va messo su git
-- Va ricaricata la conf in modo dinamico
-- chiarire e provare esempi /encrypt /decrypt
+### Updating the configuration
+
+TBD
+
+```bash
+$ curl -X POST HOST:PORT/actuator/refresh -d {} -H "Content-Type: application/json"
+```
 
 ## Resources
 - Spring Microservices in Action (Chapter 5)
