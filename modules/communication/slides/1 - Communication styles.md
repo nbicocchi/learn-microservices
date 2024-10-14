@@ -51,6 +51,4 @@ Client-service interactions form the backbone of distributed systems, enabling c
 ## Resources
 - Microservices Patterns (Chapter 3)
 - Microservices with SpringBoot3 and SpringCloud (Chapter 7)
-- [The Many Meanings of Event-Driven Architecture](https://www.youtube.com/watch?v=STKCRSUsyP0)
-- https://softwaremill.com/data-serialization-tools-comparison-avro-vs-protobuf/
 
