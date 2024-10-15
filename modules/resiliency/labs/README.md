@@ -27,12 +27,12 @@
 
 # Questions
 1. What is resiliency, and why is it essential in distributed systems?
-2. How does the Circuit Breaker pattern help improve resiliency in microservices?
-3. Explain how Resilience4j implements the Circuit Breaker pattern in a Spring Boot application.
-4. What are the key differences between the Circuit Breaker, Retry, and Timeouts patterns?
-5. Describe the *one thread per request* pattern and its key issues (i.e., thread pool/memory saturation). 
-6. Which are the most promising alternatives to the *one thread per request* pattern? Highlight their key features and mutual differences.
-7. What is the Bulkhead pattern, and how does it contribute to resource isolation?
-8. Describe the difference between client-side and server-side resiliency patterns.
-9. Describe pros and cons of *fixed-window*, *sliding-window*, *leaky bucket* policies for circuit breaker implementations.
+2. Describe the *one thread per request* pattern and its key issues (i.e., thread pool/memory saturation).
+3. Which are the most promising alternatives to the *one thread per request* pattern? Highlight their key features and mutual differences.
+4. Describe the difference between client-side and server-side resiliency patterns.
+5. Describe the most used client-side resiliency patterns. 
+6. Describe the most used server-side resiliency patterns.
+7. How does Spring Boot integrates the Resilience4j library?
+8. Describe pros and cons of *fixed-window*, *sliding-window*, *leaky bucket* policies for circuit breaker implementations.
+9. What role do retries play in improving the resiliency of microservices? Describe best practices for setting retry configuration.
 10. What role do timeouts play in improving the resiliency of microservices? Describe best practices for setting timeout values.
