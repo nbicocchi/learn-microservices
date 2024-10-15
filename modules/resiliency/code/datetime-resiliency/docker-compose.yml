@@ -16,8 +16,10 @@ services:
   datetime:
     build: datetime-service
     mem_limit: 512m
+    ports:
+      - "9001:9001"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1

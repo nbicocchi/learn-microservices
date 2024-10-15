@@ -25,9 +25,9 @@ public class DateTimeIntegration {
         restClient = builder.build();
     }
 
-    //@Retry(name = "time")
+    @Retry(name = "time")
     //@TimeLimiter(name = "time")
-    @CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
+    //@CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
     public LocalTime getTime(int delay, int faultPercent) {
         URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
 

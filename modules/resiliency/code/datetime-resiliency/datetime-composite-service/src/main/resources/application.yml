@@ -32,6 +32,8 @@ resilience4j.bulkhead:
   instances:
     time:
       base-config: default
+    date:
+      base-config: default
 
 resilience4j.timelimiter:
   configs:
