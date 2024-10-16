@@ -9,13 +9,27 @@ receivers:
 processors:
   batch:
 
+connectors:
+  spanmetrics:
+
 exporters:
-  otlp/jaeger:
-    endpoint: https://jaeger:4317
+  prometheus:
+    endpoint: 0.0.0.0:8889
+
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
 
 service:
   pipelines:
     traces:
-      receivers:  [ otlp ]
-      processors: [ batch ]
-      exporters:  [ otlp/jaeger ]
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [spanmetrics, otlp]
+
+    # The metrics pipeline receives generated span metrics from 'spanmetrics' connector
+    # and pushes to Prometheus exporter, which makes them available for scraping on :8889.
+    metrics/spanmetrics:
+      receivers: [spanmetrics]
+      exporters: [prometheus]

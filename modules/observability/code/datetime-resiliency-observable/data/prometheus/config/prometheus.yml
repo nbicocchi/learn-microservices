@@ -1,8 +1,15 @@
 scrape_configs:
-  - job_name: 'Spring Boot Application input'
+  - job_name: 'application'
     metrics_path: '/actuator/prometheus'
     scrape_interval: 2s
     static_configs:
-      - targets: ['eureka:8761', 'datetime:8080', 'datetime-composite:8080']
+      - targets: ['eureka:8761', 'datetime:8080', 'datetime-composite:8080' ]
         labels:
-          application: "My Spring Boot Application"
+          group: 'application'
+  - job_name: 'metrics from spans'
+    metrics_path: '/metrics'
+    scrape_interval: 2s
+    static_configs:
+      - targets: [ 'otel-collector:8889' ]
+        labels:
+          group: 'metrics from spans'

@@ -1,37 +1,33 @@
 services:
   prometheus:
     image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
     volumes:
       - ./data/prometheus/config:/etc/prometheus/
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
 
   grafana:
     image: grafana/grafana-oss:latest
-    user: root
-    ports:
-      - "3000:3000"
     volumes:
       - ./data/grafana:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_DOMAIN=localhost
-      # Enabled for logging
-      - GF_LOG_MODE=console file
-      - GF_LOG_FILTERS=alerting.notifier.slack:debug alertmanager:debug ngalert:debug
-      # Enabled for reverse proxy
-      #- GF_SERVER_ROOT_URL=http://localhost:8080/grafana
-      #- GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - "3000:3000"
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib
+    image: otel/opentelemetry-collector-contrib:latest
     volumes:
       - ./data/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: --config /etc/otel-collector-config.yaml
     depends_on:
       - jaeger
+    ports:
+      - "8889:8889"
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -39,7 +35,8 @@ services:
     ports:
       - "16686:16686"
     environment:
-      - LOG_LEVEL=debug
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
 
   eureka:
     build: eureka-service
