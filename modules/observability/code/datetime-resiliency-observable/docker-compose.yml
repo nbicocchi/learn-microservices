@@ -1,0 +1,73 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./data/prometheus/config:/etc/prometheus/
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    user: root
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=localhost
+      # Enabled for logging
+      - GF_LOG_MODE=console file
+      - GF_LOG_FILTERS=alerting.notifier.slack:debug alertmanager:debug ngalert:debug
+      # Enabled for reverse proxy
+      #- GF_SERVER_ROOT_URL=http://localhost:8080/grafana
+      #- GF_SERVER_SERVE_FROM_SUB_PATH=true
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./data/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    depends_on:
+      - jaeger
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    restart: always
+    ports:
+      - "16686:16686"
+    environment:
+      - LOG_LEVEL=debug
+
+  eureka:
+    build: eureka-service
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_SERVICE_NAME=eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+
+  datetime-composite:
+    build: datetime-composite-service
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_SERVICE_NAME=datetime-composite
+      - SPRING_PROFILES_ACTIVE=docker
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+
+  datetime:
+    build: datetime-service
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_SERVICE_NAME=datetime
+      - SPRING_PROFILES_ACTIVE=docker
+    mem_limit: 512m
+
+volumes:
+  mimir-data:
