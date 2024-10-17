@@ -1,0 +1,36 @@
+server.port: 8080
+
+spring.cloud.stream:
+  bindings:
+    message-out-0:
+      binder: local_rabbit
+      contentType: application/json
+      destination: queue.messages
+  binders:
+    local_rabbit:
+      type: rabbit
+      environment:
+        spring:
+          rabbitmq:
+            host: 127.0.0.1
+            port: 5672
+            username: guest
+            password: guest
+app:
+  ext-api-service:
+    host: localhost
+    port: 8082
+
+---
+spring.config.activate.on-profile: docker
+spring.cloud.stream:
+  binders:
+    local_rabbit:
+      environment:
+        spring:
+          rabbitmq:
+            host: rabbitmq
+app:
+  ext-api-service:
+    host: ext-api-service
+    port: 8082

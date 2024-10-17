@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: lab1
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+---
+spring.config.activate.on-profile: docker
+spring.data.redis.host: redis

@@ -1,0 +1,13 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <packaging>pom</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.nbicocchi</groupId>
+	<artifactId>writing-docker-compose</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>writing-docker-compose</name>
+	<description>Lab 2: Writing a Docker Compose File for a Java Spring Boot Web Application and Database</description>
+    <modules>
+        <module>lab2</module>
+    </modules>
+</project>

@@ -1,0 +1,14 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <packaging>pom</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.nbicocchi</groupId>
+	<artifactId>implementing-rabbitmq</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>implementing-rabbitmq</name>
+	<description>Lab 2: Implementing Asynchronous Communication with RabbitMQ</description>
+    <modules>
+        <module>consumer-service</module>
+		<module>producer-service</module>
+    </modules>
+</project>
