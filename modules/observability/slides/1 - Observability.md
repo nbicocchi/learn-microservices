@@ -271,7 +271,7 @@ Networking is crucial in distributed systems, as microservices rely heavily on n
 
 ### Log Routers
 
-![](images/log-routers.png)
+![](images/logging-architecture.png)
 
 **Log routers** are a critical component in modern observability and logging infrastructures, responsible for collecting, processing, and routing log data from various sources to one or more destinations. They provide:
 
@@ -304,9 +304,9 @@ Networking is crucial in distributed systems, as microservices rely heavily on n
 * **Vector**: A newer log router that emphasizes performance and efficiency, written in Rust. Vector is designed to handle large-scale log processing with minimal resource usage.
 
 
-### Prometheus for Metrics
+### Metrics Routers
 
-![](images/prometheus.png)
+![](images/prometheus-architecture.png)
 
 Prometheus is an open-source, time-series database and monitoring system widely used for collecting and querying **metrics**. It was originally developed by SoundCloud and is now part of the Cloud Native Computing Foundation (CNCF). Prometheus is particularly well-suited for microservices architectures and cloud-native environments due to its simplicity, scalability, and ability to monitor a wide range of system and application-level metrics.
 
@@ -324,7 +324,7 @@ Prometheus is an open-source, time-series database and monitoring system widely 
 
 ### OpenTelemetry Collector (Universal Telemetry Agent)
 
-![](images/opentelemetry.png)
+![](images/otelcol-data-flow-overview.png)
 
 The **OpenTelemetry collector** is a versatile, open-source tool designed to collect, process, and export telemetry data, including **logs**, **metrics**, and **traces**. It is part of the OpenTelemetry project, which aims to provide a unified standard for observability across distributed systems.
 
@@ -355,18 +355,16 @@ The **OpenTelemetry collector** is a versatile, open-source tool designed to col
 
 Observability backends play a critical role in monitoring and analyzing the performance of modern applications and infrastructure. Tools like **Grafana Loki**, **Elasticsearch**, and **OpenSearch** provide various functionalities for managing logs, metrics, and other telemetry data. Below is an elaboration on each of these observability backends:
 
-### Grafana Loki
+### Grafana Backend Ecosystem
 
-Grafana Loki is an open-source log aggregation system developed by Grafana Labs. It is designed to work seamlessly with Grafana for visualizing log data, making it easy for users to correlate logs with metrics and traces.
+![](images/architecture-grafana-agent.png)
 
-Key Features:
-- **Log Aggregation**: Loki collects logs from various sources and indexes them for easy retrieval and querying.
-- **Label-Based Indexing**: Instead of indexing the full log message, Loki uses a label-based indexing system similar to Prometheus, which makes it efficient for storing and querying large volumes of logs.
-- **Seamless Integration with Grafana**: Loki integrates directly with Grafana, allowing users to visualize logs alongside metrics from other data sources in unified dashboards.
-- **Simple Configuration**: Loki’s configuration is straightforward, making it easy to set up and use in various environments.
-- **Multi-Tenancy Support**: Loki supports multi-tenancy, enabling organizations to isolate logs for different teams or applications securely.
+The **Grafana Ecosystem** is a comprehensive, open-source observability stack developed by Grafana Labs, consisting of powerful tools designed to work together for monitoring and troubleshooting modern distributed systems. At the core is **Grafana**, a versatile visualization and dashboarding platform that integrates seamlessly with other observability tools like **Loki**, **Tempo**, and **Mimir**.
+* **Grafana Loki** is a log aggregation system that efficiently indexes and stores logs using a label-based system, making it easy to correlate logs with metrics and traces.
+* **Grafana Tempo** provides distributed tracing capabilities, enabling users to track and visualize how requests flow through complex microservices architectures without requiring expensive trace indexing. 
+* **Grafana Mimir** is a highly scalable time-series database, optimized for storing and querying massive volumes of metrics, fully compatible with Prometheus. Together, these tools offer a unified observability solution, allowing users to analyze metrics, logs, and traces in one place, simplifying root cause analysis, and improving overall system visibility and performance.
 
-### Elasticsearch
+### Elasticsearch/OpenSearch
 
 Elasticsearch is a distributed search and analytics engine that is a core component of the Elastic Stack (ELK Stack: Elasticsearch, Logstash, Kibana). It is widely used for log analysis, full-text search, and real-time data analytics.
 
@@ -376,17 +374,6 @@ Key Features:
 - **RESTful API**: Elasticsearch can be accessed through a RESTful API, making it easy to integrate with other applications and services.
 - **Powerful Aggregations**: Users can perform complex aggregations to analyze and summarize their data, enabling insights into log patterns and trends.
 - **Rich Ecosystem**: Integrates well with other components of the Elastic Stack (Logstash for data ingestion, Kibana for visualization) for comprehensive observability.
-
-
-### OpenSearch
-OpenSearch is an open-source search and analytics suite derived from Elasticsearch. It was created to provide a community-driven alternative that supports features for search, log analytics, and observability.
-
-Key Features:
-- **Elasticsearch Compatibility**: OpenSearch maintains compatibility with the Elasticsearch API, allowing users to migrate from Elasticsearch easily.
-- **Enhanced Security**: It includes built-in security features, such as role-based access control, data encryption, and audit logging.
-- **Anomaly Detection**: OpenSearch offers machine learning capabilities for detecting anomalies in datasets, helping users identify unusual patterns in their logs and metrics.
-- **Data Visualization**: OpenSearch Dashboards provide visualization capabilities similar to Kibana, allowing users to build dashboards and explore their data visually.
-- **Community-Driven Development**: OpenSearch is developed with a focus on community collaboration, ensuring it meets the evolving needs of users.
 
 ## Destinations (frontend)
 Observability frontends are essential tools for visualizing and interacting with telemetry data, enabling teams to monitor system performance, analyze metrics, and troubleshoot issues effectively. **Grafana** and **Kibana** are two of the most widely used observability frontends, each offering distinct features tailored to different use cases. Below is a detailed exploration of both platforms:

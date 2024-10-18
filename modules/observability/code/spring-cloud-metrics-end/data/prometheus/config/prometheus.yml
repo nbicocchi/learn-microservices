@@ -1,8 +1,0 @@
-scrape_configs:
-  - job_name: 'Spring Boot Application input'
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 2s
-    static_configs:
-      - targets: ['time:8080', 'composite:8080', 'gateway:8080', 'eureka:8761']
-        labels:
-          application: "My Spring Boot Application"

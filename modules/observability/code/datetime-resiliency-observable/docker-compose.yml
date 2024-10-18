@@ -1,48 +1,56 @@
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./data/prometheus/config:/etc/prometheus/
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-    ports:
-      - "9090:9090"
-
-  grafana:
-    image: grafana/grafana-oss:latest
-    volumes:
-      - ./data/grafana:/var/lib/grafana
-    environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-    ports:
-      - "3000:3000"
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
-      - ./data/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command: --config /etc/otel-collector-config.yaml
     depends_on:
       - jaeger
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus.yaml
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
     ports:
-      - "8889:8889"
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/loki.yaml
+    volumes:
+      - ./config/loki.yaml:/etc/loki/loki.yaml
+    ports:
+      - "3100:3100"
 
   jaeger:
     image: jaegertracing/all-in-one:latest
-    restart: always
-    ports:
-      - "16686:16686"
     environment:
       - METRICS_STORAGE_TYPE=prometheus
-      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+    ports:
+      - "16686:16686"
 
   eureka:
     build: eureka-service
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_SERVICE_NAME=eureka
       - SPRING_PROFILES_ACTIVE=docker
     mem_limit: 512m
     ports:
@@ -52,7 +60,6 @@ services:
     build: datetime-composite-service
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_SERVICE_NAME=datetime-composite
       - SPRING_PROFILES_ACTIVE=docker
     mem_limit: 512m
     ports:
@@ -62,9 +69,8 @@ services:
     build: datetime-service
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_SERVICE_NAME=datetime
       - SPRING_PROFILES_ACTIVE=docker
     mem_limit: 512m
 
 volumes:
-  mimir-data:
+  grafana-data:
