@@ -417,6 +417,7 @@ Key Features:
 ### Kibana
 
 ![](images/kibana.jpg)
+![](images/logging-architecture.png)
 
 Kibana is an open-source analytics and visualization platform specifically designed for use with Elasticsearch. It is a key component of the Elastic Stack (often referred to as ELK Stack: Elasticsearch, Logstash, Kibana), focusing on log data and search analytics.
 
