@@ -35,28 +35,38 @@ Observability is a critical concept in modern distributed systems, particularly 
 ![](images/primary-signals.png)
 
 ### Metrics
-- **Definition**: Metrics are numerical values that capture key performance indicators (KPIs) about your system over time. They are typically aggregated and provide an overview of system health and performance.
-- **Characteristics**:
-    - **Quantitative Data**: Metrics are quantitative and can be counted or measured (e.g., CPU usage, memory consumption, request latency).
-    - **Low Cardinality**: Metrics tend to have low cardinality, meaning they track fewer distinct values compared to logs or traces.
-    - **Time-Series Nature**: Metrics are usually collected as time-series data and plotted on dashboards to show trends over time.
-- **Types**:
-    - **System Metrics**: CPU, memory, disk, and network usage.
-    - **Application Metrics**: Request count, error rate, request latency, and throughput.
-- **Use Cases**:
-    - **Monitoring**: Continuous monitoring of performance indicators like latency, error rates, and resource consumption.
-    - **Alerting**: Alerts can be set when metrics exceed predefined thresholds (e.g., high CPU usage or request errors).
-    - **Capacity Planning**: Helps in predicting future resource needs based on trends in usage patterns.
+Metrics are numerical values that capture key performance indicators (KPIs) about your system over time. They are typically aggregated and provide an overview of system health and performance.
+
+**Characteristics**:
+  - **Quantitative Data**: Metrics are quantitative and can be counted or measured (e.g., CPU usage, memory consumption, request latency).
+  - **Low Cardinality**: Metrics tend to have low cardinality, meaning they track fewer distinct values compared to logs or traces.
+  - **Time-Series Nature**: Metrics are usually collected as time-series data and plotted on dashboards to show trends over time.
+
+**Types**:
+  - **System Metrics**: CPU, memory, disk, and network usage.
+  - **Application Metrics**: Request count, error rate, request latency, and throughput.
+
+**Use Cases**:
+  - **Monitoring**: Continuous monitoring of performance indicators like latency, error rates, and resource consumption.
+  - **Alerting**: Alerts can be set when metrics exceed predefined thresholds (e.g., high CPU usage or request errors).
+  - **Capacity Planning**: Helps in predicting future resource needs based on trends in usage patterns.
 
 
-| Metric name       | Label key | Label value | Label key   | Label Value | Value at time t0 | .. at t1 |
-|-------------------|-----------|-------------|-------------|-------------|------------------|----------|
-| heap-memory-bytes | host      | host123     | data-center | c1          | 11231            | 11200    |
-| heap-memory-bytes | host      | host234     | data-center | c1          | 300203           | 412103   |
+| **Metric Name**       | **Label Key** | **Label Value** | **Label Key** | **Label Value** | **Value T0 (ms)** | **Value T1 (ms)** |
+|-----------------------|---------------|-----------------|---------------|-----------------|-------------------|-------------------|
+| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/users`        | 120               | 150               |
+| `api_request_latency`  | `status_code` | `404`           | `endpoint`    | `/orders`       | 250               | 260               |
+| `api_request_latency`  | `status_code` | `500`           | `endpoint`    | `/products`     | 350               | 400               |
+| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/users/{id}`   | 90                | 95                |
+| `api_request_latency`  | `status_code` | `500`           | `endpoint`    | `/checkout`     | 500               | 510               |
+| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/login`        | 180               | 190               |
+| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/orders/{id}`  | 75                | 80                |
+| `api_request_latency`  | `status_code` | `500`           | `endpoint`    | `/cart`         | 400               | 420               |
+| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/health`       | 60                | 65                |
+| `api_request_latency`  | `status_code` | `404`           | `endpoint`    | `/products`     | 220               | 230               |
 
-> Table 1 shows two timeseries for one example metric. Their metric names, labels and values for certain timestamps are represented in a tabular view with columns.
 
-#### Cardinality Explosion
+**Cardinality Explosion**
 
 **Cardinality** refers to the number of unique combinations of label values (or dimensions) associated with a particular metric. Each unique combination creates a new "time series" that must be stored and tracked over time.
 
@@ -64,30 +74,42 @@ Consider a metric that tracks the latency of API requests. It might have the fol
 - `status_code`: HTTP status code of the request (e.g., 200, 404, 500).
 - `endpoint`: The specific API endpoint being accessed (e.g., `/users`, `/orders`).
 - `region`: The geographical location of the server (e.g., `us-east-1`, `eu-west-1`).
+- `nodeid`: The id of the server (e.g., `node-567`, `node-343`).
 
 For each unique combination of these labels, a new time series is created:
-- `latency{status_code="200", endpoint="/users", region="us-east-1"}`
-- `latency{status_code="404", endpoint="/users", region="us-east-1"}`
+- `latency{status_code="200", endpoint="/users", region="us-east-1", "node-567"}`
+- `latency{status_code="404", endpoint="/users", region="us-east-1", "node-343"}`
 
-If each label can take on many unique values, the number of possible combinations (and hence the number of time series) increases exponentially.
+If each label can take on many unique values, the number of possible combinations (and hence the number of time series) increases exponentially. For example, under the assumption of observing 1000 endpoints, running on 100 nodes, and considering only 20 status codes, **we would have to store 2M values each time step**. 
 
 
 
 ### Logs
-- **Definition**: Logs are detailed, unstructured or semi-structured textual records that describe events that occurred in the system. Logs capture the full context of operations and are the most granular observability data.
-- **Characteristics**:
-    - **Rich Detail**: Logs provide detailed information about the system’s state and operations, often including error messages, stack traces, and debug information.
-    - **High Cardinality**: Logs can capture many unique details such as user IDs, IP addresses, and session IDs.
-    - **Time-Stamped Events**: Each log entry is typically associated with a timestamp, allowing you to track events in chronological order.
-- **Types**:
-    - **Application Logs**: Generated by the application itself to capture business logic events, errors, or warnings.
-    - **System Logs**: Logs related to the operating system, server errors, or hardware issues.
-    - **Security Logs**: Logs capturing access events, login attempts, and authorization failures.
-    - **Infrastructure log**: Vital part of infrastructure management, which involves managing the physical and logical equipment that affects an organization's IT foundation.
-- **Use Cases**:
-    - **Debugging**: Logs are essential for troubleshooting errors and understanding the state of an application at specific points in time.
-    - **Auditing**: Logs can be used to track access, changes, and interactions within the system for compliance and security purposes.
-    - **Incident Investigation**: In the case of system failure or unexpected behavior, logs provide the information needed to reconstruct the chain of events leading to the issue.
+Logs are detailed, unstructured or semi-structured textual records that describe events that occurred in the system. Logs capture the full context of operations and are the most granular observability data.
+
+**Characteristics**:
+  - **Rich Detail**: Logs provide detailed information about the system’s state and operations, often including error messages, stack traces, and debug information.
+  - **High Cardinality**: Logs can capture many unique details such as user IDs, IP addresses, and session IDs.
+  - **Time-Stamped Events**: Each log entry is typically associated with a timestamp, allowing you to track events in chronological order.
+
+**Types**:
+  - **Application Logs**: Generated by the application itself to capture business logic events, errors, or warnings.
+  - **System Logs**: Logs related to the operating system, server errors, or hardware issues.
+  - **Security Logs**: Logs capturing access events, login attempts, and authorization failures.
+  - **Infrastructure log**: Vital part of infrastructure management, which involves managing the physical and logical equipment that affects an organization's IT foundation.
+
+**Use Cases**:
+  - **Debugging**: Logs are essential for troubleshooting errors and understanding the state of an application at specific points in time.
+  - **Auditing**: Logs can be used to track access, changes, and interactions within the system for compliance and security purposes.
+  - **Incident Investigation**: In the case of system failure or unexpected behavior, logs provide the information needed to reconstruct the chain of events leading to the issue.
+
+```
+[INFO] 2024-10-19 10:15:03 - Service 'OrderService' started successfully on port 8080.
+[ERROR] 2024-10-19 10:16:25 - Failed to connect to the database. Error: ConnectionTimeoutException: Database not reachable at db-host:5432.
+[WARN] 2024-10-19 10:18:45 - Memory usage is above the threshold (90%). Current usage: 95%.
+[DEBUG] 2024-10-19 10:19:07 - Processing request for user ID 12345. Request payload: { "orderId": "9876", "product": "Laptop", "quantity": 2 }.
+[TRACE] 2024-10-19 10:19:12 - Sending HTTP request to PaymentService. Endpoint: /api/payment. CorrelationId: abcd-1234-efgh-5678.
+```
 
 ### Traces
 - **Definition**: Traces track the path of a request as it moves through various services in a distributed system. They help visualize and analyze how requests propagate across different components.
@@ -113,18 +135,22 @@ Although each pillar serves a different purpose, they complement one another to 
 
 By integrating these pillars using observability tools (e.g., Prometheus for metrics, ELK stack for logs, Jaeger for tracing), teams can achieve comprehensive insight into the behavior of their systems, which is essential for effective monitoring, debugging, and optimizing modern software systems.
 
-## Instrumentation cost
+## Instrumentation
 
 Instrumentation in microservices refers to the process of collecting metrics, logs, and traces to monitor, diagnose, and improve performance. Instrumenting microservices involves costs in terms of resource consumption, performance overhead, and engineering effort.
 
 ### The B2I (Business Logic to Instrumentation) ratio
+
 To calculate the B2I ratio, determine the number of lines of code (LOC) before adding an instrumentation (adding code for emitting signals for a signal type), and then determine the LOC after the instrumentation. The B2I ratio is then:
 
 > B2I = LOC_AFTER_INSTRUMENTATION / LOC_BEFORE_INSTRUMENTATION
 
 In an ideal world, the B2I ratio would be 1, representing zero instrumentation costs in the code. However, in reality, the more LOC you dedicate to instrumentation, the higher the B2I ratio is. For example, if your code has 3800 LOC and you added 400 LOC for instrumentation (say, to emit logs and metrics), then you’d end up with a B2I ratio of 1.105, from (3800 + 400) / 3800.
 
-### Metrics
+### Manual instrumentation
+
+**Metrics**
+
 Micrometer is a popular metrics collection library in the Spring ecosystem, often used with Prometheus or other monitoring tools. Adding metrics introduces costs in terms of resource usage and infrastructure needs.
 
 ```java
@@ -153,7 +179,8 @@ public class ExampleController {
 - **Resource Overhead**: Each request increments a counter. In high-traffic applications, this small overhead accumulates.
 - **Infrastructure Costs**: Storing and querying metrics in Prometheus or another monitoring system requires resources, including storage and compute.
 
-### Logs
+**Logs**
+
 Logging is essential for debugging and monitoring microservices, but excessive logging can consume storage, network bandwidth, and degrade performance.
 
 ```java
@@ -179,7 +206,7 @@ public class LoggingController {
 - **Storage Costs**: Logs can grow quickly, especially in microservices architectures where each service generates logs. Storing these logs (e.g., in ELK stack) adds to infrastructure costs.
 - **Performance Impact**: Writing logs to disk or sending them to a centralized logging service can introduce latency.
 
-### Traces
+**Traces**
 Distributed tracing helps in understanding requests flowing through various microservices. It can introduce performance overhead due to the additional tracking, logging, and transmission of trace data.
 
 ```java
@@ -216,6 +243,23 @@ public class TracingController {
 
 - **Performance Overhead**: Tracing adds latency to each request as spans are created, propagated, and sent to a tracing backend (e.g., Jaeger, Zipkin).
 - **Operational Costs**: Setting up and maintaining tracing infrastructure requires additional resources, especially for high-volume traffic and complex distributed systems.
+
+### Zero-code instrumentation
+
+**Zero Code Instrumentation** refers to a technique where no code changes are required to instrument an application for monitoring, observability, or performance tracking. This is typically achieved through automatic instrumentation provided by agents (such as Java agents) or frameworks.
+
+A **Java agent** is a special type of Java program that can modify the behavior of Java bytecode at runtime. It leverages the Java Instrumentation API, allowing developers or tools to inject custom behavior into Java classes before they are loaded into memory by the JVM.
+
+**How It Works**
+* **Bytecode Manipulation**: The Java agent can modify the bytecode of the application’s classes to introduce additional behavior, such as tracing, logging, or collecting metrics, without changing the application code itself.
+* **Premain and Agentmain Methods**: Java agents have two key methods:
+  - **premain()**: Invoked before the main method of the application, allowing agents to attach at startup.
+  - **agentmain()**: Allows agents to attach to a running JVM (dynamic attachment).
+* **JVM Argument**: To use a Java agent, it is added as a JVM argument, such as:
+
+```bash
+java -javaagent:/path/to/agent.jar -jar your-application.jar
+```
 
 
 ## Sources
@@ -266,193 +310,95 @@ Networking is crucial in distributed systems, as microservices rely heavily on n
 
 - **Security Implications**: Network observability also contributes to security monitoring. Tools that inspect network traffic or audit logs can detect unauthorized access, anomalies, or data exfiltration attempts.
 
+## Metrics: Prometheus
 
-## Agents
-
-### Log Routers
-
-![](images/logging-architecture.png)
-
-**Log routers** are a critical component in modern observability and logging infrastructures, responsible for collecting, processing, and routing log data from various sources to one or more destinations. They provide:
-
-- **Centralized Log Management**: By aggregating logs from many sources into a single pipeline, log routers make it easier to manage and analyze logs.
-- **Scalability**: Log routers can handle the high volumes of log data generated by cloud-native applications, especially in environments where services are rapidly scaled up or down.
-- **Customizable Workflows**: Routing logs to different destinations based on their content (e.g., error logs to monitoring systems, audit logs to archival storage) improves the efficiency of log management and reduces noise.
-- **Cost Efficiency**: Filtering out unnecessary logs, or sending logs to cheaper storage solutions (e.g., cloud storage for archival) helps reduce storage costs, especially for large systems with high log throughput.
-
-#### Key Features
-1. **Log Aggregation**: Log routers collect logs from multiple sources, such as applications, containers, virtual machines, and operating systems, consolidating them into a single stream. This eliminates the need for developers and operations teams to manually track logs from each service or server.
-
-2. **Log Transformation**: Logs are often produced in different formats (e.g., JSON, text, syslog). A log router can transform logs into a standardized format, making it easier to analyze and process them downstream. This might include parsing fields, enriching logs with additional context, or formatting them for easier querying.
-
-3. **Routing and Filtering**: Log routers direct logs to different destinations based on customizable rules. For example, error logs can be sent to one destination for immediate alerting, while debug logs might be routed to a different storage system for later analysis. Routers can filter out unnecessary or irrelevant logs, reducing storage costs and improving performance.
-
-4. **Buffering and Reliability**: Log routers often implement buffering mechanisms to temporarily hold logs if the destination (such as a log storage system) becomes unavailable or experiences downtime. This ensures that logs are not lost and can be sent once the destination is back online.
-
-5. **Destination Flexibility**: A key benefit of log routers is their ability to send logs to multiple destinations simultaneously. For example, logs can be routed to a centralized logging platform (like Elasticsearch or Splunk) for search and analysis, to cloud storage (e.g., Amazon S3) for archival, and to a monitoring system for alerting.
-
-#### Common Destinations
-- **Log Storage and Indexing**: Elasticsearch, Splunk, or Logstash for fast querying and analysis.
-- **Cloud Storage**: Amazon S3, Google Cloud Storage for long-term log retention and compliance.
-- **Monitoring and Alerting Systems**: Grafana, Kibana, or other observability platforms to visualize and alert based on log data.
-- **Message Queues**: Kafka or RabbitMQ to store and stream logs for real-time processing pipelines.
-
-#### Popular Log Routers
-* **Fluentd**: An open-source log router that supports a wide range of input/output plugins for log collection, transformation, and routing.
-* **Fluent Bit**: A lightweight version of Fluentd, optimized for environments where resources (memory, CPU) are constrained.
-* **Logstash**: Part of the Elastic Stack (Elasticsearch, Logstash, Kibana), Logstash is designed to process and route logs to Elasticsearch.
-* **Vector**: A newer log router that emphasizes performance and efficiency, written in Rust. Vector is designed to handle large-scale log processing with minimal resource usage.
-
-
-### Metrics Routers
+**Prometheus** is an open-source monitoring and alerting toolkit widely used for recording real-time metrics and generating alerts. Prometheus was developed at SoundCloud in 2012 and later became a standalone project under the umbrella of the Cloud Native Computing Foundation (CNCF). It is designed for reliability and scalability in monitoring and alerting, with a strong emphasis on time-series data.
 
 ![](images/prometheus-architecture.png)
 
-Prometheus is an open-source, time-series database and monitoring system widely used for collecting and querying **metrics**. It was originally developed by SoundCloud and is now part of the Cloud Native Computing Foundation (CNCF). Prometheus is particularly well-suited for microservices architectures and cloud-native environments due to its simplicity, scalability, and ability to monitor a wide range of system and application-level metrics.
+### Key Features of Prometheus
 
-#### Key Features
-- **Pull-Based Model**: Prometheus uses a pull-based model to scrape metrics from various targets at predefined intervals. Each target exposes an HTTP endpoint (e.g., `/metrics`) that Prometheus queries.
-- **Multi-Dimensional Data Model**: Prometheus organizes data into time-series, each identified by a unique set of key-value pairs (labels). This allows for highly flexible querying and aggregation of metrics.
-- **Powerful Query Language (PromQL)**: Prometheus offers PromQL, a powerful query language for filtering, aggregating, and transforming metrics. It allows users to define complex queries for dashboards and alerts.
-- **Service Discovery**: Prometheus can automatically discover and monitor new services in dynamic environments like Kubernetes using built-in service discovery mechanisms.
+- **Multi-dimensional Data Model**: Prometheus uses a flexible data model that allows metrics to be identified by key-value pairs known as labels. This supports the creation of highly dimensional queries.
+- **Powerful Query Language**: Prometheus provides a query language called **PromQL** (Prometheus Query Language) for retrieving and manipulating time-series data, making it easy to create complex queries and aggregations.
+- **Pull Model**: Prometheus primarily uses a pull model for data collection, where it scrapes metrics from configured targets at specified intervals, making it suitable for dynamic environments.
+- **Alerting**: Prometheus supports alerting based on specific conditions defined in alerting rules. Alerts can be sent to various notification channels, including email, Slack, and PagerDuty.
+- **Integration**: It integrates well with various data sources, exporters, and monitoring tools, allowing for comprehensive monitoring across applications and infrastructure.
 
-#### Common Metrics
-- **System Metrics**: CPU usage, memory consumption, disk I/O, and network traffic from nodes, VMs, or containers.
-- **Application Metrics**: Request rates (QPS), latency, error rates, and throughput from microservices.
-- **Custom Business Metrics**: Metrics that represent business-related events, such as the number of orders processed or users logged in.
+### Prometheus Architecture
 
+The architecture of Prometheus consists of several key components:
 
-### OpenTelemetry Collector (Universal Telemetry Agent)
+1. **Prometheus Server**: The core component that collects, stores, and processes metrics data. It performs scraping, data storage, and querying.
+2. **Data Storage**: Prometheus stores time-series data in its own time-series database (TSDB), optimized for fast retrieval and storage of metric data.
+3. **Exporters**: Exporters are components that expose metrics in a format Prometheus can scrape. There are various exporters available, such as node_exporter for system metrics, and application-specific exporters for popular technologies like MySQL and Redis.
+4. **Alertmanager**: This component handles alerts generated by the Prometheus server. It manages alert notifications, deduplicates them, and routes them to the appropriate notification channels.
+5. **Client Libraries**: These libraries allow application developers to instrument their code and expose metrics directly to Prometheus. Libraries are available for various programming languages (e.g., Go, Java, Python).
 
-![](images/otelcol-data-flow-overview.png)
+### Prometheus as an Agent
 
-The **OpenTelemetry collector** is a versatile, open-source tool designed to collect, process, and export telemetry data, including **logs**, **metrics**, and **traces**. It is part of the OpenTelemetry project, which aims to provide a unified standard for observability across distributed systems.
+When we refer to **Prometheus as an agent**, we typically focus on its role in data collection and metrics scraping.
 
-#### Key Features
-- **Unified Data Collection**: The collector supports receiving telemetry data from different sources (metrics, logs, traces) and exporting them to various backends, making it a single agent that replaces multiple specialized agents.
-- **Extensible Pipeline**: The collector follows a pipeline architecture consisting of **receivers**, **processors**, and **exporters**:
-  - **Receivers**: Ingest telemetry data from various sources (e.g., Jaeger, Prometheus, Fluentd).
-  - **Processors**: Enrich, filter, batch, or transform data before exporting.
-  - **Exporters**: Send the processed data to backends like Prometheus, Elasticsearch, Grafana, or third-party observability platforms (Datadog, New Relic).
+- **Scraping Metrics**: Prometheus acts as a data collector (or agent) that scrapes metrics from various targets at configured intervals. Targets can include applications, services, or systems exposing metrics through HTTP endpoints.
+- **Service Discovery**: Prometheus supports various service discovery mechanisms (e.g., Kubernetes, Consul, static configuration) to automatically identify and scrape targets. This is especially useful in dynamic environments where services may frequently change.
+- **Metrics Formatting**: Targets expose metrics in a specific text-based format that Prometheus understands. The metrics can include information about CPU usage, memory consumption, request counts, error rates, and more.
 
-- **Vendor-Neutral**: OpenTelemetry aims to standardize how telemetry is collected, providing flexibility and portability. The collector allows you to change backends (e.g., from Prometheus to AWS CloudWatch) without modifying your application code.
+### Prometheus as a Backend Service
 
-- **Scalability and Flexibility**: The collector can be deployed as an agent (running locally alongside applications) or as a central service that aggregates telemetry from multiple agents across the infrastructure.
+When we refer to **Prometheus as a backend service**, we emphasize its capabilities as a metrics storage and querying system.
 
-#### How OpenTelemetry Collector Works
-1. **Instrumentation**: Application code is instrumented to produce telemetry data (logs, metrics, traces) using OpenTelemetry SDKs. The data is sent to the OpenTelemetry collector.
-2. **Data Ingestion**: The collector ingests telemetry data via receivers (e.g., metrics from Prometheus, traces from Jaeger, logs from Fluentd).
-3. **Processing**: The collector processes the telemetry (e.g., filtering sensitive data, batching traces for efficient export).
-4. **Data Export**: The processed telemetry is sent to different backends (e.g., Prometheus for metrics, Elasticsearch for logs, Jaeger for traces).
+- **Time-Series Data Storage**: Prometheus stores scraped metrics in a time-series database optimized for quick lookups, aggregations, and high-dimensional queries.
+- **PromQL Queries**: Users can use PromQL to query and analyze metrics data efficiently. This allows for complex aggregations, filtering, and transformation of metrics, enabling insightful monitoring and alerting.
+- **Alerting**: The Prometheus server evaluates alerting rules based on the collected metrics, generating alerts when conditions are met. Alerts are then forwarded to Alertmanager for handling and notification.
+- **Long-Term Storage**: While Prometheus is not designed for long-term storage, it can integrate with remote storage solutions (e.g., Thanos, Cortex, InfluxDB) to store metrics data for extended periods.
 
-#### Benefits of Using OpenTelemetry Collector
-- **Consolidation**: The collector replaces multiple agents (one for logs, one for metrics, and another for traces) with a single, unified telemetry agent.
-- **Cross-Language Support**: OpenTelemetry works across multiple programming languages, enabling a consistent observability strategy across diverse environments.
-- **Flexibility in Exporting**: You can easily switch observability backends without reconfiguring or redeploying applications.
+## Logs: ELK Stack
 
+The **ELK stack** is a popular set of tools used for managing and analyzing large volumes of data, particularly logs and metrics. It consists of three main components: **Elasticsearch**, **Logstash**, and **Kibana**. These tools work together to provide a complete solution for data ingestion, storage, search, analysis, and visualization. Here’s a detailed look at each key component of the ELK stack.
 
-## Destinations (backend)
+![](images/logging-architecture.png)
 
-Observability backends play a critical role in monitoring and analyzing the performance of modern applications and infrastructure. Tools like **Grafana Loki**, **Elasticsearch**, and **OpenSearch** provide various functionalities for managing logs, metrics, and other telemetry data. Below is an elaboration on each of these observability backends:
+### Elasticsearch
 
-### Grafana Backend Ecosystem
+**Elasticsearch** is a distributed search and analytics engine built on top of Apache Lucene. It is designed for real-time data processing and is the core component of the ELK stack, responsible for storing, searching, and analyzing data.
 
-![](images/architecture-grafana-agent.png)
+- **Distributed Architecture**: Elasticsearch is designed to be distributed, allowing it to scale horizontally. Data can be divided into multiple shards and distributed across multiple nodes, providing high availability and fault tolerance.
+- **Full-Text Search**: It provides powerful full-text search capabilities, allowing for complex queries and retrieval of relevant data quickly.
+- **RESTful API**: Elasticsearch exposes a RESTful API, enabling easy integration with applications and other components of the ELK stack. This allows users to send and receive data using standard HTTP methods.
+- **Data Indexing**: Data is stored in JSON format and indexed to make it searchable. Indexing allows Elasticsearch to quickly find and retrieve documents based on search queries.
+- **Aggregations**: Elasticsearch supports powerful aggregation capabilities, enabling users to perform complex statistical analyses and group data based on various criteria.
 
-The **Grafana Ecosystem** is a comprehensive, open-source observability stack developed by Grafana Labs, consisting of powerful tools designed to work together for monitoring and troubleshooting modern distributed systems. At the core is **Grafana**, a versatile visualization and dashboarding platform that integrates seamlessly with other observability tools like **Loki**, **Tempo**, and **Mimir**.
-* **Grafana Loki** is a log aggregation system that efficiently indexes and stores logs using a label-based system, making it easy to correlate logs with metrics and traces.
-* **Grafana Tempo** provides distributed tracing capabilities, enabling users to track and visualize how requests flow through complex microservices architectures without requiring expensive trace indexing. 
-* **Grafana Mimir** is a highly scalable time-series database, optimized for storing and querying massive volumes of metrics, fully compatible with Prometheus. Together, these tools offer a unified observability solution, allowing users to analyze metrics, logs, and traces in one place, simplifying root cause analysis, and improving overall system visibility and performance.
+### Logstash
 
-### Elasticsearch/OpenSearch
+**Logstash** is a data processing pipeline that ingests, processes, and forwards data to various outputs, primarily Elasticsearch. It serves as the intermediary between data sources and data storage.
 
-Elasticsearch is a distributed search and analytics engine that is a core component of the Elastic Stack (ELK Stack: Elasticsearch, Logstash, Kibana). It is widely used for log analysis, full-text search, and real-time data analytics.
-
-Key Features:
-- **Full-Text Search**: Elasticsearch provides advanced search capabilities, including support for complex queries, relevance scoring, and full-text search.
-- **Distributed Architecture**: It is designed to scale horizontally, allowing users to handle large volumes of data across multiple nodes.
-- **RESTful API**: Elasticsearch can be accessed through a RESTful API, making it easy to integrate with other applications and services.
-- **Powerful Aggregations**: Users can perform complex aggregations to analyze and summarize their data, enabling insights into log patterns and trends.
-- **Rich Ecosystem**: Integrates well with other components of the Elastic Stack (Logstash for data ingestion, Kibana for visualization) for comprehensive observability.
-
-## Destinations (frontend)
-Observability frontends are essential tools for visualizing and interacting with telemetry data, enabling teams to monitor system performance, analyze metrics, and troubleshoot issues effectively. **Grafana** and **Kibana** are two of the most widely used observability frontends, each offering distinct features tailored to different use cases. Below is a detailed exploration of both platforms:
-
-### Grafana
-
-![](images/grafana.avif)
-
-Grafana is an open-source analytics and monitoring platform designed for visualizing time-series data from various sources. It is known for its powerful dashboarding capabilities and flexibility in integrating with numerous data sources.
-
-Key Features:
-1. **Dashboarding**:
-  - Users can create highly customizable dashboards to visualize metrics, logs, and events.
-  - Supports a wide range of visualization types, including graphs, tables, heatmaps, and geomaps.
-
-2. **Data Source Integration**:
-  - Grafana can connect to multiple data sources, such as Prometheus, InfluxDB, Graphite, Elasticsearch, and many others.
-  - Each data source can be queried and visualized using Grafana's query editor.
-
-3. **Alerting**:
-  - Built-in alerting functionality allows users to set thresholds for metrics and receive notifications via email, Slack, PagerDuty, etc.
-  - Alerts can be based on the state of data points, ensuring proactive monitoring.
-
-4. **Annotations**:
-  - Users can add context to their graphs with annotations to mark significant events, deployments, or incidents.
-  - This feature helps correlate metrics with events, making it easier to identify causes of anomalies.
-
-5. **Plugin Ecosystem**:
-  - Grafana has a rich ecosystem of plugins that extend its capabilities, including additional visualizations, data sources, and applications.
-  - Community and official plugins allow for greater flexibility and customization.
-
-6. **Templating**:
-  - Templating allows users to create dynamic dashboards that can change based on selected parameters, such as hostnames or regions.
-  - This feature enhances the interactivity and reusability of dashboards.
-
-7. **User Management**:
-  - Grafana provides role-based access control (RBAC) to manage user permissions and access to dashboards.
-  - This feature ensures secure collaboration among team members.
-
+- **Input Plugins**: Logstash supports numerous input sources through various plugins (e.g., file, syslog, Beats, Kafka). This flexibility allows it to collect data from different environments and formats.
+- **Filter Plugins**: Logstash provides a rich set of filter plugins to transform and process incoming data. Filters can parse logs, rename fields, drop unnecessary data, and enrich data (e.g., adding geolocation information).
+- **Output Plugins**: Processed data can be sent to various outputs, with Elasticsearch being the most common target. Logstash can also output data to other systems, such as databases, message queues, or other log storage solutions.
+- **Pipeline Management**: Users can define complex data pipelines using configuration files that specify how data should be collected, processed, and forwarded.
 
 ### Kibana
 
-![](images/kibana.jpg)
-![](images/logging-architecture.png)
+**Kibana** is the visualization and exploration tool for the ELK stack. It provides a web-based interface for users to interact with data stored in Elasticsearch, allowing for data visualization, exploration, and dashboard creation.
 
-Kibana is an open-source analytics and visualization platform specifically designed for use with Elasticsearch. It is a key component of the Elastic Stack (often referred to as ELK Stack: Elasticsearch, Logstash, Kibana), focusing on log data and search analytics.
+- **Data Visualization**: Kibana offers a variety of visualization options, such as line graphs, bar charts, pie charts, and maps, to help users understand their data better.
+- **Custom Dashboards**: Users can create customizable dashboards to display multiple visualizations and metrics in a single view. Dashboards can be tailored to specific use cases and shared with others.
+- **Search and Filter**: Kibana allows users to perform powerful searches and apply filters to their data, making it easy to drill down into specific metrics or logs.
+- **Timelion and Canvas**: Kibana includes specialized tools like Timelion for time-series visualizations and Canvas for creating visually-rich presentations and reports based on data from Elasticsearch.
 
-Key Features:
-1. **Real-time Search and Analysis**:
-  - Kibana allows users to search and analyze log data stored in Elasticsearch in real-time.
-  - Provides a powerful query language for complex searches and filtering.
+### How the ELK Stack Works Together
 
-2. **Data Visualizations**:
-  - Users can create various visualizations (e.g., bar charts, line graphs, pie charts) based on their log data and metrics.
-  - Supports aggregations and statistical analysis to derive insights from the data.
+1. **Data Ingestion**: Data is collected from various sources using Logstash, which processes and transforms the data according to specified rules.
+2. **Data Storage**: The processed data is sent to Elasticsearch, where it is indexed and stored in a way that allows for fast searching and querying.
+3. **Data Visualization**: Users access Kibana to visualize and explore the data stored in Elasticsearch. They can create dashboards, perform searches, and analyze metrics to gain insights.
 
-3. **Dashboard Creation**:
-  - Users can build dashboards that combine multiple visualizations, allowing for comprehensive monitoring of data.
-  - Dashboards can be customized with various layout options and styles.
+### Benefits of the ELK Stack
 
-4. **Discover Feature**:
-  - The Discover interface allows users to explore and query their data interactively, making it easy to identify patterns or anomalies.
-  - Users can view raw log entries alongside visualizations for in-depth analysis.
+- **Centralized Logging**: The ELK stack allows organizations to centralize logs from multiple sources, making it easier to manage and analyze log data.
+- **Real-Time Analysis**: With near real-time data processing capabilities, users can monitor systems and applications effectively, responding quickly to issues as they arise.
+- **Flexible Visualization**: Kibana’s visualization tools help users present data in various formats, enabling better decision-making based on insights derived from the data.
+- **Scalability**: The distributed nature of Elasticsearch allows the ELK stack to scale with the growth of data, making it suitable for small to large enterprises.
 
-5. **Timelion**:
-  - A powerful feature within Kibana for time-series data analysis that allows users to create visualizations using a simple expression language.
-  - Timelion is beneficial for tracking changes in metrics over time.
-
-6. **Machine Learning**:
-  - Kibana provides machine learning capabilities for anomaly detection and forecasting, helping users identify unusual patterns in their data.
-  - Users can set up jobs to automatically analyze data and trigger alerts based on findings.
-
-7. **Security Features**:
-  - Kibana integrates with the Elastic Stack's security features, allowing for role-based access control and user authentication.
-  - Provides features for monitoring and auditing user activities within the application.
-
-
-## Destinations (all-in-one)
-All-in-one observability backends combine various aspects of observability, such as metrics, logs, and traces, into a single platform, simplifying monitoring and analysis for modern applications. Tools like **Jaeger**, **Zipkin**, and **Signoz** offer integrated solutions that facilitate observability across microservices architectures and help teams diagnose issues effectively.
+## Traces: Jeager/Zipkin
 
 ### Jaeger
 
@@ -482,17 +428,147 @@ Key Features:
 - **Storage Options**: Supports various storage backends, such as MySQL, Cassandra, and Elasticsearch, allowing teams to choose their preferred data storage solution.
 
 
-### Signoz
+## OpenTelemetry Collector (Universal Telemetry Agent)
+
+![](images/otelcol-data-flow-overview.png)
+
+The **OpenTelemetry collector** is a versatile, open-source tool designed to collect, process, and export telemetry data, including **logs**, **metrics**, and **traces**. It is part of the OpenTelemetry project, which aims to provide a unified standard for observability across distributed systems.
+
+#### Key Features
+- **Unified Data Collection**: The collector supports receiving telemetry data from different sources (metrics, logs, traces) and exporting them to various backends, making it a single agent that replaces multiple specialized agents.
+- **Extensible Pipeline**: The collector follows a pipeline architecture consisting of **receivers**, **processors**, and **exporters**:
+  - **Receivers**: Ingest telemetry data from various sources (e.g., Jaeger, Prometheus, Fluentd).
+  - **Processors**: Enrich, filter, batch, or transform data before exporting.
+  - **Exporters**: Send the processed data to backends like Prometheus, Elasticsearch, Grafana, or third-party observability platforms (Datadog, New Relic).
+
+- **Vendor-Neutral**: OpenTelemetry aims to standardize how telemetry is collected, providing flexibility and portability. The collector allows you to change backends (e.g., from Prometheus to AWS CloudWatch) without modifying your application code.
+
+- **Scalability and Flexibility**: The collector can be deployed as an agent (running locally alongside applications) or as a central service that aggregates telemetry from multiple agents across the infrastructure.
+
+#### How OpenTelemetry Collector Works
+1. **Instrumentation**: Application code is instrumented to produce telemetry data (logs, metrics, traces) using OpenTelemetry SDKs. The data is sent to the OpenTelemetry collector.
+2. **Data Ingestion**: The collector ingests telemetry data via receivers (e.g., metrics from Prometheus, traces from Jaeger, logs from Fluentd).
+3. **Processing**: The collector processes the telemetry (e.g., filtering sensitive data, batching traces for efficient export).
+4. **Data Export**: The processed telemetry is sent to different backends (e.g., Prometheus for metrics, Elasticsearch for logs, Jaeger for traces).
+
+#### Benefits of Using OpenTelemetry Collector
+- **Consolidation**: The collector replaces multiple agents (one for logs, one for metrics, and another for traces) with a single, unified telemetry agent.
+- **Cross-Language Support**: OpenTelemetry works across multiple programming languages, enabling a consistent observability strategy across diverse environments.
+- **Flexibility in Exporting**: You can easily switch observability backends without reconfiguring or redeploying applications.
+
+
+
+
+
+## Grafana Ecosystem
+
+![](images/architecture-grafana-agent.png)
+
+The **Grafana ecosystem** encompasses a variety of tools that work together to provide a comprehensive monitoring, observability, and visualization solution. Key components of this ecosystem include **Grafana**, **Tempo**, **Mimir**, and **Loki**. Each of these tools serves a specific purpose, enabling users to collect, analyze, and visualize metrics, logs, and traces from their applications and infrastructure. Here’s an in-depth look at each component and how they compare within the Grafana ecosystem.
+
+### Grafana
+
+**Grafana** is an open-source analytics and monitoring platform designed for visualizing metrics and logs from various data sources. It provides a flexible and customizable dashboard interface that allows users to create visualizations, alerts, and reports.
+
+![](images/grafana.avif)
+
+- **Data Source Integration**: Grafana supports a wide range of data sources, including Prometheus, InfluxDB, Elasticsearch, and more, allowing users to pull in data from multiple systems for unified visualization.
+- **Custom Dashboards**: Users can create interactive and customizable dashboards with a variety of visualization options (e.g., graphs, heatmaps, tables) to display data in meaningful ways.
+- **Alerting**: Grafana provides alerting capabilities, allowing users to set thresholds and receive notifications through various channels (e.g., email, Slack) when conditions are met.
+- **Plugins and Extensions**: The Grafana ecosystem includes numerous plugins and extensions that enhance functionality, enabling users to add new data sources, visualizations, and integrations.
+
+### Tempo
+
+**Tempo** is a distributed tracing backend designed to collect and store trace data generated by applications. It is designed to be simple, scalable, and cost-effective, making it a good choice for organizations looking to implement distributed tracing.
+
+- **Easy Integration**: Tempo integrates seamlessly with Grafana and other components in the Grafana ecosystem, allowing users to visualize traces alongside metrics and logs.
+- **Low Overhead**: Tempo is designed to be lightweight, minimizing the performance impact on applications while collecting trace data.
+- **Storage**: Tempo uses object storage (e.g., S3, GCS) for storing traces, making it easy to scale horizontally and manage costs.
+- **Contextual Insights**: By correlating trace data with metrics and logs in Grafana, users can gain deeper insights into application performance and troubleshoot issues effectively.
+
+
+
+### Mimir
+
+**Mimir** is a metrics store designed for high-performance metrics collection and retrieval. It is particularly useful for storing large volumes of time-series data and is often seen as a scalable solution for organizations with extensive observability needs.
+
+- **Horizontal Scalability**: Mimir is built to scale horizontally, enabling organizations to handle large amounts of time-series data without sacrificing performance.
+- **Multi-Tenancy**: Mimir supports multi-tenancy, allowing multiple teams or projects to share a single instance while maintaining data isolation and security.
+- **PromQL Support**: Users can leverage PromQL (Prometheus Query Language) to query data stored in Mimir, making it easy for teams familiar with Prometheus to transition to Mimir.
+- **Integration with Grafana**: Mimir integrates seamlessly with Grafana, allowing users to visualize metrics stored in Mimir alongside other data sources.
+
+### Loki
+
+**Loki** is a log aggregation system designed to collect, store, and query log data from various sources. Unlike traditional log management systems, Loki is optimized for ease of use and integrates tightly with Grafana.
+
+- **Log Aggregation**: Loki collects logs from various applications and systems, making it easier for users to search and analyze log data in one place.
+- **Label-Based Indexing**: Loki uses a unique approach to indexing logs based on labels, which reduces the need for extensive indexing and makes log storage more efficient.
+- **Integration with Grafana**: Loki integrates seamlessly with Grafana, allowing users to visualize logs alongside metrics and traces. This enables a unified observability experience.
+- **Cost-Effective**: Loki is designed to be lightweight and cost-effective, making it suitable for organizations looking for an efficient log management solution.
+
+## Signoz Ecosystem
+**SigNoz** is an open-source observability platform designed for monitoring, tracing, and logging in cloud-native applications. It provides a unified solution that enables developers and DevOps teams to gain insights into application performance and troubleshoot issues effectively. 
 
 ![](images/signoz.webp)
 
-Signoz is an open-source observability platform that provides an all-in-one solution for monitoring applications, focusing on collecting, storing, and visualizing logs, metrics, and traces in a unified interface.
+* **Unified Observability**: Combines metrics, logs, and traces in a single interface for holistic monitoring.
+* **End-to-End Tracing**: Supports distributed tracing to identify performance bottlenecks and visualize service dependencies.
+* **Metrics Collection**: Collects and visualizes metrics in real time, with alerting capabilities based on defined thresholds.
+* **Log Management**: Ingests, searches, and analyzes logs, allowing correlation with metrics and traces for context.
+* **Easy Setup**: Quick installation and configuration for various environments (Kubernetes, Docker, etc.).
+* **Powerful Query Language**: Facilitates complex queries for deeper analysis of observability data.
+* **Integration**: Works seamlessly with popular monitoring and logging solutions.
 
-Key Features:
-- **Unified Observability**: Signoz integrates logs, metrics, and traces into a single platform (OpenTelemetry), enabling users to correlate data across different observability signals.
-- **Rich User Interface**: Provides a user-friendly interface for building dashboards, querying data, and visualizing metrics and traces.
-- **Performance Monitoring**: Monitors application performance and provides insights into latency, error rates, and other critical metrics.
-- **Alerting**: Supports alerting based on specific conditions, allowing teams to proactively address issues before they impact users.
+### Architecture
+
+- **Frontend**: User interface for visualizing observability data.
+- **Backend Services**: Handle data ingestion, processing, and storage.
+- **Database**: Uses specialized databases for metrics and logs, enabling efficient storage and retrieval.
+- **Data Ingestion**: Supports OpenTelemetry for compatibility with various applications.
+
+### Use Cases
+
+1. **Application Performance Monitoring (APM)**: Track performance and identify bottlenecks.
+2. **Infrastructure Monitoring**: Monitor servers, databases, and other components.
+3. **Troubleshooting**: Search logs and trace requests for rapid issue resolution.
+4. **Capacity Planning**: Analyze metrics to inform resource allocation.
+5. **Incident Response**: Set alerts for quick notifications of performance issues.
+
+### Advantages
+
+- **Open Source**: Customizable with no licensing costs.
+- **Cost-Effective**: Combines multiple observability functions in one platform.
+- **Community Support**: Active contributions from the open-source community.
+- **User Experience**: Intuitive interface for both technical and non-technical users.
+
+## Costs
+
+### Infrastructure Costs
+- **Data Storage**: Observability generates vast amounts of data from logs, metrics, and traces. Storing this data requires significant disk space, especially in systems with high traffic or complex architectures. This can lead to high storage costs, particularly if long retention periods are needed.
+- **Compute Resources**: Observability tools often require substantial computational power for data processing, querying, and aggregation. Running these systems can increase cloud computing or server costs, as you’ll need to scale resources to handle the load.
+- **Networking Costs**: In distributed systems, observability data must be collected and transmitted across services, leading to increased network bandwidth consumption, which can result in additional costs, especially in cloud environments where network usage is billable.
+
+### Operational Costs
+- **Tooling and Software Licenses**: Many observability tools come with licensing costs, either for self-hosted solutions (e.g., Prometheus, Grafana) or cloud-based SaaS solutions (e.g., Datadog, New Relic, Splunk). These costs can escalate as the system grows and more data is collected.
+- **Maintenance**: The observability stack needs constant upkeep, including updates, scaling, troubleshooting, and ensuring data integrity. Teams must invest in keeping the observability pipeline healthy and responsive, which increases operational overhead.
+
+### Development Costs
+- **Implementation Complexity**: Developers need to instrument code to collect observability data. This involves adding logging, metrics, and tracing capabilities into each service, which can increase development time and complexity. Special attention is required to ensure data is both comprehensive and accurate.
+- **Technical Debt**: If observability isn’t planned properly, it can result in technical debt. For example, poorly structured logs, inconsistent metric names, or incomplete tracing can lead to confusion and difficulty in diagnosing issues, requiring further refactoring or reimplementation.
+
+### Performance Costs
+- **Increased Latency**: Collecting observability data, particularly with distributed tracing, can introduce latency into the system. This is especially true if synchronous tracing is used or if large amounts of data are logged at runtime.
+- **Resource Overhead**: Monitoring and collecting metrics, logs, and traces consumes CPU, memory, and I/O resources on the services being observed. If not managed properly, this can lead to degraded performance of the system or the need to provision additional resources.
+- **Sampling Impact**: To minimize performance overhead, many systems implement sampling (e.g., not tracing every request). However, this can lead to incomplete data, making certain edge cases or rare issues harder to diagnose.
+
+### Organizational Costs
+- **Skill Development and Training**: Implementing and using observability tools effectively requires expertise. Teams may need training to fully leverage these systems, especially for interpreting traces, creating effective dashboards, and understanding advanced queries. This can require both time and financial investment in personnel.
+- **Cross-Team Coordination**: In a microservices environment, observability spans multiple teams. It requires coordination between development, operations, and product teams to ensure observability data is correctly interpreted and actionable. The cost of facilitating this collaboration can be non-trivial, including the time needed for regular alignment, communication, and shared responsibilities.
+
+### Data Management Costs
+- **Retention Policies**: Observability data can grow exponentially in a distributed system. Deciding on the right retention policy (e.g., which data to keep, for how long) requires careful balancing between the need for historical analysis and the cost of storing vast amounts of data.
+- **Data Noise and Signal Extraction**: In large systems, observability can generate a lot of noise, especially with verbose logging. Sifting through unnecessary data to extract meaningful insights can be resource-intensive and may require advanced techniques like log sampling, aggregation, and filtering.
+
 
 ## Resources
 - Cloud Observability in Action, Hausenblas
