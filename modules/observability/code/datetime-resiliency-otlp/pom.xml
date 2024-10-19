@@ -4,7 +4,7 @@
     <name>datetime-resiliency-observable</name>
 
     <groupId>com.nbicocchi</groupId>
-    <artifactId>datetime-resiliency-observable</artifactId>
+    <artifactId>datetime-resiliency-otlp</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
