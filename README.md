@@ -56,10 +56,10 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * *Resilience4j* and its integration with Spring Boot
 
 [M7 Observability](modules/observability)
-* What is observability and why it is relevant for microservices
-* Metrics aggregation with *Micrometer*, *Prometheus* and *Grafana*
-* Distributed tracing with *Micrometer* and *Zipkin*
-* Log aggregation with the *ELK* Stack
+* What is observability and why it is relevant
+* Instrumentation and maintenance costs
+* Key aggregation platforms: ELK stack, Grafana stack, Jaeger, Zipkin
+* Zero-code instrumentation with OpenTelemetry
 
 [M8 Distributed transaction management](modules/data-management)
 * Issues of database transactions in distributed contexts
