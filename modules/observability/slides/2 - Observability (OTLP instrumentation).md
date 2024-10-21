@@ -2,7 +2,7 @@
 
 ## Services instrumentation
 
-For instrumentation, we make use of a Java Agent providing (zero-code instrumentation). 
+For instrumentation, we make use of a manual process. 
 
 1. Download the [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation) library and place the jar file inside the service source folder.
 

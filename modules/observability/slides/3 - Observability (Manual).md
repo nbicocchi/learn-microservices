@@ -1,3 +1,0 @@
-# Observability (Manual)
-
-## Resources
