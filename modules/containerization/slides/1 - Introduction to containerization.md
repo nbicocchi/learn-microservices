@@ -160,7 +160,8 @@ volumes:
   pgadmin-data:
 ```
 
-### First Docker commands
+
+## Docker commands
 Let’s try to start a container by launching an Ubuntu server using Docker’s run command:
 
 ```
@@ -184,8 +185,6 @@ We can try out the container by, for example, asking what version of Ubuntu it r
 # cat /etc/os-release | grep 'VERSION'
 VERSION_ID=3.20.3
 ```
-
-### Terminal Commands (Bash)
 
 The Docker CLI provides several commands for managing images and containers. Here are some of the most important commands:
 
@@ -225,6 +224,148 @@ docker rm <container-id>
 ```bash
 docker exec -it <container-id> bash
 ```
+
+## Docker images and layers
+
+Docker images are a core concept in containerization and form the foundation for deploying applications in containers. They are essentially immutable snapshots of an application and its environment, consisting of everything needed to run the application, including code, runtime, libraries, environment variables, configuration files, and dependencies.
+
+Docker images are constructed in a **layered format**, where each layer represents a set of changes (or a filesystem delta). This layered structure provides efficiency, portability, and reuse.
+
+**Base Layer**
+
+Every Docker image begins with a **base layer**, which typically includes the operating system or minimal components necessary to run an application. For example, it could be a minimal **Alpine Linux** or **Ubuntu** image. Base layers are often pulled from public Docker registries like **Docker Hub**.
+
+**Intermediate Layers**
+
+Subsequent layers in the image add modifications, such as installing software packages, setting environment variables, or copying files. These layers correspond to the instructions in the Dockerfile that describe how to build the image. Each line or instruction in the Dockerfile (e.g., `RUN`, `COPY`, `ADD`, `EXPOSE`) creates a new layer.
+
+For example:
+- `RUN apt-get install -y python3` adds a new layer with Python installed.
+- `COPY . /app` adds the contents of the current directory into the `/app` directory in the image.
+
+**Read-Only Layers**: Once built, all the layers in a Docker image are **read-only**. When the image is used to start a container, Docker combines these read-only layers into a unified view using a **Union File System** (like **OverlayFS**), allowing them to act as a single entity.
+
+**Layer Caching**: Docker caches layers to make builds faster. If a Dockerfile instruction hasn’t changed, Docker reuses the previously built layer, improving build performance.
+
+**Layer Reuse**: Because layers are independent and reusable, multiple images can share common layers. For instance, if two images are built on the same base image (e.g., Ubuntu), they can reuse the base layer, reducing storage needs and speeding up deployment.
+
+**Copy-on-Write in Containers**: When you run a Docker container from an image, Docker adds a **writable layer** on top of the read-only layers. Any changes made to the container, such as modifying files or writing logs, are stored in this top writable layer. However, this writable layer is ephemeral, and once the container is deleted, any changes are lost unless committed to a new image.
+
+
+#### Example of Layered Structure
+
+```dockerfile
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y python3
+COPY . /app
+CMD ["python3", "/app/myapp.py"]
+```
+
+This Dockerfile would create the following image layers:
+
+1. **Base Layer**: The `ubuntu:20.04` image is the base.
+2. **Intermediate Layer**: The result of running `apt-get update && apt-get install -y python3`.
+3. **Intermediate Layer**: The result of copying the contents of the local directory to `/app`.
+4. **Final Layer**: The layer resulting from setting the default command (`CMD ["python3", "/app/myapp.py"]`).
+
+
+## Docker networking
+Docker networking is a fundamental aspect of how containers communicate with each other, with other applications, and with the outside world. Understanding Docker networking is crucial for building and managing containerized applications, especially when working with microservices or distributed systems.
+
+### Key Concepts of Docker Networking
+
+1. **Network Drivers**:
+   Docker uses **network drivers** to manage how containers communicate. There are several network drivers, each suited for different use cases:
+
+    - **bridge**: The default network driver used when you start containers without specifying a network. It allows communication between containers on the same host but isolates them from external networks unless explicitly configured.
+    - **host**: Removes the network isolation between the container and the Docker host. The container shares the host’s network stack, making it as if the application is running directly on the host.
+    - **overlay**: Used for multi-host communication, typically in Docker Swarm or Kubernetes. This driver allows containers running on different Docker hosts to communicate with each other securely.
+    - **macvlan**: Assigns a MAC address to each container, making them appear as physical devices on the network. It’s useful when you want containers to appear as full-fledged devices on your network, each with its IP address.
+    - **none**: Disables networking for the container, ensuring it is completely isolated from any network.
+
+2. **Docker Network Scopes**:
+   Docker networks can be scoped either to the local host or across multiple hosts (e.g., in a swarm cluster).
+
+    - **Local scope**: Networks like `bridge`, `host`, and `none` are restricted to a single Docker host.
+    - **Global scope**: `overlay` networks span multiple Docker hosts, useful for cluster-level networking in a distributed environment.
+
+3. **Network Creation**:
+   You can create custom networks in Docker to gain better control over communication between containers.
+
+   ```bash
+   docker network create my_custom_network
+   ```
+
+   Containers connected to the same network can communicate with each other by name (DNS resolution). This makes microservices communication easier since containers don’t need to know each other's IP addresses.
+
+
+### Networking in Practice
+
+1. **Bridge Network** (Default)
+    - Containers launched on the default `bridge` network can communicate with each other using their IP addresses or container names.
+    - Containers are isolated from external networks unless specific ports are exposed. Docker uses **port forwarding** to allow external traffic into the container.
+
+   For example, to expose a container’s port to the host machine, you can use:
+
+   ```bash
+   docker run -d -p 8080:80 my_app
+   ```
+
+   This maps the container’s port 80 to the host’s port 8080, making the application accessible at `localhost:8080` from the host machine.
+
+2. **Host Network**:
+    - When using the `host` network driver, Docker bypasses its network namespace, and the container shares the host’s network stack.
+    - This setup is beneficial for high-performance, low-latency networking where network isolation is unnecessary, but it comes at the cost of security since the container has direct access to the host’s network.
+
+   Example:
+
+   ```bash
+   docker run --network host my_app
+   ```
+
+   In this case, the application inside the container will listen on the same network interfaces as the host machine.
+
+3. **Overlay Network** (for multi-host communication):
+    - The `overlay` driver allows containers running on different Docker hosts to communicate as if they were on the same network. This driver is essential for Docker Swarm or Kubernetes environments where services are distributed across nodes.
+    - The `overlay` network creates a virtual distributed network and relies on a key-value store (e.g., **etcd**, **consul**) to manage network state and routing.
+
+   Example:
+   ```bash
+   docker network create -d overlay my_overlay_network
+   ```
+
+   Services deployed in Docker Swarm can be connected to this network, facilitating seamless communication between services on different hosts.
+
+4. **Macvlan Network**:
+    - The `macvlan` driver allows containers to appear as physical devices on the network, with unique MAC and IP addresses.
+    - It’s useful when you want containers to interact directly with the physical network, bypassing Docker’s internal NAT (Network Address Translation).
+
+   Example:
+   ```bash
+   docker network create -d macvlan \
+     --subnet=192.168.1.0/24 \
+     --gateway=192.168.1.1 \
+     -o parent=eth0 my_macvlan_network
+   ```
+
+   This network would assign IP addresses in the `192.168.1.x` range directly to the containers, making them accessible from other devices on the same physical network.
+
+5. **Custom Networks**:
+    - Custom networks allow more control over how containers interact. By creating your network, containers can communicate directly by name, benefiting from Docker’s built-in DNS resolution.
+
+   Example of creating a custom bridge network:
+
+   ```bash
+   docker network create my_bridge
+   ```
+
+   Then, when starting a container, you can attach it to the custom network:
+
+   ```bash
+   docker run -d --network my_bridge --name app_container my_app
+   ```
+
+   Containers on the same network can communicate using their container names as DNS addresses, simplifying service discovery in microservice architectures.
 
 ## Resources
 - https://docs.docker.com
