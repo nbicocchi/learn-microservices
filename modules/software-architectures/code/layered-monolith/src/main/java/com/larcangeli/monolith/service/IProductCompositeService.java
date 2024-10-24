@@ -1,8 +1,8 @@
-package com.larcangeli.monolith.service;
+package com.nbicocchi.monolith.service;
 
-import com.larcangeli.monolith.persistence.model.Product;
-import com.larcangeli.monolith.persistence.model.Recommendation;
-import com.larcangeli.monolith.persistence.model.Review;
+import com.nbicocchi.monolith.persistence.model.Product;
+import com.nbicocchi.monolith.persistence.model.Recommendation;
+import com.nbicocchi.monolith.persistence.model.Review;
 
 import java.util.Collection;
 import java.util.List;

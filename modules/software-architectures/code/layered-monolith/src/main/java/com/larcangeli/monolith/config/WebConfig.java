@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.config;
+package com.nbicocchi.monolith.config;
 
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 

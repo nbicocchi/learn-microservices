@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.config;
+package com.nbicocchi.monolith.config;
 
 import org.springframework.context.annotation.Configuration;
 

@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.recommendation.shared;
+package com.nbicocchi.monolith.recommendation.shared;
 
 import org.springframework.context.event.EventListener;
 

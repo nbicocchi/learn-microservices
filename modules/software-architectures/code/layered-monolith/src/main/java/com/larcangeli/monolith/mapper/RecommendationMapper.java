@@ -1,7 +1,7 @@
-package com.larcangeli.monolith.mapper;
+package com.nbicocchi.monolith.mapper;
 
-import com.larcangeli.monolith.persistence.model.Recommendation;
-import com.larcangeli.monolith.web.dto.RecommendationDTO;
+import com.nbicocchi.monolith.persistence.model.Recommendation;
+import com.nbicocchi.monolith.web.dto.RecommendationDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

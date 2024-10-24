@@ -1,6 +1,6 @@
-package com.larcangeli.monolith.recommendation.domain;
+package com.nbicocchi.monolith.recommendation.domain;
 
-import com.larcangeli.monolith.recommendation.shared.RecommendationDTO;
+import com.nbicocchi.monolith.recommendation.shared.RecommendationDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

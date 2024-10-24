@@ -1,6 +1,6 @@
-package com.larcangeli.monolith.review.web.controllers;
+package com.nbicocchi.monolith.review.web.controllers;
 
-import com.larcangeli.monolith.review.shared.ReviewDTO;
+import com.nbicocchi.monolith.review.shared.ReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

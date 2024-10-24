@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.web.exceptions;
+package com.nbicocchi.monolith.web.exceptions;
 
 public class UnprocessableEntityException extends RuntimeException {
     public UnprocessableEntityException() {

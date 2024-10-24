@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.review.shared;
+package com.nbicocchi.monolith.review.shared;
 
 public record ReviewDTO(Long reviewId,
                         Long productId,

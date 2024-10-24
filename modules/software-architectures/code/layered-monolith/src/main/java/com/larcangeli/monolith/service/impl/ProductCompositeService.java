@@ -1,11 +1,11 @@
-package com.larcangeli.monolith.service.impl;
+package com.nbicocchi.monolith.service.impl;
 
-import com.larcangeli.monolith.persistence.model.Product;
-import com.larcangeli.monolith.persistence.model.Recommendation;
-import com.larcangeli.monolith.persistence.model.Review;
-import com.larcangeli.monolith.persistence.repository.IProductCompositeRepository;
-import com.larcangeli.monolith.service.IProductCompositeService;
-import com.larcangeli.monolith.web.exceptions.NotFoundException;
+import com.nbicocchi.monolith.persistence.model.Product;
+import com.nbicocchi.monolith.persistence.model.Recommendation;
+import com.nbicocchi.monolith.persistence.model.Review;
+import com.nbicocchi.monolith.persistence.repository.IProductCompositeRepository;
+import com.nbicocchi.monolith.service.IProductCompositeService;
+import com.nbicocchi.monolith.web.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.persistence.model;
+package com.nbicocchi.monolith.persistence.model;
 
 import jakarta.persistence.*;
 

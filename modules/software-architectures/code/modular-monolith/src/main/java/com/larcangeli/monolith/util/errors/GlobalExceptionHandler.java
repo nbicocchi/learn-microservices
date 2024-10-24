@@ -1,8 +1,8 @@
-package com.larcangeli.monolith.util.errors;
+package com.nbicocchi.monolith.util.errors;
 
-import com.larcangeli.monolith.util.exceptions.InvalidInputException;
-import com.larcangeli.monolith.util.exceptions.NotFoundException;
-import com.larcangeli.monolith.util.exceptions.UnprocessableEntityException;
+import com.nbicocchi.monolith.util.exceptions.InvalidInputException;
+import com.nbicocchi.monolith.util.exceptions.NotFoundException;
+import com.nbicocchi.monolith.util.exceptions.UnprocessableEntityException;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

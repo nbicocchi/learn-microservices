@@ -1,6 +1,6 @@
-package com.larcangeli.monolith.product.web.controllers;
+package com.nbicocchi.monolith.product.web.controllers;
 
-import com.larcangeli.monolith.product.shared.ProductDTO;
+import com.nbicocchi.monolith.product.shared.ProductDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

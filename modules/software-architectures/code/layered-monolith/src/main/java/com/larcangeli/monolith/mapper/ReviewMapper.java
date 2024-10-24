@@ -1,7 +1,7 @@
-package com.larcangeli.monolith.mapper;
+package com.nbicocchi.monolith.mapper;
 
-import com.larcangeli.monolith.persistence.model.Review;
-import com.larcangeli.monolith.web.dto.ReviewDTO;
+import com.nbicocchi.monolith.persistence.model.Review;
+import com.nbicocchi.monolith.web.dto.ReviewDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.util.errors;
+package com.nbicocchi.monolith.util.errors;
 
 import org.springframework.http.HttpStatus;
 

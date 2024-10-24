@@ -1,8 +1,8 @@
-package com.larcangeli.monolith.web.controller;
+package com.nbicocchi.monolith.web.controller;
 
-import com.larcangeli.monolith.web.dto.ProductAggregateDTO;
-import com.larcangeli.monolith.web.dto.RecommendationDTO;
-import com.larcangeli.monolith.web.dto.ReviewDTO;
+import com.nbicocchi.monolith.web.dto.ProductAggregateDTO;
+import com.nbicocchi.monolith.web.dto.RecommendationDTO;
+import com.nbicocchi.monolith.web.dto.ReviewDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

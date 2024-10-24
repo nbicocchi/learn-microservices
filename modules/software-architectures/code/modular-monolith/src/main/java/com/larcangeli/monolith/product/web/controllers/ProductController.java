@@ -1,11 +1,11 @@
-package com.larcangeli.monolith.product.web.controllers;
+package com.nbicocchi.monolith.product.web.controllers;
 
-import com.larcangeli.monolith.product.shared.ProductDTO;
-import com.larcangeli.monolith.product.shared.IProductService;
-import com.larcangeli.monolith.recommendation.shared.IRecommendationService;
-import com.larcangeli.monolith.recommendation.shared.RecommendationDTO;
-import com.larcangeli.monolith.review.shared.IReviewService;
-import com.larcangeli.monolith.review.shared.ReviewDTO;
+import com.nbicocchi.monolith.product.shared.ProductDTO;
+import com.nbicocchi.monolith.product.shared.IProductService;
+import com.nbicocchi.monolith.recommendation.shared.IRecommendationService;
+import com.nbicocchi.monolith.recommendation.shared.RecommendationDTO;
+import com.nbicocchi.monolith.review.shared.IReviewService;
+import com.nbicocchi.monolith.review.shared.ReviewDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

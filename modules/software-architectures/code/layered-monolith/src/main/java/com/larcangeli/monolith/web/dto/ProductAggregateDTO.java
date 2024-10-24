@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.web.dto;
+package com.nbicocchi.monolith.web.dto;
 
 import java.util.List;
 

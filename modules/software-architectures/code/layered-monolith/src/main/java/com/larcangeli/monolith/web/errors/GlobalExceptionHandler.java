@@ -1,12 +1,12 @@
-package com.larcangeli.monolith.web.errors;
+package com.nbicocchi.monolith.web.errors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
-import com.larcangeli.monolith.web.exceptions.InvalidInputException;
-import com.larcangeli.monolith.web.exceptions.NotFoundException;
-import com.larcangeli.monolith.web.exceptions.UnprocessableEntityException;
+import com.nbicocchi.monolith.web.exceptions.InvalidInputException;
+import com.nbicocchi.monolith.web.exceptions.NotFoundException;
+import com.nbicocchi.monolith.web.exceptions.UnprocessableEntityException;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

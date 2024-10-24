@@ -1,4 +1,4 @@
-package com.larcangeli.monolith;
+package com.nbicocchi.monolith;
 
 import org.junit.Test;
 import org.springframework.modulith.core.ApplicationModules;

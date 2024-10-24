@@ -1,8 +1,8 @@
-package com.larcangeli.monolith.persistence.repository;
+package com.nbicocchi.monolith.persistence.repository;
 
-import com.larcangeli.monolith.persistence.model.Product;
-import com.larcangeli.monolith.persistence.model.Recommendation;
-import com.larcangeli.monolith.persistence.model.Review;
+import com.nbicocchi.monolith.persistence.model.Product;
+import com.nbicocchi.monolith.persistence.model.Recommendation;
+import com.nbicocchi.monolith.persistence.model.Review;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import java.util.Set;

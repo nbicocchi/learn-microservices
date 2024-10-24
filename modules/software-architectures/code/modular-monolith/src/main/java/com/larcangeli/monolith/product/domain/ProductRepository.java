@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.product.domain;
+package com.nbicocchi.monolith.product.domain;
 
 import org.springframework.data.repository.CrudRepository;
 

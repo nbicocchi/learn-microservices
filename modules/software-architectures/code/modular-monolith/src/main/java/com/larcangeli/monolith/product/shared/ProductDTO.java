@@ -1,7 +1,7 @@
-package com.larcangeli.monolith.product.shared;
+package com.nbicocchi.monolith.product.shared;
 
-import com.larcangeli.monolith.recommendation.shared.RecommendationDTO;
-import com.larcangeli.monolith.review.shared.ReviewDTO;
+import com.nbicocchi.monolith.recommendation.shared.RecommendationDTO;
+import com.nbicocchi.monolith.review.shared.ReviewDTO;
 
 import java.util.List;
 

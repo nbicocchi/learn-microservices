@@ -1,6 +1,6 @@
-package com.larcangeli.monolith.review.domain;
+package com.nbicocchi.monolith.review.domain;
 
-import com.larcangeli.monolith.review.shared.ReviewDTO;
+import com.nbicocchi.monolith.review.shared.ReviewDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

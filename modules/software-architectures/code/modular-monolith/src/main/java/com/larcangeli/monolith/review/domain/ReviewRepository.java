@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.review.domain;
+package com.nbicocchi.monolith.review.domain;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

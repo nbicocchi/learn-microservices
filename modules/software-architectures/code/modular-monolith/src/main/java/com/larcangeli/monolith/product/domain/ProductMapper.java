@@ -1,6 +1,6 @@
-package com.larcangeli.monolith.product.domain;
+package com.nbicocchi.monolith.product.domain;
 
-import com.larcangeli.monolith.product.shared.ProductDTO;
+import com.nbicocchi.monolith.product.shared.ProductDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

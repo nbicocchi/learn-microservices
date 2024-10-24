@@ -1,2 +1,2 @@
 @org.springframework.modulith.NamedInterface("util-errors")
-package com.larcangeli.monolith.util.errors;
+package com.nbicocchi.monolith.util.errors;

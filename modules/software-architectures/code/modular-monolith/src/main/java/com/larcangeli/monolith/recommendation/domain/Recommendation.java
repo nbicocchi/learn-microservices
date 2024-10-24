@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.recommendation.domain;
+package com.nbicocchi.monolith.recommendation.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

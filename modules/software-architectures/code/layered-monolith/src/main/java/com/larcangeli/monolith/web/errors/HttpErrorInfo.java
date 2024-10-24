@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.web.errors;
+package com.nbicocchi.monolith.web.errors;
 
 import java.time.ZonedDateTime;
 import org.springframework.http.HttpStatus;

@@ -1,9 +1,9 @@
-package com.larcangeli.monolith.product.domain;
+package com.nbicocchi.monolith.product.domain;
 
-import com.larcangeli.monolith.util.exceptions.InvalidInputException;
-import com.larcangeli.monolith.product.shared.IProductService;
-import com.larcangeli.monolith.product.shared.ProductDTO;
-import com.larcangeli.monolith.util.exceptions.NotFoundException;
+import com.nbicocchi.monolith.util.exceptions.InvalidInputException;
+import com.nbicocchi.monolith.product.shared.IProductService;
+import com.nbicocchi.monolith.product.shared.ProductDTO;
+import com.nbicocchi.monolith.util.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

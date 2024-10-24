@@ -1,4 +1,4 @@
-package com.larcangeli.monolith.product.shared;
+package com.nbicocchi.monolith.product.shared;
 
 import java.util.Collection;
 
