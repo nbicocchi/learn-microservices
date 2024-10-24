@@ -51,7 +51,7 @@
 				<version>3.4.3</version>
 				<configuration>
 					<from>
-						<image>eclipse-temurin:21-jre-ubi9-minimal@sha256:9a524a6aed54d2c6445d98e00003b403231154a29253a6ebb7586475f3bb28e9</image>
+						<image>eclipse-temurin:21-jdk-alpine@sha256:c63d8669d87e16bcee66c0379d1deedf844152da449ad48f2c8bd73a3705d36b</image>
 					</from>
 					<to>
 						<image>product-service-no-db</image>

@@ -98,6 +98,14 @@ The `ENV` instruction sets environment variables in the container. These variabl
 ENV ENVIRONMENT=production
 ```
 
+### `USER`
+
+The `USER` instruction sets the user name or UID that will run the subsequent commands in the container. It is used to specify which user the processes inside the container will run as.
+
+```dockerfile
+USER appuser
+```
+
 This command sets the `ENVIRONMENT` variable to `production`. Environment variables can influence the behavior of applications within the container.
 
 ## Creating a Docker Image for a Simple Python Application
@@ -167,7 +175,7 @@ Create a `Dockerfile` in the same directory:
 
 ```Dockerfile
 # OpenJDK runtime as a parent image
-FROM eclipse-temurin:21-jre-ubi9-minimal
+FROM eclipse-temurin:21
 
 # Set the working directory in the container
 WORKDIR /app
@@ -289,9 +297,6 @@ COPY . .
 # Install the required packages
 RUN pip install -r requirements.txt
 
-# Expose port 5000 for the Flask app
-EXPOSE 5000
-
 # Define the command to run the application
 CMD ["python", "app.py"]
 ```
@@ -301,7 +306,6 @@ This Dockerfile does the following:
 2. Sets the working directory.
 3. Copies the current directory contents into the container.
 4. Installs dependencies from `requirements.txt`.
-5. Exposes port 5000 for Flask.
 6. Runs `app.py` when the container starts.
 
 ### Step 5: Build the Docker Image

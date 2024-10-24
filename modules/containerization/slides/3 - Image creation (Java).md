@@ -186,29 +186,24 @@ _Jib_ created a smaller image in a much shorter time!
 By default, **Jib makes a number of reasonable guesses about what we want**, like the FROM and the ENTRYPOINT. Let’s make a couple of changes to our application that are more specific to our needs.
 
 ```xml
-<configuration>
-    <container>
-        <ports>
-            <port>8082</port>
-        </ports>
-    </container>
-</configuration>
-```
-
-```xml
-<configuration>
-    <from>
-        <image>openjdk:alpine</image>
-    </from>
-</configuration>
-```
-
-```xml
-<configuration>
-    <to>
-        <image>product-service-no-db</image>
-    </to>
-</configuration>
+<build>
+    <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.4.3</version>
+        <configuration>
+            <from>
+                <image>eclipse-temurin:21-jdk-alpine@sha256:sha256:c63d8669d87e16bcee66c0379d1deedf844152da449ad48f2c8bd73a3705d36b</image>
+            </from>
+            <to>
+                <image>product-service-no-db</image>
+            </to>
+            <container>
+                <mainClass>com.nbicocchi.product.App</mainClass>
+            </container>
+        </configuration>
+    </plugin>
+</build>
 ```
 
 We configure tags, volumes, and [several other Docker directives](https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#extended-usage) in the same way. Jib supports numerous Java runtime configurations, too:
@@ -218,6 +213,85 @@ We configure tags, volumes, and [several other Docker directives](https://github
 -   _args_ is where we’d specify the program arguments passed to the _main_ method.
 
 Of course, make sure to check out Jib’s documentation to see all the [configuration properties available](https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin).
+
+## Optimizing Docker images
+
+The image size can have a significant impact on your performance either as a developer or as an organization. Especially when you are working in large projects with multiple services, the size of the images can be quite large, and this could cost you a lot of money and time.
+
+* **Disk space**: You are wasting disk space in your docker registry and in your production servers.
+* **Slower builds**: The larger the image, the longer it takes to build and push the image.
+* **Security**: The larger the image, the larger dependencies you have and the more attack surface you have.
+* **Bandwidth**: The larger the image, the more Bandwidth consumption you have when pulling and pushing the image from and to the registry.
+
+### Choosing the right base image
+
+Using eclipse-temurin:21, the final image is 480M 
+
+```dockerfile
+FROM eclipse-temurin:21
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+ENTRYPOINT ["java","-jar","/application.jar"]
+```
+
+Using openjdk:21-jdk-slim, the final image is 470M
+
+```dockerfile
+FROM openjdk:21-jdk-slim
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+ENTRYPOINT ["java","-jar","/application.jar"]
+```
+
+Using eclipse-temurin:21-jdk-alpine, the final image is 400M
+
+```dockerfile
+FROM eclipse-temurin:21-jdk-alpine
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+ENTRYPOINT ["java","-jar","/application.jar"]
+```
+
+### Build your own JRE image using jlink and multi-stage dockerfile
+
+`jlink` is a tool that can be used to create a custom runtime image that contains only the modules that are needed to run your application.
+
+```dockerfile
+# First stage, build the custom JRE
+FROM eclipse-temurin:21-jdk-alpine AS jre-builder
+
+RUN $JAVA_HOME/bin/jlink \
+         --verbose \
+         --add-modules ALL-MODULE-PATH \
+         --strip-debug \
+         --no-man-pages \
+         --no-header-files \
+         --compress=2 \
+         --output /optimized-jdk-21
+
+# Second stage, Use the custom JRE and build the app image
+FROM alpine:latest
+ENV JAVA_HOME=/opt/jdk/jdk-21
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+COPY --from=jre-builder /optimized-jdk-21 $JAVA_HOME
+
+ARG APPLICATION_USER=spring
+RUN addgroup --system $APPLICATION_USER &&  adduser --system $APPLICATION_USER --ingroup $APPLICATION_USER
+COPY --chown=$APPLICATION_USER:$APPLICATION_USER target/*.jar /application.jar
+USER $APPLICATION_USER
+
+ENTRYPOINT [ "java", "-jar", "/application.jar" ]
+```
+
+We have two stages, the first stage is used to build a custom JRE image using jlink and the second stage is used to package the application in a slim alpine image.
+
+* In the first stage, we used the eclipse-temurin:17-jdk-alpine image to build a custom JRE image using jlink. Then we run jlink to build a small JRE image that contains all the modules by using --add-modules ALL-MODULE-PATH that are needed to run the application.
+
+* In the second stage, we used the alpine image (which is a quite small 3Mb) to package our application) as base image, we then took the custom JRE from the first stage and use it as our JAVA_HOME.
+
+* The rest of the Dockerfile is the same as the previous one, just copying artifacts and setting the entrypoint using a custom user (not root).
+
+**Using this approach, the final image is 170MB.**
 
 ## Container limits
 Java has not historically been very good at respecting limits set for Docker containers when it comes to the use of memory and CPU.
