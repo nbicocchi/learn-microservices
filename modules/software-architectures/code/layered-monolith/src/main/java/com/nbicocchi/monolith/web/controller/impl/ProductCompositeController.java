@@ -11,13 +11,11 @@ import com.nbicocchi.monolith.web.controller.IProductCompositeController;
 import com.nbicocchi.monolith.web.dto.ProductAggregateDTO;
 import com.nbicocchi.monolith.web.dto.RecommendationDTO;
 import com.nbicocchi.monolith.web.dto.ReviewDTO;
-import com.nbicocchi.monolith.web.exceptions.InvalidInputException;
 import com.nbicocchi.monolith.web.exceptions.NotFoundException;
 import com.nbicocchi.monolith.web.exceptions.UnprocessableEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;

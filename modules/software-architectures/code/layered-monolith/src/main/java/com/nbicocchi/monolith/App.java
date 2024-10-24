@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class LayeredMonolithApp {
+public class App {
 
 	public static void main(String[] args) {
-		SpringApplication.run(LayeredMonolithApp.class, args);
+		SpringApplication.run(App.class, args);
 	}
 
 }
