@@ -1,6 +1,44 @@
 # Image Creation
 
-A `Dockerfile` is a simple text file that contains a series of instructions on how to build a Docker image. Each instruction in a Dockerfile adds a layer to the image, creating a lightweight and reusable environment for running applications. This section introduces the essential commands used in Dockerfiles for building images.
+## Images and layers
+
+Docker images are a core concept in containerization and form the foundation for deploying applications in containers. They are essentially immutable snapshots of an application and its environment, consisting of everything needed to run the application, including code, runtime, libraries, environment variables, configuration files, and dependencies.
+
+Docker images are constructed in a **layered format**, where each layer represents a set of changes (or a filesystem delta). This layered structure provides efficiency, portability, and reuse. Layers can be inspected with specific tools such as [dive](https://github.com/wagoodman/dive).
+
+**Base Layer**
+
+Every Docker image begins with a **base layer**, which typically includes the operating system or minimal components necessary to run an application. For example, it could be a minimal **Alpine Linux** or **Ubuntu** image. Base layers are often pulled from public Docker registries like **Docker Hub**.
+
+**Intermediate Layers**
+
+Subsequent layers in the image add modifications, such as installing software packages, setting environment variables, or copying files. These layers correspond to the instructions in the Dockerfile that describe how to build the image. Each line or instruction in the Dockerfile (e.g., `RUN`, `COPY`, `ADD`, `EXPOSE`) creates a new layer.
+
+For example, the following Dockerfile would create the following image layers:
+
+1. **Base Layer**: The `ubuntu:20.04` image is the base.
+2. **Intermediate Layer**: The result of running `apt-get update && apt-get install -y python3`.
+3. **Intermediate Layer**: The result of copying the contents of the local directory to `/app`.
+4. **Final Layer**: The layer resulting from setting the default command (`CMD ["python3", "/app/myapp.py"]`).
+
+```dockerfile
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y python3
+COPY . /app
+CMD ["python3", "/app/myapp.py"]
+```
+
+**Read-Only Layers**: Once built, all the layers in a Docker image are **read-only**. When the image is used to start a container, Docker combines these read-only layers into a unified view using a **Union File System** (like **OverlayFS**), allowing them to act as a single entity.
+
+**Layer Caching**: Docker caches layers to make builds faster. If a Dockerfile instruction hasn’t changed, Docker reuses the previously built layer, improving build performance.
+
+**Layer Reuse**: Because layers are independent and reusable, multiple images can share common layers. For instance, if two images are built on the same base image (e.g., Ubuntu), they can reuse the base layer, reducing storage needs and speeding up deployment.
+
+**Copy-on-Write in Containers**: When you run a Docker container from an image, Docker adds a **writable layer** on top of the read-only layers. Any changes made to the container, such as modifying files or writing logs, are stored in this top writable layer. However, this writable layer is ephemeral, and once the container is deleted, any changes are lost unless committed to a new image.
+
+
+
+
 
 ## Key commands
 

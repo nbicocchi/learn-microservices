@@ -5,7 +5,7 @@
 The most standard approach to convert the fat jars produced by Maven and Spring Boot into Docker images, is to create a *Dockerfile* that looks like this:
 
 ```dockerfile
-FROM eclipse-temurin:21-jre-ubi9-minimal
+FROM eclipse-temurin:21
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} application.jar
 ENTRYPOINT ["java","-jar","/application.jar"]
@@ -252,7 +252,7 @@ COPY ${JAR_FILE} application.jar
 ENTRYPOINT ["java","-jar","/application.jar"]
 ```
 
-### Build your own JRE image using jlink and multi-stage dockerfile
+### Build your own image using jlink and multi-stage dockerfile
 
 `jlink` is a tool that can be used to create a custom runtime image that contains only the modules that are needed to run your application.
 
@@ -310,26 +310,31 @@ $ docker run -i --rm eclipse-temurin:21
 This command will send the string Runtime.getRuntime().availableProcessors() to the Docker container, which will process the string using jshell:
 
 ```
-echo 'Runtime.getRuntime().availableProcessors()' | docker run --rm -i eclipse-temurin:21
-Apr 03, 2024 2:51:06 PM java.util.prefs.FileSystemPreferences$1 run
+╰> docker run --rm -i eclipse-temurin:21
+Oct 24, 2024 6:13:05 PM java.util.prefs.FileSystemPreferences$1 run
 INFO: Created user preferences directory.
-|  Welcome to JShell -- Version 21.0.2
+|  Welcome to JShell -- Version 21.0.5
 |  For an introduction type: /help intro
 
-jshell> Runtime.getRuntime().availableProcessors()
+jshell> Runtime.getRuntime().availableProcessors() 
 Runtime.getRuntime().availableProcessors()$1 ==> 8
+
+jshell> 
 ```
 
 Let’s move on and restrict the Docker container to only be allowed to use three CPU cores using the --cpus option, then ask the JVM about how many available processors it sees:
 
 ```
-echo 'Runtime.getRuntime().availableProcessors()' | docker run --rm --cpus=2 -i eclipse-temurin:21
-Apr 03, 2024 2:52:36 PM java.util.prefs.FileSystemPreferences$1 run
+╰> docker run --rm --cpus=2 -i eclipse-temurin:21
+Oct 24, 2024 6:15:05 PM java.util.prefs.FileSystemPreferences$1 run
 INFO: Created user preferences directory.
-|  Welcome to JShell -- Version 21.0.2
+|  Welcome to JShell -- Version 21.0.5
 |  For an introduction type: /help intro
 
-jshell> Runtime.getRuntime().availableProcessors()$1 ==> 2
+jshell> Runtime.getRuntime().availableProcessors() 
+Runtime.getRuntime().availableProcessors()$1 ==> 2
+
+jshell> 
 ```
 
 The JVM now responds with 2; that is, Java SE 21 honors the settings in the container and will, therefore, be able to configure CPU-related resources such as thread pools correctly!

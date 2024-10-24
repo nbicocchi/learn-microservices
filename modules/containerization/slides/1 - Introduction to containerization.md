@@ -28,9 +28,65 @@ The following diagram illustrates the difference in resource usage between virtu
 
 Here are some container technologies offering various capabilities for containerization, each suited for different requirements:
 
-- **Docker**: The most popular containerization platform, allowing developers to package applications and their dependencies into containers. Docker images (read-only templates) are built using **Dockerfiles**, which provide step-by-step instructions for assembling containers.
+- **Docker**: The most popular containerization platform, allowing developers to package applications and their dependencies into containers. 
 - **Podman**: A daemonless, open-source alternative to Docker, focusing on security. It is fully compatible with Docker’s CLI, offering similar functionality without the need for a central daemon.
 - **Kubernetes**: Not a container technology itself but a powerful container orchestration platform that automates deploying, scaling, and managing containerized applications. Kubernetes works seamlessly with Docker and other container runtimes.
+
+### Chroot: the first attempt at containerization
+
+The `chroot` command in Unix-like operating systems changes the apparent root directory for a process and its children. This essentially "jails" the process within a specified directory, making it impossible for the process to access files outside that directory. This is commonly referred to as a "chroot jail."
+
+```bash
+chroot [OPTION] NEWROOT [COMMAND [ARG]...]
+```
+
+**Minimal environment**: When a process is run inside a chroot environment, it loses access to the system libraries, binaries, and utilities located outside of the `NEWROOT`. You need to ensure that essential tools (e.g., `/bin/bash`, libraries, `/etc/passwd`) are available in the chrooted environment.
+
+**Not a full security measure**: Although `chroot` can isolate a process, it is not foolproof. Root users within a chroot environment can potentially break out of the jail and access other parts of the system. For strong isolation, other techniques like containers (e.g., Docker) or virtual machines are more secure.
+
+Let's show the dependencies of the `ls` and `bash` commands:
+
+```
+╰> ldd /bin/ls  
+	linux-vdso.so.1 (0x0000702f32aff000)
+	libcap.so.2 => /usr/lib/libcap.so.2 (0x0000702f32aa5000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x0000702f328b4000)
+	/lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x0000702f32b01000)
+```
+
+```
+╰> ldd /bin/bash
+	linux-vdso.so.1 (0x000072b8f1860000)
+	libreadline.so.8 => /usr/lib/libreadline.so.8 (0x000072b8f16c5000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x000072b8f14d4000)
+	libncursesw.so.6 => /usr/lib/libncursesw.so.6 (0x000072b8f1465000)
+	/lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x000072b8f1862000)
+```
+
+We can build a cage organizing the needed dependencies as in the host system:
+
+```
+cage
+├── bin
+│  ├── bash
+│  └── ls
+├── lib64 -> usr/lib64
+└── usr
+    ├── lib
+    │  ├── libcap.so.2
+    │  ├── libc.so.6
+    │  ├── libncursesw.so.6
+    │  └── libreadline.so.8
+    └── lib64
+        └── ld-linux-x86-64.so.2
+```
+
+Now we can run both the commands (packaged will all their dependencies but without a kernel) within a chroot cage:
+
+```bash
+$ sudo chroot cage /bin/ls
+$ sudo chroot cage /bin/bash
+```
 
 ## Key Use Cases
 
@@ -39,9 +95,8 @@ Here are some container technologies offering various capabilities for container
 Containers are ideal for developing microservices-based architectures, which decompose large, monolithic applications into smaller, independently deployable services. Here’s why:
 
 - **Decoupling of Services**: Each service can be packaged in its own container, running independently with its own dependencies.
-- **Team Efficiency**: Different teams can work on separate microservices without worrying about interference, leading to faster development cycles.
 - **Consistent Environments**: Containers ensure consistency across development, testing, and production environments, reducing deployment issues.
-- **Resource and Fault Isolation**: Containers provide isolation, meaning that one service failure doesn’t affect others. This makes containers excellent for fault-tolerant systems.
+- **Resource and Fault Isolation**: Containers provide isolation, meaning that one service failure does not affect others. This makes containers excellent for fault-tolerant systems.
 - **Scalability**: Containers can be scaled independently to handle varying loads. Orchestration tools like Kubernetes make it easy to manage scaling and load balancing.
 
 ### CI/CD Integration
@@ -79,15 +134,14 @@ Several container image formats are in use today, each with its advantages:
 3. **Singularity Image Format (SIF)**: Designed for high-performance computing (HPC) environments.
 4. **LXD Image Format**: Used primarily for system containers that need lightweight virtualization.
 
-## Docker
+## Docker Architecture
 
 Docker is an open-source platform that enables developers to automate the deployment, scaling, and management of applications within lightweight, portable containers. This guarantees that applications run consistently across different environments, regardless of the underlying machine's customized settings. Consequently, developers can write code and test it in a container that behaves the same way on any machine, leading to fewer deployment issues.
 
-### Docker Architecture
 ![](images/docker-architecture.png)
 ![Container Lifecycle](images/container-lifecycle.avif)
 
-The Docker architecture consists of several key components that work together to create and manage containers effectively:
+The Docker architecture consists of several key components:
 
 - **Docker CLI**: The Command Line Interface (CLI) is the primary way users interact with Docker. It allows users to issue commands for managing Docker containers, images, networks, and volumes. The CLI serves as the user-friendly front end for developers to communicate with the underlying Docker Daemon.
 
@@ -104,17 +158,18 @@ The Docker architecture consists of several key components that work together to
 
 
 
-### Key Elements
-- **Dockerfile**: A Dockerfile is a script containing a series of commands to build a Docker image. It specifies the base image, the commands to install dependencies, the files to copy, environment variables to set, and the command to run the application. The Dockerfile serves as a blueprint for creating images.
+## Docker key files
+
+**Dockerfile**: A Dockerfile is a series of commands to build a Docker image. It specifies the base image, the commands to install dependencies, the files to copy, environment variables to set, and the command to run the application. The Dockerfile serves as a blueprint for creating images.
 
 ```dockerfile
-FROM eclipse-temurin:21-jre-ubi9-minimal
+FROM eclipse-temurin:21-jdk
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} application.jar
 ENTRYPOINT ["java","-jar","/application.jar"]
 ```
 
-- **docker-compose.yml**: Docker Compose is a tool that simplifies the management of multi-container Docker applications through a YAML configuration file. This file defines the services (containers) that comprise your application, including their configurations, such as images to use, ports to expose, network settings, and volume mounts. With Docker Compose, you can start and manage all services with a single terminal command, making it easier to replicate and manage complex applications across different environments.
+**docker-compose.yml**: Docker Compose is a tool that simplifies the management of multi-container Docker applications through a YAML configuration file. This file defines the services (containers) that comprise your application, including their configurations, such as images to use, ports to expose, network settings, and volume mounts. With Docker Compose, you can start and manage all services with a single terminal command, making it easier to replicate and manage complex applications across different environments.
 
 ```yaml
 services:
@@ -161,7 +216,7 @@ volumes:
 ```
 
 
-## Docker commands
+## Docker CLI
 Let’s try to start a container by launching an Ubuntu server using Docker’s run command:
 
 ```
@@ -225,152 +280,18 @@ docker rm <container-id>
 docker exec -it <container-id> bash
 ```
 
-## Docker images and layers
+## Docker GUI
 
-Docker images are a core concept in containerization and form the foundation for deploying applications in containers. They are essentially immutable snapshots of an application and its environment, consisting of everything needed to run the application, including code, runtime, libraries, environment variables, configuration files, and dependencies.
+### Docker Desktop
+https://www.docker.com/products/docker-desktop/
 
-Docker images are constructed in a **layered format**, where each layer represents a set of changes (or a filesystem delta). This layered structure provides efficiency, portability, and reuse.
+### Lazydocker
+https://github.com/jesseduffield/lazydocker
 
-**Base Layer**
-
-Every Docker image begins with a **base layer**, which typically includes the operating system or minimal components necessary to run an application. For example, it could be a minimal **Alpine Linux** or **Ubuntu** image. Base layers are often pulled from public Docker registries like **Docker Hub**.
-
-**Intermediate Layers**
-
-Subsequent layers in the image add modifications, such as installing software packages, setting environment variables, or copying files. These layers correspond to the instructions in the Dockerfile that describe how to build the image. Each line or instruction in the Dockerfile (e.g., `RUN`, `COPY`, `ADD`, `EXPOSE`) creates a new layer.
-
-For example:
-- `RUN apt-get install -y python3` adds a new layer with Python installed.
-- `COPY . /app` adds the contents of the current directory into the `/app` directory in the image.
-
-**Read-Only Layers**: Once built, all the layers in a Docker image are **read-only**. When the image is used to start a container, Docker combines these read-only layers into a unified view using a **Union File System** (like **OverlayFS**), allowing them to act as a single entity.
-
-**Layer Caching**: Docker caches layers to make builds faster. If a Dockerfile instruction hasn’t changed, Docker reuses the previously built layer, improving build performance.
-
-**Layer Reuse**: Because layers are independent and reusable, multiple images can share common layers. For instance, if two images are built on the same base image (e.g., Ubuntu), they can reuse the base layer, reducing storage needs and speeding up deployment.
-
-**Copy-on-Write in Containers**: When you run a Docker container from an image, Docker adds a **writable layer** on top of the read-only layers. Any changes made to the container, such as modifying files or writing logs, are stored in this top writable layer. However, this writable layer is ephemeral, and once the container is deleted, any changes are lost unless committed to a new image.
-
-
-#### Example of Layered Structure
-
-```dockerfile
-FROM ubuntu:20.04
-RUN apt-get update && apt-get install -y python3
-COPY . /app
-CMD ["python3", "/app/myapp.py"]
-```
-
-This Dockerfile would create the following image layers:
-
-1. **Base Layer**: The `ubuntu:20.04` image is the base.
-2. **Intermediate Layer**: The result of running `apt-get update && apt-get install -y python3`.
-3. **Intermediate Layer**: The result of copying the contents of the local directory to `/app`.
-4. **Final Layer**: The layer resulting from setting the default command (`CMD ["python3", "/app/myapp.py"]`).
-
-
-## Docker networking
-Docker networking is a fundamental aspect of how containers communicate with each other, with other applications, and with the outside world. Understanding Docker networking is crucial for building and managing containerized applications, especially when working with microservices or distributed systems.
-
-### Key Concepts of Docker Networking
-
-1. **Network Drivers**:
-   Docker uses **network drivers** to manage how containers communicate. There are several network drivers, each suited for different use cases:
-
-    - **bridge**: The default network driver used when you start containers without specifying a network. It allows communication between containers on the same host but isolates them from external networks unless explicitly configured.
-    - **host**: Removes the network isolation between the container and the Docker host. The container shares the host’s network stack, making it as if the application is running directly on the host.
-    - **overlay**: Used for multi-host communication, typically in Docker Swarm or Kubernetes. This driver allows containers running on different Docker hosts to communicate with each other securely.
-    - **macvlan**: Assigns a MAC address to each container, making them appear as physical devices on the network. It’s useful when you want containers to appear as full-fledged devices on your network, each with its IP address.
-    - **none**: Disables networking for the container, ensuring it is completely isolated from any network.
-
-2. **Docker Network Scopes**:
-   Docker networks can be scoped either to the local host or across multiple hosts (e.g., in a swarm cluster).
-
-    - **Local scope**: Networks like `bridge`, `host`, and `none` are restricted to a single Docker host.
-    - **Global scope**: `overlay` networks span multiple Docker hosts, useful for cluster-level networking in a distributed environment.
-
-3. **Network Creation**:
-   You can create custom networks in Docker to gain better control over communication between containers.
-
-   ```bash
-   docker network create my_custom_network
-   ```
-
-   Containers connected to the same network can communicate with each other by name (DNS resolution). This makes microservices communication easier since containers don’t need to know each other's IP addresses.
-
-
-### Networking in Practice
-
-1. **Bridge Network** (Default)
-    - Containers launched on the default `bridge` network can communicate with each other using their IP addresses or container names.
-    - Containers are isolated from external networks unless specific ports are exposed. Docker uses **port forwarding** to allow external traffic into the container.
-
-   For example, to expose a container’s port to the host machine, you can use:
-
-   ```bash
-   docker run -d -p 8080:80 my_app
-   ```
-
-   This maps the container’s port 80 to the host’s port 8080, making the application accessible at `localhost:8080` from the host machine.
-
-2. **Host Network**:
-    - When using the `host` network driver, Docker bypasses its network namespace, and the container shares the host’s network stack.
-    - This setup is beneficial for high-performance, low-latency networking where network isolation is unnecessary, but it comes at the cost of security since the container has direct access to the host’s network.
-
-   Example:
-
-   ```bash
-   docker run --network host my_app
-   ```
-
-   In this case, the application inside the container will listen on the same network interfaces as the host machine.
-
-3. **Overlay Network** (for multi-host communication):
-    - The `overlay` driver allows containers running on different Docker hosts to communicate as if they were on the same network. This driver is essential for Docker Swarm or Kubernetes environments where services are distributed across nodes.
-    - The `overlay` network creates a virtual distributed network and relies on a key-value store (e.g., **etcd**, **consul**) to manage network state and routing.
-
-   Example:
-   ```bash
-   docker network create -d overlay my_overlay_network
-   ```
-
-   Services deployed in Docker Swarm can be connected to this network, facilitating seamless communication between services on different hosts.
-
-4. **Macvlan Network**:
-    - The `macvlan` driver allows containers to appear as physical devices on the network, with unique MAC and IP addresses.
-    - It’s useful when you want containers to interact directly with the physical network, bypassing Docker’s internal NAT (Network Address Translation).
-
-   Example:
-   ```bash
-   docker network create -d macvlan \
-     --subnet=192.168.1.0/24 \
-     --gateway=192.168.1.1 \
-     -o parent=eth0 my_macvlan_network
-   ```
-
-   This network would assign IP addresses in the `192.168.1.x` range directly to the containers, making them accessible from other devices on the same physical network.
-
-5. **Custom Networks**:
-    - Custom networks allow more control over how containers interact. By creating your network, containers can communicate directly by name, benefiting from Docker’s built-in DNS resolution.
-
-   Example of creating a custom bridge network:
-
-   ```bash
-   docker network create my_bridge
-   ```
-
-   Then, when starting a container, you can attach it to the custom network:
-
-   ```bash
-   docker run -d --network my_bridge --name app_container my_app
-   ```
-
-   Containers on the same network can communicate using their container names as DNS addresses, simplifying service discovery in microservice architectures.
 
 ## Resources
 - https://docs.docker.com
 - https://octopus.com/blog/top-8-container-registries
-- https://www.linkedin.com/advice/1/what-common-container-image-formats-standards-how
 
 
 
