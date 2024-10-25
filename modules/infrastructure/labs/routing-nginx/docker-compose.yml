@@ -12,13 +12,30 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - datetime
+      - datetime-1
+      - datetime-2
+      - datetime-3
 
-  datetime:
+  datetime-1:
     build: datetime-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    deploy:
-      mode: replicated
-      replicas: 3
+    depends_on:
+      - eureka
+
+  datetime-2:
+    build: datetime-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+
+  datetime-3:
+    build: datetime-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
