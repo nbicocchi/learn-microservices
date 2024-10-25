@@ -1,4 +1,4 @@
-package com.baeldung.composite;
+package com.nbicocchi.composite;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

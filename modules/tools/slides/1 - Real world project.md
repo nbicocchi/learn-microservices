@@ -127,7 +127,7 @@ public class ProductService {
 The _@Repository, @Service_ and _@Autowired_ annotations we've used are Spring annotations that define and connect the 2 classes. 
 
 ## Adding the Presentation Layer
-Moving on to the [presentation layer](), we'll add a similar service interface under the package _com.baeldung.controller_ and class name as _IProjectController_ with an implementation under the package _com.controller.service.impl_:
+Moving on to the [presentation layer](), we'll add a similar service interface under the package _com.nbicocchi.controller_ and class name as _IProjectController_ with an implementation under the package _com.controller.service.impl_:
 
 ```
 @RequestMapping(value = "/projects")

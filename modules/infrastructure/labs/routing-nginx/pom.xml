@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <description>Demo project for Spring Boot</description>
 
-    <groupId>com.baeldung</groupId>
+    <groupId>com.nbicocchi</groupId>
     <artifactId>routing-nginx</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>

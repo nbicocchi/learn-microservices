@@ -171,15 +171,15 @@ Each element has its own page with details. For example we can see the uptime of
             "configuredLevel": null,
             "effectiveLevel": "INFO"
         },
-        "com.baeldung": {
+        "com.nbicocchi": {
             "configuredLevel": null,
             "effectiveLevel": "INFO"
         },
-        "com.baeldung.ls": {
+        "com.nbicocchi.ls": {
             "configuredLevel": null,
             "effectiveLevel": "INFO"
         },
-        "com.baeldung.ls.LsApp": {
+        "com.nbicocchi.ls.LsApp": {
             "configuredLevel": null,
             "effectiveLevel": "INFO"
         }
