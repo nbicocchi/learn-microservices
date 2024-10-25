@@ -1,0 +1,33 @@
+server.port: 8080
+
+management:
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      allowHealthIndicatorToFail: false
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 5
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      record-exceptions:
+        - org.springframework.web.client.HttpServerErrorException
+  instances:
+    ok:
+      base-config: default
+    notok:
+      base-config: default
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+
