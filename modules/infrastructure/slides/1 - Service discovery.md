@@ -14,7 +14,7 @@ You might be wondering why we can’t use known approaches such as DNS or load b
 ## The problem with DNS-based service discovery
 If you have an application that calls resources spread across multiple servers, it needs to find the physical location of those resources. In the non-cloud world, service location resolution was often solved through a combination of a DNS and a network load balancer.
 
-![](images/traditional-load-balancer.avif)
+![](images/traditional-load-balancer.webp)
 
 While this type of model works well with applications with a relatively small number of services running on a group of static servers, it doesn't work well for microservice architectures. The reasons for this include the following:
 * While the load balancer can be made highly available, it’s a **single point of failure for your entire infrastructure**. 
@@ -30,7 +30,7 @@ The principal objective of service discovery is to **have an architecture where 
 * **Health monitoring:** A service instance pushes to or pulls from its status by the service discovery service. Any services failing to return a good health check are removed from the pool of available service instances.
 * **Client lookup of service address**: There are two ways to load balance clients requests to services. One involving a third component (Server-Side Load Balancer), the other involving only the client and the service (Client-Side Load Balancer).
 
-![](images/service-discovery.avif)
+![](images/service-discovery.webp)
 
 The solution for a cloud-based microservice environment is to use a service discovery mechanism that is:
 * **Highly available** Service discovery needs to support a “hot” clustering environment where service lookups can be shared across multiple nodes in a service discovery cluster. If a node becomes unavailable, other nodes in the cluster should be able to take over.
@@ -51,7 +51,7 @@ There are two types of load balancing in microservices:
 ### Client-Side Load Balancing
 If you are keeping the load balancer on the client side and giving the load balancing responsibility to the client, then it’s called **Client-Side Load Balancing**. In Client-side Load Balancing, the logic of Load Balancer is part of the client itself, and it carries the list of services and determines to which service a particular request must be directed based on some algorithm.
 
-![](images/client-side-load-balancing.avif)
+![](images/client-side-load-balancing.webp)
 
 * No more single point of failure in Client Side Load Balancer.
 * Less network latency as the client can directly call the backend servers.
@@ -165,7 +165,7 @@ eureka:
 
 Refer to [this guide](https://cloud.spring.io/spring-cloud-netflix/reference/html/) for more details on the configuration. After startup, we can connect to the Spring Eureka Dashboard at http://localhost:8761/. There are no registered clients!
 
-![](images/eureka-dashboard-empty.avif)
+![](images/eureka-dashboard-empty.webp)
 
 ### Docker configuration
 Add a _Dockerfile_ to containerize the service and edit the _docker-compose.yml_ file to include the service within your ecosystem.
@@ -339,7 +339,7 @@ $ docker compose up --detach
 
 Now, we can connect to the Spring Eureka Dashboard at http://localhost:8761/ to observe the registered services.
 
-![](images/eureka-dashboard.avif)
+![](images/eureka-dashboard.webp)
 
 
 ## Resources

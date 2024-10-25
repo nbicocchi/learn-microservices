@@ -5,14 +5,14 @@ In this lesson, we'll go through the main modules that Spring offers and underst
 ## The Popularity of Spring
 Spring is a [back-end](https://en.wikipedia.org/wiki/Front_and_back_ends) technology with a broad range of uses, the most common being the development of web applications. Spring is also a very general term which can refer to the core of the framework, but most often, it refers to the whole family of Spring-related projects.
 
-![](images/m1-spring-trends.png)
+![](images/m1-spring-trends.webp)
 
 Spring was originally built in response to the complexity of developing with [J2EE](https://www.oracle.com/technetwork/java/javaee/appmodel-135059.html) / Java EE, let's compare it with that: [Spring Framework - Java EE Google Search Trend Comparison](https://trends.google.com/trends/explore?date=all&q=%2Fm%2F0dhx5b,Java%20EE)
 
-![](images/m1-spring-vs-javaee-trends.png)
+![](images/m1-spring-vs-javaee-trends.webp)
 
 Backend technologies (such as the Spring Framework) are also propelled by the massive increase in popularity of edge-cloud technologies and microservice architecture. 
-![](images/m1-kubernetes-trend.png)
+![](images/m1-kubernetes-trend.webp)
 
 [OReilly's Technology Trends for 2024](https://www.oreilly.com/radar/technology-trends-for-2024/) also shows how Java Technologies related to cloud software engineering and microservices architectures are extremely relevant.
 

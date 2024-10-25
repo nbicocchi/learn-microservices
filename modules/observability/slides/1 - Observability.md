@@ -27,12 +27,12 @@ The inherent integrations and nature of distributed systems lead to *layers of d
 * **Destinations**: Where you consume signals, for different reasons and use cases. These include visualizations (e.g., dashboards), alerting, long-term storage (for regulatory purposes), and analytics (finding new usages for an app). 
 * **Telemetry**: The process of collecting signals from sources, routing or preprocessing via agents, and ingestion to destinations.
 
-![](images/observability-overview.png)
+![](images/observability-overview.webp)
 
 ## Signals
 Observability is a critical concept in modern distributed systems, particularly in microservices architectures, as it enables teams to understand and troubleshoot systems effectively. The three pillars of observability—**metrics**, **logs**, and **traces**—play a vital role in providing insights into the system’s behavior and performance. 
 
-![](images/primary-signals.png)
+![](images/primary-signals.webp)
 
 ### Metrics
 Metrics are numerical values that capture key performance indicators (KPIs) about your system over time. They are typically aggregated and provide an overview of system health and performance.
@@ -125,7 +125,7 @@ Logs are detailed, unstructured or semi-structured textual records that describe
     - **Root Cause Analysis**: Tracing allows you to pinpoint which service or component is causing slowdowns or errors.
     - **Dependency Visualization**: Traces give a clear picture of how services interact, making it easier to understand complex dependencies in a microservice architecture.
 
-![](images/tracing.png)
+![](images/tracing.webp)
 
 ### Combining Metrics, Logs, and Traces
 Although each pillar serves a different purpose, they complement one another to provide full visibility into system health:
@@ -314,7 +314,7 @@ Networking is crucial in distributed systems, as microservices rely heavily on n
 
 **Prometheus** is an open-source monitoring and alerting toolkit widely used for recording real-time metrics and generating alerts. Prometheus was developed at SoundCloud in 2012 and later became a standalone project under the umbrella of the Cloud Native Computing Foundation (CNCF). It is designed for reliability and scalability in monitoring and alerting, with a strong emphasis on time-series data.
 
-![](images/prometheus-architecture.png)
+![](images/prometheus-architecture.webp)
 
 ### Key Features of Prometheus
 
@@ -355,7 +355,7 @@ When we refer to **Prometheus as a backend service**, we emphasize its capabilit
 
 The **ELK stack** is a popular set of tools used for managing and analyzing large volumes of data, particularly logs and metrics. It consists of three main components: **Elasticsearch**, **Logstash**, and **Kibana**. These tools work together to provide a complete solution for data ingestion, storage, search, analysis, and visualization. Here’s a detailed look at each key component of the ELK stack.
 
-![](images/logging-architecture.png)
+![](images/logging-architecture.webp)
 
 ### Elasticsearch
 
@@ -402,7 +402,7 @@ The **ELK stack** is a popular set of tools used for managing and analyzing larg
 
 ### Jaeger
 
-![](images/jaeger.avif)
+![](images/jaeger.webp)
 
 Jaeger is an open-source end-to-end distributed tracing system originally developed by Uber Technologies. It is designed for monitoring and troubleshooting the performance of microservices-based architectures.
 
@@ -416,7 +416,7 @@ Key Features:
 
 ### Zipkin
 
-![](images/zipkin.png)
+![](images/zipkin.webp)
 
 Zipkin is another open-source distributed tracing system designed to help gather timing data needed to troubleshoot latency problems in microservices. Like Jaeger, it helps visualize the flow of requests across services.
 
@@ -430,7 +430,7 @@ Key Features:
 
 ## OpenTelemetry Collector (Universal Telemetry Agent)
 
-![](images/otelcol-data-flow-overview.png)
+![](images/otelcol-data-flow-overview.webp)
 
 The **OpenTelemetry collector** is a versatile, open-source tool designed to collect, process, and export telemetry data, including **logs**, **metrics**, and **traces**. It is part of the OpenTelemetry project, which aims to provide a unified standard for observability across distributed systems.
 
@@ -462,7 +462,7 @@ The **OpenTelemetry collector** is a versatile, open-source tool designed to col
 
 ## Grafana Ecosystem
 
-![](images/architecture-grafana-agent.png)
+![](images/architecture-grafana-agent.webp)
 
 The **Grafana ecosystem** encompasses a variety of tools that work together to provide a comprehensive monitoring, observability, and visualization solution. Key components of this ecosystem include **Grafana**, **Tempo**, **Mimir**, and **Loki**. Each of these tools serves a specific purpose, enabling users to collect, analyze, and visualize metrics, logs, and traces from their applications and infrastructure. Here’s an in-depth look at each component and how they compare within the Grafana ecosystem.
 
@@ -470,7 +470,7 @@ The **Grafana ecosystem** encompasses a variety of tools that work together to p
 
 **Grafana** is an open-source analytics and monitoring platform designed for visualizing metrics and logs from various data sources. It provides a flexible and customizable dashboard interface that allows users to create visualizations, alerts, and reports.
 
-![](images/grafana.avif)
+![](images/grafana.webp)
 
 - **Data Source Integration**: Grafana supports a wide range of data sources, including Prometheus, InfluxDB, Elasticsearch, and more, allowing users to pull in data from multiple systems for unified visualization.
 - **Custom Dashboards**: Users can create interactive and customizable dashboards with a variety of visualization options (e.g., graphs, heatmaps, tables) to display data in meaningful ways.

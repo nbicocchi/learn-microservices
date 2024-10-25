@@ -351,7 +351,7 @@ networks:
 A good way to use networks is for isolating a portion of the microservice ecosystem that does not need to be exposed to external networks. 
 In this example (code/compose-isolation), we define two networks `front_net` and `back_net`, this will allow us to hide the backend side of the network. 
 
-![](images/ecosystem.avif)
+![](images/ecosystem.webp)
 
 In this example:
 - The `frontend` and `backend` services share the `front_net`, allowing them to communicate.

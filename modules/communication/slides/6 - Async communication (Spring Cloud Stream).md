@@ -5,7 +5,7 @@ Spring Cloud Stream also allows to abstract away the implementation details of t
 
 Let’s begin our discussion by looking at the Spring Cloud Stream architecture through the lens of two services communicating via messaging. One service is the message publisher, and one service is the message consumer.
 
-![](images/spring-cloud-stream-architecture.avif)
+![](images/spring-cloud-stream-architecture.webp)
 
 A **source** takes a Plain Old Java Object (POJO), which represents the message to be published, serializes it (the default serialization is JSON), and publishes the message to a channel.
 
@@ -270,7 +270,7 @@ $ docker compose down
 
 Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/guest) we can see the *messages* exchange receiving 5 events/s and publishing the same events on one (anonymous) queue. 
 
-![](images/rabbitmq-one-consumer.png)
+![](images/rabbitmq-one-consumer.webp)
 
 ### One publisher, many consumers (publish-subscribe)
 
@@ -296,7 +296,7 @@ $ docker compose up --detach
 
 Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/guest) we can see the *messages* exchange receiving 5 events/s and publishing 15 same events on three different (anonymous) queue.
 
-![](images/rabbitmq-three-consumers.png)
+![](images/rabbitmq-three-consumers.webp)
 
 
 ### Consumer groups
@@ -338,7 +338,7 @@ $ docker compose up --detach
 
 Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to observe that the messages exchange receives 5 events/s and publishes them to a single message group having three consumers. Thus, the output rate is 5 events/s.
 
-![](images/rabbitmq-consumer-group.png)
+![](images/rabbitmq-consumer-group.webp)
 
 ### Partitions
 
@@ -438,7 +438,7 @@ $ docker compose up --detach
 
 Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to observe that the messages exchange receives 5 events/s and publishes the same events on three different (named) queues. Each event is consumed once by only one consumer. Thus, the output rate is 5 events/s. However, by checking the logs, it is possible to observe how each consumer receives *all* five messages pertaining to same ID.
 
-![](images/rabbitmq-partitions.png)
+![](images/rabbitmq-partitions.webp)
 
 ### Routing
 Consider a scenario where multiple consumers need to handle messages of different types, such as CREATE, UPDATE, and DELETE. This can be efficiently managed using routing techniques within a message broker. Producers can assign messages a *routing key* (a string that represents the type of message), allowing the broker to forward each message to the appropriate queue based on its key.

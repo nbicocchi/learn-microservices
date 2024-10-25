@@ -11,7 +11,7 @@ When applications are relatively small, a monolithic architecture offers numerou
 * **Simple Deployment**: Developers simply copy the WAR file to a server with Tomcat installed for deployment.
 * **Scalability**: Applications can run multiple instances behind a load balancer, enhancing performance.
 
-![FTGO Monolithic Architecture](images/ftgo-monolitic-architecture.avif)
+![FTGO Monolithic Architecture](images/ftgo-monolitic-architecture.webp)
 
 ### Challenges of Monolithic Architecture
 As successful applications grow, they often outgrow the monolithic architecture, leading to various challenges:
@@ -22,23 +22,23 @@ As successful applications grow, they often outgrow the monolithic architecture,
 * **Testing Challenges**: The large size of the application makes thorough testing difficult, allowing bugs to slip into production.
 * **Obsolete Technology Stack**: The monolithic structure hampers the adoption of new frameworks and languages, as rewriting the entire application is costly and risky.
 
-![FTGO Monolithic Hell](images/ftgo-monolitic-hell.avif)
+![FTGO Monolithic Hell](images/ftgo-monolitic-hell.webp)
 
 ### The Scale Cube
 
-![The Scale Cube](images/scale-cube.avif)
+![The Scale Cube](images/scale-cube.webp)
 
 1. **X-axis Scaling**: Involves running multiple instances of the monolithic application behind a load balancer to handle increased load.
 
-   ![X-axis Scaling](images/scale-cube-x.avif)
+   ![X-axis Scaling](images/scale-cube-x.webp)
 
 2. **Z-axis Scaling**: Each instance is responsible for only a subset of the data, allowing for more efficient resource usage (e.g., routing requests by userId).
 
-   ![Z-axis Scaling](images/scale-cube-z.avif)
+   ![Z-axis Scaling](images/scale-cube-z.webp)
 
 3. **Y-axis Scaling**: Introduces functional decomposition, where each service is a mini-application implementing focused functionality.
 
-   ![Y-axis Scaling](images/scale-cube-y.avif)
+   ![Y-axis Scaling](images/scale-cube-y.webp)
 
 
 ## Microservice Architecture
@@ -49,7 +49,7 @@ A growing consensus suggests that for large, complex applications, a microservic
 
 According to Chris Richardson, **it is an architecture that structures the application as a set of two or more independently deployable, loosely coupled, components, a.k.a. services**. Each service consists of one or more subdomains and is owned by the team (or teams) that owns the subdomains. In order to be independently deployable each service typically has its own source code repository and its own deployment pipeline, which builds, tests and deploys the service.
 
-![FTGO Microservices Architecture](images/ftgo-microservices-architecture.avif)
+![FTGO Microservices Architecture](images/ftgo-microservices-architecture.webp)
 
 ## Benefits and Drawbacks of Microservice Architecture
 
@@ -71,7 +71,7 @@ According to Chris Richardson, **it is an architecture that structures the appli
 
 The [Microservices Architecture Language Pattern](https://microservices.io/patterns/) is a structured framework that provides a common vocabulary for designing and implementing microservices, addressing the challenges of distributed systems. Aligned with the principles of the [12-Factor App](https://12factor.net/), it emphasizes modularity, scalability, and the separation of concerns. The pattern offers solutions for service decomposition, communication, data management, and resiliency, ensuring that services remain loosely coupled but highly cohesive. By incorporating principles like configuration management, dependency isolation, and statelessness, the language pattern helps ensure that microservices are resilient, easy to scale, and maintainable, supporting cloud-native and continuously deployed applications.
 
-![](images/microservice-pattern-language.avif)
+![](images/microservice-pattern-language.webp)
 
 ### Communication Patterns
 - **API Gateway**: Acts as a single entry point for client requests, routing them to the appropriate microservices.

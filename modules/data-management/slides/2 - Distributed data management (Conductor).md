@@ -49,7 +49,7 @@ The `conductor-client` dependency provides the client API for interacting with N
 
 To ensure that the orchestrator can manage transactions across each microservice's database and keep the data consistent, workflows must be defined. This allows the orchestrator to know how to handle the various situations that may arise.
 
-![](images/workflow.avif)
+![](images/workflow.webp)
 
 We previously mentioned that our project aims to simulate an e-commerce platform, so every product (before the sale) must do some checks. For instance it is important to verify if a number of credit card is valid. The workflow previously shown represents the steps a product must go through before being sold. Essentially, a workflow in Conductor environment is an implementation of an activity diagram, consisting of a series of tasks to be executed in sequence. Specifically, our workflow want to represent the product sale process. It includes:
 
@@ -257,15 +257,15 @@ $ docker compose up
 At this point navigate to
 [http://localhost:1234/](http://localhost:1234/): here there is the **Conductor UI** as shown in the image below.
 
-![](images/conductor-ui.avif)
+![](images/conductor-ui.webp)
 
 At the firt access, we need to save the workflow and tasks definitions. To do this click on *Definitions* and then on *New Workflow Definition* and *New Task Defintion*. The only things to do is copy and paste the JSON files defined before and click *Save*. See the image below:
 
-![](images/def-workflow.avif)
+![](images/def-workflow.webp)
 
 To run the workflow, there is a section called ***Workbech***.
 
-![](images/workbench.avif)
+![](images/workbench.webp)
 
 Here, you can select which workflow execute and the set the input parameter. Once the configuration is ready click *Play*.
 
@@ -303,7 +303,7 @@ For the first case, we will see that the workflow successed moving the product "
 
 In Conductor UI there is also another section called ***Executions***. Inside it is possible to see the results of every workflow executed and analyze the input/output parameters. It is very useful for debugging stuff.
 
-![](images/executions.avif)
+![](images/executions.webp)
 
 ## How to check the elements in the database
 

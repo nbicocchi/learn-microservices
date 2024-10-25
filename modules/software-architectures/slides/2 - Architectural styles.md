@@ -21,7 +21,7 @@ Although monolithic applications are sometimes described in negative terms by pr
 
 One common type of enterprise architecture is the multi-layered or n-tier architecture. With this design, an applications is divided into multiple layers, each with their own responsibilities and functions, such as UI, services, data, testing, and so forth.
 
-![](images/swarch-layered.avif)
+![](images/swarch-layered.webp)
 
 Benefits:
 * N-tier applications offer good separation of concerns, making it possible to consider areas like UI (user interface), data, and business logic separately.
@@ -89,7 +89,7 @@ When to use:
 
 ### Modular Monolithic Architecture
 
-![](images/swarch-modular-monolith.avif)
+![](images/swarch-modular-monolith.webp)
 
 Instead of using layered architecture with horizontal logical layers, we can organize our code across vertical slices of business functionality.These slices are determined based on business demands, rather than enforced by technical constraints. When we add or change a feature in an application, our changes are scoped to the area of business concern not technical logical layers.
 
@@ -129,14 +129,14 @@ A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-
 
 Each dot on the perimeter of the circle represents a class, and each line represents connections between the classes, where bolder lines indicate stronger connections.
 
-![](images/swarch-big-ball-of-mud.avif)
+![](images/swarch-big-ball-of-mud.webp)
 
 
 ## Distributed Architecture
 
 ### Service-based architecture
 
-![](images/swarch-service-based-architecture.avif)
+![](images/swarch-service-based-architecture.webp)
 
 Service-Based Architecture is a software design approach where an application is divided into small, independent services that perform specific functions. Each service runs in its own process and communicates with other services through well-defined APIs, often using protocols like HTTP or messaging queues. This architecture focuses on separating services by business capability, providing flexibility and scalability.
 
@@ -172,7 +172,7 @@ When to use:
 
 ### Service-oriented architecture
 
-![](images/swarch-service-oriented-architecture.avif)
+![](images/swarch-service-oriented-architecture.webp)
 
 Service-Oriented Architecture (SOA) is a design paradigm where software components (services) provide functionality through standardized interfaces and protocols. In SOA, services are reusable, self-contained units that can be discovered and invoked over a network, often using protocols like SOAP or REST. These services interact with each other to form complete business processes, promoting loose coupling and modularity.
 
@@ -209,7 +209,7 @@ When to use:
 
 ### Microservices Architecture
 
-![](images/swarch-microservices.avif)
+![](images/swarch-microservices.webp)
 
 Microservice architecture is a modern approach where an application is divided into small, independent services. Each service focuses on a specific business function and can be developed, deployed, and scaled independently. These services communicate with each other using lightweight protocols, often over HTTP or messaging queues.
 

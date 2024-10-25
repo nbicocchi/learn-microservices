@@ -23,7 +23,7 @@ Several implementations of the `ApplicationContext` interface are supplied out-o
 
 The following diagram is a high-level view of how Spring works. Your application classes are combined with configuration metadata so that after the `ApplicationContext` is created and initialized, you have a fully configured and executable system or application.
 
-![](images/m2-container-magic.png)
+![](images/m2-container-magic.webp)
 
 ## Dependency Injection
 

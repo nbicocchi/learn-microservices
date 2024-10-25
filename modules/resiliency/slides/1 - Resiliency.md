@@ -74,7 +74,7 @@ What’s insidious about problems caused by **poorly performing remote services 
 
 ### A real-world story
 
-![](images/why-resiliency-matters.avif)
+![](images/why-resiliency-matters.webp)
 
 In the scenario above, three applications are communicating in one form or another with three different services. Applications A and B communicate directly with the licensing service. The licensing service retrieves data from a database and calls the organization service to do some work for it. 
 
@@ -95,7 +95,7 @@ Now the licensing service starts running out of resources because it’s calling
 ## Client-side resiliency patterns
 **Client-side resiliency software patterns focus on protecting a client of a remote resource (another microservice call or database lookup) from crashing when the remote resource fails because of errors or poor performance**. These patterns allow the client to fail fast and not consume valuable resources, such as database connections and thread pools. 
 
-![](images/client-side-resiliency.avif)
+![](images/client-side-resiliency.webp)
 
 ### Client-side load balancing
 
@@ -113,7 +113,7 @@ The key features of a circuit breaker are as follows:
 * When the circuit is open, a circuit breaker will perform **fail-fast logic**. This means that it does not wait for a new fault to happen but, instead, it redirects the calls to a **fallback method**.
 * After a while, the circuit breaker will be half-open, allowing new calls to see whether the issue that caused the previous failures is still there. If new failures are detected by the circuit breaker, it will open the circuit again and go back to the fail-fast logic. Otherwise, it will close the circuit and go back to normal operation.
 
-![](images/circuit-breaker-internals.avif)
+![](images/circuit-breaker-internals.webp)
 
 To monitor the rate of failures and determine when to open or close, circuit breakers use time-based windowing mechanisms to track error counts. Three common methods are: **Fixed Window**, **Sliding Window**, and **Leaky Bucket**.
 
@@ -160,7 +160,7 @@ Example:
 
 For instance, let’s suppose you have an e-commerce site that monitors your user’s behavior and gives them recommendations for other items they might want to buy. If the preference service fails, your fallback might be to retrieve a more general list of preferences that are based on all user purchases from a different service and data source.
 
-![](images/microservices-resiliency-fallback.avif)
+![](images/microservices-resiliency-fallback.webp)
 
 ### Retry
 When a request fails, the Retry pattern initiates a retry mechanism, which can be configured with a certain number of retries and backoff strategies. The following circumstances have to be understood before applying this pattern:
@@ -201,7 +201,7 @@ A ship is split into small multiple compartments using Bulkheads. Bulkheads are 
 
 **The thread pools act as the bulkheads for your service**. Each remote resource is segregated and assigned to a thread pool. If one service is responding slowly, the thread pool for that type of service call can become saturated and stop processing requests. **Assigning downstream services to different thread pools helps in confining resource exhaustion to specific thread pools instead of the whole service**.
 
-![](images/microservices-resiliency-bulkhead-3.avif)
+![](images/microservices-resiliency-bulkhead-3.webp)
 
 For example: Lets assume that there are 2 services A and B. Service A has very limited resources (say 5 threads). It can process only 5 concurrent requests with its available threads. Service A has 2 sets of APIs as shown below.
 
@@ -216,7 +216,7 @@ Even though the remaining requests are for /a which does not have any other serv
 
 ### Caching
 
-![](images/cache-architecture.avif)
+![](images/cache-architecture.webp)
 
 The Caching pattern is a valuable technique for improving the performance and scalability of microservices in synchronous communication. **It involves storing frequently accessed data or computation results in a cache, which is a high-speed storage system, to serve subsequent requests more quickly.**
 

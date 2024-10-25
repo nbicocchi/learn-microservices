@@ -63,7 +63,7 @@ To help us in these operations we can use **DevOps**'s practices.
 
 The shift to DevOps is critical for organizations to support the ever-**accelerating** development speeds that customers and internal stakeholders demand. With the help of cloud-native technologies, open source solutions, and agile APIs, teams can now deliver and maintain code more **efficiently** than ever.
 
-![DevOps](images/devops-devops.avif)
+![DevOps](images/devops-devops.webp)
 
 ### How does DevOps works?
 
@@ -82,7 +82,7 @@ Implementing DevOps often goes hand in hand with **continuous integration** (**C
 
 **CI** enables developers to **discover** integration issues and bugs earlier in the process and streamline code branches and builds.
 
-![Continuos Integration](images/devops-ci.avif)
+![Continuos Integration](images/devops-ci.webp)
 
 ### Continuous Delivery and Deployment
 
@@ -114,7 +114,7 @@ To help us in these operations we can use **DevSecOps**'s practices.
 
 **Release better software faster**, and **detect and respond to software flaws** in production faster and more efficiently.
 
-![](images/devops-devsecops.avif)
+![](images/devops-devsecops.webp)
 
 ### Historically
 

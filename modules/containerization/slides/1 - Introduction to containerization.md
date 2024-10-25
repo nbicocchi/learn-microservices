@@ -2,7 +2,7 @@
 
 ## Types of Deployment
 
-![Containers vs VMs](images/containers-vms.avif)
+![Containers vs VMs](images/containers-vms.webp)
 
 ### Bare Metal Deployment
 
@@ -138,8 +138,8 @@ Several container image formats are in use today, each with its advantages:
 
 Docker is an open-source platform that enables developers to automate the deployment, scaling, and management of applications within lightweight, portable containers. This guarantees that applications run consistently across different environments, regardless of the underlying machine's customized settings. Consequently, developers can write code and test it in a container that behaves the same way on any machine, leading to fewer deployment issues.
 
-![](images/docker-architecture.png)
-![Container Lifecycle](images/container-lifecycle.avif)
+![](images/docker-architecture.webp)
+![Container Lifecycle](images/container-lifecycle.webp)
 
 The Docker architecture consists of several key components:
 

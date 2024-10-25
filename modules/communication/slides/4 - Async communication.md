@@ -14,7 +14,7 @@ In an asynchronous communication model, services are decoupled, meaning they do 
 
 4. **Event-Driven Architecture**: This communication style is closely tied to **event-driven architectures**, where services react to events or messages rather than relying on direct requests from other services.
 
-![](images/communication-styles.png)
+![](images/communication-styles.webp)
 
 ## Benefits of Asynchronous Communication
 
@@ -25,7 +25,7 @@ In an asynchronous communication model, services are decoupled, meaning they do 
    Since services do not rely on the immediate availability of others, the system is more resilient to failures. A message broker can store messages in case a service is down and deliver them when it becomes available again, making the system fault-tolerant.
 
 3. **Decoupled Services**:
-   Services in asynchronous architectures are more loosely coupled. The sender doesn’t need to know when or how the recipient processes the message. This decoupling allows easier system updates, as changes in one service do not require changes in others.
+   Services in asynchronous architectures are more loosely coupled. The sender does not need to know when or how the recipient processes the message. This decoupling allows easier system updates, as changes in one service do not require changes in others.
 
 4. **Better Resource Utilization**:
    In asynchronous communication, system resources (such as threads and memory) are not blocked waiting for responses. This improves resource utilization, especially in high-throughput environments, enabling the system to handle more requests simultaneously.
@@ -61,7 +61,7 @@ In an asynchronous communication model, services are decoupled, meaning they do 
 
 In distributed systems, message-passing is a core mechanism for enabling communication between microservices. There are two primary approaches to messaging systems: **broker-based** and **brokerless** (also known as peer-to-peer or direct messaging) systems.
 
-![](images/brokerless-architecture.avif)
+![](images/brokerless-architecture.webp)
 
 ### Broker-Based Messaging Systems
 
@@ -117,16 +117,16 @@ Brokerless messaging, also known as **peer-to-peer (P2P)** messaging or direct m
 
 ### Comparison Table
 
-| **Aspect**                  | **Broker-Based Messaging**                      | **Brokerless Messaging**                      |
-|-----------------------------|-------------------------------------------------|-----------------------------------------------|
-| **Architecture**             | Centralized message broker mediates communication | Direct communication between services         |
-| **Message Routing**          | Managed by the broker, with advanced routing options | Custom implementation required by services    |
-| **Latency**                  | Higher, due to additional hops via the broker   | Lower, direct communication between services  |
-| **Reliability**              | High (with features like persistence, retries, and delivery guarantees) | Low by default; must be handled manually      |
-| **Scalability**              | Easily scalable with broker clusters and partitioning | Requires custom handling of scaling (load balancing) |
-| **Complexity**               | Broker adds complexity to the infrastructure    | Simpler infrastructure, but more complex logic in services |
-| **Failure Handling**         | Brokers often provide failover and recovery mechanisms | More prone to failures if not carefully managed |
-| **Service Decoupling**       | Services are loosely coupled via the broker     | Services are more tightly coupled             |
-| **Operational Overhead**     | High: managing broker infrastructure            | Lower: fewer components, but custom features required |
-| **Message Delivery Guarantees** | Strong (at-least-once, exactly-once delivery) | Weak: requires custom implementation          |
+| **Aspect**                      | **Broker-Based Messaging**                                              | **Brokerless Messaging**                                   |
+|---------------------------------|-------------------------------------------------------------------------|------------------------------------------------------------|
+| **Architecture**                | Centralized message broker mediates communication                       | Direct communication between services                      |
+| **Message Routing**             | Managed by the broker, with advanced routing options                    | Custom implementation required by services                 |
+| **Latency**                     | Higher, due to additional hops via the broker                           | Lower, direct communication between services               |
+| **Reliability**                 | High (with features like persistence, retries, and delivery guarantees) | Low by default; must be handled manually                   |
+| **Scalability**                 | Easily scalable with broker clusters and partitioning                   | Requires custom handling of scaling (load balancing)       |
+| **Complexity**                  | Broker adds complexity to the infrastructure                            | Simpler infrastructure, but more complex logic in services |
+| **Failure Handling**            | Brokers often provide failover and recovery mechanisms                  | More prone to failures if not carefully managed            |
+| **Service Decoupling**          | Services are loosely coupled via the broker                             | Services are more tightly coupled                          |
+| **Operational Overhead**        | High: managing broker infrastructure                                    | Lower: fewer components, but custom features required      |
+| **Message Delivery Guarantees** | Strong (at-least-once, exactly-once delivery)                           | Weak: requires custom implementation                       |
 

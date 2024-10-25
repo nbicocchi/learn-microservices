@@ -33,7 +33,7 @@ With JPA, we create a set of classes (entities) that map to the database tables 
 
 We have to keep in mind that JPA is only the specification. The reference implementation of JPA is [EclipseLink](https://projects.eclipse.org/projects/ee4j.eclipselink), but the most popular implementation is the [Hibernate](https://hibernate.org/) ORM (Object Relational Mapping) framework.
 
-![](images/m4-diagram-db-abstractions.png)
+![](images/m4-diagram-db-abstractions.webp)
 
 With JPA, we’re delegating a lot of functionality to the framework, and whenever that happens, **we lose some control** over what’s finally executed. JPA is a very powerful and useful solution, suitable for most projects, and definitely better than writing a lot of boilerplate manually. There might be edge cases, a few exceptional queries, or persistence procedures where it makes sense to use a different approach. This could mean maybe lower level JPA customizations, or even some JDBC operations.
 

@@ -21,7 +21,7 @@ With the basics of the RabbitMQ message cycle in place, let’s now have a look 
 * Step 3: The queue receives the message and stores it until the consumer receives it.
 * Step 4: Finally, the consumer handles the message.
 
-![](images/rabbitMQ-message-cycle.png)
+![](images/rabbitMQ-message-cycle.webp)
 
 ## Types of Exchanges
 
@@ -29,7 +29,7 @@ RabbitMQ provides several types of exchanges that determine how messages are rou
 
 ### 1. Direct Exchange
 
-![](images/exchange-direct.png)
+![](images/exchange-direct.webp)
 
 - **Description**: A direct exchange routes messages with a specific routing key to the queues that are bound to the exchange with the same routing key.
 - **Use Case**: Useful for point-to-point communication where messages must be routed to a specific queue.
@@ -38,7 +38,7 @@ RabbitMQ provides several types of exchanges that determine how messages are rou
 
 ### 2. Fanout Exchange
 
-![](images/exchange-fanout.png)
+![](images/exchange-fanout.webp)
 
 - **Description**: A fanout exchange routes messages to all queues that are bound to it, regardless of the routing key. It broadcasts messages to multiple consumers.
 - **Use Case**: Useful for scenarios where messages need to be delivered to multiple subscribers.
@@ -47,7 +47,7 @@ RabbitMQ provides several types of exchanges that determine how messages are rou
 
 ### 3. Topic Exchange
 
-![](images/exhange-topic.png)
+![](images/exhange-topic.webp)
 
 - **Description**: A topic exchange routes messages to one or more queues based on wildcard patterns in the routing key. This allows for more complex routing logic.
 - **Use Case**: Useful for scenarios where messages need to be filtered based on multiple criteria.
@@ -56,7 +56,7 @@ RabbitMQ provides several types of exchanges that determine how messages are rou
 
 ### 4. Headers Exchange
 
-![](images/exchange-header.png)
+![](images/exchange-header.webp)
 
 - **Description**: A headers exchange routes messages based on the message's header attributes rather than the routing key. It matches the headers against specified criteria.
 - **Use Case**: Useful for scenarios requiring routing based on multiple attributes rather than a single routing key.

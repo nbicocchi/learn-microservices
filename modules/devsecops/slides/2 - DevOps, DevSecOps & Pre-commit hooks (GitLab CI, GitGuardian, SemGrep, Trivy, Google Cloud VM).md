@@ -114,7 +114,7 @@ Create a service account from the API section of your GitGuardian workspace (or 
 
 Add this API key to the **GITGUARDIAN_API_KEY** environment variable in your project settings.
 
-![GitLab Variables](images/devops-GitLab-variables.avif)
+![GitLab Variables](images/devops-GitLab-variables.webp)
 
 Add a new step using **ggshield** to your GitLab project's pipeline.
 
@@ -438,7 +438,7 @@ We can now use our GitLab pipeline to **upload newver version** of our microserv
 
 The **Variables** tabs of our GitLab project will be like this:
 
-![All GitLab Variables](images/devops-GitLab-all-variables.avif)
+![All GitLab Variables](images/devops-GitLab-all-variables.webp)
 
 ## Our .gitlab-ci.yml file
 
@@ -559,7 +559,7 @@ stages:
 
 The final version of our **GitLab DevSecOps Pipeline**, will be like this:
 
-![GitLab DevSecOps Pipeline](images/devops-pipeline.avif)
+![GitLab DevSecOps Pipeline](images/devops-pipeline.webp)
 
 ## Pre-commit hooks
 

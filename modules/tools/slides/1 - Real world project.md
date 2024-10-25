@@ -11,7 +11,7 @@ We'll choose a Maven project using Java, and we need to fill in the project deta
 
 For the dependencies section, we'll choose the *Spring Web* dependency. Even though we won't be focusing on web aspects in this module, we include it since it allows us to start the application and keep it running.
 
-![](images/m1-start-spring-io.png)
+![](images/m1-start-spring-io.webp)
 
 Now we can click the "Generate" button to download the project, unzip it and import it into an IDE.
 

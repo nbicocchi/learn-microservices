@@ -15,7 +15,7 @@
 
 ## Configuration management architecture
 
-![](images/centralized-configuration.avif)
+![](images/centralized-configuration.webp)
 
 1. When a microservice instance comes up, it calls a service endpoint to read its configuration information, which is specific to the environment it’s operating in. The connection information for the configuration management (connection credentials, service endpoint, ...) is passed into to the microservice as it starts.
 2. The actual configuration resides in a repository. Based on the implementation of your configuration repository, you can choose different ways to hold your configuration data. This can include files under source control, relational databases, key-value data stores, etc. 

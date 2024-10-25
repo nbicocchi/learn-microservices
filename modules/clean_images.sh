@@ -15,34 +15,44 @@ check_extension() {
 	return 1
 }
 
+process_module() {
+  echo "--->" "$1"
+  cd "$1"
 
-for fname in images/*; do
-	# already avif image
-	if check_extension "avif" "$fname"; then
-		continue
-	fi
+  for fname in images/*; do
+    # useless image
+    slides=$(find_slides_using_it "$fname")
+    if [ -z "$slides" ]; then
+      echo "[NU]" "$fname"
+      rm -rf "$fname"
+      continue
+    fi
 
-	# conversion to avif not supported
-	if ! check_extension "jpeg jpg png" "$fname"; then
-		echo "[NS]" "$fname"
-		continue
-	fi
+    # already webp image
+    if check_extension "webp" "$fname"; then
+      continue
+    fi
 
-	# useless image
-	slides=$(find_slides_using_it "$fname")
-	if [ -z "$slides" ]; then
-		echo "[NU]" "$fname"
-		rm -rf "$fname"
-		continue
-	fi
+    # convert to webp
+    fname_webp="${fname%.*}".webp
+    echo "[OK]" "$fname"
+    magick "$fname" -quality 60 -define webp:lossless=false "$fname_webp"
+    rm -rf "$fname"
 
-	# convert to avif and update slides
-	fname_avif="${fname%.*}".avif
-	echo "[OK]" "$fname"
-	avifenc "$fname" "$fname_avif" > /dev/null
-	rm -rf "$fname"
+    # update slides
+    for slide in "$slides"; do
+      sed -i s/$(basename "$fname")/$(basename "$fname_webp")/g "$slide"
+    done
+  done
 
-	for slide in "$slides"; do
-		sed -i s/$(basename "$fname")/$(basename "$fname_avif")/g "$slide"				
-	done
+  cd ../..
+}
+
+for file in *; do
+  if [ -d "$file"/slides/images ]; then
+    process_module "$file"/slides
+  else
+    echo skipping "$file"...
+  fi
 done
+

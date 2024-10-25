@@ -149,7 +149,7 @@ A route is defined by the following:
 * **Predicates**, which select a route based on information in the incoming HTTP request
 * **Filters**, which can modify both the request and/or the response
 
-![](images/gateway-predicate-filters.avif)
+![](images/gateway-predicate-filters.webp)
 
 Clients make requests to Spring Cloud Gateway. If the Gateway Handler Mapping determines that a request matches a route, it is sent to the Gateway Web Handler. This handler runs the request through a filter chain that is specific to the request.
 

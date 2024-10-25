@@ -30,7 +30,7 @@ Client-service interactions form the backbone of distributed systems, enabling c
 
 ## Types of interaction
 
-![](images/communication-styles.png)
+![](images/communication-styles.webp)
 
 **Request/Response (One-to-One, Synchronous)**: In this classic interaction style, a client sends a request to a service and waits for a direct response. The expectation is for a timely reply, which can lead to tight coupling between the client and the service. This pattern is common in traditional web applications and APIs where immediate feedback is required. **Example**: An API call to retrieve user details where the client waits for the service to return the data before proceeding.
 

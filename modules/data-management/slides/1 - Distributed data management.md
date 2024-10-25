@@ -46,7 +46,7 @@ One major issue is that many modern technologies, including NoSQL databases like
 
 Although distributed transactions offer a familiar programming model similar to local transactions, these challenges make them unsuitable for modern applications. Instead, to maintain data consistency in a microservices architecture, a different approach is needed one that leverages loosely coupled, asynchronous services. This is where the SAGA pattern comes into play.
 
-![](images/transactions.avif)
+![](images/transactions.webp)
 
 In the image there is an example of what we have mentioned at the beginning of the paragraph. It illustrates `createOrder()` operation in a microservices architecture. This operation involves multiple services and must ensure data consistency across them. The diagram shows the `Order Service`, `Consumer Service`, `Kitchen Service`, and `Accounting Service`, each represented by hexagons.
 
@@ -62,11 +62,11 @@ The alternative to the distributed transactions is SAGA Pattern. To implement it
 
 - **Choreography**: In this approach, each service involved in the saga performs its local transaction and then publishes an event to signal other services that the next step can proceed. This method is decentralized, with services reacting to events and executing their respective tasks. While choreography can simplify the design by eliminating the need for a central controller, it may lead to increased complexity as the number of interactions grows, making the overall process harder to manage and understand.
 
-![](images/choreography.avif)
+![](images/choreography.webp)
 
 - **Orchestration**: This approach involves a centralized controller, known as the saga orchestrator, which coordinates the sequence of transactions. The orchestrator sends commands to each service to execute its part of the saga. If a step fails, the orchestrator triggers compensating transactions to roll back completed steps, thereby maintaining consistency. Orchestration offers better control and visibility over the saga's execution, though it introduces a potential single point of failure and can complicate the orchestrator's logic.
 
-![](images/orchestration.avif)
+![](images/orchestration.webp)
 
 Both approaches are designed to maintain data consistency across distributed services without relying on traditional ACID transactions, making them essential in a microservices architecture. The choice between choreography and orchestration depends on the system's specific requirements and complexity.
 
