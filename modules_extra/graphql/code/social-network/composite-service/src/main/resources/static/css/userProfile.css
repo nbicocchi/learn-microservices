@@ -1,0 +1,77 @@
+/* userProfile.css */
+
+/* Layout */
+.container {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+/* Left Sidebar */
+.sidebar {
+    flex: 1;
+    max-width: 25%;
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 80px);
+    padding: 20px;
+    background-color: #fff;
+    border-right: 1px solid #dbdbdb;
+}
+
+.sidebar .user-info {
+    text-align: center;
+}
+
+.sidebar .user-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.sidebar .username {
+    font-size: 24px;
+    font-weight: bold;
+    color: #262626;
+    margin-bottom: 10px;
+}
+
+.sidebar .email {
+    font-size: 16px;
+    color: #999999;
+    margin-bottom: 20px;
+}
+
+.sidebar .edit-profile-btn {
+    margin-top: 20px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 3;
+    max-width: 75%;
+    padding: 20px;
+}
+
+.edit-profile-btn {
+    margin-bottom: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar, .main-content {
+        max-width: 100%;
+        flex: none;
+    }
+
+    .sidebar {
+        position: relative;
+        top: 0;
+        height: auto;
+    }
+}

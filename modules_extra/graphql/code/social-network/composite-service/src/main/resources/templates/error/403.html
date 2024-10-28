@@ -1,0 +1,13 @@
+<!-- src/main/resources/templates/error/403.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Access Denied</title>
+    <link rel="stylesheet" th:href="@{/css/error.css}" />
+</head>
+<body>
+<h1>Access Denied (403)</h1>
+<p>You do not have permission to access this page.</p>
+<a th:href="@{/login}">Login with Different Credentials</a>
+</body>
+</html>

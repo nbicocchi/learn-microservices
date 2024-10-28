@@ -1,0 +1,63 @@
+/* createPost.css */
+
+/* Body Padding Override */
+body {
+    margin-top: 0; /* Remove margin-top if no fixed header */
+    padding: 20px;
+}
+
+/* Form Container */
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+}
+
+.form-container h2 {
+    text-align: center;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group textarea,
+.form-group input[type="file"] {
+    width: 100%;
+}
+
+.form-group textarea {
+    height: 150px;
+    resize: vertical;
+}
+
+.form-group button {
+    width: 100%;
+    padding: 10px;
+    background-color: #3897f0;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-group button:hover {
+    background-color: #2a77d0;
+}
+
+/* Error Message */
+.error-message {
+    color: red;
+    margin-bottom: 15px;
+}
