@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    user: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: user-service-db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./data/db-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  minio:
+    image: docker.io/minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: rootname
+      MINIO_ROOT_PASSWORD: yourpassword
+    volumes:
+      - ./data/minio-data:/data
+    command: server /data --console-address ":9001"
+
+  composite:
+    container_name: composite-service
+    build: composite-service
+    mem_limit: 512m
+    ports:
+      - "7000:7000"
+    depends_on:
+        - user
+        - post
+        - minio
+        - interaction
+
+  user:
+    container_name: user-service
+    build: user-service
+    mem_limit: 512m
+    ports:
+      - "7001:7001"
+    depends_on:
+      - postgres
+
+  post:
+    container_name: post-service
+    build: post-service
+    mem_limit: 512m
+    ports:
+      - "7002:7002"
+    depends_on:
+      - postgres
+      - user
+
+  interaction:
+    container_name: interaction-service
+    build: interaction-service
+    mem_limit: 512m
+    ports:
+      - "7003:7003"
+    depends_on:
+      - user
+      - postgres
+      - post
+
+volumes:
+  postgres-data:

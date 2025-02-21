@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Node Status Monitoring</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .down {
+            color: red;
+            font-weight: bold;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+
+        .action-icon:hover {
+            opacity: 0.7;
+        }
+
+        .icon-stop::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: red;
+            border: 2px solid #fff;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+
+        .icon-resume::before {
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border-left: 12px solid green;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align:center;">Raft Node Status</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Node</th>
+        <th>Status</th>
+        <th>Current Term</th>
+        <th>Voted For</th>
+        <th>Node URL</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody id="status-table-body">
+    </tbody>
+</table>
+
+<script>
+    const currentNodeUrl = window.location.host; // Gets 'localhost:8000', 'localhost:8001', etc.
+    let isRedirecting = false; // Flag to prevent multiple redirects
+    const nodeUrlsSet = new Set(); // To maintain the list of nodes
+    let lastStatusList = []; // Stores the last status list
+
+    /**
+     * Sorts the node list by nodeId in alphabetical order.
+     * @param {Array} statusList - List of node statuses.
+     * @returns {Array} Sorted list.
+     */
+    function sortStatusList(statusList) {
+        return statusList.sort((a, b) => a.nodeId.localeCompare(b.nodeId));
+    }
+
+    /**
+     * Updates the table with the node statuses.
+     * @param {Array} statusList - List of node statuses.
+     */
+    function updateTable(statusList) {
+        lastStatusList = statusList; // Update the last status list
+
+        // Sort the node list by nodeId to maintain stable order
+        const sortedList = sortStatusList(statusList);
+
+        const tableBody = document.getElementById('status-table-body');
+        tableBody.innerHTML = ''; // Clear the table
+
+        let currentNodeStatus = null;
+
+        sortedList.forEach(nodeStatus => {
+            const row = document.createElement('tr');
+
+            const nodeCell = document.createElement('td');
+            nodeCell.textContent = nodeStatus.nodeId !== nodeStatus.nodeUrl ? nodeStatus.nodeId : nodeStatus.nodeUrl;
+            row.appendChild(nodeCell);
+
+            const stateCell = document.createElement('td');
+            stateCell.textContent = nodeStatus.state;
+            if (nodeStatus.state === "DOWN" || nodeStatus.isStopped) {
+                stateCell.classList.add('down');
+            }
+            row.appendChild(stateCell);
+
+            const termCell = document.createElement('td');
+            termCell.textContent = nodeStatus.currentTerm;
+            row.appendChild(termCell);
+
+            const votedForCell = document.createElement('td');
+            votedForCell.textContent = nodeStatus.votedFor || "None";
+            row.appendChild(votedForCell);
+
+            const nodeUrlCell = document.createElement('td');
+            nodeUrlCell.textContent = nodeStatus.nodeUrl;
+            row.appendChild(nodeUrlCell);
+
+            // Add the node URL to the Set if not already present
+            nodeUrlsSet.add(nodeStatus.nodeUrl);
+
+            // Action Cell
+            const actionCell = document.createElement('td');
+            const actionIcon = document.createElement('span');
+            actionIcon.classList.add('action-icon');
+
+            if (nodeStatus.state !== "DOWN" && !nodeStatus.isStopped) {
+                // Node is active, show Stop icon
+                actionIcon.classList.add('icon-stop');
+                actionIcon.title = 'Stop Node';
+                actionIcon.onclick = () => toggleNodeState(nodeStatus.nodeUrl, 'stop');
+            } else {
+                // Node is down or stopped, show Resume icon
+                actionIcon.classList.add('icon-resume');
+                actionIcon.title = 'Resume Node';
+                actionIcon.onclick = () => toggleNodeState(nodeStatus.nodeUrl, 'resume');
+            }
+
+            actionCell.appendChild(actionIcon);
+            row.appendChild(actionCell);
+
+            // Check if this node is the current node
+            if (nodeStatus.nodeUrl === currentNodeUrl) {
+                currentNodeStatus = nodeStatus;
+            }
+
+            tableBody.appendChild(row);
+        });
+
+        // After updating the table, check if the current node is DOWN
+        if (currentNodeStatus && (currentNodeStatus.state === "DOWN" || currentNodeStatus.isStopped)) {
+            if (!isRedirecting) {
+                isRedirecting = true;
+                handleCurrentNodeDown();
+            }
+        }
+    }
+
+    /**
+     * Toggles the state of a node by sending a stop or resume request.
+     * @param {string} nodeUrl - The URL of the node.
+     * @param {string} action - 'stop' or 'resume'.
+     */
+    function toggleNodeState(nodeUrl, action) {
+        const endpoint = action === 'stop' ? '/raft/stop' : '/raft/resume';
+        fetch(`http://${nodeUrl}${endpoint}`, {
+            method: 'GET',
+        })
+            .then(response => {
+                if (response.ok) {
+                    // alert(`Successfully sent ${action} request to ${nodeUrl}`);
+                } else {
+                    alert(`Failed to send ${action} request to ${nodeUrl}`);
+                }
+            })
+            .catch(error => {
+                console.error(`Error sending ${action} request to ${nodeUrl}:`, error);
+                // alert(`Error sending ${action} request to ${nodeUrl}`);
+            });
+    }
+
+    /**
+     * Handles the failure of the current node and attempts to redirect to another active node.
+     */
+    function handleCurrentNodeDown() {
+        // Filter active nodes excluding the current node
+        const activeNodes = lastStatusList.filter(node => node.nodeUrl !== currentNodeUrl && node.state !== "DOWN");
+
+        if (activeNodes.length === 0) {
+            alert('All nodes are DOWN. Unable to redirect.');
+            return;
+        }
+
+        // Prefer a node with "LEADER" state
+        let targetNode = activeNodes.find(node => node.state === "LEADER");
+
+        // If no leader is found, take the first active node
+        if (!targetNode) {
+            targetNode = activeNodes[0];
+        }
+        if (targetNode) {
+            // Perform the redirect
+            window.location.href = `http://${targetNode.nodeUrl}/monitor`;
+        } else {
+            // No active node found
+            alert('All nodes are DOWN. Unable to redirect.');
+        }
+    }
+
+    /**
+     * Redirects to an active node by checking its availability.
+     * It's NECESSARY even if it looks to be not used.
+     * @param {Array} nodes - List of nodes to attempt the redirect.
+     */
+    function redirectToActiveNode(nodes) {
+        let index = 0;
+
+        function tryRedirect() {
+            if (index >= nodes.length) {
+                alert('All nodes are DOWN. Unable to redirect.');
+                return;
+            }
+
+            const targetNode = nodes[index];
+            index++;
+
+            // Attempt to check if the node is active
+            fetch(`http://${targetNode}/raft/status`)
+                .then(response => {
+                    if (response.ok) {
+                        // Node is active, perform the redirect
+                        window.location.href = `http://${targetNode}/monitor`;
+                    } else {
+                        // Node is not active, try the next one
+                        tryRedirect();
+                    }
+                })
+                .catch(() => {
+                    // Network error, try the next one
+                    tryRedirect();
+                });
+        }
+
+        tryRedirect();
+    }
+
+    /**
+     * Fetches the current status of all nodes.
+     * This function can be used to manually refresh the status.
+     */
+    function fetchStatus() {
+        fetch('/raft/status')
+            .then(response => response.json())
+            .then(data => {
+                updateTable(data);
+            })
+            .catch(error => {
+                console.error('Error fetching status:', error);
+            });
+    }
+
+    // Initialize the EventSource connection
+    const evtSource = new EventSource('/raft/status-stream');
+
+    // Handles messages received from the EventSource
+    evtSource.onmessage = function (event) {
+        const data = event.data;
+        try {
+            const status = JSON.parse(data);
+            updateTable(status);
+        } catch (e) {
+            console.error('Error parsing data:', e);
+        }
+    };
+
+    // Handles EventSource connection errors
+    evtSource.onerror = function () {
+        console.error('Error in EventSource connection. Attempting redirect...');
+        if (!isRedirecting) {
+            isRedirecting = true;
+            handleCurrentNodeDown();
+        }
+    };
+</script>
+</body>
+</html>

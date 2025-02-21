@@ -1,0 +1,16 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "node.id",
+      "type": "java.lang.String",
+      "description": "ID of the node in the Raft cluster."
+    },
+    {
+      "name": "node.clusterNodes",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of cluster node URLs."
+    }
+  ],
+  "hints": []
+}

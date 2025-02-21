@@ -1,0 +1,74 @@
+# Note:
+# By default, Docker Compose assigns containers to a shared bridge network,
+# which allows them to communicate with each other using their service names as hostnames.
+# Avoid using 'localhost' for inter-container communication, as 'localhost' refers to the container itself.
+#
+# To enable seamless communication between nodes:
+# - Use the container names (e.g., 'node1', 'node2', 'node3') as hostnames in your configurations.
+#
+# Example:
+# --node.cluster-nodes=node1:8000,node2:8001,node3:8002
+#
+# Alternatively, you can set 'network_mode: host' to allow containers to share the host's network stack.
+# However, this approach is not recommended for production environments due to potential security and networking issues.
+#
+# Best Practice:
+# Rely on Docker Compose's default networking by using service names for inter-container communication.
+
+services:
+  node1:
+    build: .
+    container_name: node1
+    command: >
+      java -jar app.jar
+      --server.port=8000
+      --node.id=node1
+      --node.cluster-nodes=node1:8000,node2:8001,node3:8002
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+    working_dir: /app
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/raft/status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  node2:
+    build: .
+    container_name: node2
+    command: >
+      java -jar app.jar
+      --server.port=8001
+      --node.id=node2
+      --node.cluster-nodes=node1:8000,node2:8001,node3:8002
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./logs:/app/logs
+    working_dir: /app
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8001/raft/status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  node3:
+    build: .
+    container_name: node3
+    command: >
+      java -jar app.jar
+      --server.port=8002
+      --node.id=node3
+      --node.cluster-nodes=node1:8000,node2:8001,node3:8002
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./logs:/app/logs
+    working_dir: /app
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8002/raft/status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3

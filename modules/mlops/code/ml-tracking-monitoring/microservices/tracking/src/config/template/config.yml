@@ -1,0 +1,37 @@
+general:
+  seed: 42
+
+model:
+  experiment_name: "tracking_experiment"
+
+service:
+
+controller:
+  app:
+    host: "0.0.0.0"
+    port: 5002
+    debug: False
+    base_url: "/root"
+    service_url: "/tracking"
+
+  db_dataset:
+    host: "db"
+    port: 5432
+    name: "wines_database"
+    user: "postgres"
+    password: "postgres"
+
+  db_mlflow:
+    host: "mlflow_db"
+    port: 5432
+    name: "mlflow_database"
+    user: "postgres"
+    password: "postgres"
+
+  ml:
+    host: "ml"
+    port: 5001
+    base_url: "/root"
+    service_url: "/ml"
+
+

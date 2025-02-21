@@ -1,0 +1,31 @@
+type User {
+    id: ID!
+    username: String!
+    avatarPath: String!
+}
+
+type Comment {
+    id: ID!
+    content: String!
+    postId: ID!
+    user: User!
+}
+
+type Like {
+    id: ID!
+    postId: ID!
+    userId: ID!
+}
+
+type Query {
+    getCommentsByPostId(postId: ID!): [Comment]
+    getLikesByPostId(postId: ID!): [Like]
+    isPostLikedByUser(postId: ID!, username: String!): Boolean
+}
+
+type Mutation {
+    addComment(content: String!, postId: ID!, userId: ID!): Comment
+    deleteComment(id: ID!): Boolean
+    likePost(postId: ID!, userId: ID!): Like
+    unlikePost(postId: ID!, userId: ID!): Boolean
+}

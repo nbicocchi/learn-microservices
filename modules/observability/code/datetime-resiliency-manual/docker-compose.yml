@@ -1,0 +1,78 @@
+services:
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus.yaml
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
+    ports:
+      - "9090:9090"
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/loki.yaml
+    volumes:
+      - ./config/loki.yaml:/etc/loki/loki.yaml
+    ports:
+      - "3100:3100"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+    ports:
+      - "16686:16686"
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - loki
+      - jaeger
+
+  eureka:
+    build: eureka-service
+    environment:
+      - LOKI_ENDPOINT=http://loki:3100/loki/api/v1/push
+      - SPRING_PROFILES_ACTIVE=docker
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+    depends_on:
+      - grafana
+
+  datetime-composite:
+    build: datetime-composite-service
+    environment:
+      - LOKI_ENDPOINT=http://loki:3100/loki/api/v1/push
+      - SPRING_PROFILES_ACTIVE=docker
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka
+
+  datetime:
+    build: datetime-service
+    environment:
+      - LOKI_ENDPOINT=http://loki:3100/loki/api/v1/push
+      - SPRING_PROFILES_ACTIVE=docker
+    mem_limit: 512m
+    depends_on:
+      - eureka
+
+volumes:
+  grafana-data:

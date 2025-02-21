@@ -1,0 +1,22 @@
+server.port: 8082
+server.error.include-message: always
+server.error.include-stacktrace: never
+
+auth:
+  endpoint: http://192.168.1.108:7777/realms/master
+  client_id: example-spring
+  client_secret: 2EImaDyrqBDKLpCSnwoqp3q17tlAyHmW
+  redirect_uri: http://localhost:8082/auth/code
+  jwks_uri: http://192.168.1.108:7777/realms/master/protocol/openid-connect/certs
+
+microservices:
+  students_endpoint: http://localhost:8089/students
+  grades_endpoint: http://localhost:8089/grades
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+spring:
+  devtools:
+    livereload:
+      enabled: true

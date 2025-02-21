@@ -1,0 +1,52 @@
+services:
+  #conductor:
+  #  image: orkesio/orkes-conductor-community-standalone:latest
+  #  init: true
+  #  ports:
+  #    - "8080:8080"
+  #    - "5000:5000"
+  #  volumes:
+  #    - redis:/redis
+  #    - postgres:/pgdata
+  #  healthcheck:
+  #    test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080" ]
+  #    interval: 30s
+  #    timeout: 10s
+  #    retries: 5
+
+  order:
+    build: order-service
+    mem_limit: 512m
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    #depends_on:
+    #  conductor:
+    #    condition: service_healthy
+
+  payment:
+    build: payment-service
+    mem_limit: 512m
+    ports:
+      - "9001:9001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    #depends_on:
+    #  conductor:
+    #    condition: service_healthy
+
+  inventory:
+    build: inventory-service
+    mem_limit: 512m
+    ports:
+      - "9002:9002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    #depends_on:
+    #  conductor:
+    #    condition: service_healthy
+
+#volumes:
+#  redis:
+#  postgres:

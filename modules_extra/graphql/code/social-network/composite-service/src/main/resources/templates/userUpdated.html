@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Created</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding-top: 50px;
+    }
+    .container {
+      max-width: 500px;
+      background-color: #fff;
+      padding: 30px;
+      margin: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #28a745;
+    }
+    .btn-custom {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .btn-custom:hover {
+      background-color: #0056b3;
+      color: #fff;
+    }
+    p {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container text-center">
+  <h2>User Successfully Updated</h2>
+
+  <p th:text="'User ' + ${user.username} + ' update was successful!'"></p>
+
+  <a th:href="@{/logout}" class="btn btn-custom mt-3">Login to confirm the update!</a>
+</div>
+
+<!-- Include Bootstrap JS (optional if you use interactive components) -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

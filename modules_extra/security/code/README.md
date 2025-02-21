@@ -1,0 +1,1 @@
+- docker exec -i app-grades_pg-1 psql -U test grades < schema.sql

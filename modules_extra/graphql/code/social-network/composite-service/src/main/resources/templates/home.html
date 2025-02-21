@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Home Page</title>
+    <meta charset="UTF-8" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+
+<!-- Fixed Header -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <!-- Left Side: User Profile Picture and Username -->
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/user/{username}(username=${user.username})}">
+            <img th:src="@{${user.avatarPath}}" alt="Profile Picture" class="profile-picture mr-2">
+            <span th:text="${user.username}">Username</span>
+        </a>
+
+        <!-- Center: SocialSpringBoot -->
+        <div class="mx-auto">
+            <a class="navbar-brand" th:href="@{/}">SocialSpringBoot</a>
+        </div>
+
+        <!-- Right Side: New Post Button -->
+        <div class="navbar-nav">
+            <a th:href="@{/createPost}" class="btn btn-primary">New Post +</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Success Message -->
+    <div th:if="${postCreationSuccess}" class="alert alert-success mt-3" role="alert">
+        <span th:text="${postCreationSuccess}"></span>
+    </div>
+
+    <!-- Posts -->
+    <div th:each="post : ${posts}" class="post-container" th:attr="data-post-id=${post.id}">
+        <!-- Post Header -->
+        <div class="post-header">
+            <div class="post-header-left">
+                <!-- User Avatar -->
+                <a th:href="@{/user/{username}(username=${post.user.username})}" >
+                    <img th:src="@{~/{path}(path=${post.user.avatarPath})}" alt="User Avatar">
+                </a>
+                <!-- Username -->
+                <a th:href="@{/user/{username}(username=${post.user.username})}" class="post-username" th:text="${post.user.username}">Username</a>
+            </div>
+            <div class="post-header-right">
+                <!-- Bin button (only for post owner) -->
+                <form th:if="${user.id} == ${post.user.id}" th:action="@{/posts/delete}" method="post" class="delete-post-form" th:attr="data-post-id=${post.id}">
+                    <input type="hidden" name="postId" th:value="${post.id}" />
+                    <input type="hidden" name="imagePath" th:value="${post.imagePath}" />
+                    <button type="submit" class="delete-button" >
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Post Image -->
+        <div>
+            <img class="post-image" th:src="@{~/{path}(path=${post.imagePath})}" alt="Post Image">
+        </div>
+
+        <!-- Post Actions -->
+        <div class="post-actions">
+            <!-- Like Button -->
+            <form th:action="@{${post.isLiked ? '/posts/unlike' : '/posts/like'}}" method="post" class="like-form" th:attr="data-post-id=${post.id}">
+
+                <input type="hidden" name="postId" th:value="${post.id}" />
+                <button type="submit" class="like-button">
+                    <i th:class="${post.isLiked} ? 'fas fa-heart liked' : 'far fa-heart'"></i>
+                </button>
+            </form>
+            <!-- Likes Count -->
+            <span class="likes-count" th:text="${post.likesCount}" th:attr="data-post-id=${post.id},data-likes-count=${post.likesCount}"></span>
+            <span th:text="${post.likesCount} == 1 ? ' like' : ' likes'"></span>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-content">
+            <p>
+                <strong th:text="${post.user.username}"></strong>
+                <span th:text="${post.description}"></span>
+            </p>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section" th:attr="data-post-id=${post.id}">
+            <!-- Existing Comments -->
+            <div class="comments-list">
+                <div th:each="comment : ${post.comments}" class="comment" th:attr="data-comment-id=${comment.id}">
+                    <div class="comment-row-left">
+                        <a th:href="@{~/user/{username}(username=${comment.user.username})}">
+                            <img th:src="@{~/{path}(path=${comment.user.avatarPath})}"
+                                 alt="User Avatar" class="comment-avatar" />
+                        </a>
+                        <p>
+                            <a th:href="@{~/user/{username}(username=${comment.user.username})}">
+                                <strong th:text="${comment.user.username}"></strong>
+                            </a>
+                            <span th:text="${comment.content}"></span>
+                        </p>
+                    </div>
+                    <div class="comment-row-right">
+                        <!-- Delete Comment Button -->
+                        <form th:if="${user.id} == ${comment.user.id} or ${user.id} == ${post.user.id}"
+                              th:action="@{/posts/deleteComment}" method="post" class="delete-comment-form" th:attr="data-comment-id=${comment.id}">
+                            <input type="hidden" name="commentId" th:value="${comment.id}" />
+                            <button type="submit" class="delete-button">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Comment Field -->
+            <form th:action="@{/posts/addComment}" method="post" class="add-comment-form">
+                <input type="text" name="content" placeholder="Add a comment..." />
+                <input type="hidden" name="postId" th:value="${post.id}" />
+                <input type="hidden" name="currentUserId" th:value="${user.id}" />
+                <input type="hidden" name="postOwnerId" th:value="${post.user.id}">
+                <button type="submit">Post</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function deleteComment(event, form) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Show confirmation dialog
+            if (!confirm('Are you sure you want to delete this comment?')) {
+                // User clicked cancel, do nothing
+                return;
+            }
+
+            const commentId = form.getAttribute('data-comment-id');
+            const commentContainer = document.querySelector('.comment[data-comment-id="' + commentId + '"]');
+
+            // Optimistically remove the post from the UI
+            commentContainer.remove();
+
+            // Prepare data to send
+            const formData = new FormData(form);
+
+            // Send the data via fetch API
+            fetch(form.getAttribute('action'), {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    // No further action needed since we updated the UI optimistically
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    // Optionally, show an error message or reload the page
+                    alert('There was an error deleting your comment.');
+                    // Optionally, you can re-add the post to the UI or refresh the page
+                    location.reload();
+                });
+        }
+
+        // Like functionality
+        const likeForms = document.querySelectorAll('.like-form');
+
+        likeForms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Disable the button to prevent multiple clicks
+                const likeButton = form.querySelector('button');
+                likeButton.disabled = true;
+                const action = form.getAttribute('action');
+
+                // Optimistically toggle the like status
+                toggleLike(form);
+
+                // Prepare data to send
+                const formData = new FormData(form);
+
+                // Send the data via fetch API
+                fetch(action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                    .then(function(response) {
+                        likeButton.disabled = false; // Re-enable the button
+
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        // No further action needed since we updated the UI optimistically
+                    })
+                    .catch(function(error) {
+                        likeButton.disabled = false; // Re-enable the button
+                        console.error('Error:', error);
+                        // Reverse the UI changes since the request failed
+                        toggleLike(form);
+                    });
+            });
+        });
+
+        function toggleLike(form) {
+            const postId = form.getAttribute('data-post-id');
+            const likeIcon = form.querySelector('i');
+            const likesCountSpan = document.querySelector('.likes-count[data-post-id="' + postId + '"]');
+            let likesCount = parseInt(likesCountSpan.getAttribute('data-likes-count'));
+
+            if (likeIcon.classList.contains('liked')) {
+                likeIcon.classList.remove('fas', 'liked');
+                likeIcon.classList.add('far');
+                likesCount--;
+                form.setAttribute('action', '/posts/like');
+            } else {
+                likeIcon.classList.remove('far');
+                likeIcon.classList.add('fas', 'liked');
+                likesCount++;
+                form.setAttribute('action', '/posts/unlike');
+            }
+
+            // Update the likes count in the data attribute and the displayed text
+            likesCountSpan.setAttribute('data-likes-count', likesCount.toString());
+            likesCountSpan.textContent = likesCount.toString();
+        }
+
+        // Comment functionality
+        const commentForms = document.querySelectorAll('.add-comment-form');
+
+        commentForms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const contentInput = form.querySelector('input[name="content"]');
+                const content = contentInput.value.trim();
+
+                if (content === '') {
+                    return; // Do nothing if the comment is empty
+                }
+
+                // Disable the submit button to prevent multiple submissions
+                const submitButton = form.querySelector('button');
+                submitButton.disabled = true;
+
+                // Prepare data to send
+                const formData = new FormData();
+                formData.set("content", content);
+                formData.set("postId", form.querySelector('input[name="postId"]').value);
+
+                // Send the data via fetch API
+                fetch(form.getAttribute('action'), {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                    .then(function(response) {
+                        submitButton.disabled = false; // Re-enable the submit button
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json(); // Parse the JSON response
+                    })
+                    .then(function(data) {
+                        // Extract comment data from the response
+                        const commentData = data.data.addComment;
+                        // Add the new comment to the UI
+                        addCommentToUI(form, commentData);
+
+                        // Clear the input field
+                        contentInput.value = '';
+                    })
+                    .catch(function(error) {
+                        submitButton.disabled = false; // Re-enable the submit button
+                        console.error('Error:', error);
+                        // Optionally, show an error message to the user
+                        alert('There was an error submitting your comment.');
+                    });
+            });
+        });
+
+        function addCommentToUI(form, commentData) {
+            const commentsSection = form.closest('.comments-section');
+            const commentsList = commentsSection.querySelector('.comments-list');
+
+            const newCommentDiv = document.createElement('div');
+            newCommentDiv.classList.add('comment');
+            newCommentDiv.setAttribute('data-comment-id', commentData.id);
+
+
+            // Create the inner HTML for the new comment using data from the response
+            newCommentDiv.innerHTML = `
+                <div class="comment-row-left">
+                    <a href="/user/${commentData.user.username}">
+                        <img src="/${commentData.user.avatarPath}" alt="User Avatar" class="comment-avatar" />
+                    </a>
+                    <p>
+                        <a href="/user/${commentData.user.username}">
+                            <strong>${commentData.user.username}</strong>
+                        </a>
+                        <span>${commentData.content}</span>
+                    </p>
+                </div>
+            `;
+            const currentUserId = form.querySelector('input[name="currentUserId"]').value;
+            const postOwnerId = form.querySelector('input[name="postOwnerId"]').value;
+
+            if( currentUserId === commentData.user.id || currentUserId === postOwnerId){
+                newCommentDiv.innerHTML += `
+                    <div class="comment-row-right">
+                        <form action="/posts/deleteComment" method="post" class="delete-comment-form" data-comment-id="${commentData.id}">
+                            <input type="hidden" name="commentId" value="${commentData.id}" />
+                            <button type="submit" class="delete-button" >
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                `;
+                newCommentDiv.addEventListener('submit', (event) => deleteComment(event,newCommentDiv.querySelector('.delete-comment-form')));
+            }
+            // Append the new comment to the comments list
+            commentsList.appendChild(newCommentDiv);
+        }
+
+        // Delete Post functionality
+        const deleteForms = document.querySelectorAll('.delete-post-form');
+
+        deleteForms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Show confirmation dialog
+                if (!confirm('Are you sure you want to delete this post?')) {
+                    // User clicked cancel, do nothing
+                    return;
+                }
+
+                const postId = form.getAttribute('data-post-id');
+                const postContainer = document.querySelector('.post-container[data-post-id="' + postId + '"]');
+
+                // Optimistically remove the post from the UI
+                postContainer.parentNode.removeChild(postContainer);
+
+                // Prepare data to send
+                const formData = new FormData(form);
+
+                // Send the data via fetch API
+                fetch(form.getAttribute('action'), {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        // No further action needed since we updated the UI optimistically
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        // Optionally, show an error message or reload the page
+                        alert('There was an error deleting your post.');
+                        // Optionally, you can re-add the post to the UI or refresh the page
+                        location.reload();
+                    });
+            });
+        });
+
+        // Delete Comment functionality
+        const deleteCommentForms = document.querySelectorAll('.delete-comment-form');
+
+        deleteCommentForms.forEach(function(form) {
+            form.addEventListener('submit', (event) => deleteComment(event, form));
+        });
+    });
+</script>
+
+</body>
+</html>

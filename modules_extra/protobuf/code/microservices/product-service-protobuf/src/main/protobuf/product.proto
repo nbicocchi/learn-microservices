@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.luca.product;
+
+option java_package = "com.luca.product.protobuf";
+option java_outer_classname = "ProductProto";
+
+message Product {
+  int32 productId = 1;
+  string name = 2;
+  int32 weight = 3;
+  string serviceAddress = 4;
+}

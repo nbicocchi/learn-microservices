@@ -1,0 +1,162 @@
+openapi: 3.0.1
+info:
+  title: Raft Implementation API
+  description: API documentation for Raft Implementation with Spring Boot
+  version: "1.0.0"
+  termsOfService: "https://example.com/terms/"
+  contact:
+    name: tede12
+    url: "https://github.com/tede12"
+    email: "contact@mail.com"
+  license:
+    name: Apache 2.0
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+externalDocs:
+  description: Project Repository
+  url: "https://github.com/tede12/raft-implementation-with-spring-boot"
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: http://localhost:8001
+    description: Development server
+  - url: http://localhost:8002
+    description: Development server
+
+paths:
+  /raft/start-election:
+    post:
+      summary: Start a new election
+      operationId: startElection
+      tags:
+        - Raft Operations
+      responses:
+        '200':
+          description: Election started successfully
+        '500':
+          description: Internal server error
+  /raft/request-vote:
+    post:
+      summary: Request a vote from the node
+      operationId: requestVote
+      tags:
+        - Raft Operations
+      requestBody:
+        description: Vote request payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaftRequestVotePostRequest'
+      responses:
+        '200':
+          description: Vote granted or denied
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          description: Invalid request payload
+        '500':
+          description: Internal server error
+  /raft/initialize:
+    post:
+      summary: Initialize the node
+      operationId: initializeNode
+      tags:
+        - Raft Operations
+      responses:
+        '200':
+          description: Node initialized successfully
+        '500':
+          description: Internal server error
+  /raft/heartbeat:
+    post:
+      summary: Receive heartbeat from the leader
+      operationId: receiveHeartbeat
+      tags:
+        - Raft Operations
+      responses:
+        '200':
+          description: Heartbeat received successfully
+        '500':
+          description: Internal server error
+  /raft/status:
+    get:
+      summary: Get the current node status
+      operationId: getStatus
+      tags:
+        - Raft Operations
+      responses:
+        '200':
+          description: Node status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeStatusDTO'
+        '404':
+          description: Node state not found
+        '500':
+          description: Internal server error
+  /raft/status-stream:
+    get:
+      summary: Stream the status of all nodes in the cluster
+      operationId: streamStatus
+      tags:
+        - Raft Operations
+      responses:
+        '200':
+          description: Streaming node statuses
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    NodeStatusDTO:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          example: node1
+        state:
+          type: string
+          enum: [ FOLLOWER, LEADER, CANDIDATE, DOWN ]
+          example: FOLLOWER
+        currentTerm:
+          type: integer
+          example: 1
+        votedFor:
+          type: string
+          example: node2
+          nullable: true
+        nodeUrl:
+          type: string
+          format: uri
+          example: "http://localhost:8000"
+        isStopped:
+          type: boolean
+          example: false
+      required:
+        - nodeId
+        - state
+        - currentTerm
+        - nodeUrl
+        - isStopped
+    RaftRequestVotePostRequest:
+      type: object
+      properties:
+        candidateId:
+          type: string
+          description: The ID of the candidate requesting the vote
+          example: node2
+        candidateTerm:
+          type: integer
+          description: The term number of the candidate
+          example: 2
+      required:
+        - candidateId
+        - candidateTerm

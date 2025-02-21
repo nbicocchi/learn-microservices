@@ -1,0 +1,21 @@
+general:
+  seed: <seed>
+
+model:
+
+service:
+
+controller:
+  app:
+    host: "0.0.0.0"
+    port: 5003
+    debug: False
+    base_url: "/root"
+    service_url: "/monitoring"
+
+  db_dataset:
+    host: "db"
+    port: 5432
+    name: "wines_database"
+    user: "postgres"
+    password: "postgres"

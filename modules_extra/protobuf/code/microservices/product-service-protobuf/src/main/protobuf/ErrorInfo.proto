@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.luca.proto;
+
+option java_package = "com.luca.error.protobuf";
+option java_outer_classname = "ErrorInfoProto";
+
+message ErrorInfo {
+  string timestamp = 1;
+  string path = 2;
+  int32 httpStatus = 3;
+  string message = 4;
+}

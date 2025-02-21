@@ -1,0 +1,50 @@
+services:
+  publisher:
+    image: async-rabbitmq-publisher
+    build: async-rabbitmq-publisher
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  consumer:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 1
+
+#  rabbitmq:
+#    image: rabbitmq:latest
+#    mem_limit: 512m
+#    ports:
+#      - 5672:5672
+#      - 15672:15672
+#    healthcheck:
+#      test: ["CMD", "rabbitmqctl", "status"]
+#      interval: 5s
+#      timeout: 2s
+#      retries: 60
+
+  lavinmq:
+    image: cloudamqp/lavinmq:latest
+    mem_limit: 512m
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: [ "CMD", "lavinmqctl", "status" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60

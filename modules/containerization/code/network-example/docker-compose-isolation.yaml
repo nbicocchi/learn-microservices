@@ -1,0 +1,53 @@
+services:
+  frontend:
+    image: nginx
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf  # Custom NGINX config
+    networks:
+      - front_net
+    ports:
+      - "8080:8080"
+    depends_on:
+      echo:
+        condition: service_healthy
+
+  echo:
+    build: echo-server-logs-db-java
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - front_net
+      - back_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/logs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: jdbc_schema
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - back_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d jdbc_schema" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  front_net:
+    driver: bridge
+  back_net:
+    driver: bridge
+
+volumes:
+  pg-data:

@@ -1,0 +1,30 @@
+server.port: 8081
+
+spring.cloud.stream:
+  function:
+    definition: messageProcessor
+  bindings:
+    messageProcessor-in-0:
+      binder: local_rabbit
+      contentType: application/json
+      destination: queue.messages
+  binders:
+    local_rabbit:
+      type: rabbit
+      environment:
+        spring:
+          rabbitmq:
+            host: 127.0.0.1
+            port: 5672
+            username: guest
+            password: guest
+
+---
+spring.config.activate.on-profile: docker
+spring.cloud.stream:
+  binders:
+    local_rabbit:
+      environment:
+        spring:
+          rabbitmq:
+            host: rabbitmq

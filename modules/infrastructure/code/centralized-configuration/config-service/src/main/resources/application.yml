@@ -1,0 +1,33 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/nbicocchi/learn-microservices-config
+          skipSslValidation: true
+          timeout: 4
+
+encrypt:
+  key: ${CONFIG_SERVER_ENCRYPT_KEY}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+---
+spring.config.activate.on-profile: docker
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/

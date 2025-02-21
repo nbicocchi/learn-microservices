@@ -1,0 +1,81 @@
+
+services:
+  db:
+    image: postgres:latest
+    container_name: ml_model_tracking_db
+    restart: always
+    environment:
+      POSTGRES_DB: "wines_database"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: "pg_isready -U postgres"
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
+  mlflow_db:
+    image: postgres:latest
+    container_name: ml_model_tracking_mlflow_db
+    restart: always
+    environment:
+      POSTGRES_DB: "mlflow_database"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: "pg_isready -U postgres"
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
+  simulator:
+    build: ./microservices/simulator
+    container_name: ml_model_tracking_simulator
+    ports:
+      - "5004:5004"
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ml:
+    build: ./microservices/ml
+    container_name: ml_model_tracking_ml
+    ports:
+      - "5001:5001"
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  tracking:
+    build: ./microservices/tracking
+    container_name: ml_model_tracking_tracking
+    ports:
+      - "5002:5002"
+    links:
+      - db
+      - mlflow_db
+    depends_on:
+      db:
+        condition: service_healthy
+      mlflow_db:
+        condition: service_healthy
+
+  monitoring:
+    build: ./microservices/monitoring
+    container_name: ml_model_monitoring_monitoring
+    ports:
+      - "5003:5003"
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
+

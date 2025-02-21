@@ -1,0 +1,56 @@
+server.port: 9001
+spring.application.name: datetime-service
+
+app.default.zone: "Europe/Rome"
+
+resilience4j.ratelimiter:
+  configs:
+    default:
+      limit-for-period: 20
+      limit-refresh-period: 60s
+      timeout-duration: 0s
+  instances:
+      time:
+        base-config: default
+      date:
+        base-config: default
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+management:
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: 1.0
+
+tracing:
+  url: http://localhost:4318/v1/traces
+
+logging:
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+---
+spring.config.activate.on-profile: docker
+eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka/
+
+server:
+  port: 8080
+
+tracing:
+  url: http://jaeger:4318/v1/traces
+

@@ -1,0 +1,20 @@
+general:
+  seed: 42
+
+model:
+
+service:
+
+controller:
+  app:
+    host: "0.0.0.0"
+    port: 5004
+    debug: False
+    base_url: "/root"
+    service_url: "/simulator"
+  db:
+    host: "db"
+    port: 5432
+    name: "wines_database"
+    user: "postgres"
+    password: "postgres"

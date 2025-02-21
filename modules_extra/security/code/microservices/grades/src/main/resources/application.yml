@@ -1,0 +1,28 @@
+server.port: 8081
+server.error.include-message: always
+server.error.include-stacktrace: never
+students.uri: http://students:8080/
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://192.168.1.108:7777/realms/master
+          jwk-set-uri: http://keycloak:8080/realms/master/protocol/openid-connect/certs
+  datasource:
+    url: jdbc:postgresql://grades_pg:5432/grades
+    username: test
+    password: test
+  jpa:
+    database: postgresql
+    properties:
+      hibernate:
+        physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+spring:
+  devtools:
+    livereload:
+      enabled: true

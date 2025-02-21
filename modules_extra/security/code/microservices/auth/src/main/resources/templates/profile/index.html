@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile home</title>
+</head>
+<body>
+    <h1>Welcome, [[${user.fullName}]]</h1>
+    <p>Email address: [[${user.email}]]</p>
+    <hr>
+    <h2>Here's a list of all the students and their grades!</h2>
+    <ul>
+        <li th:each="student: ${students}">
+            <b>[[${student.name}]] [[${student.surname}]] ([[${student.id}]])</b>
+            <ul>
+                Grades:
+                <li th:each="grade: ${grades.get(student.id)}">
+                    [[${grade}]]
+                </li>
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>

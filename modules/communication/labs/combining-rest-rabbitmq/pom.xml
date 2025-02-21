@@ -1,0 +1,15 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <packaging>pom</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.nbicocchi</groupId>
+	<artifactId>combining-rest-rabbitmq</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>combining-rest-rabbitmq</name>
+	<description>Lab 3: Combining Synchronous and Asynchronous Communication</description>
+    <modules>
+        <module>sync-service</module>
+		<module>async-service</module>
+		<module>ext-api-service</module>
+    </modules>
+</project>

@@ -1,0 +1,8 @@
+server:
+  port: 7000
+
+logging:
+  level:
+    root: WARN
+    org.springframework: INFO
+    com.nbicocchi: DEBUG

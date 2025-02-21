@@ -1,0 +1,6 @@
+services:
+  properties:
+    build: .
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,no-banner

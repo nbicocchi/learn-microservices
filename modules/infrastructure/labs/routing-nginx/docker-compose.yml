@@ -1,0 +1,41 @@
+services:
+  eureka:
+    build: eureka-service
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+    depends_on:
+      - datetime-1
+      - datetime-2
+      - datetime-3
+
+  datetime-1:
+    build: datetime-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+
+  datetime-2:
+    build: datetime-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+
+  datetime-3:
+    build: datetime-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka

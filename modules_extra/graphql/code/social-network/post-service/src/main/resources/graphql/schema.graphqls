@@ -1,0 +1,31 @@
+type User {
+    id: ID!
+    username: String!
+    avatarPath: String!
+}
+
+type Comment {
+    id: ID!
+    content: String!
+    user: User!
+}
+
+type Post {
+    id: ID!
+    description: String!
+    user: User!
+    comments: [Comment]!
+    likesCount: Int!
+    imagePath: String!
+}
+
+type Query {
+    getPostById(id: ID!): Post
+    getPostsByUserId(userId: ID!): [Post]!
+    getPosts: [Post]!
+}
+
+type Mutation {
+    createPost(description: String!, userId: ID!, imagePath:String!): Post!
+    deletePost(id: ID!): Boolean
+}

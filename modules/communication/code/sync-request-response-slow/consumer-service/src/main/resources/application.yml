@@ -1,0 +1,21 @@
+server.port: 7000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+app:
+  provider-service:
+    host: localhost
+    port: 7001
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+
+app:
+  provider-service:
+    host: provider
+    port: 8081

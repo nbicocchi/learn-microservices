@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jdbc_schema
+    username: user
+    password: secret
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init.mode: always

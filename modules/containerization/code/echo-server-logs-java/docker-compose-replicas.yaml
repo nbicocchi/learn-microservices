@@ -1,0 +1,7 @@
+services:
+  echo:
+    build: .
+    ports:
+      - "5000"
+    deploy:
+      replicas: 3

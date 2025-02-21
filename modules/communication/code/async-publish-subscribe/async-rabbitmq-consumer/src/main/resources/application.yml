@@ -1,0 +1,91 @@
+server.port: 8082
+
+spring.cloud.stream:
+  function:
+    definition: messageProcessor
+  bindings:
+    messageProcessor-in-0:
+      binder: local_rabbit
+      contentType: application/json
+      destination: queue.messages
+  binders:
+    local_rabbit:
+      type: rabbit
+      environment:
+        spring:
+          rabbitmq:
+            host: 127.0.0.1
+            port: 5672
+            username: guest
+            password: guest
+
+---
+spring.config.activate.on-profile: docker
+spring.cloud.stream:
+  binders:
+    local_rabbit:
+      environment:
+        spring:
+          rabbitmq:
+            host: lavinmq
+
+---
+spring.config.activate.on-profile: groups
+spring.cloud.stream:
+  bindings:
+    messageProcessor-in-0:
+      group: messagesGroup
+
+---
+spring.config.activate.on-profile: partitioned_instance_0
+spring.cloud.stream.bindings:
+  messageProcessor-in-0:
+    consumer:
+      partitioned: true
+      instanceIndex: 0
+      instanceCount: 3
+
+---
+spring.config.activate.on-profile: partitioned_instance_1
+spring.cloud.stream.bindings:
+  messageProcessor-in-0:
+    consumer:
+      partitioned: true
+      instanceIndex: 1
+      instanceCount: 3
+
+---
+spring.config.activate.on-profile: partitioned_instance_2
+spring.cloud.stream.bindings:
+  messageProcessor-in-0:
+    consumer:
+      partitioned: true
+      instanceIndex: 2
+      instanceCount: 3
+
+---
+spring.config.activate.on-profile: routed_instance_CREATE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'CREATE'
+
+---
+spring.config.activate.on-profile: routed_instance_UPDATE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'UPDATE'
+
+---
+spring.config.activate.on-profile: routed_instance_DELETE
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: 'DELETE'

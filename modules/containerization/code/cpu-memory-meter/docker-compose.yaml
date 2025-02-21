@@ -1,0 +1,10 @@
+services:
+  meter:
+    build: .
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 512M    # Restrict memory to 512MB
+          cpus: '2'       # Restrict cpus to 2 cores

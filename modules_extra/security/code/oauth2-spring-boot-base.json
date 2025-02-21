@@ -1,0 +1,214 @@
+{
+	"info": {
+		"_postman_id": "ce648316-319e-4d83-bacd-76f3c37d15f0",
+		"name": "oauth spring boot base",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26186192"
+	},
+	"item": [
+		{
+			"name": "grades",
+			"item": [
+				{
+					"name": "get grades by student id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{grades}}/:student",
+							"host": [
+								"{{grades}}"
+							],
+							"path": [
+								":student"
+							],
+							"variable": [
+								{
+									"key": "student",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "insert grade for student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"grade\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{grades}}/:student",
+							"host": [
+								"{{grades}}"
+							],
+							"path": [
+								":student"
+							],
+							"variable": [
+								{
+									"key": "student",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all grades",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{grades}}/",
+							"host": [
+								"{{grades}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "students",
+			"item": [
+				{
+					"name": "get student by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{students}}/:student",
+							"host": [
+								"{{students}}"
+							],
+							"path": [
+								":student"
+							],
+							"variable": [
+								{
+									"key": "student",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{students}}/",
+							"host": [
+								"{{students}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Emiliano\",\n    \"surname\": \"Maccaferri\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{students}}/",
+							"host": [
+								"{{students}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "students",
+			"value": "http://localhost:7776",
+			"type": "string"
+		},
+		{
+			"key": "grades",
+			"value": "http://localhost:7777",
+			"type": "string"
+		}
+	]
+}
