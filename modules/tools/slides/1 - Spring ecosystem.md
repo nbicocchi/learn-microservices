@@ -9,7 +9,7 @@ Spring was originally built in response to the complexity of developing with [J2
 
 ![](images/trends-spring-vs-javaee.webp)
 
-Backend technologies (such as the Spring Framework) are also propelled by the massive increase in popularity of edge-cloud technologies and microservice architecture.[OReilly's Technology Trends for 2024](https://www.oreilly.com/radar/technology-trends-for-2024/) also shows how Java Technologies related to cloud software engineering and microservices architectures are currently relevant.
+Backend technologies (such as the Spring Framework) are also propelled by the **massive increase in popularity of edge-cloud technologies and microservice architecture**. [OReilly's Technology Trends for 2024](https://www.oreilly.com/radar/technology-trends-for-2024/) also shows how Java Technologies related to cloud software engineering and microservices architectures are currently relevant.
 
 
 

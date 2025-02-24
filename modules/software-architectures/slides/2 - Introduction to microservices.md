@@ -125,7 +125,7 @@ Monitoring the health and performance of many services is a challenge:
 
 - **Centralized Logging:** Logs need to be centralized, parsed, and correlated across services to provide a unified view.
 - **Distributed Tracing:** Tracking requests across services requires specialized tracing tools to understand request flow, latency issues, and dependencies.
-- **Metric Collection and Alerting:** Each service should emit metrics (e.g., latency, error rates) that can be collected, visualized, and used for alerting.
+- **Metrics Collection:** Each service should emit metrics (e.g., latency, error rates) that can be collected, visualized, and used for alerting.
 
 ### Data Consistency and Management
 

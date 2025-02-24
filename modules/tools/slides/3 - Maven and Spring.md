@@ -300,8 +300,8 @@ $ mvn spring-boot:run
 ```
 
 **It’s worth mentioning that running the application using the plugin isn’t recommended in production.** 
-* It would need the codebase to be present in the server. 
-* The process wouldn’t be optimized, as it has to pull the dependencies, build the app, and then run the application in place each time it’s executed (high Mean Time To Start).
+* **Source code has to be present on the server**. 
+* **Cold start would be slow**: it has to pull the dependencies, build the app, and then run the application (high Mean Time To Start).
 
 Usually, in production environments, it’s suitable to run a pre-packaged artifact such as a JAR file or a [container](https://www.docker.com/resources/what-container/).
 

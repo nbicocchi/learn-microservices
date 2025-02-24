@@ -20,7 +20,7 @@ If you are using IntelliJ, you can import the project by navigating to the main 
 ## Adding the Persistence Layer
 We'll create a simple [persistence layer](https://en.wikipedia.org/wiki/Persistence_(computer_science)#Persistence_layers) under the package _com.nbicocchi.product.persistence.model_, by adding a _Product_ class.
 
-```
+```java
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -43,7 +43,7 @@ This class has 3 key attributes: _uuid_, _name_ and _weight_.
 
 Next, we'll add the [repository](https://martinfowler.com/eaaCatalog/repository.html) under the package _com.nbicocchi.product.persistence.repository_:
 
-```
+```java
 @Repository
 public class ProductRepository {
     private final List<Product> products = new ArrayList<>();
@@ -85,7 +85,7 @@ public class ProductRepository {
 ## Adding the Service Layer
 Moving on to the [service layer](https://en.wikipedia.org/wiki/Multitier_architecture#Common_layers), we'll add a similar service under the package _com.nbicocchi.product.service_:
 
-```
+```java
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
@@ -115,7 +115,7 @@ public class ProductService {
 ## Adding the Presentation Layer
 Moving on to the [presentation layer](), we'll add a similar service interface under the package _com.nbicocchi.controller_:
 
-```
+```java
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -191,22 +191,13 @@ public class App implements ApplicationRunner {
 
 ## Testing the Product microservice
 
-See one product
-
-```bash
-╰> curl -X GET http://localhost:7001/products/171f5df0-b213-4a40-8ae6-fe82239ab660 | jq
-{
-  "id": 833124,
-  "uuid": "171f5df0-b213-4a40-8ae6-fe82239ab660",
-  "name": "Laptop",
-  "weight": 2.2
-}
-```
-
 See all products
 
 ```bash
-╰> curl -X GET http://localhost:7001/products | jq                                     
+curl -X GET http://localhost:7001/products | jq                                     
+```
+
+```json
 [
   {
     "id": 163814,
@@ -229,26 +220,47 @@ See all products
 ]
 ```
 
+See one product
+
+```bash
+curl -X GET http://localhost:7001/products/171f5df0-b213-4a40-8ae6-fe82239ab660 | jq
+```
+
+```json
+{
+  "id": 833124,
+  "uuid": "171f5df0-b213-4a40-8ae6-fe82239ab660",
+  "name": "Laptop",
+  "weight": 2.2
+}
+```
+
 Add a product
 
 ```bash
-╰> curl -X POST http://localhost:7001/products -H "Content-Type: application/json" -d '{                                                
+curl -X POST http://localhost:7001/products -H "Content-Type: application/json" -d '{                                                
     "uuid": "b1f4748a-0000-4fc3-be58-38316afe1574",
     "name": "Puppet",
     "weight": 0.2
   }'
-{"id":777523,"uuid":"b1f4748a-0000-4fc3-be58-38316afe1574","name":"Puppet","weight":0.2}%   
+```
+
+```json
+{"id":777523,"uuid":"b1f4748a-0000-4fc3-be58-38316afe1574","name":"Puppet","weight":0.2}
 ```
 
 Update a product
 
 ```bash
-╰> curl -X PUT http://localhost:7001/products/b1f4748a-0000-4fc3-be58-38316afe1574 -H "Content-Type: application/json" -d '{
+curl -X PUT http://localhost:7001/products/b1f4748a-0000-4fc3-be58-38316afe1574 -H "Content-Type: application/json" -d '{
     "uuid": "b1f4748a-0000-4fc3-be58-38316afe1574",
     "name": "Puppet, but nicer",
     "weight": 0.3
   }'
-{"id":777523,"uuid":"b1f4748a-0000-4fc3-be58-38316afe1574","name":"Puppet, but nicer","weight":0.3}%   
+```
+
+```json
+{"id":777523,"uuid":"b1f4748a-0000-4fc3-be58-38316afe1574","name":"Puppet, but nicer","weight":0.3}  
 ```
 
 Delete a product
