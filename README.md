@@ -7,10 +7,11 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/) [Plugins: [Envfile](https://plugins.jetbrains.com/plugin/7861-envfile)]
 * [Apache Maven](https://maven.apache.org/)
+* [Postman](https://www.postman.com/), [curl](https://curl.se/)
 * [Apache JMeter](https://jmeter.apache.org/)
-* [EvidentlyAI](https://github.com/evidentlyai/evidently)
-* [mlflow](https://mlflow.org/)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* [mlflow](https://mlflow.org/)
+* [EvidentlyAI](https://github.com/evidentlyai/evidently)
 
 ## Books
 * Microservices Patterns; Richardson
@@ -18,7 +19,6 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 * Microservices with Spring Boot 3 and Spring Cloud; Larsson
 
 ## Videos
-* [Mark Richards' YouTube Channel](https://www.youtube.com/@markrichards5014/videos)
 * [MIT 6.824 Distributed Systems](https://www.youtube.com/watch?v=cQP8WApzIQQ&list=PLrw6a1wE39_tb2fErI4-WkMbsvGQk9_UB)
 
 ## Contributing

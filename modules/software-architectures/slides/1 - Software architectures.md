@@ -7,27 +7,72 @@
 
 [David Garlan and colleagues](https://books.google.it/books/about/Software_Architecture.html?id=fh_kjgEACAAJ&redir_esc=y) defined it as: *something that defines a family of such systems in terms of a pattern of structural organization. More specifically, an architectural style determines the vocabulary of components and connectors that can be used in instances of that style, together with a set of constraints on how they can be combined.*
 
-In software, architecture styles can be classified into two main types: **monolithic** (single deployment unit of all code) and **distributed** (multiple deployment units connected through remote access protocols).
+## Local and Global Complexity
+
+- **Local Complexity**: The difficulty of understanding and modifying a single component or module.
+- **Global Complexity**: The difficulty of understanding and managing interactions across the entire system.
+
+Different architectural styles affect local and global complexity differently.
 
 ![](images/software-architectures.webp)
 
+### Monolithic Architectures
+
+- **A single deployable unit** where all functionalities are tightly integrated (UI, business, and database access logic are packaged together).
+- **Shared memory space and function calls for internal communication**.
+
+* Code for a single functionality is often easier to understand in isolation.  
+* Fewer distributed concerns like network failures or data consistency issues.  
+* Debugging and testing are straightforward since all components are in one process.
+* Deployment and versioning are simpler, as everything is released together.  
+
+As the codebase grows:
+- **Due to tight coupling, changes in one part can impact the whole system**.
+- **Do not allow independent scaling**.
+
+Naturally evolve towards:
+- a [big ball of mud](http://www.laputan.org/mud/mud.html#BigBallOfMud) (**local complexity apex**)
+
+*A big ball of mud is haphazardly structured, sprawling, sloppy, duct-tape and bailing wire, spaghetti code jungle. We’ve all seen them. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated. The overall structure of the system may never have been well-defined. If it was, it may have eroded beyond recognition. Programmers with a shred of architectural sensibility shun these quagmires. Only those who are unconcerned about architecture, and, perhaps, are comfortable with the inertia of the day-to-day chore of patching the holes in these failing dikes, are content to work on such systems.* - Brian Foote, Joseph Yoder (1999)
+
+![](images/swarch-big-ball-of-mud.webp)
+
+Dots on the perimeter represent classes, edges represent dependencies.
+
+### Distributed Architectures
+
+- **Composed of multiple independent services (developed, deployed, and scaled independently) -> lower local complexity**.
+- **Remote Procedure Calls (RPC) for communication**.
+
+* Each service is relatively small and focused on a single responsibility.  
+* Easier to understand and modify an isolated microservice.  
+* Allows independent scaling and deployment of services.  
+* Reduces the risk of a single point of failure affecting the whole system.
+
+However, they **increase global complexity**:
+- Increased complexity in handling service boundaries, API design, and data consistency.  
+- Increased operational overhead (service discovery, monitoring, logging, tracing).  
+- Network communication adds latency, failure points, and consistency challenges.
+
+Naturally evolve towards:
+- a [big ball of distributed mud]() (**global complexity apex**)
+
+Big Ball of Distributed Mud is an expression used to describe a chaotic and poorly designed distributed architecture. It occurs when:
+- Distributed components are poorly defined and overly dependent on each other.
+- There are no clear boundaries between services, leading to a "distributed monolith."
+- Communication between services is inefficient, with excessive calls, high latencies, and consistency issues.
+
+![](images/swarch-big-ball-distributed-mud.webp)
+
+
+### Choosing the Right Architecture
+
+- Monolithic systems have lower global complexity but can suffer from high local complexity as they grow.
+- Distributed systems reduce local complexity but introduce higher global complexity due to inter-service communication.
+- The best choice depends on factors like team expertise, scalability needs, and operational constraints.
+
+
 ## Monolithic Architectures
-
-Many small-to-medium web-based applications are built using a monolithic architectural style. In a monolithic architecture:
-* **An application is delivered as a single deployable software artifact**. 
-* All of the UI, business, and database access logic are packaged together into a unique application. 
-
-**Monoliths are easier to build and deploy than distributed architectures like microservices**. If your use case is well-defined and unlikely to change, it can be a good decision to start with a monolith.
-
-**When an application begins to increase in size and complexity, however, monoliths can become difficult to manage**. Each change to a monolith can have a cascading effect on other parts of the application, which may make it time consuming and expensive, especially in a production system.
-
-### Big ball of mud
-
-*A [big ball of mud](http://www.laputan.org/mud/mud.html#BigBallOfMud) is haphazardly structured, sprawling, sloppy, duct-tape and bailing wire, spaghetti code jungle. We’ve all seen them. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated. The overall structure of the system may never have been well-defined. If it was, it may have eroded beyond recognition. Programmers with a shred of architectural sensibility shun these quagmires. Only those who are unconcerned about architecture, and, perhaps, are comfortable with the inertia of the day-to-day chore of patching the holes in these failing dikes, are content to work on such systems.* - Brian Foote, Joseph Yoder (1999)
-
-![](images/big-ball-of-mud.webp)
-
-Coupling between classes (the points on the perimeter) in a Big Ball of Mud.
 
 ### Multi-Layered architecture
 
@@ -234,5 +279,5 @@ When to use:
 
 ## Resources
 - Fundamentals of Software Architectures (Chapters 9-)
-- https://www.youtube.com/@markrichards5014/videos
+* [Mark Richards' YouTube Channel](https://www.youtube.com/@markrichards5014/videos)
 
