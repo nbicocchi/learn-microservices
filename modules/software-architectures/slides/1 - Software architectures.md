@@ -37,7 +37,7 @@ Naturally evolve towards:
 
 ![](images/swarch-big-ball-of-mud.webp)
 
-Dots on the perimeter represent classes, edges represent dependencies.
+*Dots on the perimeter represent classes, edges represent dependencies.*
 
 ### Distributed Architectures
 
@@ -50,9 +50,9 @@ Dots on the perimeter represent classes, edges represent dependencies.
 * Reduces the risk of a single point of failure affecting the whole system.
 
 However, they **increase global complexity**:
-- Increased complexity in handling service boundaries, API design, and data consistency.  
-- Increased operational overhead (service discovery, monitoring, logging, tracing).  
-- Network communication adds latency, failure points, and consistency challenges.
+- **Increased complexity** in handling service boundaries, API design, and data consistency.  
+- **Increased operational overhead** (service discovery, monitoring, logging, tracing).  
+- Network communication adds **latency, failure points**.
 
 Naturally evolve towards:
 - a [big ball of distributed mud]() (**global complexity apex**)
@@ -62,7 +62,9 @@ Big Ball of Distributed Mud is an expression used to describe a chaotic and poor
 - There are no clear boundaries between services, leading to a "distributed monolith."
 - Communication between services is inefficient, with excessive calls, high latencies, and consistency issues.
 
-![](images/swarch-big-ball-distributed-mud.webp)
+![](images/swarch-big-ball-of-distributed-mud.webp)
+
+*Uber’s microservice architecture circa mid-2018 from Jaeger. Nodes represent services, edges represent dependencies (remote procedure calls).*
 
 
 ### Choosing the Right Architecture
@@ -92,11 +94,11 @@ Benefits:
 
 Drawbacks:
 * Messages tend to pass up and down through the layers, which can be inefficient.
-* **Refactoring is difficult** (domain-based features require changes to all layers).
+* **Refactoring might be difficult** (domain-based features require changes to all layers).
 
 When to use:
 * When developing simple applications, it is advisable to implement a layered architecture because it’s the simplest framework. 
-* Pre-existing, technically-oriented teams 
+* Pre-existing, technically-oriented teams.
 
 
 | **Feature**      | **Score** |
@@ -118,7 +120,7 @@ The [Clean Architecture](https://www.amazon.com/Clean-Architecture-Craftsmans-So
 ![](images/clean-architecture.webp)
 
 Benefits:
-* Clean Architecture promotes high decoupling between components, ensuring that changes in one part of the system do not affect others.
+* Clean Architecture promotes high decoupling between components, ensuring that **changes in outer layers do not affect others**.
 * It enhances the testability of the system, allowing developers to test business logic without UI or databases.
 * **Due to its modular nature, it's easier to replace or upgrade parts of the system (e.g., databases, UI frameworks) without impacting core business logic.**
 
@@ -153,7 +155,6 @@ Instead of using layered architecture with horizontal logical layers:
 Benefits:
 * **Encapsulate Business Logic** in modules, and enables high reusability, while data remains consistent and communication patterns simple.
 * **Modular components can be reused**: that can help teams establish a single source of truth.
-* **Better for teams**: easier for developers to work on different parts of the code and implement business requirements with minimum affect to each other.
 
 Drawbacks:
 * **Can't diversifying technology**: modular monoliths don't provide all benefits of microservices. If you need to diversify technology and language choices, you just can't. 
@@ -253,7 +254,7 @@ When to use:
 * **Services communicate with each other using lightweight protocols, often over HTTP or messaging queues**.
 
 Benefits:
-* **Separation of concerns**, each service handle a specific part of the business logic (and its data!) independently. 
+* **Separation of concerns**, each service handle a specific part of the business logic (**and its data!**) independently. 
 * **Quick response to changes**, each service is independent and owns its data.
 * **Common chassis** for simplified development (read more on [Chassis Pattern](https://microservices.io/patterns/microservice-chassis.html)).
 * **Avoids technology lock-in**, each service can be developed with a different tech stack.
@@ -278,6 +279,6 @@ When to use:
 | scalability     | * * * * * |
 
 ## Resources
-- Fundamentals of Software Architectures (Chapters 9-)
+- [Richards, Ford - Fundamentals of Software Architectures](https://www.oreilly.com/library/view/fundamentals-of-software/9781492043447/)
 * [Mark Richards' YouTube Channel](https://www.youtube.com/@markrichards5014/videos)
 

@@ -12,7 +12,7 @@ When applications are relatively small, a monolithic architecture offers numerou
 
 ![FTGO Monolithic Architecture](images/ftgo-monolitic-architecture.webp)
 
-### Challenges of Monolithic Architecture
+### Challenges of Monolithic Architecture (Development)
 As successful applications grow, they often outgrow the monolithic architecture, leading to various challenges:
 
 * **Slow Development**: The lengthy build process and slow startup times hinder productivity, making the edit-build-run-test cycle inefficient.
@@ -22,7 +22,7 @@ As successful applications grow, they often outgrow the monolithic architecture,
 
 ![FTGO Monolithic Hell](images/ftgo-monolitic-hell.webp)
 
-### Scaling a monolithic architecture
+### Challenges of Monolithic Architecture (Scaling)
 
 ![The Scale Cube](images/scale-cube.webp)
 
@@ -32,7 +32,9 @@ As successful applications grow, they often outgrow the monolithic architecture,
 
 In most cases, **just a few parts of the application are the choke points that require scaling**, while other components are used less.
 
-**If you scale the monolithic design, all the code for these different tasks is deployed multiple times and scaled at the same grade.** This is costly (in terms of hardware) in that all nodes have must address peak performance of the heaviest components.
+**If you scale the monolithic design, all the code for these different tasks is deployed multiple times and scaled at the same grade.** 
+* Costly (in terms of hardware): all nodes have must address peak performance of the heaviest components.
+* Slow: duplicating a large artifact, starting it, updating DNS requires **many seconds, possibly minutes**!
 
 ---
 
@@ -66,7 +68,7 @@ As the name implies, a microservices architecture is an approach to building a s
 
 Why a microservices architecture? 
 
-* **Agility**. Microservices enable better maintainability in complex, large, and highly-scalable systems by letting you create applications based on many independently deployable services that each have granular and autonomous lifecycles. 
+* **Development**. Microservices enable better maintainability in complex, large, and highly-scalable systems by letting you create applications based on many independently deployable services that each have granular and autonomous lifecycles. 
   * **Maintainability**: Smaller services are easier to maintain and update.
   * **Independent Deployment**: Services can be deployed independently, minimizing downtime.
   * **Team Autonomy**: Teams can operate independently, fostering innovation.
