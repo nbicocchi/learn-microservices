@@ -7,8 +7,7 @@
 - Create a new Maven project using [Spring Initializr](https://start.spring.io/). 
 - Add dependencies for Spring Boot (e.g., `spring-boot-starter-web`) and JUnit (e.g., `junit-jupiter`) to the `pom.xml` file.
 - Create a simple RESTful web service that returns a greeting message at the `/greet` endpoint.
-- Use Maven commands (`mvn clean`, `mvn install`) to build the project and ensure all dependencies are resolved correctly.
-- Use Maven the show the dependency tree.
+- Use Maven commands (`mvn clean`, `mvn package`) to build the project and ensure all dependencies are resolved correctly.
 
 ## Lab 2: Building a Spring Boot Application
 **Objective:** Develop a Spring Boot application with various components and configurations.
@@ -18,8 +17,7 @@
 - Implement a simple RESTful API with CRUD operations for managing a resource (e.g., `User`).
 - Configure the application properties (i.e., PostgreSQL database connection) in `application.yml`.
 - Use Maven to build and run the Spring Boot application locally.
-- Demonstrate how to build a Docker image using both the Jib Maven Plugin and `docker buildx` command.
-- Run both the PostgreSQL and your microservice with `docker compose`. 
+- Demonstrate how to build a Docker image using both the Jib Maven Plugin.
 
 ## Lab 3: Performance Testing with JMeter
 **Objective:** Use JMeter to perform load testing on a Spring Boot application.

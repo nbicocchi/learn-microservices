@@ -6,15 +6,15 @@
 
 ### Bare Metal Deployment
 
-Initially, applications were deployed on physical servers where multiple applications shared the same hardware resources. This led to conflicts between libraries, dependencies, and performance needs. One solution was to allocate separate physical servers for each application, but this resulted in high costs, underutilized resources, and increased maintenance overhead.
+Initially, applications were deployed on physical servers where multiple applications shared the same hardware resources. This led to conflicts between libraries, dependencies, and performance needs. One solution was to allocate separate physical servers for each application, but this resulted in **high costs, underutilized resources, and increased maintenance overhead**.
 
 ### Virtualized Deployment
 
-Virtualization introduced a more efficient way to utilize resources by creating multiple virtual machines (VMs) on a single physical server. This is done through a **hypervisor**, which manages the underlying hardware resources (CPU, memory, storage) and allows multiple VMs to run independently. Each VM contains its own guest operating system and application stack. This approach enhances scalability, reduces hardware costs, and provides isolation between applications. However, the overhead of running separate operating systems for each VM remains a drawback.
+Virtualization introduced a more efficient way to utilize resources by creating multiple virtual machines (VMs) on a single physical server. This is done through a **hypervisor**, which manages the underlying hardware resources (CPU, memory, storage) and allows multiple VMs to run independently. Each VM contains its own guest operating system and application stack. This approach enhances scalability, reduces hardware costs, and provides isolation between applications. However, **the overhead of running separate operating systems for each VM remains a drawback**.
 
 ### Container Deployment
 
-Containers are lightweight, standalone software units that run directly on the host's operating system, eliminating the need for a separate OS for each application. They package everything an application needs to run, including libraries, dependencies, and binaries, providing **portability**, **efficiency**, and **isolation** without the overhead of VMs. As a rule of thumb, containers provide **application isolation** while reducing resource consumption.
+Containers are lightweight, **standalone software units that run directly on the host's operating system, eliminating the need for a separate OS for each application**. They package everything an application needs to run, including libraries, dependencies, and binaries, providing **portability**, **efficiency**, and **isolation** without the overhead of VMs. As a rule of thumb, containers provide **application isolation** while reducing resource consumption.
 
 ## Chroot: the first attempt at containerization
 
@@ -90,7 +90,7 @@ Containers are ideal for developing microservices-based architectures, which dec
 
 - **Decoupling of Services**: Each service can be packaged in its own container, running independently with its own dependencies.
 - **Consistent Environments**: Containers ensure consistency across development, testing, and production environments, reducing deployment issues.
-- **Resource and Fault Isolation**: Containers provide isolation, meaning that one service failure does not affect others. This makes containers excellent for fault-tolerant systems.
+- **Resource and Fault Isolation**: Containers provide isolation, meaning that one service failure does not *directly* affect others. This makes containers excellent for fault-tolerant systems.
 - **Scalability**: Containers can be scaled independently to handle varying loads. Orchestration tools like Kubernetes make it easy to manage scaling and load balancing.
 
 ### CI/CD Integration
@@ -99,7 +99,6 @@ Containers play a crucial role in Continuous Integration/Continuous Deployment (
 
 - **Faster Build and Deployment**: Containers can be built quickly, making deployments faster and more efficient.
 - **Isolation of CI/CD Stages**: Each stage of the CI/CD pipeline (e.g., build, test, deploy) can be containerized, ensuring that issues in one stage don’t affect others.
-- **Parallel Testing**: Multiple tests can be run simultaneously in separate containers, reducing testing time.
 - **Environment Parity**: Containers ensure that code behaves the same in development, testing, and production environments.
 - **Rollback Capabilities**: Since containers are immutable, rolling back to a previous version is simple in case of deployment failures.
 
@@ -236,16 +235,22 @@ VERSION_ID=3.20.3
 
 The Docker CLI provides several commands for managing images and containers. Here are some of the most important commands:
 
-**Pull an Image**: Downloads a specified image from a Docker registry, such as Docker Hub.
+**Pull an image**: Downloads a specified image from a Docker registry.
 
 ```bash
-docker pull <image-name>
+docker pull busybox:latest
+```
+
+**Show local images**
+
+```bash
+docker images
 ```
 
 **Run a Container**: Creates and starts a container from the specified image.
 
 ```bash
-docker run <image-name>
+docker run -it busybox:latest
 ```
 
 **List Running Containers**: Displays a list of currently running containers.
@@ -257,8 +262,8 @@ docker ps
 **Start and Stop a Container**:  Starts/Stops a previously created container.
 
 ```bash
-docker start <container-id>
 docker stop <container-id>
+docker start <container-id>
 ```
 
 **Remove a Container**: Deletes a specified container. The container must be stopped before it can be removed.
@@ -271,6 +276,12 @@ docker rm <container-id>
 
 ```bash
 docker exec -it <container-id> bash
+```
+
+**Remove a Container**: Deletes a specified container. The container must be stopped before it can be removed.
+
+```bash
+docker rmi -f busybox:latest
 ```
 
 ## Docker GUI
