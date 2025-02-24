@@ -12,3 +12,11 @@ spring:
   h2:
     console:
       enabled: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  thymeleaf:
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/

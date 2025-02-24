@@ -41,14 +41,14 @@ public class CreationInteractor implements CreationInputBoundary {
         Set<ReviewEntity> reviewEntities = new HashSet<>();
 
 
-        if(!p.getRecommendations().isEmpty()){
+        if(!(p.getRecommendations() == null) ){
             p.getRecommendations().forEach(r -> {
                 RecommendationEntity recommendationEntity = (RecommendationEntity) recommendationFactory
                         .createRecommendation(r.getVersion(),r.getAuthor(),r.getRating(),r.getContent());
                 recommendationEntities.add(recommendationEntity);
             });
         }
-        if(!p.getReviews().isEmpty()){
+        if(!(p.getReviews() == null)){
             p.getReviews().forEach(r -> {
                 ReviewEntity reviewEntity = (ReviewEntity) reviewFactory
                         .createReview(r.getAuthor(),r.getSubject(),r.getContent());

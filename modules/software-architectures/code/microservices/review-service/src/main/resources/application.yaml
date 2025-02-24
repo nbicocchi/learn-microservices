@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: review-service
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init.mode: always
+  h2:
+    console:
+      enabled: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+server:
+  port: 8082
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-registry:8761/eureka/

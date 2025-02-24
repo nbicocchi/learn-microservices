@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/products.css}" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="products-container">
+        <h1>Products</h1>
+        <div class="products-list">
+            <div class="product-card" th:each="product : ${allProducts}">
+                <h2 th:text="${product.name}">Product Name</h2>
+                <p th:text="'Weight: ' + ${product.weight} + 'gr'">Weight</p>
+                <ul>
+                    <li th:text="'Reviews: ' + ${product.reviews.size()}">Reviews: 0</li>
+                    <li th:text="'Recommendations: ' + ${product.recommendations.size()}">Recommendations: 0</li>
+                </ul>
+                <!-- RETRIEVE -->
+                <button class="btn-view" th:onclick="'window.location.href=\'/products/\' + ' + ${product.productId}">
+                    VIEW PRODUCT
+                </button>
+            </div>
+        </div>
+        <div class="add-product-form">
+            <form method="post" th:action="@{/products}">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter product name" required>
+
+                <label for="weight">Weight (gr):</label>
+                <input type="number" id="weight" name="weight" placeholder="Enter weight" min="1" required>
+
+                <button type="submit" class="btn-add">ADD PRODUCT</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
+

@@ -1,0 +1,176 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f5f0;
+    color: #3c3c3c;
+}
+
+/* Navigation */
+.navbar {
+    display: flex;
+    justify-content: flex-start;
+    background-color: #4B6574;
+    padding: 10px;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar li {
+    margin-right: 20px;
+}
+
+.navbar li:hover {
+    opacity: 80%;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+/* Product Details */
+.product-details-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #3c3c3c;
+    margin-bottom: 10px;
+}
+
+.product-info-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-delete {
+    background-color: #3c3c3c;
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn-delete:hover {
+    background-color: black;
+}
+
+.recommendations-section, .reviews-section {
+    margin: 30px 0;
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: #2A3A40;
+    margin-bottom: 20px;
+}
+
+.recommendations-list {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.reviews-list {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Cards */
+.recommendation-card, .review-card {
+    background-color: #A9C8DB;
+    padding: 15px;
+    border-radius: 5px;
+    width: 250px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-right: 20px;
+}
+
+.delete-card {
+    display: flex;
+    justify-content: end;
+}
+
+.delete-card-btn {
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+}
+
+.recommendation-card .author-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    align-items: center;
+}
+
+.author-info-review {
+    display: flex;
+    justify-content: end;
+    margin-top: 20px;
+    align-items: center;
+}
+
+.rating span {
+    color: #2A3A40;
+    font-size: 1.2rem;
+}
+
+/* Forms */
+.add-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.add-form label {
+    font-weight: bold;
+    color: #4b3a2d;
+}
+
+.add-form textarea,
+.add-form input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #4b3a2d;
+    outline: none;
+    margin-right: 25px;
+    margin-left: 15px;
+}
+
+.add-form button {
+    background-color: #45A2C3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.add-form button:hover {
+    background-color: #176A94;
+}

@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+          - id: PRODUCT-SERVICE
+            uri: lb://PRODUCT-SERVICE
+            predicates:
+              - Path=/products/**
+          - id: REVIEW-SERVICE
+            uri: lb://REVIEW-SERVICE
+            predicates:
+              - Path=/reviews/**
+          - id: RECOMMENDATION-SERVICE
+            uri: lb://RECOMMENDATION-SERVICE
+            predicates:
+              - Path=/recommendations/**
+  thymeleaf:
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+server:
+  port: 8080
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-registry:8761/eureka/

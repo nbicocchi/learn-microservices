@@ -1,0 +1,52 @@
+services:
+  service-registry:
+    build: ./service-registry
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-net
+
+  gateway:
+    build: ./gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service-registry
+    networks:
+      - microservices-net
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - service-registry
+    networks:
+      - microservices-net
+
+  review-service:
+    build: ./review-service
+    container_name: review-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - service-registry
+    networks:
+      - microservices-net
+
+  recommendation-service:
+    build: ./recommendation-service
+    container_name: recommendation-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - service-registry
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge

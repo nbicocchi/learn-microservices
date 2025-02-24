@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product details</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/product_item.css}" />
+</head>
+<body>
+<nav class="navbar">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+    </ul>
+</nav>
+
+<main class="product-details-container">
+    <!-- Product Information -->
+    <h1 th:text="${product.name}">Product Name</h1>
+    <div class="product-info-button">
+        <p th:text="'Weight: ' + ${product.weight} + 'gr'">Weight: 300gr</p>
+        <!-- DELETE PRODUCT -->
+        <form th:action="@{/products/{id}(id=${product.productId})}" method="post" class="delete-form">
+            <input type="hidden" name="_method" value="delete"> <!-- field that simulate delete method -->
+            <button class="btn-delete" type="submit"> DELETE PRODUCT </button>
+        </form>
+    </div>
+
+    <!-- Recommendations Section -->
+    <section class="recommendations-section">
+        <h2>Recommendations</h2>
+        <div class="recommendations-list">
+            <div class="recommendation-card" th:each="recommendation : ${product.recommendations}">
+                <!-- DELETE -->
+                <form th:action="@{/products/{id}/recommendations/{rId}(id=${product.productId},rId=${recommendation.recommendationId})}" method="post" class="delete-card">
+                    <input type="hidden" name="_method" value="delete"> <!-- field that simulate delete method -->
+                    <button class="delete-card-btn" type="submit">x</button>
+                </form>
+                <p th:text="${recommendation.content}">content</p>
+                <div class="author-info">
+                    <span th:text="${recommendation.author}">author</span>
+                    <div class="rating">
+                        <span th:each="i : ${#numbers.sequence(1, recommendation.rating)}">&#9733;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Form to add a new recommendation -->
+        <form id="recommendationForm" class="add-form" method="post" th:action="@{/products/{productId}/recommendations(productId=${product.productId})}">
+            <label for="recommendation-content">Content:</label>
+            <textarea id="recommendation-content" name="content" placeholder="Enter recommendation content" required></textarea>
+            <label for="recommendation-author">Author:</label>
+            <input type="text" name="author" id="recommendation-author" placeholder="Author" required>
+            <label for="recommendation-rating">Rating:</label>
+            <input type="number" name="rating" id="recommendation-rating" placeholder="(1-5)" min="1" max="5" required>
+            <button type="submit">SUBMIT</button>
+        </form>
+    </section>
+
+    <hr>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+        <h2>Reviews</h2>
+        <div class="reviews-list">
+            <div class="review-card" th:each="review : ${product.reviews}">
+                <!-- DELETE -->
+                <form th:action="@{/products/{id}/reviews/{rId}(id=${product.productId},rId=${review.reviewId})}" method="post" class="delete-card">
+                    <input type="hidden" name="_method" value="delete"> <!-- field that simulate delete method -->
+                    <button class="delete-card-btn" type="submit">x</button>
+                </form>
+                <div class="review-info">
+                    <span class="subject" th:text="${review.subject}">Subject</span>
+                    <p th:text="${review.content}">
+                        Boost your product and service's credibility by adding testimonials from your clients.
+                    </p>
+                </div>
+                <div class="author-info-review">
+                    <span th:text="${review.author}">Noah Schumacher</span>
+                </div>
+            </div>
+        </div>
+        <!-- Form to add a new review -->
+        <form id="reviewForm" class="add-form" method="post" th:action="@{/products/{productId}/reviews(productId=${product.productId})}">
+            <label for="review-subject">Subject:</label>
+            <input id="review-subject" type="text" name="subject" placeholder="Subject" required>
+            <label for="review-content">Content:</label>
+            <textarea id="review-content" name="content" placeholder="Enter review content" required></textarea>
+            <label for="review-author">Author:</label>
+            <input id="review-author" type="text" name="author" placeholder="Author" required>
+            <button type="submit">SUBMIT</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>
+
+

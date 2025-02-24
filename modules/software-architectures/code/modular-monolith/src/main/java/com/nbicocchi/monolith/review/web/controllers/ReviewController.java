@@ -5,9 +5,13 @@ import com.nbicocchi.monolith.review.shared.IReviewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.NoSuchElementException;
+
+@Controller
 class ReviewController implements IReviewController{
 
     private static final Logger LOG = LoggerFactory.getLogger(ReviewController.class);
@@ -20,18 +24,30 @@ class ReviewController implements IReviewController{
     }
 
     @Override
-    public ReviewDTO createReview(@RequestBody ReviewDTO review){
-        LOG.debug("deleteCompositeProduct: Creates the review with ID: {}", review.reviewId());
-        ReviewDTO r = reviewService.save(review);
-        LOG.debug("deleteCompositeProduct: review created with ID: {}", review.reviewId());
-        return r;
+    public String createReview(Model model, @PathVariable Long productId, @ModelAttribute("review") ReviewDTO review){
+        try{
+            LOG.debug("createReview: creates a new review entity for productId: {}", productId);
+            ReviewDTO r = reviewService.save(review);
+            LOG.debug("createReview: review created");
+        }catch (RuntimeException re) {
+            LOG.warn("createReview failed", re);
+            throw re;
+        }
+        // redirect to product page
+        return ("redirect:/products/" + productId);
     }
 
     @Override
-    public void deleteReview(@PathVariable Long reviewId){
-        LOG.debug("deleteCompositeProduct: Deletes the review with ID: {}", reviewId);
-        reviewService.deleteById(reviewId);
-        LOG.debug("deleteCompositeProduct: review deleted for ID: {}", reviewId);
+    public String deleteReview(Model model, @PathVariable Long productId, @PathVariable Long reviewId){
+        LOG.debug("deleteReview: Deletes the review with ID: {}", reviewId);
+        try{
+            reviewService.deleteById(reviewId);
+        }catch (NoSuchElementException e){
+            throw new NoSuchElementException("Review with ID: " + reviewId + " not found");
+        }
+        LOG.debug("deleteReview: review deleted for ID: {}", reviewId);
+        // redirect to product page
+        return ("redirect:/products/" + productId);
     }
 
 }

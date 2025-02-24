@@ -12,3 +12,23 @@ spring:
   h2:
     console:
       enabled: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  thymeleaf:
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/
+logging:
+  level:
+    root: debug
+    org: warn
+    com.zaxxer: warn
+    org.springdoc: warn
+  pattern:
+    dateformat: yyyy-MM-dd
+
+
+
+

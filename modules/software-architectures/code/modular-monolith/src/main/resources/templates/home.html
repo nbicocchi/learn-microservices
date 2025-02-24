@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOFTWARE ARCHITECTURES</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/home.css}" />
+</head>
+<body>
+    <div class="hero">
+        <div class="overlay"></div>
+        <div class="content">
+            <div class="title-content">
+                <div class="logo">
+                    <span>UNIMORE - Distributed Edge Programming</span>
+                </div>
+                <h1>SOFTWARE ARCHITECTURES</h1>
+                <p>Modular Architecture</p>
+            </div>
+            <button class="btn" onclick="goToProductPage()">View Products
+                <script>
+                    function goToProductPage() {
+                        document.location.href = '/products';
+                    }
+                </script>
+            </button>
+        </div>
+    </div>
+</body>
+</html>
+

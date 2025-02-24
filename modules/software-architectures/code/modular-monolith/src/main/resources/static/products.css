@@ -1,0 +1,155 @@
+/* General reset */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #fff;
+    background-color: #2A3A40;
+}
+
+/* Navigation bar */
+.navbar {
+    background-color: #4B6574;
+    padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navbar li {
+    margin-right: 20px;
+}
+
+.navbar li:hover {
+    opacity: 80%;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+/* Main section */
+.products-container {
+    padding: 20px;
+    text-align: center;
+}
+
+.products-container h1 {
+    color: #fff;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+/* Product cards */
+.products-list {
+    display: flex;
+    justify-content: center;
+    justify-items: stretch;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 20px 0;
+    margin: 0 10%;
+    border-bottom: 1px solid #45A2C3;
+}
+
+.product-card {
+    background-color: #f7f3e7;
+    color: #2A3A40;
+    border-radius: 10px;
+    padding: 15px;
+    width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.product-card h2 {
+    font-size: 1.5em;
+    margin: 0 0 10px 0;
+}
+
+.product-card p {
+    font-size: 1.1em;
+    margin: 0 0 10px 0;
+}
+
+.product-card ul {
+    padding: 0 20px;
+    margin: 0 0 15px 0;
+}
+
+.product-card ul li {
+    margin-bottom: 5px;
+}
+
+/* Button */
+.btn-view {
+    background-color: #1AB6D9;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-view:hover {
+    background-color: #45A2C3;
+}
+
+/* Form Section */
+.add-product-form {
+    margin-top: 30px;
+    background-color: #2A3A40;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.add-product-form form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-product-form label {
+    font-weight: bold;
+    color: #E4EDF2;
+}
+
+.add-product-form input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #45A2C3;
+    outline: none;
+    margin-right: 20px;
+}
+
+.add-product-form input:focus {
+    border: 1px solid #45A2C3;
+}
+
+.btn-add {
+    background-color: #176A94;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 80px;
+}
+
+.btn-add:hover {
+    background-color: #48555D;
+}
+
+

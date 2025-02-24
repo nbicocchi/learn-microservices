@@ -6,16 +6,20 @@ import com.nbicocchi.monolith.recommendation.shared.IRecommendationService;
 import com.nbicocchi.monolith.recommendation.shared.RecommendationDTO;
 import com.nbicocchi.monolith.review.shared.IReviewService;
 import com.nbicocchi.monolith.review.shared.ReviewDTO;
+import com.nbicocchi.monolith.util.exceptions.NotFoundException;
+import com.nbicocchi.monolith.util.exceptions.UnprocessableEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RestController
+@Controller
 class ProductController implements IProductController{
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductController.class);
@@ -33,10 +37,21 @@ class ProductController implements IProductController{
         this.events = events;
     }
 
+    @Override
+    public String homePage(Model model) {
+        model.addAttribute("message", "Hello from Thymeleaf!");
+        return "home";
+    }
 
     @Override
-    public ProductDTO getProduct(@PathVariable Long productId){
-        LOG.debug("getCompositeProduct: lookup a product aggregate for productId: {}", productId);
+    public String getAllProducts(Model model) {
+        List<ProductDTO> products = productService.findAll().stream().map(p -> getProduct(p.productId())).collect(Collectors.toList());
+        LOG.debug("all products: {}", products);
+        model.addAttribute("allProducts", products);
+        return "products";
+    }
+
+    public ProductDTO getProduct(Long productId) {
         ProductDTO p = productService.findById(productId);
 
         List<RecommendationDTO> recommendations = recommendationService.findRecommendationsByProductId(productId);
@@ -46,39 +61,64 @@ class ProductController implements IProductController{
     }
 
     @Override
-    public List<ProductDTO> getAllProducts(){
-        return productService.findAll().stream().map(p -> getProduct(p.productId())).collect(Collectors.toList());
+    public String getProduct(Model model, @PathVariable Long productId){
+        if(productId < 0){
+            throw new UnprocessableEntityException("Invalid productId: " + productId);
+        }
+        LOG.debug("getProduct: lookup a product aggregate for productId: {}", productId);
+        try{
+            ProductDTO p = productService.findById(productId);
+
+            List<RecommendationDTO> recommendations = recommendationService.findRecommendationsByProductId(productId);
+            List<ReviewDTO> reviews = reviewService.findReviewsByProductId(productId);
+
+            ProductDTO product = createProductAggregate(p,recommendations,reviews);
+
+            model.addAttribute("product", product);
+            return "product_item";
+        }catch (NotFoundException e){
+            throw new NotFoundException("No product found with ID: " + productId);
+        }
     }
 
     @Override
-    public ProductDTO createProduct(@RequestBody ProductDTO body){
-            LOG.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.productId());
-            ProductDTO p = productService.save(body);
-            if(!body.recommendations().isEmpty()){
-                body.recommendations().forEach(r -> {
+    public String createProduct(Model model, @ModelAttribute("product") ProductDTO request){
+        try{
+            ProductDTO p = productService.save(request);
+            if(!(request.recommendations() == null)){
+                request.recommendations().forEach(r -> {
                     RecommendationDTO rec = new RecommendationDTO(r.recommendationId(),p.productId(),r.version(),r.author(),r.rating(),r.content());
                     events.publishEvent(rec);
                 });
             }
-            if(!body.reviews().isEmpty()){
-                body.reviews().forEach(r -> {
+            if(!(request.reviews()== null)){
+                request.reviews().forEach(r -> {
                     ReviewDTO rev = new ReviewDTO(r.reviewId(),p.productId(),r.author(),r.subject(),r.content());
                     events.publishEvent(rev);
                 });
             }
-            LOG.debug("createCompositeProduct: composite entities created for productId: {}", body.productId());
-            return p;
-
-
+        }catch (RuntimeException re) {
+            LOG.warn("createProduct failed", re);
+            throw re;
+        }
+        // return updated products list
+        List<ProductDTO> products = productService.findAll().stream().map(p -> getProduct(p.productId())).collect(Collectors.toList());
+        LOG.debug("all products: {}", products);
+        model.addAttribute("allProducts", products);
+        return "products";
     }
 
     @Override
-    public void deleteProduct(@PathVariable Long productId){
-        LOG.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
-        productService.deleteById(productId);
-        events.publishEvent(productId);
-        LOG.debug("deleteCompositeProduct: aggregate entities deleted for productId: {}", productId);
-
+    public String deleteProduct(Model model, @PathVariable Long productId){
+        LOG.debug("deleteProduct: Deletes a product aggregate for productId: {}", productId);
+        try{
+            productService.deleteById(productId);
+            LOG.debug("deleteProduct: aggregate entities deleted for productId: {}", productId);
+            // redirect to products list
+            return "redirect:/products";
+        }catch (NoSuchElementException e){
+            throw new NoSuchElementException("Product with ID: " + productId + " not found");
+        }
     }
 
     private ProductDTO createProductAggregate(
