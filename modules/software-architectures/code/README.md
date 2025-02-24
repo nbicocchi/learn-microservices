@@ -1,15 +1,8 @@
 ## Overview
 
-The project was developed for the Distributed Edge Programming course at the University of Modena and Reggio Emilia, based on the code found in this repository: https://github.com/nbicocchi/learn-microservices/tree/main/modules/software-architectures/code.
+This project presents 4 implementations of the same software, each built using a different architecture. These architectures explore various approaches to software design, such as monolithic and microservices. Each implementation demonstrates how different architectures can impact the internal workings of the software.
 
-The contents of this repository present 4 implementations of the same software, each built using a different architecture.
-These architectures explore various approaches to software design, such as monolithic and microservices.
-
-However, despite the different internal structures, the user interface and the available operations remain identical across all versions.
-The user will interact with the same software, transparently, regardless of the underlying architecture.
-In other words, the chosen implementation does not affect the end-user experience, who will continue to see and use the same software behavior.
-
-Each implementation demonstrates how different architectures can impact the internal workings of the software, while leaving the user interaction and functionality unchanged.
+Despite the different internal structures, the user interface and the available operations remain identical across all versions. The user will interact with the same software, transparently, regardless of the underlying architecture.
 
 **Key Highlights:**
 
