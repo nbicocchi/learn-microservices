@@ -239,13 +239,8 @@ $ curl -X GET http://localhost:5000/logs | jq
   ]
 }
 
-$ docker ps
-CONTAINER ID   IMAGE                        COMMAND                  CREATED         STATUS         PORTS                    NAMES
-44d587f97fdf   echo-server-logs-java-echo   "java -jar /applicat…"   5 minutes ago   Up 4 minutes   0.0.0.0:5000->5000/tcp   echo-server-logs-java-echo-1
-
-$ docker stop 44d587f97fdf
-$ docker start 44d587f97fdf
-
+$ docker compose down
+$ docker compose up
 $ curl -X GET http://localhost:5000/logs | jq
 {
   "lines": [
@@ -256,7 +251,13 @@ $ curl -X GET http://localhost:5000/logs | jq
 
 Instead of saving `application.log` inside the container, it can be externalized in three different ways.
 
-### Volumes
+### Named Volume
+
+- **Definition:** Defined and named manually by the user
+- **Persistence:** Persistent, exists independently of the container
+- **Access from Host:** Accessible via Docker commands
+- **Typical Usage:** Persistent data (e.g., databases)
+- **Security:** Secure, Docker-managed
 
 ```yaml
 services:
@@ -274,7 +275,7 @@ volumes:
 - **services**: Defines the services (containers) to be created. Here, only one service named `echo` is defined.
 - **build**: Instructs Docker to build the image using a Dockerfile located in the current dir.
 - **ports**: Maps a port on the host (left side) to a port on the container (right side). Here, both are set to `5000`.
-- **volumes**: Specifies volumes to be mounted inside the container. The `ymp` volume is mounted at `/tmp` within the container, which could be used for persistent storage.
+- **volumes**: Specifies volumes to be mounted inside the container. The `tmp` volume is mounted at `/tmp` within the container, which could be used for persistent storage.
 - **volumes** section: Defines the `tmp` volume, which persists data independent of the container lifecycle.
 
 ```bash
@@ -284,7 +285,13 @@ docker compose build
 docker compose up --detach
 ```
 
-### Anonymous Volumes
+### Anonymous Volume
+
+- **Definition:** Automatically created by Docker without a name
+- **Persistence:** Temporary, removed with the container
+- **Access from Host:** Not directly accessible
+- **Typical Usage:** Temporary or transient data (temporary files, logs, writable storage for read-only containers)
+- **Security:** Secure, Docker-managed
 
 ```yaml
 services:
@@ -296,7 +303,7 @@ services:
       - /tmp
 ```
 
-- **Anonymous Volume**: The path `/tmp` refers to an anonymous volume. Docker will automatically create a volume without a specific name, and it will be mounted to the `/tmp` directory inside the container. This volume is used for storing data but won't have a persistent identity unless managed externally (i.e., you won't be able to reuse or easily reference this volume by name later).
+- **volumes**: The path `/tmp` refers to an anonymous volume. Docker will automatically create a volume without a specific name, and it will be mounted to the `/tmp` directory inside the container. This volume is used for storing data but won't have a persistent identity unless managed externally (i.e., you won't be able to reuse or easily reference this volume by name later).
 
 ```bash
 export COMPOSE_FILE=docker-compose-anonvolume.yaml
@@ -305,7 +312,13 @@ docker compose build
 docker compose up --detach
 ```
 
-### Bind mounts
+### Bind mount
+
+- **Definition:** Links a host directory/file to a container path
+- **Persistence:** Depends on the host filesystem
+- **Access from Host:** Direct access from the host
+- **Typical Usage:** Sync files during development
+- **Security:** Full host access
 
 ```yaml
 services:
@@ -317,7 +330,7 @@ services:
       - ./data:/tmp
 ```
 
-- **Bind Mount**: The path `./data:/tmp` specifies a bind mount. This means that the directory `./data` on the host machine is directly mounted into the container at `/tmp`. Any changes made in the container at `/tmp` will be reflected on the host's `./data` directory and vice versa.
+- **volumes**: The path `./data:/tmp` specifies a bind mount. This means that the directory `./data` on the host machine is directly mounted into the container at `/tmp`. Any changes made in the container at `/tmp` will be reflected on the host's `./data` directory and vice versa.
 
 ```bash
 mkdir data
@@ -327,22 +340,20 @@ docker compose build
 docker compose up --detach
 ```
 
-### Summary
-
-| Feature              | Anonymous Volume                               | Named Volume                                      | Bind Mount                                      |
-|----------------------|------------------------------------------------|---------------------------------------------------|-------------------------------------------------|
-| **Definition**       | Automatically created by Docker without a name | Defined and named manually by the user            | Links a host directory/file to a container path |
-| **Persistence**      | Temporary, removed with the container          | Persistent, exists independently of the container | Depends on the host filesystem                  |
-| **Access from Host** | Not directly accessible                        | Accessible via Docker commands                    | Direct access from the host                     |
-| **Typical Usage**    | Temporary or transient data                    | Persistent data (e.g., databases)                 | Sync files during development                   |
-| **Security**         | Secure, Docker-managed                         | Secure, Docker-managed                            | Full host access                                |
-
-
 ## Networks
-One aspect that makes the Docker engine a powerful tool is the possibility of creating and managing the services' connectivity. When using Docker Compose, networks are automatically created for your services, but you can also define custom networks to:
-- Isolate groups of services. 
-- Control which services can communicate with each other. 
-- Configure advanced network options like driver types and external networks.
+One aspect that makes the Docker engine a powerful tool is the **possibility of creating and managing the services' connectivity**. When using Docker Compose, networks are automatically created for your services, but you can also define custom networks to **control which services can communicate with each other**.
+
+To list the networks created by Docker, you can run:
+
+```bash
+docker network ls
+```
+
+To inspect a specific network and see its details, including the associated containers, use:
+
+```bash
+docker network inspect <network_name>
+```
 
 Docker supports different types of networks:
 - **Bridge**: The default network type for Docker containers. It isolates containers from the host network but allows communication between containers on the same bridge network.
@@ -352,35 +363,10 @@ Docker supports different types of networks:
 
 ### Interaction with `iptables`
 
-Docker manages networking using `iptables`, a Linux utility for configuring network packet filtering rules. Here's how Docker Compose networks interact with `iptables`:
-
-#### Automatic `iptables` Rules
-When you create a network (either by running `docker-compose up` or manually), Docker automatically adds `iptables` rules to allow traffic between containers in the same network.
-
-Each bridge network is assigned a subnet, and `iptables` rules are configured to allow communication between all containers on that subnet.
-
-#### Isolation and Security
-Docker uses `iptables` to enforce isolation between networks. Containers on different networks cannot communicate with each other unless explicitly allowed through additional rules.
-
-You can customize `iptables` rules if you need finer control over traffic flow. For example, you might want to restrict access to a database container from the outside world while allowing specific application containers to connect.
-
-#### Inspecting `iptables` Rules
-You can inspect the `iptables` rules applied by Docker using the following command:
-```bash
-sudo iptables -L -n
-```
-This command lists all the rules, including those created by Docker. Look for chains like `DOCKER` that contain rules specific to Docker containers.
-
-#### Network Management Commands
-To list the networks created by Docker, you can run:
-```bash
-docker network ls
-```
-
-To inspect a specific network and see its details, including the associated containers, use:
-```bash
-docker network inspect <network_name>
-```
+Docker manages networking using `iptables`, a Linux utility for configuring network packet filtering rules:
+* When you create a network (either by running `docker-compose up` or manually), Docker automatically adds `iptables` rules to allow traffic between containers in the same network.
+* Each bridge network is assigned a subnet, and `iptables` rules are configured to allow communication between all containers on that subnet.
+* You can inspect the `iptables` rules applied by Docker using `sudo iptables -L -n`. This command lists all the rules, including those created by Docker. Look for chains like `DOCKER` that contain rules specific to Docker containers.
 
 ### First example
 In this example (code/network-example) we define the `echo` and `postgres` services connected to a custom network called `my_network`, using a `bridge` driver, which is the default for single-host setups.
@@ -432,16 +418,13 @@ docker compose build
 docker compose up --detach
 ```
 
-
 ### Second example
-A good way to use networks is for isolating a portion of the microservice ecosystem that does not need to be exposed to external networks. In this example (code/network-example), we define two networks `front_net` and `back_net`, this will allow us to hide the backend side of the network. 
-
-![](images/ecosystem.webp)
-
-In this example:
+A good way to use networks is for isolating a portion of the microservice ecosystem that does not need to be exposed to external networks. In this example (code/network-example), we define two networks `front_net` and `back_net`:
 - The `frontend` and `echo` services share the `front_net`, allowing them to communicate.
 - The `echo` and `database` services share the `back_net`, isolating database traffic from the frontend.
 - `nginx` is used as a reverse proxy for API requests forwarding
+
+![](images/ecosystem.webp)
 
 ```yaml
 services:
@@ -512,10 +495,12 @@ docker compose up --detach
 
 Heartbeat functions — commonly referred to as **health checks** — are mechanisms that periodically verify whether a service (container) is healthy and functioning as expected. Implementing heartbeat functions ensures that your application components are up and running, and allows Docker Compose to manage:
 
-* **service dependencies**
-* **restarts**
+* **dependencies**: a service needs another service to run properly.
+* **restarts**: a failing service can be restarted by Docker.
 
 ### Implementing Health Checks Using `curl`
+
+> **NOTE:** curl must be available inside the container
 
 ```yaml
 services:
@@ -538,6 +523,8 @@ services:
 - **`retries`:** Number of consecutive failures needed to mark the container as `unhealthy` (3 retries).
 
 ### Implementing Health Checks Using `wget`
+
+> **NOTE:** wget must be available inside the container
 
 Alternatively, you can use `wget` for the health check:
 
