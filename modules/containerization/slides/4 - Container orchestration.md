@@ -1,7 +1,7 @@
 # Docker Compose Overview
-Docker Compose is a powerful tool that allows us to define and manage multi-container Docker applications. It is particularly useful when working with microservice ecosystems, as it enables the easy launch and coordination of multiple containers simultaneously. With Compose, we can configure networking, define infrastructure as code, and also address scalability requirements.
+**Docker Compose is a powerful tool that allows us to define and manage multi-container Docker applications**. It is particularly useful when working with microservices ecosystems, as it enables the coordination of multiple containers. With Compose, we can configure networking, resources, and also address scalability requirements.
 
-The `docker-compose.yaml` file is the heart of Docker Compose, it is a YAML file that allows to define an application ecosystem including services, networking, disk space and more. It follows a hierarchical structure by the use of indentations.
+The `docker-compose.yaml` file follows a hierarchical structure by the use of indentations.
 
 - **services**: Defines the containers of the application, each service represents a container.
   - **[service-name]**: Name of the single service, the choice is at our discretion.
@@ -15,7 +15,17 @@ The `docker-compose.yaml` file is the heart of Docker Compose, it is a YAML file
     - **healthcheck**: Ensures that the service is healthy, specifying the interval and number of tries.
 
 ### Basic example of `docker-compose.yml`
-Now we will deploy a simple application mapped to the port 5000 (code/echo-server-logs-java). It's controller is reported below:
+Now we will deploy a simple application mapped to the port 5000. Below, the `docker-compose.yml` file.
+
+```yaml
+services:
+  echo:
+    build: .
+    ports:
+      - "5000:5000"
+```
+
+The application is a simple echo server written in Java with the capability of saving and retrieving logs (code/echo-server-logs-java). Its controller is reported below:
 
 ```java
 @Log
@@ -36,15 +46,7 @@ public class EchoController {
 }
 ```
 
-```yaml
-services:
-  echo:
-    build: .
-    ports:
-      - "5000:5000"
-```
-
-Now with everything set up, we will start the ecosystem with the `docker-compose up` command in the context of the project directory.
+We can start the ecosystem with the `docker-compose up` command in the context of the project directory.
 
 ```bash
 export COMPOSE_FILE=docker-compose-simple.yaml
@@ -126,7 +128,7 @@ curl http://localhost:8080 | jq
 }
 ```
 
-As expected the number of (perceived) cores is 2. Maximum memory (MB) represents the *estimated* maximum size of the HEAP memory. The JVM usually sets it between 25pc and 50pc of the total memory. In this case 129MB is approximately 25pc of the total 512MB.
+As expected the number of (perceived) cores is 2. Maximum memory (MB) represents the **estimated** maximum size of the HEAP memory. The JVM usually sets it between 25pc and 50pc of the total memory. In this case 129MB is approximately 25pc of the total 512MB.
 
 As a final test, you can try to allocate memory inside the service. This example allocates 10MB and works fine.
 
@@ -146,13 +148,12 @@ curl http://localhost:8080/allocate/100
 
 
 ## Replicas
-A **Replica** in Docker refers to the ability to instantiate more replicas of the same container, this allows us to scale it horizontally (code/echo-server-logs-java).
+A **Replica** in Docker refers to the ability to instantiate more instances of the same container, this allows us to scale it horizontally (code/echo-server-logs-java).
 The `deploy` field allows us to manage replicas and is composed of:
  - `mode`: **global** or **replicated**
    - `replicas`: the number of replicas.
 
-> [!NOTE]
-> If not specified, `mode` is defaulted to `replicated`
+> **NOTE:** If not specified, `mode` = `replicated` and `replicas` = `1`
 
 ```yaml
 services:
@@ -164,10 +165,9 @@ services:
       replicas: 3
 
 ```
-> [!NOTE]
-> Since the service we're replicating is mapping ports, we will specify only the container port (omitting the host port), otherwise it will show an error.
+> **NOTE:** Since the service we're replicating is mapping ports, we will specify only the container port (omitting the host port), otherwise it will show an error.
 
-As standard procedure we will start up the ecosystem and see the running containers.
+With the same procedure seen above, we start up the ecosystem.
 
 ```bash
 export COMPOSE_FILE=docker-compose-replicas.yaml
