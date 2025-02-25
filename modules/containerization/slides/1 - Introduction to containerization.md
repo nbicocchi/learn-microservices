@@ -4,15 +4,15 @@
 
 ![Containers vs VMs](images/containers-vms.webp)
 
-### Bare Metal Deployment
+### Bare Metal Deployment (Low density)
 
 Initially, applications were deployed on physical servers where multiple applications shared the same hardware resources. This led to conflicts between libraries, dependencies, and performance needs. One solution was to allocate separate physical servers for each application, but this resulted in **high costs, underutilized resources, and increased maintenance overhead**.
 
-### Virtualized Deployment
+### Virtualized Deployment (Mid density)
 
 Virtualization introduced a more efficient way to utilize resources by creating multiple virtual machines (VMs) on a single physical server. This is done through a **hypervisor**, which manages the underlying hardware resources (CPU, memory, storage) and allows multiple VMs to run independently. Each VM contains its own guest operating system and application stack. This approach enhances scalability, reduces hardware costs, and provides isolation between applications. However, **the overhead of running separate operating systems for each VM remains a drawback**.
 
-### Container Deployment
+### Container Deployment (High density)
 
 Containers are lightweight, **standalone software units that run directly on the host's operating system, eliminating the need for a separate OS for each application**. They package everything an application needs to run, including libraries, dependencies, and binaries, providing **portability**, **efficiency**, and **isolation** without the overhead of VMs. As a rule of thumb, containers provide **application isolation** while reducing resource consumption.
 
@@ -129,7 +129,7 @@ Several container image formats are in use today, each with its advantages:
 
 ## Docker Architecture
 
-Docker is an open-source platform that enables developers to automate the deployment, scaling, and management of applications within lightweight, portable containers. This guarantees that applications run consistently across different environments, regardless of the underlying machine's customized settings. Consequently, developers can write code and test it in a container that behaves the same way on any machine, leading to fewer deployment issues.
+[Docker](https://www.datadoghq.com/docker-adoption/) is an open-source platform that enables developers to automate the deployment, scaling, and management of applications within lightweight, portable containers. This guarantees that applications run consistently across different environments, regardless of the underlying machine's customized settings. Consequently, developers can write code and test it in a container that behaves the same way on any machine, leading to fewer deployment issues.
 
 ![](images/docker-architecture.webp)
 
@@ -147,7 +147,9 @@ The Docker architecture consists of several key components:
 
 - **Docker Registry**: A Docker registry is a service for storing and distributing Docker images. It acts as a repository where users can push, pull, and manage Docker images. Public registries like Docker Hub are available, and users can also set up private registries for internal use within organizations.
 
+## Container lifecycle
 
+![](images/container-lifecycle.webp)
 
 
 ## Docker key files

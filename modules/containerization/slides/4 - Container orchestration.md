@@ -1,4 +1,23 @@
 # Docker Compose Overview
+
+## Container Orchestration
+
+Container orchestration is the **automated management** of containerized applications across multiple hosts. It ensures that containers are efficiently deployed, scaled, networked, and managed in a production environment.
+* **Automated Deployment & Scheduling** – Ensures containers are placed on the right nodes.  
+* **Scaling** – Dynamically adjusts the number of containers based on demand.  
+* **Load Balancing** – Distributes traffic across containers efficiently.  
+* **Self-Healing** – Automatically restarts failed containers or reschedules them.  
+* **Service Discovery & Networking** – Manages inter-container communication.  
+* **Security & Access Control** – Manages role-based access and secrets.
+
+**Popular Container Orchestration Tools**
+
+* Kubernetes (K8s)
+* Docker Swarm
+* Apache Mesos & Marathon
+* Red Hat OpenShift
+
+## The `docker-compose.yml` file
 **Docker Compose is a powerful tool that allows us to define and manage multi-container Docker applications**. It is particularly useful when working with microservices ecosystems, as it enables the coordination of multiple containers. With Compose, we can configure networking, resources, and also address scalability requirements.
 
 The `docker-compose.yaml` file follows a hierarchical structure by the use of indentations.
@@ -14,7 +33,7 @@ The `docker-compose.yaml` file follows a hierarchical structure by the use of in
     - **environment**: Used to pass environment variables to configure containers and applications.
     - **healthcheck**: Ensures that the service is healthy, specifying the interval and number of tries.
 
-### Basic example of `docker-compose.yml`
+## Simple example
 Now we will deploy a simple application mapped to the port 5000. Below, the `docker-compose.yml` file.
 
 ```yaml
