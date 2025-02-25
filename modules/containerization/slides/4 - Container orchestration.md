@@ -55,11 +55,18 @@ docker compose build
 docker compose up --detach
 ```
 
-To test:
+To receive an echoed message:
 
 ```bash
 curl -X POST http://localhost:5000/echo -H "Content-Type: application/json" -d '{"message": "Hello, Echo Server!"}'
 ```
+
+To see the logs:
+
+```bash
+curl -X GET http://localhost:5000/logs
+```
+
 
 ## Resource limitation
 In Docker Compose we can limit CPU and memory for containers (code/cpu-memory-meter). Its controller is reported below:
@@ -119,6 +126,9 @@ docker compose up --detach
 
 ```bash
 curl http://localhost:8080 | jq
+```
+
+```json
 {
   "Total memory (MB)": 37,
   "Maximum memory (MB)": 129,
@@ -130,22 +140,25 @@ curl http://localhost:8080 | jq
 
 As expected the number of (perceived) cores is 2. Maximum memory (MB) represents the **estimated** maximum size of the HEAP memory. The JVM usually sets it between 25pc and 50pc of the total memory. In this case 129MB is approximately 25pc of the total 512MB.
 
-As a final test, you can try to allocate memory inside the service. This example allocates 10MB and works fine.
+As a final test, you can try to allocate memory inside the service. This example allocates 20MB and works fine.
 
 ```bash
-curl http://localhost:8080/allocate/10
-{"array allocation":"OK"}%
+curl http://localhost:8080/allocate/20
 ```
 
-Instead, this example allocates 100MB and produces an error.
+```json
+{"array allocation":"OK"}
+```
+
+Instead, this example allocates 200MB and produces an error.
 
 ```bash
-curl http://localhost:8080/allocate/100
-{"array allocation":"Out of memory"}%   
+curl http://localhost:8080/allocate/200
 ```
 
-
-
+```json
+{"array allocation":"Out of memory"} 
+```
 
 ## Replicas
 A **Replica** in Docker refers to the ability to instantiate more instances of the same container, this allows us to scale it horizontally (code/echo-server-logs-java).
@@ -185,20 +198,16 @@ def456         echo-server-logs-java-echo    "java -jar /applicat" ...    0.0.0.
 ghi789         echo-server-logs-java-echo    "java -jar /applicat" ...    0.0.0.0:32770->5000/tcp
 ```
 
-## Volumes and Bind Mounts
-Docker containers allow us to maintain persistent data surviving beyond the container lifecycle, facilitating sharing data between containers, backup and restore.
+We can invoke one replica with:
 
-| Feature              | Anonymous Volume                               | Named Volume                                      | Bind Mount                                      |
-|----------------------|------------------------------------------------|---------------------------------------------------|-------------------------------------------------|
-| **Definition**       | Automatically created by Docker without a name | Defined and named manually by the user            | Links a host directory/file to a container path |
-| **Persistence**      | Temporary, removed with the container          | Persistent, exists independently of the container | Depends on the host filesystem                  |
-| **Access from Host** | Not directly accessible                        | Accessible via Docker commands                    | Direct access from the host                     |
-| **Typical Usage**    | Temporary or transient data                    | Persistent data (e.g., databases)                 | Sync files during development                   |
-| **Security**         | Secure, Docker-managed                         | Secure, Docker-managed                            | Full host access                                |
+```bash
+curl -X POST http://localhost:32768/echo -H "Content-Type: application/json" -d '{"message": "Hello, Echo Server!"}'
+```
 
-_Is also important to say that if a service doesn't specify a volumes section, it means that the service won't have any volumes mounted. Essentially, **no data will be persisted outside the container** for that service._
+## External Volumes
+Docker containers allow us to **maintain persistent data surviving beyond the container lifecycle**, facilitating sharing data between containers, backup and restore. If a service doesn't specify a volumes section, **no data will be persisted outside the container**.
 
-In the following example (code/echo-server-logs-java) we have an echo server configured to save logs in '/tmp/application.log'. This file can be written inside the container or externalized with either volumes or bind mounts.
+In the following example (code/echo-server-logs-java) we have an echo server configured to save logs in '/tmp/application.log'. 
 
 ```java
 @Log
@@ -218,6 +227,34 @@ public class EchoController {
     }
 }
 ```
+
+We can stop the container, restart the container and see that the previous logs disappeared (watch the timestamp!).
+
+```bash
+$ curl -X GET http://localhost:5000/logs | jq
+
+{
+  "lines": [
+    "25-02-2025 19:07:16.968 [http-nio-5000-exec-1] INFO  c.n.echo.controller.EchoController.logs - requested_logs",
+  ]
+}
+
+$ docker ps
+CONTAINER ID   IMAGE                        COMMAND                  CREATED         STATUS         PORTS                    NAMES
+44d587f97fdf   echo-server-logs-java-echo   "java -jar /applicat…"   5 minutes ago   Up 4 minutes   0.0.0.0:5000->5000/tcp   echo-server-logs-java-echo-1
+
+$ docker stop 44d587f97fdf
+$ docker start 44d587f97fdf
+
+$ curl -X GET http://localhost:5000/logs | jq
+{
+  "lines": [
+    "25-02-2025 19:08:33.875 [http-nio-5000-exec-1] INFO  c.n.echo.controller.EchoController.logs - requested_logs"
+  ]
+}
+```
+
+Instead of saving `application.log` inside the container, it can be externalized in three different ways.
 
 ### Volumes
 
@@ -289,6 +326,17 @@ mvn clean package -Dmaven.test.skip=true
 docker compose build
 docker compose up --detach
 ```
+
+### Summary
+
+| Feature              | Anonymous Volume                               | Named Volume                                      | Bind Mount                                      |
+|----------------------|------------------------------------------------|---------------------------------------------------|-------------------------------------------------|
+| **Definition**       | Automatically created by Docker without a name | Defined and named manually by the user            | Links a host directory/file to a container path |
+| **Persistence**      | Temporary, removed with the container          | Persistent, exists independently of the container | Depends on the host filesystem                  |
+| **Access from Host** | Not directly accessible                        | Accessible via Docker commands                    | Direct access from the host                     |
+| **Typical Usage**    | Temporary or transient data                    | Persistent data (e.g., databases)                 | Sync files during development                   |
+| **Security**         | Secure, Docker-managed                         | Secure, Docker-managed                            | Full host access                                |
+
 
 ## Networks
 One aspect that makes the Docker engine a powerful tool is the possibility of creating and managing the services' connectivity. When using Docker Compose, networks are automatically created for your services, but you can also define custom networks to:
