@@ -235,50 +235,50 @@ VERSION_ID=3.20.3
 
 The Docker CLI provides several commands for managing images and containers. Here are some of the most important commands:
 
-**Pull an image**: Downloads a specified image from a Docker registry.
+**Pull an image from a Docker registry:**
 
 ```bash
 docker pull busybox:latest
 ```
 
-**Show local images**
+**Show local images:**
 
 ```bash
 docker images
 ```
 
-**Run a Container**: Creates and starts a container from the specified image.
+**Creates and starts a container from the specified image:**
 
 ```bash
 docker run -it busybox:latest
 ```
 
-**List Running Containers**: Displays a list of currently running containers.
+**List running containers**: 
 
 ```bash
 docker ps
 ```
 
-**Start and Stop a Container**:  Starts/Stops a previously created container.
+**Start and stop a container**: 
 
 ```bash
 docker stop <container-id>
 docker start <container-id>
 ```
 
-**Remove a Container**: Deletes a specified container. The container must be stopped before it can be removed.
+**Deletes a specified container. The container must be stopped before it can be removed:**
 
 ```bash
 docker rm <container-id>
 ```
 
-**Execute a Command in a Running Container**: Runs a specified command inside a running container. The `-it` flags enable an interactive terminal session.
+**Execute a command in a running container**: Runs a specified command inside a running container. The `-it` flags enable an interactive terminal session.
 
 ```bash
 docker exec -it <container-id> bash
 ```
 
-**Remove a Container**: Deletes a specified container. The container must be stopped before it can be removed.
+**Remove an image from the local registry**:
 
 ```bash
 docker rmi -f busybox:latest

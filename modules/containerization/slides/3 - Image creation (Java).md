@@ -24,7 +24,7 @@ Then, create a docker image and submit it to your local daemon. The following co
 $ docker buildx build -t $(basename $(pwd)) .
 ```
 
-**If we change something in our application, repackage it and rebuild the image we'll be able to see the build is using the cached layers except for the application layer:**
+If we change something in our application and rebuild the image we'll be able to see the build process is using the cached layers except for the application layer!
 
 ```bash
 $ docker images                              
@@ -33,7 +33,9 @@ product-service-no-db   latest    9883188cab8e   4 seconds ago   478MB
 ...
 ```
 
-Now let’s run our image. We will bind the port 8080 in the container to 8080 in our host machine:
+> **NOTE:** The final image is 478MB!
+
+Now let’s run our image:
 
 ```bash
 $ docker run -e SPRING_PROFILES_ACTIVE=docker -p 8080:8080 product-service-no-db
@@ -52,7 +54,7 @@ CONTAINER ID   IMAGE                   COMMAND                  CREATED         
 f5c2c01a895a   product-service-no-db   "java -cp @/app/jib-…"   7 seconds ago   Up 7 seconds   0.0.0.0:8080->8080/tcp   youthful_dijkstra
 ```
 
-Let's verify that there are no errors, and let’s hit our endpoint:
+Let's hit our newly created endpoint:
 
 [http://localhost:8080/products](http://localhost:8080/products)
 
@@ -84,7 +86,7 @@ Create your jar artifact inside the *target/* directory.
 $ mvn clean package
 ```
 
-Then, create a docker image and submit it to your local daemon.
+Then, create a docker image and submit it to your local Docker daemon.
 
 ```bash
 $ mvn spring-boot:build-image
@@ -104,7 +106,7 @@ The image size is substantially reduced when compared to plain docker, but the p
 
 ## Building an Image (Jib Maven Plugin)
 
-[Jib](https://github.com/GoogleContainerTools/jib) is an open-source Java tool maintained by Google for building Docker images of Java applications. It simplifies containerization since with it, **we don’t need to write a _Dockerfile_.
+[Jib](https://github.com/GoogleContainerTools/jib) is an open-source Java tool maintained by Google for building Docker images of Java applications. It simplifies containerization: **we don’t need to write a _Dockerfile_**.
 
 Google publishes Jib as both a Maven and a Gradle plugin. **This saves us separate docker build/push commands and simplifies adding this to a CI pipeline.**
 
@@ -219,7 +221,13 @@ ENTRYPOINT ["java","-jar","/application.jar"]
 
 ### Build your own image using jlink and multi-stage dockerfile
 
-`jlink` is a tool that can be used to create a custom runtime image that contains only the modules that are needed to run your application.
+`jlink` is a **tool that can be used to create a custom runtime image** that contains only the modules that are needed to run your application.
+
+We can also make use of a **multi-stage process**. We have two stages, the first stage is used to build a custom JRE image using jlink and the second stage is used to package the application in a slim alpine image.
+
+* In the first stage, we used the eclipse-temurin:17-jdk-alpine image to build a custom JRE image using jlink. Then we run jlink to build a small JRE image that contains all the modules by using --add-modules ALL-MODULE-PATH that are needed to run the application.
+
+* In the second stage, we used the alpine image (which is a quite small 3Mb) to package our application) as base image, we then took the custom JRE from the first stage and use it as our JAVA_HOME.
 
 ```dockerfile
 # First stage, build the custom JRE
@@ -247,14 +255,6 @@ USER $APPLICATION_USER
 
 ENTRYPOINT [ "java", "-jar", "/application.jar" ]
 ```
-
-We have two stages, the first stage is used to build a custom JRE image using jlink and the second stage is used to package the application in a slim alpine image.
-
-* In the first stage, we used the eclipse-temurin:17-jdk-alpine image to build a custom JRE image using jlink. Then we run jlink to build a small JRE image that contains all the modules by using --add-modules ALL-MODULE-PATH that are needed to run the application.
-
-* In the second stage, we used the alpine image (which is a quite small 3Mb) to package our application) as base image, we then took the custom JRE from the first stage and use it as our JAVA_HOME.
-
-* The rest of the Dockerfile is the same as the previous one, just copying artifacts and setting the entrypoint using a custom user (not root).
 
 **Using this approach, the final image is 170MB.**
 
