@@ -16,65 +16,90 @@ Different architectural styles affect local and global complexity differently.
 
 ![](images/software-architectures.webp)
 
-### Monolithic Architectures
+## Monolithic Architectures
 
-- **A single deployable unit** where all functionalities are tightly integrated (UI, business, and database access logic are packaged together).
-- **Shared memory space and function calls for internal communication**.
+A **monolithic architecture** is a software development approach where an application is built as a **single and unified unit**. In this architecture, all components (such as the user interface, business logic, and database operations) are tightly integrated into one codebase and typically run as a single process.
 
-* Code for a single functionality is often easier to understand in isolation.  
-* Fewer distributed concerns like network failures or data consistency issues.  
-* Debugging and testing are straightforward since all components are in one process.
-* Deployment and versioning are simpler, as everything is released together.  
 
-As the codebase grows:
-- **Due to tight coupling, changes in one part can impact the whole system**.
-- **Do not allow independent scaling**.
+### Benefits of Monolithic Architecture
 
-Naturally evolve towards:
-- a [big ball of mud](http://www.laputan.org/mud/mud.html#BigBallOfMud) (**local complexity apex**)
+When applications are relatively small, a monolithic architecture offers numerous advantages such as:
 
-*A big ball of mud is haphazardly structured, sprawling, sloppy, duct-tape and bailing wire, spaghetti code jungle. We’ve all seen them. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated. The overall structure of the system may never have been well-defined. If it was, it may have eroded beyond recognition. Programmers with a shred of architectural sensibility shun these quagmires. Only those who are unconcerned about architecture, and, perhaps, are comfortable with the inertia of the day-to-day chore of patching the holes in these failing dikes, are content to work on such systems.* - Brian Foote, Joseph Yoder (1999)
+- **Wide collection of tools**: Integrated Development Environments (IDEs) and developer tools (e.g. *debugger*) are optimized for building a single application, simplifying development.
+- **Straightforward Testing**: End-to-end tests can be written to launch the application, invoke the REST API, and test the UI with tools like Selenium.
+- **Simple Deployment**: Developers can simply copy the WAR file to a server with Tomcat installed for deployment, moreover they can change the code and database schema, then build and deploy the application seamlessly.
+- **Performance**: Faster communication between components since everything is in one process.
 
-![](images/swarch-big-ball-of-mud.webp)
+
+> [!NOTE]
+> A WAR (Web Application Archive) file is a packaged file used to distribute and deploy Java-based web applications. It is essentially a compressed archive (ZIP format) that contains all the necessary components and resources.
+
+![FTGO Monolithic Architecture](images/ftgo-monolitic-architecture.webp)
+
+### Challenges of Monolithic Architecture
+
+Monolithic architectures due to several factors evolves naturally towards a [big ball of mud](http://www.laputan.org/mud/mud.html#BigBallOfMud) (**local complexity apex**).
+
+> *A big ball of mud is haphazardly structured, sprawling, sloppy, duct-tape and bailing wire, spaghetti code jungle. We’ve all seen them. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated. The overall structure of the system may never have been well-defined. If it was, it may have eroded beyond recognition. Programmers with a shred of architectural sensibility shun these quagmires. Only those who are unconcerned about architecture, and, perhaps, are comfortable with the inertia of the day-to-day chore of patching the holes in these failing dikes, are content to work on such systems.* - Brian Foote, Joseph Yoder (1999)
+
+![Big ball of mud](images/swarch-big-ball-of-mud.webp)
 
 *Dots on the perimeter represent classes, edges represent dependencies.*
 
-### Distributed Architectures
+---
 
-- **Composed of multiple independent services (developed, deployed, and scaled independently) -> lower local complexity**.
-- **Remote Procedure Calls (RPC) for communication**.
+When a successful application grows, the inexorable degradation of its structure leads to a high degree of coupling of the components:
 
-* Each service is relatively small and focused on a single responsibility.  
-* Easier to understand and modify an isolated microservice.  
-* Allows independent scaling and deployment of services.  
-* Reduces the risk of a single point of failure affecting the whole system.
-
-However, they **increase global complexity**:
-- **Increased complexity** in handling service boundaries, API design, and data consistency.  
-- **Increased operational overhead** (service discovery, monitoring, logging, tracing).  
-- Network communication adds **latency, failure points**.
-
-Naturally evolve towards:
-- a [big ball of distributed mud]() (**global complexity apex**)
-
-Big Ball of Distributed Mud is an expression used to describe a chaotic and poorly designed distributed architecture. It occurs when:
-- Distributed components are poorly defined and overly dependent on each other.
-- There are no clear boundaries between services, leading to a "distributed monolith."
-- Communication between services is inefficient, with excessive calls, high latencies, and consistency issues.
-
-![](images/swarch-big-ball-of-distributed-mud.webp)
-
-*Uber’s microservice architecture circa mid-2018 from Jaeger. Nodes represent services, edges represent dependencies (remote procedure calls).*
+- **Due to tight coupling, changes in one part can impact the whole system**.
+- **Do not allow independent scaling**.
 
 
-### Choosing the Right Architecture
+#### Development issues
 
-- Monolithic systems have lower global complexity but can suffer from high local complexity as they grow.
-- Distributed systems reduce local complexity but introduce higher global complexity due to inter-service communication.
-- The best choice depends on factors like team expertise, scalability needs, and operational constraints.
+- **Slow Development**: The lengthy build process and slow startup times hinder productivity, making the edit-build-run-test cycle inefficient.
+- **Testing Challenges**: The large size of the application makes thorough testing difficult, allowing bugs to slip into production.
+- **Long Deployment Path**: Updating production becomes cumbersome, often limiting updates to once a month and making continuous deployment nearly impossible.
+- **Obsolete Technology Stack**: The monolithic structure hampers the adoption of new frameworks and languages, as rewriting the entire application is costly and risky.
+
+![FTGO Monolithic Hell](images/ftgo-monolitic-hell.webp)
+
+#### Scaling issues
+
+Different kind of scaling options are describable thanks to **The Scale Cube**:
+
+![The Scale Cube](images/scale-cube.webp)
+
+**X-axis Scaling**: Involves running multiple instances of the monolithic application behind a load balancer to handle increased load. 
+
+![X-axis Scaling](images/scale-cube-x.webp)
+
+In most cases, **just a few parts of the application are the choke points that require scaling**, while other components are used less.
+
+**If you scale the monolithic design, all the code for these different tasks is deployed multiple times and scaled at the same grade.** 
+* Costly (in terms of hardware): all nodes have must address peak performance of the heaviest components.
+* Slow: duplicating a large artifact, starting it, updating DNS requires **many seconds, possibly minutes**!
+
+---
+
+**Z-axis Scaling**: Each instance is responsible for only a subset of the data, allowing for more efficient resource usage (e.g., routing requests by userId).
+
+![Z-axis Scaling](images/scale-cube-z.webp)
+
+Scaling a monolithic application by **data sharding** can help manage large datasets, but it has several downsides:
+
+**Complex Data Management**: Sharding requires routing queries to the correct shard, complicates joins across shards, and makes consistency harder to enforce, particularly for transactions and foreign key relationships.
+
+**Limited Scalability**: Sharding only scales the database layer, leaving other layers (like business logic) unoptimized. This can lead to bottlenecks in the application, and inter-shard queries may add latency.
+
+**Operational Overhead**: Sharded databases require extra maintenance, like rebalancing or splitting shards over time. This is complex in a monolithic app where schema changes affect many areas simultaneously.
+
+---
+
+**Y-axis Scaling**: Introduces functional decomposition, where each service is a mini-application implementing focused functionality.
+
+![Y-axis Scaling](images/scale-cube-y.webp)
 
 
-## Monolithic Architectures
 
 ### Multi-Layered architecture
 
@@ -175,6 +200,34 @@ When to use:
 
 
 ## Distributed Architectures
+
+A **distributed architecture** is an application built as a collection of interconnected components running on multiple systems (servers, nodes, or machines). These components communicate over a network, working together to provide functionality while distributing the workload.
+
+* Each service is relatively small and focused on a single responsibility.  
+* Easier to understand and modify an isolated microservice.  
+* Allows independent scaling and deployment of services.  
+* Reduces the risk of a single point of failure affecting the whole system.
+
+Independent component uses **Remote Procedure Calls (RPC) for communication**.
+
+Given that distributed architectures are composed of multiple *small* independent services, they decrease local complexity respect to [monolithic architectures](#monolithic-architectures). However, they **increase global complexity**:
+
+- **Increased complexity** in handling service boundaries, API design, and data consistency.  
+- **Increased operational overhead** (service discovery, monitoring, logging, tracing).  
+- Network communication adds **latency, failure points**.
+
+
+Distributed architectures naturally evolve towards a [big ball of distributed mud]() (**global complexity apex**).
+
+Big Ball of Distributed Mud is an expression used to describe a chaotic and poorly designed distributed architecture. It occurs when:
+- Distributed components are poorly defined and overly dependent on each other.
+- There are no clear boundaries between services, leading to a "distributed monolith."
+- Communication between services is inefficient, with excessive calls, high latencies, and consistency issues.
+
+![](images/swarch-big-ball-of-distributed-mud.webp)
+
+*Uber’s microservice architecture circa mid-2018 from Jaeger. Nodes represent services, edges represent dependencies (remote procedure calls).*
+
 
 ### Service-based architecture
 
@@ -277,6 +330,17 @@ When to use:
 | maintainability | * * * * * |
 | evolvability    | * * * * * |
 | scalability     | * * * * * |
+
+
+
+## Choosing the Right Architecture
+
+- Monolithic systems have lower global complexity but can suffer from high local complexity as they grow.
+- Distributed systems reduce local complexity but introduce higher global complexity due to inter-service communication.
+- The best choice depends on factors like team expertise, scalability needs, and operational constraints.
+
+
+
 
 ## Resources
 - [Richards, Ford - Fundamentals of Software Architectures](https://www.oreilly.com/library/view/fundamentals-of-software/9781492043447/)
