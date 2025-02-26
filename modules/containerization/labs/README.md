@@ -4,19 +4,20 @@
 **Objective:** Create a Dockerfile that sets up a Docker image containing a Java application.
 
 **Instructions:**
-- Write a Dockerfile that uses an official `openjdk` base image (e.g., `openjdk:21-jdk`).
+- Write a Dockerfile that uses `eclipse-temurin:21` as base image.
 - Add a simple Java application (built as a jar artifact) that prints "Hello, Docker!".
 - Run the Java application whenever the container is started.
-- Build another image producing the same output (prints "Hello, Docker!") but using Python.
 
 ## Lab 2: Writing a Docker Compose File for a Java Spring Boot Web Application and Database
 **Objective:** Write a Docker Compose file to define two containers: one for a Java Spring Boot web application and another for a PostgreSQL database.
 
 **Instructions:**
+- Create a new Spring Boot application using the [Spring Initializr](https://start.spring.io/), selecting appropriate dependencies (e.g., Spring Web, Spring Data JPA).
+- Implement a simple RESTful API with CRUD operations for managing a resource (e.g., `User`).
+- The Spring Boot application should connect to the PostgreSQL database.
 - Write a `docker-compose.yml` file that defines a Spring Boot web application and a PostgreSQL database.
-- The Spring Boot application should connect to the PostgreSQL database and retrieve data (e.g., customer info).
-- Define networking between the two containers (the application has to be exposed while PostgreSQL runs inside the Docker network) and use volumes to persist PostgreSQL data.
-- Use Docker Compose to start the containers and test the application.
+- Define networking between the two containers (the application has to be exposed while PostgreSQL runs inside the Docker network).
+- Use a named volume to persist PostgreSQL data.
 
 ## Lab 3: Resource Limiting
 **Objective:** Set CPU and memory limits on a Java container and monitor its usage.

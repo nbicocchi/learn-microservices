@@ -1,4 +1,4 @@
-package com.nbicocchi.writing_docker_compose;
+package com.nbicocchi.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -7,8 +7,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: jdbc_schema
-    ports:
-      - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
     healthcheck:
@@ -17,14 +15,12 @@ services:
       timeout: 10s
       retries: 5
 
-  backend:
-    build: .
+  application:
+    build: user-application
     depends_on:
       - postgres
     ports:
       - "8080:8080"
-    networks:
-      - my_custom_network
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jdbc_schema
       SPRING_DATASOURCE_USERNAME: user

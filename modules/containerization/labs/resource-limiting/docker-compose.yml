@@ -7,8 +7,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: jdbc_schema
-    ports:
-      - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
     healthcheck:
@@ -22,8 +20,8 @@ services:
           cpus: '1'
           memory: '512M'
 
-  backend:
-    build: .
+  application:
+    build: user-application
     depends_on:
       - postgres
     ports:
@@ -32,6 +30,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jdbc_schema
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: secret
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '512M'
 
 volumes:
   pg-data:
