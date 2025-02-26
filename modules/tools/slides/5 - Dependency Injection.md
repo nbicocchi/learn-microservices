@@ -99,8 +99,8 @@ Note that since we have a single constructor, the _@Autowired_ annotation is opt
 ### Setter Injection
 
 In setter-based injection, **we inject dependencies using the setter methods** of the required dependencies declared as fields:
-* optional dependencies
-* dependencies changes at runtime
+* **optional dependencies**
+* **dependencies changes at runtime**
 
 ```java
 @Service

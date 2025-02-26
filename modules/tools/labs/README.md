@@ -5,19 +5,19 @@
 
 **Instructions:**
 - Create a new Maven project using [Spring Initializr](https://start.spring.io/). 
-- Add dependencies for Spring Boot (e.g., `spring-boot-starter-web`) and JUnit (e.g., `junit-jupiter`) to the `pom.xml` file.
-- Create a simple RESTful web service that returns a greeting message at the `/greet` endpoint.
-- Use Maven commands (`mvn clean`, `mvn package`) to build the project and ensure all dependencies are resolved correctly.
+- Add `lombok`, `spring-boot-starter-web` and `spring-boot-starter-test` to the project dependencies.
+- Create a REST controller that returns a greeting message at the `/greet` endpoint (GET).
+- Use Maven commands (`mvn clean`, `mvn package`, `mvn dependency:tree`) to build the project and ensure all dependencies are resolved correctly.
 
-## Lab 2: Building a Spring Boot Application
+## Lab 2: Building a Spring Application
 **Objective:** Develop a Spring Boot application with various components and configurations.
 
 **Instructions:**
 - Create a new Spring Boot application using the [Spring Initializr](https://start.spring.io/), selecting appropriate dependencies (e.g., Spring Web, Spring Data JPA).
 - Implement a simple RESTful API with CRUD operations for managing a resource (e.g., `User`).
-- Configure the application properties (i.e., PostgreSQL database connection) in `application.yml`.
+- Configure the application properties for establishing a connection with an H2 in-memory database.
 - Use Maven to build and run the Spring Boot application locally.
-- Demonstrate how to build a Docker image using both the Jib Maven Plugin.
+- Demonstrate how to build a Docker image using the Jib Maven Plugin.
 
 ## Lab 3: Performance Testing with JMeter
 **Objective:** Use JMeter to perform load testing on a Spring Boot application.
@@ -42,4 +42,3 @@
 11. How does a logging system work, and how can log levels be used effectively during both development and production?
 12. How do Spring Boot Actuators help in managing a microservice in a production environment?
 13. What are the key features of the Spring Data library, particularly in relation to JPA?
-14. What is JMeter, and how is it used for performance testing of web applications?
