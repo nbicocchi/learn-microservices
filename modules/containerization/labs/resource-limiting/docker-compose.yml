@@ -16,6 +16,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '512M'
 
   backend:
     build: .
@@ -23,8 +28,6 @@ services:
       - postgres
     ports:
       - "8080:8080"
-    networks:
-      - my_custom_network
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jdbc_schema
       SPRING_DATASOURCE_USERNAME: user
@@ -32,4 +35,3 @@ services:
 
 volumes:
   pg-data:
-

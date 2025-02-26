@@ -18,7 +18,7 @@
 - Define networking between the two containers (the application has to be exposed while PostgreSQL runs inside the Docker network) and use volumes to persist PostgreSQL data.
 - Use Docker Compose to start the containers and test the application.
 
-## Lab 3: Resource Limiting and Monitoring for Java Containers
+## Lab 3: Resource Limiting
 **Objective:** Set CPU and memory limits on a Java container and monitor its usage.
 
 **Instructions:**
