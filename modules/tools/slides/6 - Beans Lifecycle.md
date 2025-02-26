@@ -3,9 +3,18 @@
 When the Spring application starts up, **Application Context** starts instantiating objects called _beans_ in Spring terminology to make them available to the ecosystem.
 
 ## Contributing Beans to the Context
-We can create beans in several ways. For this example, we’ll use a simple and highly common option: a configuration class where we manually define a bean.
+We can create beans in several ways. 
 
-Let's create a new _PersistenceConfig_ class:
+The simplest stereotype annotation we can use is _@Component._ Basically, during the bootstrapping process, **Spring will scan for any classes annotated with _@Component_ and will instantiate them as beans.**
+
+```java
+@Component
+public class ProductRepository {
+    // ...
+}
+```
+
+Another highly common option is a configuration class where we manually define a bean.
 
 ```java
 @Configuration
@@ -20,22 +29,14 @@ public class PersistenceConfig {
 
 **The _@Configuration_ annotation indicates to Spring that this class needs to be processed by the Spring Container** because it will contribute bean definitions to it. And, of course, the _@Bean_ annotation is one such actual bean definition. In our case, this is a bean named _productRepository,_ as that’s the name of the method.
 
-By default, **Spring Boot loads all classes annotated with _@Bean_, _@Component_, _@Configuration_ etc that are located in the same package as the main class or in all sub-packages of this.** See the _@ComponentScan_ annotation options to extend the search to other packages.
+By default, **Spring Boot loads all classes annotated with _@Component_, _@Configuration_ etc that are located in the same package as the main class or in all sub-packages of this.** See the _@ComponentScan_ annotation options to extend the search to other packages.
 
-## Spring Component Scanning
-The simplest stereotype annotation we can use is _@Component._ Basically, during the bootstrapping process, **Spring will scan for any classes annotated with _@Component_ and will instantiate them as beans.**
+> **NOTE:** we never actually defined component scanning explicitly. This is because **_@SpringBootApplication_ is already using the annotation**. If we go to the _@SpringBootApplication_ definition (In Intellij: View > Jump to Source), we'll see that is includes the _@ComponentScan_ annotation.
 
-```java
-@Component
-public class ProductRepository {
-    // ...
-}
-```
 
-Note that we never actually defined component scanning explicitly. This is because **_@SpringBootApplication_ is already using the annotation**. If we go to the _@SpringBootApplication_ definition (In Intellij: View > Jump to Source), we'll see that is includes the _@ComponentScan_ annotation.
 
 ## Stereotype Annotations
-Besides _@Component_, there are, a few more stereotype annotations that aren’t actually that different. They use _@Component_ under the hood and just bring an extra layer of semantics on top.
+Besides _@Component_, there are a few more stereotype annotations that use _@Component_ under the hood and just bring an extra layer of semantics on top.
 
 For example, on the _ProductRepository_ we can replace _@Component_ with the _@Repository_ annotation:
 
@@ -61,8 +62,6 @@ public class ProductService {
 public class ProductController {
     // ...
 }
-
-
 ```
 
 ## Bean Lifecycle

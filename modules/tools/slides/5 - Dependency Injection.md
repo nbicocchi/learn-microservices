@@ -247,22 +247,102 @@ public class Driver {
 }
 ```
 
-## General Best Practices for Dependency Injection:
+## General Best Practices for Dependency Injection
 
-1. **Prefer Constructor Injection**:
+1. **Prefer constructor injection**:
     - Constructor injection makes the object’s dependencies clear and enforces immutability. It also makes unit testing easier since dependencies can be mocked and injected via the constructor.
 
-2. **Avoid Field Injection in Business Logic**:
+2. **Avoid field injection**:
     - Field injection hides the object’s dependencies, increasing coupling and making the class harder to test. Use setter or constructor injection instead.
 
-3. **Handle Optional Dependencies with Setter Injection**:
+3. **Handle optional dependencies with setter injection**:
     - Setter injection is ideal when some dependencies are optional. Constructor injection should be used for mandatory dependencies, while setter injection can be used for those that might not always be provided.
 
-4. **Use `@Qualifier` and `@Primary` for Multiple Beans**:
+4. **Use `@Qualifier` and `@Primary` for multiple beans implementing the same interface**:
     - When you have multiple beans of the same type, use `@Qualifier` to specify which one to inject, or mark one of them with `@Primary` to make it the default.
 
-5. **Avoid Circular Dependencies**:
+5. **Avoid circular dependencies**:
     - Circular dependencies can cause issues with injection, especially with constructor injection. Spring will throw an error if it detects circular dependencies at runtime, so design your beans to avoid this.
+
+## Circular Dependencies in Spring
+
+A **circular dependency** occurs when two or more beans in a Spring application depend on each other, creating a cycle that Spring cannot resolve automatically. This situation typically arises when using **constructor-based dependency injection**, leading to a `BeanCurrentlyInCreationException`.
+
+Consider the following two Spring beans:
+
+```java
+@Component
+public class A {
+    private final B b;
+
+    @Autowired
+    public A(B b) {
+        this.b = b;
+    }
+}
+```
+
+```java
+@Component
+public class B {
+    private final A a;
+
+    @Autowired
+    public B(A a) {
+        this.a = a;
+    }
+}
+```
+
+Here, `A` depends on `B`, and `B` depends on `A`, creating a circular dependency.
+
+### How Spring Handles Circular Dependencies
+
+Spring can resolve circular dependencies **only if at least one of the dependencies is injected via a setter or field injection**, allowing the container to create one bean first and inject the other later.
+
+**Setter Injection (Recommended)**
+
+```java
+@Component
+public class A {
+    private B b;
+
+    @Autowired
+    public void setB(B b) {
+        this.b = b;
+    }
+}
+```
+
+```java
+@Component
+public class B {
+    private A a;
+
+    @Autowired
+    public void setA(A a) {
+        this.a = a;
+    }
+}
+```
+
+**`@Lazy` Annotation**
+
+Another approach is marking one of the dependencies as `@Lazy`, delaying its initialization until it's actually needed.
+
+```java
+@Component
+public class A {
+    private final B b;
+
+    @Autowired
+    public A(@Lazy B b) {
+        this.b = b;
+    }
+}
+```
+
+This tells Spring to inject `B` into `A` only when it is actually required, breaking the cycle.
 
 ## Resources
 - [Inversion of Control and Dependency Injection with Spring](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)
