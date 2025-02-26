@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewService implements IReviewService {
@@ -47,8 +48,7 @@ public class ReviewService implements IReviewService {
         if(p.isEmpty())
             throw new NotFoundException();
         try{
-            repo.deleteReviewById(reviewId);
-            repo.flush();
+            repo.deleteById(reviewId);
         }catch (NotFoundException e){
             throw new NotFoundException("No review found with ID: " + reviewId);
         }
@@ -56,8 +56,12 @@ public class ReviewService implements IReviewService {
 
     @Override
     public void deleteReviews(Long productId) {
+        List<Long> reviews = findReviewsByProductId(productId)
+                .stream()
+                .map(ReviewDTO::reviewId)
+                .collect(Collectors.toList());
         try{
-            repo.deleteAllReviewsByProductId(productId);
+            repo.deleteAllById(reviews);
         }catch (NotFoundException e){
             throw new NotFoundException("No product found with ID: " + productId);
         }

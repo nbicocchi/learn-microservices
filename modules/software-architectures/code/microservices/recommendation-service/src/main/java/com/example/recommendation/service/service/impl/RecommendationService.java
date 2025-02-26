@@ -9,7 +9,6 @@ import com.example.recommendation.service.web.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -21,12 +20,10 @@ public class RecommendationService implements IRecommendationService {
     private static final Logger LOG = LoggerFactory.getLogger(RecommendationService.class);
     private final RecommendationRepository repo;
     private final RecommendationMapper mapper;
-    private final WebClient webClient;
 
-    public RecommendationService(RecommendationRepository recommendationRepository, RecommendationMapper recommendationMapper,  WebClient.Builder webClientBuilder) {
+    public RecommendationService(RecommendationRepository recommendationRepository, RecommendationMapper recommendationMapper) {
         this.repo = recommendationRepository;
         this.mapper = recommendationMapper;
-        this.webClient = webClientBuilder.build();
     }
 
     @Override
@@ -50,8 +47,7 @@ public class RecommendationService implements IRecommendationService {
         if(p.isEmpty())
             throw new NotFoundException();
         try {
-            repo.deleteRecommendationById(recommendationId);
-            repo.flush();
+            repo.deleteById(recommendationId);
         }catch (NoSuchElementException e) {
             throw new NotFoundException("No recommendation found with ID: " + recommendationId);
         }
@@ -59,8 +55,12 @@ public class RecommendationService implements IRecommendationService {
 
     @Override
     public void deleteRecommendations(Long productId) {
+        List<Long> recommendations = findRecommendationsByProductId(productId)
+                .stream()
+                .map(RecommendationDTO::recommendationId)
+                .toList();
         try{
-            repo.deleteAllRecommendationsByProductId(productId);
+            repo.deleteAllById(recommendations);
         }catch (NoSuchElementException e){
             throw new NoSuchElementException("No product found with ID: " + productId);
         }

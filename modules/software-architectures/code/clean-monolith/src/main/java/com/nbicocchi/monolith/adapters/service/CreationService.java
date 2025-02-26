@@ -3,7 +3,7 @@ package com.nbicocchi.monolith.adapters.service;
 import com.nbicocchi.monolith.adapters.persistence.implementation.Product;
 import com.nbicocchi.monolith.adapters.persistence.implementation.Recommendation;
 import com.nbicocchi.monolith.adapters.persistence.implementation.Review;
-import com.nbicocchi.monolith.adapters.persistence.repository.IProductCompositeRepository;
+import com.nbicocchi.monolith.adapters.persistence.repository.IProductRepository;
 import com.nbicocchi.monolith.adapters.api.mapper.ProductAggregateMapper;
 import com.nbicocchi.monolith.adapters.api.mapper.RecommendationMapper;
 import com.nbicocchi.monolith.adapters.api.mapper.ReviewMapper;
@@ -18,12 +18,12 @@ import java.util.*;
 @Service
 public class CreationService implements CreationOutputBoundary {
 
-    private final IProductCompositeRepository productRepository;
+    private final IProductRepository productRepository;
     private final ProductAggregateMapper productMapper;
     private final RecommendationMapper recommendationMapper;
     private final ReviewMapper reviewMapper;
 
-    public CreationService(IProductCompositeRepository productRepository, ProductAggregateMapper productMapper, RecommendationMapper recommendationMapper, ReviewMapper reviewMapper) {
+    public CreationService(IProductRepository productRepository, ProductAggregateMapper productMapper, RecommendationMapper recommendationMapper, ReviewMapper reviewMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.recommendationMapper = recommendationMapper;

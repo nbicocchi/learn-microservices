@@ -1,6 +1,10 @@
 package com.example.recommendation.service.persistence.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.util.Objects;
 
 @Entity
@@ -11,9 +15,6 @@ public class Recommendation {
     private Long recommendationId;
 
     private Long productId;
-
-    @Version
-    private Integer version;
 
     private String author;
     private int rating;
@@ -31,10 +32,6 @@ public class Recommendation {
 
     public Long getRecommendationId() {
         return recommendationId;
-    }
-
-    public Integer getVersion() {
-        return version;
     }
 
     public Long getProductId() {
@@ -55,10 +52,6 @@ public class Recommendation {
 
     public void setRecommendationId(Long recommendationId) {
         this.recommendationId = recommendationId;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     public void setProductId(Long productId) {
@@ -95,7 +88,6 @@ public class Recommendation {
         return "Recommendation{" +
                 "recommendationId=" + recommendationId +
                 ", productId=" + productId +
-                ", version=" + version +
                 ", author='" + author + '\'' +
                 ", rating=" + rating +
                 ", content='" + content + '\'' +
