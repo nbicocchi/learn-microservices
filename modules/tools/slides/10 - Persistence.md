@@ -68,7 +68,7 @@ With JPA, we’re delegating a lot of functionality to the framework, and whenev
 
 Despite being very similar, each database requires specific details.
 
-**PostGreSQL Configuration**
+**PostGreSQL Configuration (see The Twelve Factors #4).**
 
 ```yaml
 spring:

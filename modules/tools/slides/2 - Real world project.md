@@ -23,19 +23,13 @@ We'll create a simple [persistence layer](https://en.wikipedia.org/wiki/Persiste
 ```java
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Data
 public class Product {
     private Long id;
-    @EqualsAndHashCode.Include
-    private String uuid;
-    private String name;
-    private Double weight;
-
-    public Product(String uuid, String name, Double weight) {
-        this.uuid = uuid;
-        this.name = name;
-        this.weight = weight;
-    }
+    @NonNull @EqualsAndHashCode.Include private String uuid;
+    @NonNull private String name;
+    @NonNull private Double weight;
 }
 ```
 

@@ -1,6 +1,6 @@
 # Boilerplate Code Reduction with Lombok
 
-In this guide, we will explore how to significantly reduce the amount of boilerplate code in Java. While Java is a powerful language, it often becomes verbose when handling routine tasks or complying with framework practices. This verbosity doesn't add much business value, and that's where Lombok comes in to make us more productive.
+In this guide, we will explore how to significantly reduce the amount of boilerplate code in Java. While Java is a powerful language, it often becomes verbose when handling routine tasks or complying with framework practices. This verbosity doesn't add much business value, and that's where [Project Lombok](https://projectlombok.org/) comes in to improve productivity.
 
 ## Project Dependencies
 
@@ -84,7 +84,7 @@ public class Event<K, T> {
 }
 ```
 
-Creating a random Event object looks like:
+Creating a random Event<String, Integer> object looks like:
 
 ```java
 int index = RANDOM.nextInt(Event.Type.class.getEnumConstants().length);

@@ -49,7 +49,9 @@ Below, we have a handful of properties which override what’s defined in the pa
 </properties>
 ```
 
-Now we’re reached the _dependencies_ section. This section of the `pom.xml` configures the necessary libraries for developing a Spring Boot web application.
+Now we’re reached the _dependencies_ section **(see The Twelve Factors #2)**. 
+
+This section of the `pom.xml` configures the necessary libraries for developing a Spring Boot web application.
 
 ```
 <dependencies>
@@ -303,25 +305,25 @@ $ mvn spring-boot:run
 * **Source code has to be present on the server**. 
 * **Cold start would be slow**: it has to pull the dependencies, build the app, and then run the application (high Mean Time To Start).
 
-Usually, in production environments, it’s suitable to run a pre-packaged artifact such as a JAR file or a [container](https://www.docker.com/resources/what-container/).
+In production environments, it is more suitable to run a pre-packaged artifact such as a JAR file or a [container](https://www.docker.com/resources/what-container/).
 
 ### Running as a Jar
 
 **A regular jar can’t be executed out of the box, since it doesn’t include all the needed dependencies** that are required to run the application.
 
-The Spring Boot Maven Plugin packages an executable **fat jar** containing the application class files and all the necessary dependencies to run the project as a self-contained app.** Since we’re including the plugin in our _build_ configuration, the _package_ phase execution is preconfigured to build a **fat jar**.
+The Spring Boot Maven Plugin packages an executable **fat jar** containing the application class files and all the necessary dependencies to run the project as a self-contained app. Since we’re including the plugin in our _build_ configuration, the _package_ phase execution is preconfigured to build a **fat jar**.
 
 ```
 $ mvn clean package -Dmaven.skip.test=true
 ```
 
-**Having a packaged executable jar allows us to simply run the application using the _java_ command:**
-
 ```
 $ java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
 
-As you might imagine, here is where we would provide runtime configurations using command line arguments, if necessary:
+**Command line arguments (see The Twelve Factors #1, #3).**
+
+We can provide runtime configurations using command line arguments, if needed:
 
 ```
 $ java -jar -Dserver.port=8082 target/product-service-no-db-0.0.1-SNAPSHOT.jar
