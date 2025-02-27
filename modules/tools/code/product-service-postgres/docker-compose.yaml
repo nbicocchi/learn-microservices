@@ -3,6 +3,8 @@ services:
     image: postgres:latest
     container_name: postgres
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: secret
@@ -28,11 +30,10 @@ services:
       - pgadmin-data:/var/lib/pgadmin
 
   product-service:
-    build: product-service-postgres
-    image: product-service-postgres
+    build: .
     mem_limit: 512m
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 

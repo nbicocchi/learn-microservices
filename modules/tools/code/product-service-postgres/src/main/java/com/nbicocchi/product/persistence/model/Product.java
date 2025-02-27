@@ -6,14 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
-package com.nbicocchi.product.persistence.model;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.*;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
