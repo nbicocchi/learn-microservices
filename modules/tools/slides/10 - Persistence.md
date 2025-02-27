@@ -2,7 +2,7 @@
 
 ## Java Persistence Solutions
 
-Spring Data is a family of projects, all related to data access aspects. The goal of this umbrella project is to offer a familiar and consistent Spring-based model for data access, while providing submodules to cover any specific scenario we might have to deal with.
+Spring Data is a family of projects, all related to data access aspects. 
 
 -   [Spring Data Commons](https://github.com/spring-projects/spring-data-commons) - Core Spring concepts underpinning every Spring Data module.
 -   [Spring Data JDBC](https://spring.io/projects/spring-data-jdbc) - Spring Data repository support for JDBC.
@@ -21,9 +21,9 @@ Spring Data is a family of projects, all related to data access aspects. The goa
 
 This is the JDBC standard, and it’s also the oldest approach for working with databases in Java. Using JDBC requires us to use SQL statements, which can be both an advantage and a disadvantage.
 
-One of the biggest advantages of Spring Data JDBC is the **improved performance when accessing the database as compared to Spring Data JPA**. This is due to Spring Data JDBC communicating directly to the database. Spring Data JDBC does not contain most of the Spring Data magic when querying the database.
+**Biggest advantage:** **improved performance**. This is due to Spring Data JDBC communicating directly to the database. Spring Data JDBC does not contain most of the Spring Data magic when querying the database.
 
-One of the biggest disadvantages when using Spring Data JDBC is the dependency on the database vendor. If we decide to change the database from MySQL to Oracle, we might have to deal with problems that arise from databases having different dialects.
+**Biggest disadvantages:** **dependency on the database vendor**. If we decide to change the database from MySQL to Oracle, we might have to deal with problems that arise from databases having different dialects.
 
 ### Spring Data JPA
 
@@ -35,7 +35,9 @@ We have to keep in mind that JPA is only the specification. The reference implem
 
 ![](images/diagram-db-abstractions.webp)
 
-With JPA, we’re delegating a lot of functionality to the framework, and whenever that happens, **we lose some control** over what’s finally executed. JPA is a very powerful and useful solution, suitable for most projects, and definitely better than writing a lot of boilerplate manually. There might be edge cases, a few exceptional queries, or persistence procedures where it makes sense to use a different approach. This could mean maybe lower level JPA customizations, or even some JDBC operations.
+With JPA, we’re delegating a lot of functionality to the framework, and whenever that happens, **we lose some control** over what’s finally executed:
+* **Suitable for most projects**, and definitely better than writing a lot of boilerplate manually.
+* Few exceptional queries, or persistence procedures where it makes sense to use a different approach. This could mean maybe **lower level JPA customizations, or even some JDBC operations**.
 
 ## Configuration
 
@@ -49,13 +51,13 @@ With JPA, we’re delegating a lot of functionality to the framework, and whenev
         <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
 
-    <!-- Database Driver (e.g., PostgreSQL) -->
+    <!-- PostgreSQL db driver -->
     <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
     </dependency>
 
-    <!-- Optional: H2 Database for In-Memory Testing -->
+    <!-- H2 in-memory db driver -->
     <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
@@ -152,9 +154,9 @@ We can simply _@Autowire_ our created interface into any component.
 To save and find products, we can call the _findAll()_ and _save()_ methods. 
 
 ```java
+@Log
 @SpringBootApplication
 public class App implements ApplicationRunner {
-    private static final Logger LOG = LoggerFactory.getLogger(App.class);
     ProductRepository productRepository;
 
     public App(ProductRepository productRepository) {
@@ -167,13 +169,13 @@ public class App implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        productRepository.save(new Product("Laptop", 2.2));
-        productRepository.save(new Product("Bike", 5.5));
-        productRepository.save(new Product("Shirt", 0.2));
+        productRepository.save(new Product("171f5df0-b213-4a40-8ae6-fe82239ab660", "Laptop", 2.2));
+        productRepository.save(new Product("f89b6577-3705-414f-8b01-41c091abb5e0", "Bike", 5.5));
+        productRepository.save(new Product("b1f4748a-f3cd-4fc3-be58-38316afe1574", "Shirt", 0.2));
 
         Iterable<Product> products = productRepository.findAll();
         for (Product product : products) {
-            LOG.info(product.toString());
+            log.info(product.toString());
         }
     }
 }
@@ -259,7 +261,4 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
 ## Resources
 * https://spring.io/projects/spring-data
-* https://docs.spring.io/spring-data/relational/reference/
-* https://docs.spring.io/spring-data/jpa/reference/
-* https://docs.spring.io/spring-data/mongodb/reference/
 * https://www.baeldung.com/spring-data-repositories

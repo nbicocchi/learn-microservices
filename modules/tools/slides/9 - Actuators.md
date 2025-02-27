@@ -1,6 +1,6 @@
 # Actuators
 
-**Actuators are monitoring tools**. They bring production-ready features into our app with very low effort. Actuators provide various endpoints (documented [here](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints)) mainly exposed via HTTP which help in monitoring and, to some extent, managing our application. 
+**Actuators are monitoring tools**. They bring production-ready features into our app with very low effort. Actuators provide various endpoints (documented [here](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints)) which help in monitoring and, to some extent, managing our application. 
 
 **The best way to enable actuators is to add the _spring-boot-starter-actuator_ dependency**:
 
@@ -56,7 +56,7 @@ management:
 
 ### _/health_ endpoint
 
-The /actuator/health endpoint in Spring Boot Actuator provides an overview of the application's health status. Key Features:
+The /actuator/health endpoint provides an overview of the application's health status. Key Features:
 * Returns a basic status (UP, DOWN, or UNKNOWN).
 * Can include detailed health indicators (e.g., database, disk space, external services).
 * Supports custom health checks via HealthIndicator beans.
@@ -181,23 +181,21 @@ Each element has its own page with details. For example we can see the uptime of
 
 ### _/beans_ endpoint
 
-The `/actuator/beans` endpoint in Spring Boot Actuator provides detailed information about all **Spring beans** registered in the application context. Key Features:
+The `/actuator/beans` endpoint in Spring Boot Actuator provides detailed information about all beans registered in the application context. Key Features:
 - Lists all beans managed by Spring.
 - Shows their **names, types, dependencies, and source configurations**.
 - Helps in debugging **bean wiring issues** and understanding the application context structure.
 
 [http://localhost:8080/actuator/beans](http://localhost:8080/actuator/beans).
 
-```text
-...
+```yaml
 "dateTimeController": {
     "aliases": [],
     "scope": "singleton",
     "type": "com.nbicocchi.DateTimeController",
     "resource": "file [/home/nicola/IdeaProjects/learn-microservices/modules/tools/code/actuators/target/classes/com/nbicocchi/DateTimeController.class]",
     "dependencies": []
-},
-...
+}
 ```
 
 ### _/loggers_ endpoint
@@ -241,7 +239,7 @@ The `/actuator/loggers` endpoint in Spring Boot Actuator provides detailed infor
 
 If you want to update/set the environment property while the application is running, you have to set:
 
-```
+```yaml
 management:
   endpoint:
     env:
@@ -253,8 +251,8 @@ management:
 
 For example, we can set the ROOT logging level to TRACE in our app by hitting the endpoint:
 
-```
-$ curl -X POST http://localhost:8080/actuator/loggers/ROOT -H "Content-Type: application/json" -d '{ "configuredLevel": "TRACE" }'
+```bash
+curl -X POST http://localhost:8080/actuator/loggers/ROOT -H "Content-Type: application/json" -d '{ "configuredLevel": "TRACE" }'
 ```
 
 This can be very useful when troubleshooting issues without having to restart our app.
@@ -262,7 +260,4 @@ This can be very useful when troubleshooting issues without having to restart ou
 
 ## Resources
 - [Spring Boot Actuator](https://www.baeldung.com/spring-boot-actuators)
-- [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
-- [Spring Boot Actuator: Production-ready features](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready)
-- [Auto-configured HealthIndicators](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-health-indicators)
 - [Custom Information in Spring Boot Info Endpoint](https://www.baeldung.com/spring-boot-info-actuator-custom)

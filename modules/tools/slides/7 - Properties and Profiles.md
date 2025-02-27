@@ -48,12 +48,12 @@ logging:
        example: DEBUG
    ```
 
-See [here](https://docs.spring.io/spring-boot/appendix/application-properties/index.html) a list of common application properties.
+See [here](https://docs.spring.io/spring-boot/appendix/application-properties/index.html) the **long** list of common application properties.
 
 
 ## Custom Properties
 
-In Spring Boot, custom properties allow you to define application-specific settings that are loaded from external configuration files such as `application.yml`. These properties can then be injected into your Spring-managed beans using the `@Value` annotation. **This approach decouples configuration from code, making the application more flexible and easier to maintain**.
+Custom properties allow you to define application-specific settings that are loaded from external configuration files such as `application.yml`. These properties can then be injected into your beans using the `@Value` annotation. **This approach decouples configuration from code, making the application easier to maintain**.
 
 ### Defining Custom Properties
 
@@ -75,7 +75,7 @@ app:
 
 ### Injecting Custom Properties with `@Value`
 
-The `@Value` annotation allows you to inject the values of these custom properties directly into fields in your Spring-managed components such as `@Service`, `@Controller`, `@Component`, etc.
+The `@Value` annotation allows you to inject the values of these custom properties directly into your beans.
 
 ```java
 package com.nbicocchi.beans;
@@ -113,8 +113,6 @@ The constructor of AppService takes three arguments: appName, appVersion, and ma
 * `@Value("${app.name}")`: Injects the value of the app.name property.
 * `@Value("${app.version}")`: Injects the value of the app.version property.
 * `@Value("${app.max-users}")`: Injects the value of the app.max-users property.
-
-This approach uses constructor injection, which is a recommended practice in Spring as it makes the dependencies explicit and supports immutability (since fields are final).
 
 ## Profiles
 
@@ -156,7 +154,7 @@ In this file:
 
 ## Activating Profiles
 
-Profiles can be activated in various ways. See [rule #1](https://12factor.net/codebase) of the 12 Factors App. 
+Profiles can be activated in various ways. See [rule #1 and #3](https://12factor.net/) of the 12 Factors App. 
 
 ### `application.yml`
 You can specify which profile is active by setting the `spring.profiles.active` property in the `application.yml` file.
@@ -204,7 +202,7 @@ services:
          - SPRING_PROFILES_ACTIVE=docker,no-banner
 ```
 
-```yaml
+```bash
 $ mvn clean package
 $ docker compose up
 ```
@@ -225,5 +223,4 @@ public class App {
 
 ## Resources
 - [Properties with Spring and Spring Boot](https://www.baeldung.com/properties-with-spring)
-- [Spring Environment JavaDoc](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/Environment.html)
-- [Common Application Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html)
+- [Spring Profiles](https://www.baeldung.com/spring-profiles)

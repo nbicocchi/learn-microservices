@@ -27,11 +27,11 @@ public class PersistenceConfig {
 }
 ```
 
-**The _@Configuration_ annotation indicates to Spring that this class needs to be processed by the Spring Container** because it will contribute bean definitions to it. And, of course, the _@Bean_ annotation is one such actual bean definition. In our case, this is a bean named _productRepository,_ as that’s the name of the method.
+**The _@Configuration_ annotation indicates to Spring that this class needs to be processed by the Spring Container** because it will contribute bean definitions. Of course, the _@Bean_ annotation is such bean definition. In our case, this is a bean named _productRepository,_ as that’s the name of the method.
 
-By default, **Spring Boot loads all classes annotated with _@Component_, _@Configuration_ etc that are located in the same package as the main class or in all sub-packages of this.** See the _@ComponentScan_ annotation options to extend the search to other packages.
+By default, **Spring Boot loads all classes annotated with _@Component_, _@Configuration_ that are located in the same package as the main class (and sub-packages).** This is defined by the _@ComponentScan_ annotation and can be changed manually.
 
-> **NOTE:** we never actually defined component scanning explicitly. This is because **_@SpringBootApplication_ is already using the annotation**. If we go to the _@SpringBootApplication_ definition (In Intellij: View > Jump to Source), we'll see that is includes the _@ComponentScan_ annotation.
+> **NOTE:** **_@SpringBootApplication_ includes _@ComponentScan_** (In Intellij: View > Jump to Source). That's why we usually do not use _@ComponentScan_ explicitly.
 
 
 
@@ -169,8 +169,6 @@ public class BeanD {
 
 ## Resources
 - [Spring Bean Scopes](https://www.baeldung.com/spring-bean-scopes)
-- [Spring Application Context](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-basics)
-- [Java-based Container Configuration](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-java)
 - [Spring Component Scanning](https://www.baeldung.com/spring-component-scanning)
 - [@Component vs @Repository and @Service in Spring](https://www.baeldung.com/spring-component-repository-service)
 - [Spring Bean Annotations](https://www.baeldung.com/spring-bean-annotations)

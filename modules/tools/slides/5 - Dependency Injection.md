@@ -49,7 +49,7 @@ public class A {
 
 **Injection is simply the process of injecting the dependency B in the object of type A.** Since the instantiation of the B dependency is no longer done in A, that responsibility will now belong to the framework. Separating the responsibility of instantiating a class from the logic in that class is a very useful concept:
 
-* Leads to **a more loosely coupled system and to a lot of flexibility in the design** of that system, as now the dependency can be decided (or swapped out) at runtime.
+* Leads to **a more loosely coupled system and adds flexibility** (dependencies can be swapped out at runtime).
 * **Helpful in both application architecture, as well as testing, because DI make it easier to switch between different implementations of the dependency**. For example, we can pass in a mock of a dependency rather than a full dependency object.
 
 ## Dependency Injection Types
@@ -62,7 +62,7 @@ There are **three main ways to inject dependencies**:
 
 ### Constructor Injection
 
-In this case, we inject dependencies in a class via its constructor arguments. Each constructor argument represents a dependency and Spring will inject those dependencies automatically.
+In this case, we inject dependencies in a class via its constructor arguments (each argument represents a dependency that Spring will inject automatically).
 
 Let’s take a look at our _ProductService_ where an object of _ProductRepository_ class is injected via a constructor argument:
 
@@ -252,16 +252,13 @@ public class Driver {
 1. **Prefer constructor injection**:
     - Constructor injection makes the object’s dependencies clear and enforces immutability. It also makes unit testing easier since dependencies can be mocked and injected via the constructor.
 
-2. **Avoid field injection**:
-    - Field injection hides the object’s dependencies, increasing coupling and making the class harder to test. Use setter or constructor injection instead.
-
-3. **Handle optional dependencies with setter injection**:
+2. **Handle optional dependencies with setter injection**:
     - Setter injection is ideal when some dependencies are optional. Constructor injection should be used for mandatory dependencies, while setter injection can be used for those that might not always be provided.
 
-4. **Use `@Qualifier` and `@Primary` for multiple beans implementing the same interface**:
+3. **Use `@Qualifier` and `@Primary` for multiple beans implementing the same interface**:
     - When you have multiple beans of the same type, use `@Qualifier` to specify which one to inject, or mark one of them with `@Primary` to make it the default.
 
-5. **Avoid circular dependencies**:
+4. **Avoid circular dependencies**:
     - Circular dependencies can cause issues with injection, especially with constructor injection. Spring will throw an error if it detects circular dependencies at runtime, so design your beans to avoid this.
 
 ## Circular Dependencies in Spring
@@ -345,9 +342,7 @@ public class A {
 This tells Spring to inject `B` into `A` only when it is actually required, breaking the cycle.
 
 ## Resources
-- [Inversion of Control and Dependency Injection with Spring](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)
 - [Inversion of Control Containers and the Dependency Injection pattern (Martin Fowler)](https://martinfowler.com/articles/injection.html)
 - [Spring Dependency Injection Series](https://www.baeldung.com/spring-dependency-injection)
-- [Guide to Spring @Autowired](https://www.baeldung.com/spring-autowire)
 
 

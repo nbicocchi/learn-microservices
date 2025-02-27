@@ -4,16 +4,16 @@
 
 A robust logging approach includes:
 
-* formatting log messages
-* dealing with concurrent access to log files
-* writing to alternate destinations, depending on log level or other criteria
-* configuring all of this, and without having to alter the code
+* **formatting** log messages
+* dealing with **concurrent access to log files**
+* writing to **alternate destinations**, depending on log level or other criteria
+* **configuring** all of this, and **without having to alter the code**
 
 When you adopt a logging library or framework, you get all of the above in a nicely packaged, ready-to-use unit, and most of the time it’s free.
 
-When we add the _spring-boot-starter_ dependency in a Boot project, **the _spring-boot-starter-logging_ is already included transitively**. This contains all the dependencies needed for logging.
+When we add the _spring-boot-starter_ dependency, **the _spring-boot-starter-logging_ is already included transitively**. This contains all the dependencies needed for logging.
 
-We can verify this by checking the dependency tree in our IDE, or by running the command _mvn dependency:tree_ in the project location.
+We can verify this by checking the dependency tree in our IDE, or by running _mvn dependency:tree_.
 
 ```
 [INFO] +- org.springframework.boot:spring-boot-starter-web:jar:3.3.4:compile
@@ -55,22 +55,42 @@ public class DateTimeController {
 }
 ```
 
+With Lombok, it can be further simplified to:
+
+```java
+@Log4j2
+@RestController
+public class DateTimeController {
+    @GetMapping("/time")
+    public String getTime() {
+        String response = LocalTime.now().toString();
+        log.info("getTime() invoked, returning {}", response);
+        return response;
+    }
+
+    @GetMapping("/date")
+    public String getDate() {
+        String response = LocalDate.now().toString();
+        log.info("getDate() invoked, returning {}", response);
+        return response;
+    }
+}
+```
+
 Let’s boot our app and check the logs:
 
 ```bash
-$ curl -X GET http://localhost:7000/time  
-14:59:41.121709906%  
- 
-$ curl -X GET http://localhost:7000/date
-2025-02-21%     
+curl -X GET http://localhost:7000/time  
+```
+
+```bash 
+curl -X GET http://localhost:7000/date
 ```
 
 ```
 2025-02-21T14:59:41.121+01:00  INFO 60378 --- [nio-7000-exec-1] com.nbicocchi.DateTimeController         : getTime() invoked, returning 14:59:41.121709906
 2025-02-21T14:59:47.398+01:00  INFO 60378 --- [nio-7000-exec-2] com.nbicocchi.DateTimeController         : getDate() invoked, returning 2025-02-21
 ```
-
-Now that we’ve seen how logging works out of the box, let’s see how we can configure its behavior.
 
 ## Importance of Log Levels
 
@@ -104,7 +124,7 @@ The default logging ROOT level is INFO, which is why our info-level log statemen
 
 Of course, we can tune that level. The way we can configure logging is simply via the Boot _application.yml_ file. The ROOT logging level can be configured from the property:
 
-```
+```yaml
 logging:
   level:
     root: WARN
@@ -120,7 +140,7 @@ For example, while we want the overall logging to only show WARN info, let’s s
 
 We need to simply add the property:
 
-```
+```yaml
 logging:
   level:
     root: WARN
@@ -131,7 +151,7 @@ If we run the app now, we'll see the Spring logs.
 
 Finally, let’s say we want the logging level in our own application to be a little bit more verbose, to closely follow our own logic:
 
-```
+```yaml
 logging:
   level:
     root: WARN
@@ -149,7 +169,7 @@ We can also use the _application.yml_ file for other logging configurations.
 
 For example, to **print log statements in a log file**, we can use the `logging.file.name` property. Or, if we want to **change the date-format of logs** we can use `logging.pattern.dateformat`.
 
-```
+```yaml
 logging:
   level:
     root: WARN
@@ -166,4 +186,3 @@ logging:
 - [Logging in Spring Boot](https://www.baeldung.com/spring-boot-logging)
 - [Introduction to SLF4J](https://www.baeldung.com/slf4j-with-log4j2-logback)
 - [Introduction to Java Logging](https://www.baeldung.com/java-logging-intro)
-- [Spring Reference - Logging](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html)
