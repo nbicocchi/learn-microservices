@@ -9,11 +9,15 @@ import com.example.product.service.web.dto.RecommendationDTO;
 import com.example.product.service.web.dto.ReviewDTO;
 import com.example.product.service.web.exceptions.InvalidInputException;
 import com.example.product.service.web.exceptions.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -23,12 +27,13 @@ public class ProductService implements IProductService {
     private static final Logger LOG = LoggerFactory.getLogger(ProductService.class);
     private final ProductRepository repo;
     private final ProductMapper mapper;
-    private final WebClient webClient;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper, WebClient.Builder webClientBuilder) {
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
         this.repo = productRepository;
         this.mapper = productMapper;
-        this.webClient = webClientBuilder.build();
     }
 
     public ProductDTO findById(Long id){
@@ -79,8 +84,8 @@ public class ProductService implements IProductService {
         try {
             Product savedProduct = repo.save(mapper.toEntity(product));
             // create reviews and recommendation
-            createReviews(product.reviews());
-            createRecommendations(product.recommendations());
+            createReviews(product.productId(), product.reviews());
+            createRecommendations(product.productId(), product.recommendations());
             return mapper.toDTO(savedProduct);
         }catch (RuntimeException re) {
             LOG.warn("createCompositeProduct failed", re);
@@ -97,64 +102,68 @@ public class ProductService implements IProductService {
         deleteReviews(id);
         deleteRecommendations(id);
 
-        repo.deleteProductById(id);
-        repo.flush();
+        repo.deleteById(id);
     }
 
     private List<ReviewDTO> getReviews(Long productId) {
-        return webClient.get()
-                .uri("http://review-service:8082/products/{productId}/reviews", productId)
-                .retrieve()
-                .bodyToFlux(ReviewDTO.class)
-                .collectList()
-                .block();
+        String url = "http://review-service:8082/products/{productId}/reviews";
+        ResponseEntity<List<ReviewDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {},
+                productId
+        );
+        return response.getBody();
     }
 
     private List<RecommendationDTO> getRecommendations(Long productId) {
-        return webClient.get()
-                .uri("http://recommendation-service:8083/products/{productId}/recommendations", productId)
-                .retrieve()
-                .bodyToFlux(RecommendationDTO.class)
-                .collectList()
-                .block();
+        String url = "http://recommendation-service:8083/products/{productId}/recommendations";
+        ResponseEntity<List<RecommendationDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {},
+                productId
+        );
+        return response.getBody();
     }
 
-    private void createReviews(List<ReviewDTO> reviews) {
+    private void createReviews(Long productId, List<ReviewDTO> reviews) {
         if (reviews != null && !reviews.isEmpty()) {
-            webClient.post()
-                    .uri("http://review-service:8082/products/{productId}/reviews")
-                    .body(Mono.just(reviews), List.class)
-                    .retrieve()
-                    .bodyToMono(Void.class)
-                    .block();
+            String url = "http://review-service:8082/products/{productId}/reviews";
+            HttpEntity<List<ReviewDTO>> requestEntity = new HttpEntity<>(reviews);
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Void.class,
+                    productId
+            );
         }
     }
 
-    private void createRecommendations(List<RecommendationDTO> recommendations) {
+    private void createRecommendations(Long productId, List<RecommendationDTO> recommendations) {
         if (recommendations != null && !recommendations.isEmpty()) {
-            webClient.post()
-                    .uri("http:///recommendation-service:8083/products/{productId}/recommendations")
-                    .body(Mono.just(recommendations), List.class)
-                    .retrieve()
-                    .bodyToMono(Void.class)
-                    .block();
+            String url = "http://recommendation-service:8083/products/{productId}/recommendations";
+            HttpEntity<List<RecommendationDTO>> requestEntity = new HttpEntity<>(recommendations);
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Void.class,
+                    productId
+            );
         }
     }
 
     private void deleteReviews(Long productId) {
-        webClient.delete()
-                .uri("http://review-service:8082/products/{productId}/reviews", productId)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .block();
+        String url = "http://review-service:8082/products/{productId}/reviews";
+        restTemplate.delete(url, productId);
     }
 
     private void deleteRecommendations(Long productId) {
-        webClient.delete()
-                .uri("http://recommendation-service:8083/products/{productId}/recommendations", productId)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .block();
+        String url = "http://recommendation-service:8083/products/{productId}/recommendations";
+        restTemplate.delete(url, productId);
     }
-
 }

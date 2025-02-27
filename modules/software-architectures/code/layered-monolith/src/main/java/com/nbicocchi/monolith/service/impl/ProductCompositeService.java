@@ -3,7 +3,9 @@ package com.nbicocchi.monolith.service.impl;
 import com.nbicocchi.monolith.persistence.model.Product;
 import com.nbicocchi.monolith.persistence.model.Recommendation;
 import com.nbicocchi.monolith.persistence.model.Review;
-import com.nbicocchi.monolith.persistence.repository.IProductCompositeRepository;
+import com.nbicocchi.monolith.persistence.repository.IProductRepository;
+import com.nbicocchi.monolith.persistence.repository.IRecommendationRepository;
+import com.nbicocchi.monolith.persistence.repository.IReviewRepository;
 import com.nbicocchi.monolith.service.IProductCompositeService;
 import com.nbicocchi.monolith.web.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,14 @@ import java.util.*;
 @Service
 public class ProductCompositeService implements IProductCompositeService {
 
-    private final IProductCompositeRepository productRepository;
+    private final IProductRepository productRepository;
+    private final IRecommendationRepository recommendationRepository;
+    private final IReviewRepository reviewRepository;
 
-    public ProductCompositeService(IProductCompositeRepository productRepository) {
+    public ProductCompositeService(IProductRepository productRepository, IRecommendationRepository recommendationRepository, IReviewRepository reviewRepository) {
         this.productRepository = productRepository;
+        this.recommendationRepository= recommendationRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @Override
@@ -65,22 +71,24 @@ public class ProductCompositeService implements IProductCompositeService {
 
     @Override
     public void deleteRecommendation(Long productId, Long recommendationId) {
-        Recommendation r = productRepository.findRecommendation(recommendationId);
+        Optional<Recommendation> r = recommendationRepository.findById(recommendationId);
         Optional<Product> p = productRepository.findById(productId);
-        if(p.isPresent()){
+        if(p.isPresent() && r.isPresent()){
             Product product = p.get();
-            product.removeRecommendation(r);
+            Recommendation recommendation = r.get();
+            product.removeRecommendation(recommendation);
             productRepository.save(product);
         }else throw new NoSuchElementException();
     }
 
     @Override
     public void deleteReview(Long productId, Long reviewId) {
-        Review r = productRepository.findReview(reviewId);
+        Optional<Review> r = reviewRepository.findById(reviewId);
         Optional<Product> p = productRepository.findById(productId);
-        if(p.isPresent()){
+        if(p.isPresent() && r.isPresent()){
             Product product = p.get();
-            product.removeReview(r);
+            Review review = r.get();
+            product.removeReview(review);
             productRepository.save(product);
         }else throw new NoSuchElementException();
     }
@@ -88,14 +96,14 @@ public class ProductCompositeService implements IProductCompositeService {
     @Override
     public Set<Recommendation> findRecommendationsByProductId(Long productId) {
         if(productRepository.findById(productId).isPresent()){
-            return productRepository.findRecommendationsByProductId(productId);
+            return recommendationRepository.findRecommendationsByProductId(productId);
         }else throw new NoSuchElementException();
     }
 
     @Override
     public Set<Review> findReviewsByProductId(Long productId) {
         if(productRepository.findById(productId).isPresent()){
-            return productRepository.findReviewsByProductId(productId);
+            return reviewRepository.findReviewsByProductId(productId);
         }else throw new NoSuchElementException();
     }
 }

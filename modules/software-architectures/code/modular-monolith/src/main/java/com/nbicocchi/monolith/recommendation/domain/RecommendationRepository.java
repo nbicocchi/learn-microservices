@@ -7,6 +7,5 @@ import java.util.List;
 
 interface RecommendationRepository extends CrudRepository<Recommendation, Long> {
 
-    @Query("SELECT r FROM Recommendation r WHERE r.productId = :productId")
     List<Recommendation> findRecommendationsByProductId(Long productId);
 }

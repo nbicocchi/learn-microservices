@@ -20,15 +20,6 @@ spring:
     cache: false
     suffix: .html
     prefix: classpath:/templates/
-logging:
-  level:
-    root: debug
-    org: warn
-    com.zaxxer: warn
-    org.springdoc: warn
-  pattern:
-    dateformat: yyyy-MM-dd
-
 
 
 

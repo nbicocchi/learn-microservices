@@ -1,7 +1,11 @@
 package com.example.product.service.persistence.model;
 
 import com.example.product.service.web.dto.*;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import java.util.*;
 
 @Entity
@@ -11,7 +15,6 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
-    @Version private Integer version;
     private String name;
     private int weight;
 
@@ -50,7 +53,6 @@ public class Product {
         this.reviews = reviews;
         this.name = name;
         this.weight = weight;
-        this.version = version;
     }
 
     public Long getProductId() {
@@ -75,14 +77,6 @@ public class Product {
 
     public void setWeight(int weight) {
         this.weight = weight;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     @Override
@@ -110,7 +104,6 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "productId=" + productId +
-                ", version=" + version +
                 ", name='" + name + '\'' +
                 ", weight=" + weight +
                 ", recommendations=" + recommendations +

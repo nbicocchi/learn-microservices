@@ -6,21 +6,23 @@ import com.example.gateway.web.dto.RecommendationDTO;
 import com.example.gateway.web.dto.ReviewDTO;
 import com.example.gateway.web.exceptions.UnprocessableEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @Controller
 public class UIController implements IUIController {
-    private final WebClient webClient;
 
     @Autowired
-    public UIController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.build();
-    }
+    private RestTemplate restTemplate;
 
     @Override
     public String homePage(Model model) {
@@ -29,125 +31,94 @@ public class UIController implements IUIController {
     }
 
     @Override
-    public Mono<String> getAllProducts(Model model) {
-        return webClient.get()
-                .uri("http://product-service:8081/products")
-                .retrieve()
-                .bodyToFlux(ProductDTO.class)
-                .collectList()
-                .doOnNext(products -> model.addAttribute("allProducts", products))
-                .then(Mono.just("products")); // Thymeleaf template (products.html)
+    public String getAllProducts(Model model) {
+        String url = "http://product-service:8081/products";
+        ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {}
+        );
+        model.addAttribute("allProducts", response.getBody());
+        return "products"; // Thymeleaf template (products.html)
     }
 
     @Override
-    public Mono<String> getProduct(Model model, @PathVariable Long productId){
-        if(productId < 0){
+    public String getProduct(Model model, @PathVariable Long productId) {
+        if (productId < 0) {
             throw new UnprocessableEntityException("Invalid productId: " + productId);
         }
-        return webClient.get()
-                .uri("http://product-service:8081/products/{productId}", productId)
-                .retrieve()
-                .bodyToFlux(ProductDTO.class)
-                .doOnNext(product -> model.addAttribute("product", product))
-                .then(Mono.just("product_item")); // Thymeleaf template (product_item.html)
+        String url = UriComponentsBuilder.fromHttpUrl("http://product-service:8081/products/{productId}")
+                .buildAndExpand(productId)
+                .toUriString();
+        ResponseEntity<ProductDTO> response = restTemplate.getForEntity(url, ProductDTO.class);
+        model.addAttribute("product", response.getBody());
+        return "product_item"; // Thymeleaf template (product_item.html)
     }
 
     @Override
-    public Mono<String> createProduct(Model model, @ModelAttribute("product") ProductDTO request){
-        return webClient.post()
-                .uri("http://product-service:8081/products")
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(ProductDTO.class)
-                .thenMany(webClient.get()
-                        .uri("http://product-service:8081/products")
-                        .retrieve()
-                        .bodyToFlux(ProductDTO.class)
-                )
-                .collectList()
-                .doOnSuccess(products -> model.addAttribute("allProducts", products))
-                .thenReturn("products");
+    public String createProduct(Model model, @ModelAttribute("product") ProductDTO request) {
+        String url = "http://product-service:8081/products";
+        restTemplate.postForEntity(url, request, ProductDTO.class); //create new product
+        ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
+                "http://product-service:8081/products",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {}
+        );
+        model.addAttribute("allProducts", response.getBody());
+        return "products"; // Thymeleaf template (products.html)
     }
 
     @Override
-    public Mono<String> deleteProduct(Model model, @PathVariable Long productId){
-        return webClient.delete()
-                .uri("http://product-service:8081/products/{productId}", productId)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .thenMany(webClient.get()
-                        .uri("http://product-service:8081/products")
-                        .retrieve()
-                        .bodyToFlux(ProductDTO.class)
-                )
-                .collectList()
-                .doOnSuccess(products -> model.addAttribute("allProducts", products))
-                .thenReturn("products");
+    public String deleteProduct(Model model, @PathVariable Long productId) {
+        String url = "http://product-service:8081/products/{productId}";
+        restTemplate.delete(url, productId);
+        ResponseEntity<List<ProductDTO>> response = restTemplate.exchange(
+                "http://product-service:8081/products",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {}
+        );
+        model.addAttribute("allProducts", response.getBody());
+        return "products"; // Thymeleaf template (products.html)
     }
 
     @Override
-    public Mono<String> createRecommendation(Model model, @PathVariable Long productId, @ModelAttribute("recommendation") RecommendationDTO recommendation){
-        return webClient.post()
-                .uri("http://recommendation-service:8083/products/{productId}/recommendations", productId)
-                .bodyValue(recommendation)
-                .retrieve()
-                .bodyToMono(RecommendationDTO.class)
-                .flatMap(createdRec ->
-                        webClient.get()
-                                .uri("http://product-service:8081/products/{productId}", productId)
-                                .retrieve()
-                                .bodyToMono(ProductDTO.class)
-                )
-                .doOnNext(updatedProduct -> model.addAttribute("product", updatedProduct))
-                .thenReturn("product_item");
+    public String createRecommendation(Model model, @PathVariable Long productId, @ModelAttribute("recommendation") RecommendationDTO recommendation) {
+        String url = "http://recommendation-service:8083/products/{productId}/recommendations";
+        restTemplate.postForEntity(url, recommendation, ReviewDTO.class, productId);
+        model.addAttribute("product", getUpdatedProduct(productId));
+        return "product_item"; // Thymeleaf template (product_item.html)
     }
 
     @Override
-    public Mono<String> deleteRecommendation(Model model, @PathVariable Long productId, @PathVariable Long recommendationId){
-        return webClient.delete()
-                .uri("http://recommendation-service:8083/products/{productId}/recommendations/{recommendationId}", productId, recommendationId)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .then(
-                        webClient.get()
-                                .uri("http://product-service:8081/products/{productId}", productId)
-                                .retrieve()
-                                .bodyToMono(ProductDTO.class)
-                )
-                .doOnNext(updatedProduct -> model.addAttribute("product", updatedProduct))
-                .thenReturn("product_item");
+    public String deleteRecommendation(Model model, @PathVariable Long productId, @PathVariable Long recommendationId) {
+        String url = "http://recommendation-service:8083/products/{productId}/recommendations/{recommendationId}";
+        restTemplate.delete(url, productId, recommendationId);
+        model.addAttribute("product", getUpdatedProduct(productId));
+        return "product_item"; // Thymeleaf template (product_item.html)
     }
 
     @Override
-    public Mono<String> createReview(Model model, @PathVariable Long productId, @ModelAttribute("review") ReviewDTO review){
-        return webClient.post()
-                .uri("http://review-service:8082/products/{productId}/reviews", productId)
-                .bodyValue(review)
-                .retrieve()
-                .bodyToMono(ReviewDTO.class)
-                .flatMap(createdReview ->
-                        webClient.get()
-                                .uri("http://product-service:8081/products/{productId}", productId)
-                                .retrieve()
-                                .bodyToMono(ProductDTO.class)
-                )
-                .doOnNext(updatedProduct -> model.addAttribute("product", updatedProduct))
-                .thenReturn("product_item");
+    public String createReview(Model model, @PathVariable Long productId, @ModelAttribute("review") ReviewDTO review) {
+        String url = "http://review-service:8082/products/{productId}/reviews";
+        restTemplate.postForEntity(url, review, ReviewDTO.class, productId);
+        model.addAttribute("product", getUpdatedProduct(productId));
+        return "product_item"; // Thymeleaf template (product_item.html)
     }
 
     @Override
-    public Mono<String> deleteReview(Model model, @PathVariable Long productId, @PathVariable Long reviewId){
-        return webClient.delete()
-                .uri("http://review-service:8082/products/{productId}/reviews/{reviewId}", productId, reviewId)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .then(
-                        webClient.get()
-                                .uri("http://product-service:8081/products/{productId}", productId)
-                                .retrieve()
-                                .bodyToMono(ProductDTO.class)
-                )
-                .doOnNext(updatedProduct -> model.addAttribute("product", updatedProduct))
-                .thenReturn("product_item");
+    public String deleteReview(Model model, @PathVariable Long productId, @PathVariable Long reviewId) {
+        String url = "http://review-service:8082/products/{productId}/reviews/{reviewId}";
+        restTemplate.delete(url, productId, reviewId);
+        model.addAttribute("product", getUpdatedProduct(productId));
+        return "product_item"; // Thymeleaf template (product_item.html)
+    }
+
+    public ProductDTO getUpdatedProduct(Long productId) {
+        String productUrl = "http://product-service:8081/products/{productId}";
+        ResponseEntity<ProductDTO> response = restTemplate.exchange(productUrl, HttpMethod.GET, null, ProductDTO.class, productId);
+        return response.getBody();
     }
 }
