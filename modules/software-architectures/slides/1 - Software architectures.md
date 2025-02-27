@@ -30,38 +30,27 @@ When applications are relatively small, a monolithic architecture offers numerou
 - **Simple Deployment**: Developers can simply copy the WAR file to a server with Tomcat installed for deployment, moreover they can change the code and database schema, then build and deploy the application seamlessly.
 - **Performance**: Faster communication between components since everything is in one process.
 
-
-> [!NOTE]
-> A WAR (Web Application Archive) file is a packaged file used to distribute and deploy Java-based web applications. It is essentially a compressed archive (ZIP format) that contains all the necessary components and resources.
-
 ![FTGO Monolithic Architecture](images/ftgo-monolitic-architecture.webp)
 
 ### Challenges of Monolithic Architecture
 
-Monolithic architectures due to several factors evolves naturally towards a [big ball of mud](http://www.laputan.org/mud/mud.html#BigBallOfMud) (**local complexity apex**).
-
-> *A big ball of mud is haphazardly structured, sprawling, sloppy, duct-tape and bailing wire, spaghetti code jungle. We’ve all seen them. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated. The overall structure of the system may never have been well-defined. If it was, it may have eroded beyond recognition. Programmers with a shred of architectural sensibility shun these quagmires. Only those who are unconcerned about architecture, and, perhaps, are comfortable with the inertia of the day-to-day chore of patching the holes in these failing dikes, are content to work on such systems.* - Brian Foote, Joseph Yoder (1999)
-
-![Big ball of mud](images/swarch-big-ball-of-mud.webp)
-
-*Dots on the perimeter represent classes, edges represent dependencies.*
-
----
-
-When a successful application grows, the inexorable degradation of its structure leads to a high degree of coupling of the components:
-
-- **Due to tight coupling, changes in one part can impact the whole system**.
-- **Do not allow independent scaling**.
-
-
 #### Development issues
 
+When monolithic architectures grow, the inexorable degradation of their structure leads to a high degree of coupling of internal components. They evolve towards a [big ball of mud](http://www.laputan.org/mud/mud.html#BigBallOfMud) (**local complexity apex**) where, **due to tight coupling, changes in one part can impact the whole system**.
+
+This process leads to:
 - **Slow Development**: The lengthy build process and slow startup times hinder productivity, making the edit-build-run-test cycle inefficient.
 - **Testing Challenges**: The large size of the application makes thorough testing difficult, allowing bugs to slip into production.
 - **Long Deployment Path**: Updating production becomes cumbersome, often limiting updates to once a month and making continuous deployment nearly impossible.
 - **Obsolete Technology Stack**: The monolithic structure hampers the adoption of new frameworks and languages, as rewriting the entire application is costly and risky.
 
 ![FTGO Monolithic Hell](images/ftgo-monolitic-hell.webp)
+
+> *A big ball of mud is haphazardly structured, sprawling, sloppy, duct-tape and bailing wire, spaghetti code jungle. We’ve all seen them. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated. The overall structure of the system may never have been well-defined. If it was, it may have eroded beyond recognition. Programmers with a shred of architectural sensibility shun these quagmires. Only those who are unconcerned about architecture, and, perhaps, are comfortable with the inertia of the day-to-day chore of patching the holes in these failing dikes, are content to work on such systems.* - Brian Foote, Joseph Yoder (1999)
+
+![Big ball of mud](images/swarch-big-ball-of-mud.webp)
+
+*Dots on the perimeter represent classes, edges represent dependencies.*
 
 #### Scaling issues
 
