@@ -54,7 +54,7 @@ This process leads to:
 
 #### Scaling issues
 
-Different kind of scaling options are describable thanks to **The Scale Cube**:
+Different kind of scaling options are describable thanks to the **Scale Cube**:
 
 ![The Scale Cube](images/scale-cube.webp)
 
