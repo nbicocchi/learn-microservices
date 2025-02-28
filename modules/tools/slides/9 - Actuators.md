@@ -57,7 +57,7 @@ management:
 ### _/health_ endpoint
 
 The /actuator/health endpoint provides an overview of the application's health status. Key Features:
-* Returns a basic status (UP, DOWN, or UNKNOWN).
+* Returns a basic status (`UP`, `DOWN`, or `UNKNOWN`).
 * Can include detailed health indicators (e.g., database, disk space, external services).
 * Supports custom health checks via HealthIndicator beans.
 
@@ -207,31 +207,32 @@ The `/actuator/loggers` endpoint in Spring Boot Actuator provides detailed infor
 [http://localhost:8080/actuator/loggers](http://localhost:8080/actuator/loggers).
 
 
-```text
-{ //...
-    "loggers": {
-        "ROOT": {
-            "configuredLevel": "INFO",
-            "effectiveLevel": "INFO"
-        },
-        "com": {
-            "configuredLevel": null,
-            "effectiveLevel": "INFO"
-        },
-        "com.nbicocchi": {
-            "configuredLevel": null,
-            "effectiveLevel": "INFO"
-        },
-        "com.nbicocchi.ls": {
-            "configuredLevel": null,
-            "effectiveLevel": "INFO"
-        },
-        "com.nbicocchi.ls.LsApp": {
-            "configuredLevel": null,
-            "effectiveLevel": "INFO"
-        }
-    }
-  //...    
+```json
+{ 
+  //...
+  "loggers": {
+      "ROOT": {
+          "configuredLevel": "INFO",
+          "effectiveLevel": "INFO"
+      },
+      "com": {
+          "configuredLevel": null,
+          "effectiveLevel": "INFO"
+      },
+      "com.nbicocchi": {
+          "configuredLevel": null,
+          "effectiveLevel": "INFO"
+      },
+      "com.nbicocchi.ls": {
+          "configuredLevel": null,
+          "effectiveLevel": "INFO"
+      },
+      "com.nbicocchi.ls.LsApp": {
+          "configuredLevel": null,
+          "effectiveLevel": "INFO"
+      }
+  }
+  //...
 }
 ```
 
@@ -247,7 +248,7 @@ management:
         enabled: true
 ```
 
-**For example, we can also configure the logging level for individual loggers at runtime by hitting the POST _/loggers/{{logger}}_ request.**
+**For example, we can also configure the logging level for individual loggers at runtime by hitting the POST `/loggers/{{logger}}` request.**
 
 For example, we can set the ROOT logging level to TRACE in our app by hitting the endpoint:
 
@@ -259,5 +260,6 @@ This can be very useful when troubleshooting issues without having to restart ou
 
 
 ## Resources
+
 - [Spring Boot Actuator](https://www.baeldung.com/spring-boot-actuators)
 - [Custom Information in Spring Boot Info Endpoint](https://www.baeldung.com/spring-boot-info-actuator-custom)

@@ -55,7 +55,7 @@ public class DateTimeController {
 }
 ```
 
-With Lombok, it can be further simplified to:
+With Lombok, it can be further simplified: the only thing to do is add `@Log4j2` decorator to our classes. Then, we can use `log` variable (implicitly provided by Lombok for us).
 
 ```java
 @Log4j2
