@@ -332,17 +332,13 @@ java -jar -Dserver.port=8082 target/product-service-no-db-0.0.1-SNAPSHOT.jar
 or environment variables:
 
 ```bash
-export SERVER_PORT=8182
-
-java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
+SERVER_PORT=8182 java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
 
 or both:
 
 ```bash
-export SERVER_PORT=8082 java -jar -Dserver.port=8083
-
-target/product-service-no-db-0.0.1-SNAPSHOT.jar
+SERVER_PORT=8082 java -jar -Dserver.port=8083 target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
 
 ```
