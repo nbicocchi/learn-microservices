@@ -169,24 +169,26 @@ spring:
 You can activate a profile when starting your application by passing the `--spring.profiles.active` argument in the command line.
 
 ```bash
-$ mvn clean package -Dmaven.skip.test=true
-$ java -jar target/properties-0.0.1-SNAPSHOT.jar --spring.profiles.active=docker,no-banner
+mvn clean package -Dmaven.skip.test=true
+
+java -jar target/properties-0.0.1-SNAPSHOT.jar --spring.profiles.active=docker,no-banner
 ```
 
 ### Environment Variables
 You can also set the `spring.profiles.active` property as an environment variable:
 
 ```bash
-$ mvn clean package -Dmaven.skip.test=true
-$ SPRING_PROFILES_ACTIVE=docker,no-banner java -jar target/properties-0.0.1-SNAPSHOT.jar
+mvn clean package -Dmaven.skip.test=true
+
+SPRING_PROFILES_ACTIVE=docker,no-banner java -jar target/properties-0.0.1-SNAPSHOT.jar
 ```
 
 ### Environment Variables (Docker)
 
 ```bash
-$ mvn clean package
-$ docker buildx build -t $(basename $(pwd)) .
-$ docker run -e SPRING_PROFILES_ACTIVE='docker,no-banner' properties
+mvn clean package
+docker buildx build -t $(basename $(pwd)) .
+docker run -e SPRING_PROFILES_ACTIVE='docker,no-banner' properties
 ```
 
 ### Environment Variables (Docker Compose)
@@ -203,8 +205,8 @@ services:
 ```
 
 ```bash
-$ mvn clean package
-$ docker compose up
+mvn clean package
+docker compose up
 ```
 
 ### Programmatically
