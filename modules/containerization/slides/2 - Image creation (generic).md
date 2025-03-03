@@ -2,27 +2,23 @@
 
 ## Images and layers
 
-Docker images are the foundation for deploying applications in containers:
-* They are **immutable snapshots of an application and its environment**.
-* They **include everything needed to run the application** (code, runtime, libraries, environment variables, configuration files, and dependencies).
-
-Docker images are constructed in a **layered format**.
+Docker images:
+* are **immutable snapshots of an application and its environment**.
+* **include everything needed to run the application** (code, runtime, libraries, environment variables, configuration files, and dependencies). 
+* are constructed in a **layered format**.
 
 ![](images/docker-layers.webp)
 
-**Base layer**:
-* Typically, it includes the operating system or minimal components necessary to run an application (it could be a minimal **Alpine** or **Ubuntu** image).
-* Base layers are often pulled from public Docker registries like **Docker Hub**.
-
-**Intermediate layers** add modifications, such as installing software packages, setting environment variables, or copying files:
-* These layers correspond to the instructions in the Dockerfile that describe how to build the image. Each line or instruction in the Dockerfile (e.g., `RUN`, `COPY`, `ADD`, `EXPOSE`) creates a new layer.
-
-Each layer represents a set of changes (or a filesystem delta).
+Each layer represents a set of changes (or a filesystem delta):
+* **Base layer**: it includes the minimal components necessary to run an application (e.g., **Alpine** or **Ubuntu** images).
+* **Intermediate layers** add modifications, such as installing software packages, setting environment variables, or copying files. These layers correspond to the instructions in the Dockerfile that describe how to build the image. Each line or instruction in the Dockerfile (e.g., `RUN`, `COPY`, `ADD`) creates a new layer.
+* **Read-Only**: Once built, all the layers in a Docker image are **read-only**. When the image is used to start a container, Docker combines these read-only layers into a unified view using a **Union File System** (like [OverlayFS](https://docs.kernel.org/filesystems/overlayfs.html)), allowing them to act as a single entity.
 * Layers can be inspected with specific tools such as [dive](https://github.com/wagoodman/dive).
-* **Read-Only**: Once built, all the layers in a Docker image are **read-only**. When the image is used to start a container, Docker combines these read-only layers into a unified view using a **Union File System** (like **OverlayFS**), allowing them to act as a single entity.
+
+Layers allow:
 * **Faster builds**: Docker caches layers to make builds faster. If a Dockerfile instruction has not changed, Docker reuses the previously built layer, improving build performance.
 * **Layer reuse**: Because layers are independent and reusable, multiple images can share common layers. For instance, if two images are built on the same base image (e.g., Ubuntu), they can reuse the base layer, reducing storage needs and speeding up deployment.
-* **Copy-on-Write in containers**: When you run a Docker container from an image, Docker adds a **writable layer** on top of the read-only layers. Any changes made to the container, such as modifying files or writing logs, are stored in this top writable layer. However, this writable layer is ephemeral, and once the container is deleted, any changes are lost unless committed to a new image.
+* **Writable layer**: When you run a Docker container, Docker adds a **writable layer** on top of the read-only layers. Any changes made to the container, such as modifying files or writing logs, are stored in this top writable layer. However, once the container is deleted, all changes are lost.
 
 Example:
 
@@ -39,12 +35,6 @@ This Dockerfile creates the following image layers:
 2. **Intermediate Layer**: The result of running `apt-get update && apt-get install -y python3`.
 3. **Intermediate Layer**: The result of copying the contents of the local directory to `/app`.
 4. **Final Layer**: The layer resulting from setting the default command (`CMD ["python3", "/app/myapp.py"]`).
-
-
-
-
-
-
 
 ## Key commands
 
@@ -166,16 +156,12 @@ USER appuser
 
 ### Step 1: Write the Python Application
 
-Create a file named `app.py` with the following content:
-
 ```python
 # app.py
 print("Hello, Docker!")
 ```
 
 ### Step 2: Create the Dockerfile
-
-Create a `Dockerfile` in the same directory:
 
 ```Dockerfile
 # Use an official Python runtime as a parent image
@@ -193,8 +179,6 @@ CMD ["python", "app.py"]
 
 ### Step 3: Build the Docker Image
 
-Run the following command in your terminal:
-
 ```bash
 docker buildx build -t python-app:latest .
 ```
@@ -210,8 +194,6 @@ docker run python-app
 
 ### Step 1: Write the Java Application
 
-Create a file named `App.java` with the following content:
-
 ```java
 // App.java
 public class App {
@@ -222,8 +204,6 @@ public class App {
 ```
 
 ### Step 2: Create the Dockerfile
-
-Create a `Dockerfile` in the same directory:
 
 ```Dockerfile
 # OpenJDK runtime as a parent image
@@ -259,8 +239,6 @@ docker run java-app
 
 ### Step 1: Create the Dockerfile
 
-Create a `Dockerfile`:
-
 ```Dockerfile
 # Use an official Alpine Linux image as a parent image
 FROM alpine:3.18
@@ -288,11 +266,7 @@ docker run -it ls-command /bin/sh
 
 ## Creating a Docker Image for a Flask Echo Server
 
-In this section, we will create and containerize a simple Echo server using Flask, which echoes back any data sent to it.
-
 ### Step 1: Create a Dockerfile
-
-Create a `Dockerfile` with the following content:
 
 ```Dockerfile
 FROM python:3.9-slim
@@ -302,24 +276,13 @@ RUN pip install -r requirements.txt
 CMD ["python", "app.py"]
 ```
 
-This Dockerfile does the following:
-1. Uses a lightweight Python image.
-2. Sets the working directory.
-3. Copies the current directory contents into the container.
-4. Installs dependencies from `requirements.txt`.
-5. Runs `app.py` when the container starts.
-
 ### Step 2: Build the Docker Image
-
-Build the Docker image:
 
 ```bash
 docker buildx build -t echo-server-flask:latest .
 ```
 
 ### Step 3: Run the Docker Container
-
-Run the container:
 
 ```bash
 docker run -p 5000:5000 echo-server-flask
@@ -329,19 +292,13 @@ This command maps port 5000 on your host to port 5000 in the container, allowing
 
 ### Step 4: Test the Echo Server
 
-Test the Echo server using a tool like `curl` or Postman.
-
 ```bash
 curl -X POST http://localhost:5000/echo -H "Content-Type: application/json" -d '{"message": "Hello, Echo Server!"}'
 ```
 
 ## Creating a Docker Image for a Spring Boot Echo Server
 
-In this section, we will create and containerize a simple Echo server using Flask, which echoes back any data sent to it.
-
 ### Step 1: Create a Dockerfile
-
-Create a `Dockerfile` with the following content:
 
 ```Dockerfile
 FROM eclipse-temurin:21
@@ -350,15 +307,7 @@ COPY ${JAR_FILE} application.jar
 ENTRYPOINT ["java","-jar","/application.jar"]
 ```
 
-This Dockerfile does the following:
-1. Uses Eclipse Temurin image.
-2. Sets the JAR_FILE local variable representing the application artifact.
-3. Copies the application artifact into the container.
-4. Runs `java -jar application.jar` when the container starts.
-
 ### Step 2: Build the Docker Image
-
-Build the Docker image:
 
 ```bash
 # Maven is needed to actually create the jar artifact!
@@ -368,15 +317,11 @@ docker buildx build -t echo-server-java:latest .
 
 ### Step 3: Run the Docker Container
 
-Run the container:
-
 ```bash
 docker run -p 5000:5000 echo-server-java
 ```
 
 ### Step 4: Test the Echo Server
-
-Test the Echo server using a tool like `curl` or Postman.
 
 ```bash
 curl -X POST http://localhost:5000/echo -H "Content-Type: application/json" -d '{"message": "Hello, Echo Server!"}'

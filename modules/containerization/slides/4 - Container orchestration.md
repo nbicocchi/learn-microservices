@@ -18,7 +18,7 @@ Container orchestration is the **automated management** of containerized applica
 * Red Hat OpenShift
 
 ## The `docker-compose.yml` file
-**Docker Compose is a powerful tool that allows us to define and manage multi-container Docker applications**. It is particularly useful when working with microservices ecosystems, as it enables the coordination of multiple containers. With Compose, we can configure networking, resources, and also address scalability requirements.
+**Docker Compose is a powerful tool that allows us to define and manage multi-container Docker applications**. **Docker running a single node does not provide full orchestration features**. It is particularly useful when working with microservices ecosystems, as it enables the coordination of multiple containers. With Compose, we can configure networking, resources, and also address scalability requirements.
 
 The `docker-compose.yaml` file follows a hierarchical structure by the use of indentations.
 
@@ -182,8 +182,8 @@ curl http://localhost:8080/allocate/200
 ## Replicas
 A **Replica** in Docker refers to the ability to instantiate more instances of the same container, this allows us to scale it horizontally (code/echo-server-logs-java).
 The `deploy` field allows us to manage replicas and is composed of:
- - `mode`: **global** or **replicated**
-   - `replicas`: the number of replicas.
+  - `mode`: **global** or **replicated**
+  - `replicas`: the number of replicas.
 
 > **NOTE:** If not specified, `mode` = `replicated` and `replicas` = `1`
 
@@ -194,8 +194,8 @@ services:
     ports:
       - "5000"
     deploy:
+      mode: replicated
       replicas: 3
-
 ```
 > **NOTE:** Since the service we're replicating is mapping ports, we will specify only the container port (omitting the host port), otherwise it will show an error.
 
@@ -250,6 +250,10 @@ public class EchoController {
 We can stop the container, restart the container and see that the previous logs disappeared (watch the timestamp!).
 
 ```bash
+$ export COMPOSE_FILE=docker-compose-simple.yaml
+$ mvn clean package -Dmaven.test.skip=true
+$ docker compose build
+$ docker compose up --detach
 $ curl -X GET http://localhost:5000/logs | jq
 
 {
@@ -259,7 +263,7 @@ $ curl -X GET http://localhost:5000/logs | jq
 }
 
 $ docker compose down
-$ docker compose up
+$ docker compose up --detach
 $ curl -X GET http://localhost:5000/logs | jq
 {
   "lines": [
