@@ -18,6 +18,7 @@ Now we can click the "Generate" button to download the project, unzip it and imp
 If you are using IntelliJ, you can import the project by navigating to the main menu, select File > Open, and then navigating to the path where our project is present to add it as a Project.
 
 ## Adding the Persistence Layer
+
 We'll create a simple [persistence layer](https://en.wikipedia.org/wiki/Persistence_(computer_science)#Persistence_layers) under the package _com.nbicocchi.product.persistence.model_, by adding a _Product_ class.
 
 ```java
@@ -77,6 +78,7 @@ public class ProductRepository {
 ```
 
 ## Adding the Service Layer
+
 Moving on to the [service layer](https://en.wikipedia.org/wiki/Multitier_architecture#Common_layers), we'll add a similar service under the package _com.nbicocchi.product.service_:
 
 ```java
@@ -107,6 +109,7 @@ public class ProductService {
 ```
 
 ## Adding the Presentation Layer
+
 Moving on to the [presentation layer](), we'll add a similar service interface under the package _com.nbicocchi.controller_:
 
 ```java
@@ -155,7 +158,7 @@ public class ProductController {
 
 In Spring Boot, _CommandLineRunner_ and _ApplicationRunner_ are two interfaces that allow you to execute code when a Spring Boot application starts. They are typically used to perform some initialization or setup tasks before the application starts processing requests. Both interfaces have a single run method that you need to implement.
 
-```
+```java
 @Log
 @SpringBootApplication
 public class App implements ApplicationRunner {

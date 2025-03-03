@@ -20,7 +20,7 @@ These directories contain our test source code and resources, similarly to the _
 
 First, we have a core part of the pom here, namely the _parent_:
 
-```
+```xml
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -53,7 +53,7 @@ Now we’re reached the _dependencies_ section **(see The Twelve Factors #2)**.
 
 This section of the `pom.xml` configures the necessary libraries for developing a Spring Boot web application.
 
-```
+```xml
 <dependencies>
     <dependency>
         <groupId>org.projectlombok</groupId>
@@ -159,7 +159,7 @@ $ mvn dependency:tree
 
 Next, we have the _build_ section.
 
-```
+```xml
 <build>
     <plugins>
         <plugin>
@@ -284,7 +284,7 @@ To determine whether you are invoking a phase or a goal **check the command stru
 
 **The Spring Boot Maven plugin provides various convenient features to build and run our application.** We have to explicitly include it in the _build > plugins_ section of our project’s _pom.xml_ file:
 
-```
+```xml
 <build>
     <plugins>
         <plugin>
@@ -297,8 +297,8 @@ To determine whether you are invoking a phase or a goal **check the command stru
 
 With this in place, we can now run the application by executing the _run_ goal of the plugin. This will build and then run the application in place:
 
-```
-$ mvn spring-boot:run
+```bash
+mvn spring-boot:run
 ```
 
 **It’s worth mentioning that running the application using the plugin isn’t recommended in production.** 
@@ -313,41 +313,40 @@ In production environments, it is more suitable to run a pre-packaged artifact s
 
 The Spring Boot Maven Plugin packages an executable **fat jar** containing the application class files and all the necessary dependencies to run the project as a self-contained app. Since we’re including the plugin in our _build_ configuration, the _package_ phase execution is preconfigured to build a **fat jar**.
 
-```
-$ mvn clean package -Dmaven.skip.test=true
+```bash
+mvn clean package -Dmaven.skip.test=true
 ```
 
-```
-$ java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
+```bash
+java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
 
 **Command line arguments (see The Twelve Factors #1, #3).**
 
 We can provide runtime configurations using command line arguments, if needed:
 
-```
-$ java -jar -Dserver.port=8082 target/product-service-no-db-0.0.1-SNAPSHOT.jar
+```bash
+java -jar -Dserver.port=8082 target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
 
 or environment variables:
 
-```
-$ SERVER_PORT=8182 \
-java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
+```bash
+SERVER_PORT=8182 java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
 
 or both:
 
+```bash
+SERVER_PORT=8082 java -jar -Dserver.port=8083 target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
-$ SERVER_PORT=8082 java -jar -Dserver.port=8083 \
-target/product-service-no-db-0.0.1-SNAPSHOT.jar
 
+```
 2024-10-06T15:29:49.860+02:00  INFO 63986 --- [           main] com.nbicocchi.product.App                : No active profile set, falling back to 1 default profile: "default"
 2024-10-06T15:29:50.944+02:00  INFO 63986 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8083 (http)
 2024-10-06T15:29:50.957+02:00  INFO 63986 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
 2024-10-06T15:29:50.957+02:00  INFO 63986 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
 2024-10-06T15:29:50.987+02:00  INFO 63986 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-
 
 ...
 ```
