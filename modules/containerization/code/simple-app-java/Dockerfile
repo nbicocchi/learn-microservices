@@ -1,5 +1,5 @@
 # OpenJDK runtime as a parent image
-FROM eclipse-temurin:21-jre-ubi9-minimal
+FROM eclipse-temurin:21
 
 # Set the working directory in the container
 WORKDIR /app
