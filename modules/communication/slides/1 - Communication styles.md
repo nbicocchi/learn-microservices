@@ -2,11 +2,11 @@
 
 **The biggest challenge when changing from a monolithic application to a microservices-based application lies in changing the communication mechanism.** A direct conversion from in-process method calls into RPC calls to services will cause a chatty and not efficient communication that won't perform well in distributed environments.
 
-The challenges of designing distributed system are so notorious that there's even a canon known as the [Fallacies of distributed computing](0%20-%20Fallacies%20of%20distributed%20computing.md) listing **wrong** assumptions that developers often make when moving from monolithic to distributed designs.
+The challenges of designing distributed system are so notorious that there's even a canon known as the [Fallacies of Distributed Computing](0%20-%20Fallacies%20of%20distributed%20computing.md) listing **wrong assumptions that developers often make** when moving from monolithic to distributed designs.
 
-![](images/monolithic-vs-distributed.webp)
+![](images/fallacies-distributed-systems.webp)
 
-## Smart endpoints and dumb pipes
+## Smart Endpoints Dumb Pipes
 The microservice community promotes the philosophy of **smart endpoints and dumb pipes**.
 * Business logic is handled at the service level (smart endpoints), while communication between services is kept simple (dumb pipes).
 * This approach **avoids complex middleware (like ESBs in traditional SOA) by making the pipes solely responsible for message transport**, not transformation or orchestration. The result is loose coupling, better scalability, resilience as services can evolve independently without relying on a complex communication layer.
@@ -34,6 +34,8 @@ Client-service interactions form the backbone of distributed systems and can be 
 
 - **Asynchronous**: Asynchronous interactions **allow the client to continue processing other tasks without waiting** for a response. The client may receive the response later or be notified when the response is ready. This non-blocking approach **improves responsiveness and user experience but can complicate error handling and state management**. 
   - **Example**: A user uploads a large file to a cloud storage service. Instead of waiting for the upload to complete, the user can continue working, and the service notifies them when the upload is finished.
+
+![](images/synchronous-asynchronous.avif)
 
 ## Types of interaction
 
