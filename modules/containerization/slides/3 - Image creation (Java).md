@@ -183,12 +183,13 @@ Of course, make sure to check out Jib’s documentation to see all the [configur
 
 ## Optimizing Docker images
 
-The image size can have a significant impact on your performance either as a developer or as an organization. Especially when you are working in large projects with multiple services, the size of the images can be quite large, and this could cost you a lot of money and time.
+The image size can have a significant impact on your performance either as a developer or as an organization. Especially when you are working in large projects with many services, this could cost you a lot of money and time.
 
-* **Disk space**: You are wasting disk space in your docker registry and in your production servers.
-* **Slower builds**: The larger the image, the longer it takes to build and push the image.
-* **Security**: The larger the image, the larger dependencies you have and the more attack surface you have.
+* **Space**: You are wasting disk space in your docker registry and in your production servers.
 * **Bandwidth**: The larger the image, the more Bandwidth consumption you have when pulling and pushing the image from and to the registry.
+* **Speed**: The larger the image, the longer it takes to build and push the image.
+* **Security**: The larger the image, the larger dependencies you have and the more attack surface you have.
+
 
 ### Choosing the right base image
 
@@ -221,13 +222,12 @@ ENTRYPOINT ["java","-jar","/application.jar"]
 
 ### Build your own image using jlink and multi-stage dockerfile
 
-`jlink` is a **tool that can be used to create a custom runtime image** that contains only the modules that are needed to run your application.
+`jlink` is a **JDK tool that can be used to create a custom runtime image** that contains only the modules that are needed to run your application. We can also make use of a **multi-stage process**:
+* The first stage is used to build a custom JRE image using jlink.
+* The second stage is used to package the application in a slim alpine image.
 
-We can also make use of a **multi-stage process**. We have two stages, the first stage is used to build a custom JRE image using jlink and the second stage is used to package the application in a slim alpine image.
 
-* In the first stage, we used the eclipse-temurin:17-jdk-alpine image to build a custom JRE image using jlink. Then we run jlink to build a small JRE image that contains all the modules by using --add-modules ALL-MODULE-PATH that are needed to run the application.
-
-* In the second stage, we used the alpine image (which is a quite small 3Mb) to package our application) as base image, we then took the custom JRE from the first stage and use it as our JAVA_HOME.
+In the first stage, we used the eclipse-temurin:17-jdk-alpine image to build a custom JRE image using jlink. Then we run jlink to build a small JRE image that contains all the modules by using --add-modules ALL-MODULE-PATH that are needed to run the application.
 
 ```dockerfile
 # First stage, build the custom JRE
@@ -241,7 +241,10 @@ RUN $JAVA_HOME/bin/jlink \
          --no-header-files \
          --compress=2 \
          --output /optimized-jdk-21
+```
+In the second stage, we used the alpine image (which is a quite small 3Mb) to package our application) as base image, we then took the custom JRE from the first stage and use it as our JAVA_HOME. We also run the application as a de-privileged user for improved security.
 
+```dockerfile
 # Second stage, Use the custom JRE and build the app image
 FROM alpine:latest
 ENV JAVA_HOME=/opt/jdk/jdk-21

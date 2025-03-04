@@ -4,15 +4,17 @@
 
 ![Containers vs VMs](images/containers-vms.webp)
 
-### Bare Metal Deployment (Low density)
+**Deployment density** refers to the measure of how many instances of a particular application, or service can be deployed and run within a given environment. **High deployment density** means more workloads are running on fewer resources, often leading to better utilization of available infrastructure, but it can also present challenges related to resource contention, performance, and scaling.
 
-Initially, applications were deployed on physical servers where multiple applications shared the same hardware resources. This led to conflicts between libraries, dependencies, and performance needs. One solution was to allocate separate physical servers for each application, but this resulted in **high costs, underutilized resources, and increased maintenance overhead**.
+### Bare Metal Deployment (No isolation, Low density)
 
-### Virtualized Deployment (Mid density)
+Initially, applications were deployed on physical servers where multiple applications shared the same hardware resources. This led to **conflicts between libraries, dependencies, and performance needs**. One solution was to **allocate separate physical servers for each application**, but this resulted in **high costs, underutilized resources, and increased maintenance overhead**.
 
-Virtualization introduced a more efficient way to utilize resources by creating multiple virtual machines (VMs) on a single physical server. This is done through a **hypervisor**, which manages the underlying hardware resources (CPU, memory, storage) and allows multiple VMs to run independently. Each VM contains its own guest operating system and application stack. This approach enhances scalability, reduces hardware costs, and provides isolation between applications. However, **the overhead of running separate operating systems for each VM remains a drawback**.
+### Virtualized Deployment (Isolation, Mid density)
 
-### Container Deployment (High density)
+Virtualization introduced a more efficient way to utilize resources by creating multiple virtual machines (VMs) on a single physical server. This is done through a **hypervisor**, which manages the underlying hardware resources (CPU, memory, storage) and allows multiple VMs to run independently. **Each VM contains its own guest operating system and application stack**. This approach enhances scalability, reduces hardware costs, and provides isolation between applications. However, **the overhead of running separate operating systems for each VM remains a drawback**.
+
+### Container Deployment (Isolation, High density)
 
 Containers are lightweight, **standalone software units that run directly on the host's operating system, eliminating the need for a separate OS for each application**. They package everything an application needs to run, including libraries, dependencies, and binaries, providing **portability**, **efficiency**, and **isolation** without the overhead of VMs. As a rule of thumb, containers provide **application isolation** while reducing resource consumption.
 
@@ -20,13 +22,9 @@ Containers are lightweight, **standalone software units that run directly on the
 
 The `chroot` command in Unix-like operating systems changes the apparent root directory for a process and its children. This essentially "jails" the process within a specified directory, making it impossible for the process to access files outside that directory. This is commonly referred to as a "chroot jail."
 
-```bash
-chroot [OPTION] NEWROOT [COMMAND [ARG]...]
-```
+* **Minimal environment**: When a process is run inside a chroot environment, it loses access to the system libraries, binaries, and utilities located outside of the `NEWROOT`. You need to ensure that essential tools (e.g., `/bin/bash`, libraries, `/etc/passwd`) are available in the chrooted environment.
 
-**Minimal environment**: When a process is run inside a chroot environment, it loses access to the system libraries, binaries, and utilities located outside of the `NEWROOT`. You need to ensure that essential tools (e.g., `/bin/bash`, libraries, `/etc/passwd`) are available in the chrooted environment.
-
-**Not a full security measure**: Although `chroot` can isolate a process, it is not foolproof. Root users within a chroot environment can potentially break out of the jail and access other parts of the system. For strong isolation, other techniques like containers (e.g., Docker) or virtual machines are more secure.
+* **Not a full security measure**: Although `chroot` can isolate a process, it is not foolproof. Root users within a chroot environment can potentially break out of the jail and access other parts of the system. For strong isolation, other techniques like containers (e.g., Docker) or virtual machines are more secure.
 
 Let's show the dependencies of the `ls` and `bash` commands:
 
@@ -86,28 +84,18 @@ Here are some container technologies offering various capabilities for container
 
 ### Microservices and Application Isolation
 
-Containers are ideal for developing microservices-based architectures, which decompose large, monolithic applications into smaller, independently deployable services. Here’s why:
+Containers are ideal for developing microservices-based architectures, which decompose large, monolithic applications into independently deployable (smaller) services:
 
-- **Decoupling of Services**: Each service can be packaged in its own container, running independently with its own dependencies.
-- **Consistent Environments**: Containers ensure consistency across development, testing, and production environments, reducing deployment issues.
+- **Decoupling**: Each service can be packaged in its own container, running independently.
+- **Consistent Environments**: Containers ensure consistency across development, testing, and production environments.
 - **Resource and Fault Isolation**: Containers provide isolation, meaning that one service failure does not *directly* affect others. This makes containers excellent for fault-tolerant systems.
-- **Scalability**: Containers can be scaled independently to handle varying loads. Orchestration tools like Kubernetes make it easy to manage scaling and load balancing.
-
-### CI/CD Integration
-
-Containers play a crucial role in Continuous Integration/Continuous Deployment (CI/CD) pipelines by enabling:
-
-- **Faster Build and Deployment**: Containers can be built quickly, making deployments faster and more efficient.
-- **Isolation of CI/CD Stages**: Each stage of the CI/CD pipeline (e.g., build, test, deploy) can be containerized, ensuring that issues in one stage don’t affect others.
-- **Environment Parity**: Containers ensure that code behaves the same in development, testing, and production environments.
-- **Rollback Capabilities**: Since containers are immutable, rolling back to a previous version is simple in case of deployment failures.
+- **Scalability**: Containers can be scaled independently to handle varying loads. Orchestration tools (e.g., Kubernetes) make it easy to manage scaling and load balancing.
+- **Rollback**: Since containers are immutable, rolling back to a previous version is simple in case of deployment failures.
 
 
 ## Container Registries
 
-Container images are stored in **registries**, which serve as repositories where developers can push and pull images. Registries save time by centralizing image management across environments.
-
-Registries can be:
+Container images are stored in **registries**, which serve as repositories where developers can push and pull images. Registries save time by centralizing image management across environments. They can be:
 
 - **Public** (e.g., Docker Hub): Accessible by anyone.
 - **Private** (e.g., enterprise registries): Access is restricted and includes additional security controls.
@@ -129,23 +117,23 @@ Several container image formats are in use today, each with its advantages:
 
 ## Docker Architecture
 
-[Docker](https://www.datadoghq.com/docker-adoption/) is an open-source platform that enables developers to automate the deployment, scaling, and management of applications within lightweight, portable containers. This guarantees that applications run consistently across different environments, regardless of the underlying machine's customized settings. Consequently, developers can write code and test it in a container that behaves the same way on any machine, leading to fewer deployment issues.
 
 ![](images/docker-architecture.webp)
 
-The Docker architecture consists of several key components:
+[Docker](https://www.datadoghq.com/docker-adoption/) is an open-source platform that enables developers to automate the deployment, scaling, and management of applications within containers. The Docker architecture consists of several key components:
 
 - **Docker CLI**: The Command Line Interface (CLI) is the primary way users interact with Docker. It allows users to issue commands for managing Docker containers, images, networks, and volumes. The CLI serves as the user-friendly front end for developers to communicate with the underlying Docker Daemon.
 
-- **Socket**: The socket acts as the communication bridge between the Docker CLI and the Docker Daemon. It enables the CLI commands to be transmitted to the Daemon, which then executes the requested actions.
+- **Docker Engine**: The core component of Docker that runs on the host machine. The Daemon is responsible for creating, running, and managing containers. It listens for Docker API requests and manages Docker objects such as images, containers, networks, and volumes.
 
-- **Docker Daemon (Docker Engine)**: The core component of Docker that runs on the host machine. The Daemon is responsible for creating, running, and managing containers. It listens for Docker API requests and manages Docker objects such as images, containers, networks, and volumes.
-
-- **Containers**: Applications that run inside containers are isolated from each other. Multiple applications can run concurrently within their containers, providing a robust environment for development and production.
+- **Docker Registry**: A Docker registry is a service for storing and distributing Docker images. It acts as a repository where users can push, pull, and manage Docker images. Public registries like Docker Hub are available, and users can also set up private registries for internal use within organizations.
 
 - **Images**: Docker images are lightweight, standalone, and executable packages that include everything needed to run a piece of software, such as the application code, runtime, libraries, environment variables, and configuration files. Images are immutable and can be versioned.
 
-- **Docker Registry**: A Docker registry is a service for storing and distributing Docker images. It acts as a repository where users can push, pull, and manage Docker images. Public registries like Docker Hub are available, and users can also set up private registries for internal use within organizations.
+- **Containers**: Applications that run inside containers are isolated from each other. Multiple applications can run concurrently within their containers, providing a robust environment for development and production.
+
+
+
 
 ## Container lifecycle
 
@@ -154,7 +142,7 @@ The Docker architecture consists of several key components:
 
 ## Docker key files
 
-**Dockerfile**: A Dockerfile is a series of commands to build a Docker image. It specifies the base image, the commands to install dependencies, the files to copy, environment variables to set, and the command to run the application. The Dockerfile serves as a blueprint for creating images.
+**Dockerfile**: is a blueprint for creating a Docker image. It specifies the base image, the commands to install dependencies, the files to copy, environment variables to set, and the command to run the application.
 
 ```dockerfile
 FROM eclipse-temurin:21-jdk
@@ -163,7 +151,7 @@ COPY ${JAR_FILE} application.jar
 ENTRYPOINT ["java","-jar","/application.jar"]
 ```
 
-**docker-compose.yml**: Docker Compose is a tool that simplifies the management of multi-container Docker applications through a YAML configuration file. This file defines the services (containers) that comprise your application, including their configurations, such as images to use, ports to expose, network settings, and volume mounts. With Docker Compose, you can start and manage all services with a single terminal command, making it easier to replicate and manage complex applications across different environments.
+**docker-compose.yml**: defines the services (containers) that comprise your application, including their configurations, such as images to use, ports to expose, network settings, and external volumes. With Docker Compose, you can manage all services at once making it easier to replicate complex applications across different environments.
 
 ```yaml
 services:
@@ -211,30 +199,6 @@ volumes:
 
 
 ## Docker CLI
-Let’s try to start a container by launching an Ubuntu server using Docker’s run command:
-
-```
-$ docker run -it --rm alpine
-```
-
-With the preceding command, we ask Docker to create a container that runs Alpine, based on the latest version that’s available. The -it option is used so that we can interact with the container using Terminal, and the --rm option tells Docker to remove the container once we exit the Terminal session.
-
-The first time we use a Docker image that we haven’t built ourselves, Docker will download it from a Docker registry, which is Docker Hub by default (https://hub.docker.com). This will take some time, but for subsequent usage of that Docker image, the container will start in just a few seconds!
-
-Once the Docker image has been downloaded and the container has been started up, it should respond with a prompt such as the following:
-
-```
-$ docker run -it --rm alpine
-/ # 
-```
-
-We can try out the container by, for example, asking what version of Ubuntu it runs:
-
-```
-# cat /etc/os-release | grep 'VERSION'
-VERSION_ID=3.20.3
-```
-
 The Docker CLI provides several commands for managing images and containers. Here are some of the most important commands:
 
 **Pull an image from a Docker registry:**
@@ -277,7 +241,7 @@ docker rm <container-id>
 **Execute a command in a running container**: Runs a specified command inside a running container. The `-it` flags enable an interactive terminal session.
 
 ```bash
-docker exec -it <container-id> bash
+docker exec -it <container-id> /bin/echo "Hello World!"
 ```
 
 **Remove an image from the local registry**:
@@ -293,7 +257,6 @@ https://www.docker.com/products/docker-desktop/
 
 ### Lazydocker
 https://github.com/jesseduffield/lazydocker
-
 
 ## Resources
 - https://docs.docker.com
