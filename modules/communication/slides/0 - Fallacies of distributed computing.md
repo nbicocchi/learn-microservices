@@ -62,7 +62,7 @@ This fallacy assumes that the network can handle any amount of data being sent o
 * **As this limit is approached (e.g., additional machines are installed on the same network due to performance issues), slow things like TCP retransmits become more frequent, latency adds up ultimately impacting reliability (e.g. HttpTimeoutException)!**
 
 ### The Network is Secure
-This fallacy assumes that all communications over the network are inherently secure. In reality, security must be explicitly designed into network communications to protect against threats like eavesdropping, tampering, and unauthorized access. Furthermore, as [Kevin Mitnick](https://en.wikipedia.org/wiki/Kevin_Mitnick) initially showed, **social aspects become more and more relevant**. 
+This fallacy assumes that all communications over the network are inherently secure. In reality, security must be explicitly designed into network communications to protect against threats like eavesdropping, tampering, and unauthorized access. Furthermore, as [Kevin Mitnick](https://en.wikipedia.org/wiki/Kevin_Mitnick) initially showed, **social aspects become more and more relevant as the organizations complexity increases**. 
 
 For example, *everyone can find on Linkedin the DBA admins of a company, discover their habits on social media, and eventually "ask" them to put a recent organization backup on a pendrive and drop it from their car at a specific location.*
 
