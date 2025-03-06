@@ -5,8 +5,9 @@
 
 **Instructions:**
 - Write a Dockerfile that uses `eclipse-temurin:21` as base image.
-- Add a simple Java application (built as a jar artifact) that prints "Hello, Docker!".
+- Add a simple Java application (built with Maven as a jar artifact) that prints "Hello, Docker!".
 - Run the Java application whenever the container is started.
+- Test if the created image runs properly.
 
 ## Lab 2: Writing a Docker Compose File for a Java Spring Boot Web Application and Database
 **Objective:** Write a Docker Compose file to define two containers: one for a Java Spring Boot web application and another for a PostgreSQL database.
@@ -14,17 +15,19 @@
 **Instructions:**
 - Create a new Spring Boot application using the [Spring Initializr](https://start.spring.io/), selecting appropriate dependencies (e.g., Spring Web, Spring Data JPA).
 - Implement a simple RESTful API with CRUD operations for managing a resource (e.g., `User`).
-- The Spring Boot application should connect to the PostgreSQL database.
-- Write a `docker-compose.yml` file that defines a Spring Boot web application and a PostgreSQL database.
-- Define networking between the two containers (the application has to be exposed while PostgreSQL runs inside the Docker network).
-- Use a named volume to persist PostgreSQL data.
+- The application runs on port 9000.
+- The application uses PostgreSQL for persistence (a named volume has to be used for storing data).
+- Write a `docker-compose.yml` file for orchestrating both the application and the database.
+- Define networking between the two containers (both the application and the database have to be mapped on the host).
+- Test both the Spring Boot Maven Plugin and the Jib Plugin for building the image without Dockerfile.
 
 ## Lab 3: Resource Limiting
 **Objective:** Set CPU and memory limits on a Java container and monitor its usage.
 
 **Instructions:**
-- Write a Docker Compose file to run the Spring Boot application of Lab 2, with CPU and memory limits applied.
-- Start the containers and use `docker stats` to monitor their resource usage and verify that the limits are applied.
+- Modify the `docker-compose.yml` file (Lab 2) to run the application, with CPU and memory limits applied.
+- Modify the `docker-compose.yml` file (Lab 2) to run the PostgreSQL NOT mapped on the host network.
+- Start the containers and use `docker stats` to monitor their resource usage (and verify that the limits are applied).
 
 # Questions
 1. What are the main differences between bare-metal, virtual machines, and container-based deployments? Explain the concept of deployment density.
