@@ -2,17 +2,13 @@
 
 ## Key Principles of REST
 
-**REST** is an architectural style that leverages the existing protocols of the web, specifically HTTP. It emphasizes stateless communication and a uniform interface for resource manipulation. The core HTTP methods used in RESTful communication are:
+**REST** is an architectural style that leverages the existing protocols of the web, specifically HTTP. It emphasizes stateless communication and a uniform interface for resource manipulation. 
 
-- **GET**: Retrieve information from the server.
-- **POST**: Create a new resource on the server.
-- **PUT**: Update an existing resource.
-- **DELETE**: Remove a resource from the server.
+1. **Client-Server Separation**: The client and server are independent entities that communicate over the network, allowing for changes on either side without affecting the other.
+2. **Uniform Interface**: RESTful APIs provide a uniform interface, which simplifies and decouples the architecture, making it easier for clients to interact with resources.
+3. **Statelessness**: Each request from a client to the server contains all the necessary information. The server does not store client context between requests.
+4. **Resource Identification**: Resources are identified using URIs (Uniform Resource Identifiers), which can be represented in various formats, such as JSON or XML.
 
-1. **Statelessness**: Each request from a client to the server contains all the necessary information. The server does not store client context between requests.
-2. **Client-Server Separation**: The client and server are independent entities that communicate over the network, allowing for changes on either side without affecting the other.
-3. **Resource Identification**: Resources are identified using URIs (Uniform Resource Identifiers), which can be represented in various formats, such as JSON or XML.
-4. **Uniform Interface**: RESTful APIs provide a uniform interface, which simplifies and decouples the architecture, making it easier for clients to interact with resources.
 
 ## Building RESTful Services
 
@@ -24,24 +20,17 @@ To create a RESTful service in Spring Boot, follow these steps (tools/code/produ
 ```java
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Data
 @Entity
 public class Product {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
-   @EqualsAndHashCode.Include
-   private String uuid;
-   private String name;
-   private Double weight;
-
-   public Product(String uuid, String name, Double weight) {
-      this.uuid = uuid;
-      this.name = name;
-      this.weight = weight;
-   }
+   @NonNull @EqualsAndHashCode.Include private String uuid;
+   @NonNull private String name;
+   @NonNull private Double weight;
 }
-
 ```
 
 2. **Create a REST Controller**:
@@ -93,10 +82,10 @@ public class ProductController {
 
 In a microservices architecture, it is often necessary for services to consume APIs provided by other services. Spring Boot provides a simple way to achieve this through the `RestClient` class, which allows for HTTP requests to be made and handled effectively.
 
-To consume a RESTful service in Spring Boot, follow these steps (code/sync-one-to-one):
+To consume a RESTful service, follow these steps (code/sync-request-response):
 
 1. **Use RestClient**:
-   Use `RestClient` to make HTTP requests to other services. Here's an example of a service that consumes a REST API to fetch product data using a dedicated class named _ProductIntegration_:
+   Use `RestClient` to make HTTP requests to other services. Here's an example of a service that consumes a REST API to fetch product data using a dedicated bean named _ProductIntegration_:
 
 ```java
 @RestController
@@ -206,6 +195,12 @@ In Java, several libraries provide automatic mapping capabilities. Here are the 
 **Marshmallow**: (Python) Marshmallow is a popular library for object serialization/deserialization in Python. It is typically used to convert objects to and from JSON, but it can also be used for DTO mappings.
 
 **Pydantic**: (Python) Pydantic is primarily used for data validation and settings management, but it also serves as a great DTO library. It provides data validation and conversion between Python objects and JSON-compatible formats.
+
+TODO
+* order service non ritorna numero dei prodotti
+* order potrebbe usare un vero dto per togliere il long id
+* mettere esempio di funzionamento
+* spiegare sync-r-r-slow come osservarlo in grafana
 
 ## Resources
 * https://www.baeldung.com/spring-boot-restclient

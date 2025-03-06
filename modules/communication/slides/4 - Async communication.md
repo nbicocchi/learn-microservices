@@ -1,6 +1,6 @@
 # Asynchronous communications
 
-Asynchronous communication is a key architectural pattern in distributed systems where services need to communicate without blocking each other. Unlike synchronous communication, where one service sends a request and waits for a response, asynchronous communication allows services to continue processing other tasks while awaiting a response.
+Asynchronous communication is a key architectural pattern in distributed systems. Unlike synchronous communication, where one service sends a request and waits for a response, **asynchronous communication allows services to continue processing other tasks while awaiting a response**.
 
 In an asynchronous communication model, services are decoupled, meaning they do not rely on immediate responses to continue functioning. This improves scalability, fault tolerance, and overall system performance, making it an attractive approach for handling large-scale, high-concurrency workloads.
 
@@ -9,30 +9,30 @@ In an asynchronous communication model, services are decoupled, meaning they do 
 ## Benefits of Asynchronous Communication
 
 1. **Improved Scalability**:
-   Asynchronous systems are more scalable because services are not waiting for immediate responses. Instead, they handle tasks independently, allowing more efficient use of resources. Message queues can scale horizontally, distributing load across services.
+   Asynchronous systems are more scalable because services are not waiting for immediate responses (**solve temporal coupling!**). Instead, they handle tasks independently. Message queues can also scale horizontally, distributing load across services.
 
 2. **Increased Resilience and Fault Tolerance**:
-   Since services do not rely on the immediate availability of others, the system is more resilient to failures. A message broker can store messages in case a service is down and deliver them when it becomes available again, making the system fault-tolerant.
+   Since services do not rely on the immediate availability of others, the system is more resilient to failures. A **message broker can store messages** in case a service is down and deliver them when it becomes available again, making the system fault-tolerant.
 
 3. **Decoupled Services**:
-   Services in asynchronous architectures are more loosely coupled. The sender does not need to know when or how the recipient processes the message. This decoupling allows easier system updates, as changes in one service do not require changes in others.
+   Services in asynchronous architectures are more loosely coupled. The **sender does not need to know when or how the recipient processes the message**. This decoupling allows easier system updates, as changes in one service do not require changes in others.
 
 4. **Better Resource Utilization**:
-   In asynchronous communication, system resources (such as threads and memory) are not blocked waiting for responses. This improves resource utilization, especially in high-throughput environments, enabling the system to handle more requests simultaneously.
+   In asynchronous communication, system resources (such as threads and memory) are not blocked waiting for responses (**solve thread pool exhaustion!**). This improves resource utilization, especially in high-throughput environments.
 
 ## Challenges of Asynchronous Communication
 
 1. **Complexity**:
-   Managing asynchronous communication introduces additional complexity in system design. Ensuring that messages are delivered, processed, and acknowledged properly requires careful planning and infrastructure.
+   Managing asynchronous communication introduces **additional complexity** in system design. **Ensuring that messages are delivered, processed, and acknowledged properly** requires careful planning and infrastructure.
 
 2. **Consistency**:
    Eventual consistency is a common model in asynchronous systems, where data updates propagate asynchronously between services. While this improves availability, it can lead to **data consistency** issues since updates may take time to propagate.
 
 3. **Message Ordering**:
-   Ensuring messages are processed in the correct order can be a challenge, particularly in distributed systems where messages might arrive out of order. Advanced message brokers provide support for message sequencing, but this adds complexity to the implementation.
+   **Ensuring messages are processed in the correct order can be a challenge**, particularly in distributed systems where messages might arrive out of order. Advanced message brokers provide support for message sequencing, but this adds complexity to the implementation.
 
 4. **Error Handling**:
-   Errors in asynchronous communication are often harder to detect and handle than in synchronous systems. When a service fails to process a message, it may not be immediately obvious. Retry mechanisms, dead-letter queues, and monitoring are essential to managing errors effectively.
+   Errors in asynchronous communication are often harder to detect and handle than in synchronous systems. **When a service fails to process a message, it may not be immediately obvious**. Retry mechanisms, dead-letter queues, and monitoring are essential to managing errors effectively.
 
 
 ## When to Use Asynchronous Communication

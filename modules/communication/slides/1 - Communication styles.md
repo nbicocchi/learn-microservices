@@ -51,5 +51,4 @@ Client-service interactions form the backbone of distributed systems and can be 
 
 ## Resources
 - Microservices Patterns (Chapter 3)
-- Microservices with SpringBoot3 and SpringCloud (Chapter 7)
 
