@@ -33,6 +33,48 @@ The `docker-compose.yaml` file follows a hierarchical structure by the use of in
     - **environment**: Used to pass environment variables to configure containers and applications.
     - **healthcheck**: Ensures that the service is healthy, specifying the interval and number of tries.
 
+
+## Command line utility
+
+We manage containers (_services_) ecosystem thanks to `docker compose` command (or `docker-compose` in old versions).
+
+First of all, we must build services in order to be able to make containers:
+
+```bash
+docker compose build
+```
+
+Then, we can start the ecosystem with the `docker compose up` command in the context of the project directory.
+
+```bash
+docker compose up --detach
+```
+
+> [!NOTE]
+> We use `detach` flag in order to run containers in the background and prevent verbose outputs.
+
+Given that we will always copy _last built_ JAR file in our microservice container, we must **re-build** microservice **image every** time that we change something in code.
+
+In practice, we can use these two commands:
+
+```bash
+mvn clean package -Dmaven.test.skip=true
+docker compose -f <compose-configuration>.yml up --build --detach
+```
+
+Which is a short version of these:
+
+```bash
+export COMPOSE_FILE=<compose-configuration>.yaml
+mvn clean package -Dmaven.test.skip=true
+docker compose build
+docker compose up --detach
+```
+
+> [!TIP]
+> Specify explicitly Docker compose configuration YML file name is not mandatory, the default used value is `docker-compose.yml`
+
+
 ## Simple example
 Now we will deploy a simple application mapped to the port 5000. Below, the `docker-compose.yml` file.
 
@@ -65,10 +107,8 @@ public class EchoController {
 }
 ```
 
-We can start the ecosystem with the `docker-compose up` command in the context of the project directory.
-
 ```bash
-export COMPOSE_FILE=docker-compose-simple.yaml
+export COMPOSE_FILE=docker-compose-simple.yml
 mvn clean package -Dmaven.test.skip=true
 docker compose build
 docker compose up --detach
