@@ -1,6 +1,6 @@
 # Synchronous communications
 
-## Definitions
+## Definitions and Know Issues
 
 **Serialization** is the process of converting data structures or objects into a format that can be easily transmitted or stored. This format is often a byte stream or text, which can be later deserialized (converted back) into the original data structure or object.
 

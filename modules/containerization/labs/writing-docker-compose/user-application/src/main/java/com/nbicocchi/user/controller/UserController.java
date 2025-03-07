@@ -19,6 +19,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping()
+    public Iterable<UserModel> getUsers() {
+        log.info("getUsers() invoked");
+        return userService.findAll();
+    }
+
     @GetMapping("/{email}")
     public UserModel getUser(@PathVariable String email) {
         log.info("getUser() invoked");

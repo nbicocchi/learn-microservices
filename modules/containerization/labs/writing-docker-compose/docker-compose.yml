@@ -3,6 +3,8 @@ services:
     image: postgres:latest
     container_name: postgres
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: secret
@@ -20,7 +22,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "8080:8080"
+      - "9000:9000"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jdbc_schema
       SPRING_DATASOURCE_USERNAME: user

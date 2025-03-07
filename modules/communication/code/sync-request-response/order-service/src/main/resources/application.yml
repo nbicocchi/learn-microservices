@@ -10,7 +10,6 @@ spring:
     hibernate.ddl-auto: create-drop
     defer-datasource-initialization: true
     database-platform: org.hibernate.dialect.H2Dialect
-
   sql:
     init.mode: always
   h2:

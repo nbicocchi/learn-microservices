@@ -15,7 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 public class Order {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
