@@ -1,4 +1,6 @@
-server.port: 5000
+server:
+  port: 5000
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/jdbc_schema
@@ -6,6 +8,7 @@ spring:
     password: secret
   jpa:
     open-in-view: false
+    # this creates and drops tables every startup
     hibernate.ddl-auto: create-drop
     defer-datasource-initialization: true
     properties:
@@ -13,8 +16,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   sql:
     init.mode: always
-
-
 
 ---
 spring.config.activate.on-profile: docker
