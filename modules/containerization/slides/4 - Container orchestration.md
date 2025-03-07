@@ -50,8 +50,7 @@ Then, we can start the ecosystem with the `docker compose up` command in the con
 docker compose up --detach
 ```
 
-> [!NOTE]
-> We use `detach` flag in order to run containers in the background and prevent verbose outputs.
+> **[NOTE]** We use `detach` flag in order to run containers in the background and prevent verbose outputs.
 
 Given that we will always copy _last built_ JAR file in our microservice container, we must **re-build** microservice **image every** time that we change something in code.
 
@@ -70,10 +69,6 @@ mvn clean package -Dmaven.test.skip=true
 docker compose build
 docker compose up --detach
 ```
-
-> [!TIP]
-> Specify explicitly Docker compose configuration YML file name is not mandatory, the default used value is `docker-compose.yml`
-
 
 ## Simple example
 Now we will deploy a simple application mapped to the port 5000. Below, the `docker-compose.yml` file.
