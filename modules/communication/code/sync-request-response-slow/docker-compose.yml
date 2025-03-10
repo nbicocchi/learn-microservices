@@ -1,7 +1,6 @@
 services:
   provider:
     build: provider-service
-    mem_limit: 512m
     ports:
       - 8081:8081
     environment:
@@ -9,7 +8,6 @@ services:
 
   consumer:
     build: consumer-service
-    mem_limit: 512m
     ports:
       - 8080:8080
     environment:

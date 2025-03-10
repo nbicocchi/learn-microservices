@@ -1,15 +1,21 @@
 services:
   product-service:
     image: product-service-h2
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   order-service:
     build: order-service
     image: order-service
-    mem_limit: 512m
     ports:
       - 8080:8080
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    deploy:
+      resources:
+        limits:
+          memory: 512m

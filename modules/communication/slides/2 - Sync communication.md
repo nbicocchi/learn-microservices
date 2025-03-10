@@ -72,6 +72,8 @@ public class BookController {
 
 **Under-fetching (aka chattiness)** occurs when a client requests data from an API but does not receive all the necessary information in a single response. As a result, the client must make additional requests to retrieve the missing data, leading to inefficiencies and increased latency.
 
+*Scenario*: The endpoint `/books` returns a simplified model for books. If the client also needs the publisher, it must make additional requests to fetch publisher details such as: `GET /books/{title}`
+
 ```java
 public class BookBasicDTO {
     private String title;
@@ -99,10 +101,10 @@ public class BookController {
 }
 ```
 
-*Scenario*: The endpoint `/books` returns a simplified models for all books available. If the client also needs the publisher, it must make additional requests to fetch publisher details such as: `GET /books/{title}`
-
 
 **Thread pool exhaustion (on client!)** clients waiting for a response from the server consumes system resources (threads, memory), which can be problematic in high-concurrency environments. **[unsolvable with sync approaches!]**
+
+*Scenario*: A client queries the endpoint `/books` 100 times every second. Each request takes on average 1 second to be satisfied. At any moment in time, the **client** has approximately 100 threads in waiting state (waiting the server reply). Given that each thread requires 1MB of RAM, what happens if the books service stop responding for 10 seconds? The client will need 1GB of RAM only for managing them!
 
 ![](images/thread-pool.webp)
 

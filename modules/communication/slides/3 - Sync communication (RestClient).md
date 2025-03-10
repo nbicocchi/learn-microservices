@@ -2,12 +2,12 @@
 
 ## Key Principles of REST
 
-**REST** is an architectural style that leverages the existing protocols of the web, specifically HTTP. It emphasizes stateless communication and a uniform interface for resource manipulation. 
+**REST** is an architectural style that leverages the existing protocols of the web, specifically HTTP/1.1. It emphasizes stateless communication and a uniform interface for resource manipulation. 
 
 1. **Client-Server Separation**: The client and server are independent entities that communicate over the network, allowing for changes on either side without affecting the other.
-2. **Uniform Interface**: RESTful APIs provide a uniform interface, which simplifies and decouples the architecture, making it easier for clients to interact with resources.
+2. **Resource Identification**: Resources are identified using URIs (Uniform Resource Identifiers), which can be represented in various formats, such as JSON or XML.
 3. **Statelessness**: Each request from a client to the server contains all the necessary information. The server does not store client context between requests.
-4. **Resource Identification**: Resources are identified using URIs (Uniform Resource Identifiers), which can be represented in various formats, such as JSON or XML.
+
 
 
 ## Building RESTful Services
@@ -78,7 +78,7 @@ public class ProductController {
 }
 ```
 
-## Consuming RESTful Services with RestClient
+## Consuming RESTful Services (RestClient)
 
 In a microservices architecture, it is often necessary for services to consume APIs provided by other services. Spring Boot provides a simple way to achieve this through the `RestClient` class, which allows for HTTP requests to be made and handled effectively.
 
@@ -168,6 +168,41 @@ try {
 } catch (RestClientException e) {
     // Handle the error, e.g., log it or throw a custom exception
 }
+```
+
+
+## Trying out the messaging system
+
+```yaml
+services:
+   product-service:
+      image: product-service-h2
+      environment:
+         - SPRING_PROFILES_ACTIVE=docker
+      deploy:
+         resources:
+            limits:
+               memory: 512m
+
+   order-service:
+      build: order-service
+      image: order-service
+      ports:
+         - 8080:8080
+      environment:
+         - SPRING_PROFILES_ACTIVE=docker
+      deploy:
+         resources:
+            limits:
+               memory: 512m
+```
+
+```bash
+cd order-service
+mvn clean package -Dmaven.test.skip=true
+cd ..
+docker compose build
+docker compose up --detach
 ```
 
 ## DTOs
