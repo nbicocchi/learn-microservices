@@ -29,10 +29,10 @@ Client-service interactions form the backbone of distributed systems and can be 
 
 ### Response timing
 
-- **Synchronous**: In synchronous interactions, **the client sends a request and waits for a response**, often blocking further actions until the response is received. This model is intuitive but **can lead to delays** if the service takes time to process the request. 
+- **Synchronous**: In synchronous interactions, **the client sends a request and waits for a response** blocking further actions until the response is received. This model is intuitive but **latency adds up** if the service takes time to process the request. 
   - **Example**: A client submits a form on a website and waits for the server to confirm the submission before continuing. This tight coupling can lead to performance bottlenecks if the service is slow to respond.
 
-- **Asynchronous**: Asynchronous interactions **allow the client to continue processing other tasks without waiting** for a response. The client may receive the response later or be notified when the response is ready. This non-blocking approach **improves responsiveness and user experience but can complicate error handling and state management**. 
+- **Asynchronous**: Asynchronous interactions **allow the client to continue processing other tasks without waiting** for a response. The client may receive the response later or be notified when the response is ready. This non-blocking approach **improves responsiveness and user experience but introduces complexity**. 
   - **Example**: A user uploads a large file to a cloud storage service. Instead of waiting for the upload to complete, the user can continue working, and the service notifies them when the upload is finished.
 
 ![](images/synchronous-asynchronous.avif)
@@ -43,9 +43,9 @@ Client-service interactions form the backbone of distributed systems and can be 
 
 **Request/Response (One-to-One, Synchronous)**: In this classic interaction style, a client sends a request to a service and waits for a direct response. The expectation is for a timely reply, which can lead to tight coupling between the client and the service. This pattern is common in traditional web applications and APIs where immediate feedback is required. 
 
-**Asynchronous Request/Response (One-to-One, Asynchronous)**: In this interaction, a client sends a request but does not wait for an immediate response. Instead, it can continue processing other tasks. The service will eventually respond, but the client does not block while waiting. This pattern helps improve user experience by preventing UI freezes or delays. 
+**Asynchronous Request/Response (One-to-One, Asynchronous)**: In this interaction, a client sends a request but does not wait for an immediate response. Instead, it can continue processing other tasks. The service will eventually respond, but the client does not block while waiting. 
 
-**Publish/Subscribe (One-to-Many, Asynchronous)**: This interaction model allows a client to publish messages to a topic or channel that can be consumed by multiple services. Interested services subscribe to these messages, which can be processed independently of the publisher. This decouples clients from services, enabling a more flexible architecture. 
+**Publish/Subscribe (One-to-Many, Asynchronous)**: This interaction model allows a client to publish messages to a *topic* that can be consumed by multiple services. Interested services subscribe to these messages, which can be processed independently of the publisher. This decouples clients from services, enabling a more flexible architecture. 
 
 **Publish/Async Responses (One-to-Many, Asynchronous)**: In this variation, a client publishes a request message to multiple services and waits for responses for a specified amount of time. This allows the client to receive inputs from various services while still not blocking its operation, enhancing its efficiency. 
 
