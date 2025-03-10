@@ -10,9 +10,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDto {
-    private Long id;
     @EqualsAndHashCode.Include
     private String uuid;
     private LocalDateTime timestamp;
-    private Set<ProductDto> products = new HashSet<>();
+    private Set<OrderLineDto> orderLineDtos = new HashSet<>();
 }

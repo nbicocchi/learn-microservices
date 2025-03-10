@@ -3,15 +3,11 @@ package com.nbicocchi.order.persistence.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Setter
-@Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Entity
-public class ProductOrder {
-
+public class OrderLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +19,7 @@ public class ProductOrder {
     @Column(nullable = false, unique = false)
     private Integer amount;
 
-    public ProductOrder(String uuid, Integer amount) {
+    public OrderLine(String uuid, Integer amount) {
         this.uuid = uuid;
         this.amount = amount;
     }

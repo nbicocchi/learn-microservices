@@ -99,30 +99,33 @@ public class OrderController {
       this.productIntegration = productIntegration;
    }
 
-   @GetMapping(value = "")
-   public Iterable<OrderDto> findAll() {
-      Iterable<Order> orders = orderRepository.findAll();
-
-      List<OrderDto> orderDtos = new ArrayList<>();
-      for (Order order : orders) {
-         OrderDto orderDto = new OrderDto(
-                 order.getId(),
-                 order.getUuid(),
-                 order.getTimestamp(),
-                 new HashSet<>()
-         );
-
-         for (ProductOrder productOrder : order.getProducts()) {
-            orderDto.getProducts().add(productIntegration.findbyUuid(productOrder.getUuid()));
-         }
-         orderDtos.add(orderDto);
-      }
-      return orderDtos;
-   }
-
-   @GetMapping(value = "/{id}")
+   @GetMapping(value = "/local/{id}")
    public Order findById(@PathVariable Long id) {
       return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+   }
+
+   @GetMapping(value = "/remote/{id}")
+   public OrderDto findByIdWithRemoteCall(@PathVariable Long id) {
+      Optional<Order> optionalOrder = orderRepository.findById(id);
+      optionalOrder.orElseThrow(() -> new RuntimeException("Order not found"));
+
+      Order foundOrder = optionalOrder.get();
+      OrderDto orderDto = new OrderDto(
+              foundOrder.getUuid(),
+              foundOrder.getTimestamp(),
+              new HashSet<>()
+      );
+
+      for (OrderLine orderLine : foundOrder.getOrderLines()) {
+         ProductDto product = productIntegration.findbyUuid(orderLine.getUuid());
+         orderDto.getOrderLineDtos().add(
+                 new OrderLineDto(
+                         product.getUuid(),
+                         product.getName(),
+                         product.getWeight(),
+                         orderLine.getAmount()));
+      }
+      return orderDto;
    }
 }
 ```
@@ -130,33 +133,33 @@ public class OrderController {
 ```java
 @Component
 public class ProductIntegration {
-    String productServiceHost;
-    int productServicePort;
+   String productServiceHost;
+   int productServicePort;
 
-    public ProductIntegration(
-            @Value("${app.product-service.host}") String productServiceHost,
-            @Value("${app.product-service.port}") int productServicePort) {
-        this.productServiceHost = productServiceHost;
-        this.productServicePort = productServicePort;
-    }
+   public ProductIntegration(
+           @Value("${app.product-service.host}") String productServiceHost,
+           @Value("${app.product-service.port}") int productServicePort) {
+      this.productServiceHost = productServiceHost;
+      this.productServicePort = productServicePort;
+   }
 
-    public List<ProductDto> findAll() {
-        String url = "http://" + productServiceHost + ":" + productServicePort + "/products";
-        RestClient restClient = RestClient.builder().build();
-        return restClient.get()
-                .uri(url)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-    }
+   public List<ProductDto> findAll() {
+      String url = "http://" + productServiceHost + ":" + productServicePort + "/products";
+      RestClient restClient = RestClient.builder().build();
+      return restClient.get()
+              .uri(url)
+              .retrieve()
+              .body(new ParameterizedTypeReference<>() {});
+   }
 
-    public ProductDto findbyUuid(String uuid) {
-        String url = "http://" + productServiceHost + ":" + productServicePort + "/products" + "/" + uuid;
-        RestClient restClient = RestClient.builder().build();
-        return restClient.get()
-                .uri(url)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-    }
+   public ProductDto findbyUuid(String uuid) {
+      String url = "http://" + productServiceHost + ":" + productServicePort + "/products" + "/" + uuid;
+      RestClient restClient = RestClient.builder().build();
+      return restClient.get()
+              .uri(url)
+              .retrieve()
+              .body(new ParameterizedTypeReference<>() {});
+   }
 }
 ```
 
@@ -203,6 +206,59 @@ mvn clean package -Dmaven.test.skip=true
 cd ..
 docker compose build
 docker compose up --detach
+```
+
+The following command shows the locally stored data about orders.
+
+```bash
+curl -X GET http://localhost:8080/orders/local/2
+```
+
+```json
+{
+   "id": 2,
+   "uuid": "45750c00-c7cf-4987-ab94-de5920f3a7ca",
+   "timestamp": "2025-03-10T22:04:59.287086",
+   "orderLines": [
+      {
+         "id": 3,
+         "uuid": "b1f4748a-f3cd-4fc3-be58-38316afe1574",
+         "amount": 2
+      },
+      {
+         "id": 2,
+         "uuid": "f89b6577-3705-414f-8b01-41c091abb5e0",
+         "amount": 2
+      }
+   ]
+}
+```
+
+The following command shows the locally stored data about orders, augmented with product data.
+
+```bash
+curl -X GET http://localhost:8080/orders/remote/2
+```
+
+```json
+{
+   "uuid": "45750c00-c7cf-4987-ab94-de5920f3a7ca",
+   "timestamp": "2025-03-10T22:04:59.287086",
+   "orderLineDtos": [
+      {
+         "uuid": "b1f4748a-f3cd-4fc3-be58-38316afe1574",
+         "name": "Shirt",
+         "weight": 0.2,
+         "amount": 2
+      },
+      {
+         "uuid": "f89b6577-3705-414f-8b01-41c091abb5e0",
+         "name": "Bike",
+         "weight": 5.5,
+         "amount": 2
+      }
+   ]
+}
 ```
 
 ## DTOs

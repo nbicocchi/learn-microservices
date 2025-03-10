@@ -1,5 +1,6 @@
 package com.nbicocchi.order.integration;
 
+import com.nbicocchi.order.dto.OrderLineDto;
 import com.nbicocchi.order.dto.ProductDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;

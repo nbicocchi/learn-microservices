@@ -7,12 +7,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Setter
-@Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Entity
 public class Order {
     @Id
@@ -27,11 +24,11 @@ public class Order {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
-    private Set<ProductOrder> products = new HashSet<>();
+    private Set<OrderLine> orderLines = new HashSet<>();
 
-    public Order(String uuid, LocalDateTime timestamp, Set<ProductOrder> products) {
+    public Order(String uuid, LocalDateTime timestamp, Set<OrderLine> orderLines) {
         this.uuid = uuid;
         this.timestamp = timestamp;
-        this.products = products;
+        this.orderLines = orderLines;
     }
 }
