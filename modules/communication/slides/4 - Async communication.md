@@ -87,7 +87,7 @@ function AppD (x) {
 
 | SOA Model                       | Pipeline Model                  |
 |---------------------------------|---------------------------------|
-| ![](images/broker-classic.webp) | ![](images/broker-pipeline.png) |
+| ![](images/broker-classic.webp) | ![](images/broker-pipeline.webp) |
 
 
 ### Brokerless Messaging Systems
@@ -106,11 +106,11 @@ For efficient communication, peers spawn **multiple threads or use asynchronous 
 
 | Direct Communication            | Directory Service                |
 |---------------------------------|----------------------------------|
-| ![](images/broker-nobroker.png) | ![](images/broker-directory.png) |
+| ![](images/broker-nobroker.webp) | ![](images/broker-directory.webp) |
 
 | Distributed Broker                        | Distributed Directory Service                |
 |-------------------------------------------|----------------------------------------------|
-| ![](images/broker-distributed-broker.png) | ![](images/broker-distributed-directory.png) |
+| ![](images/broker-distributed-broker.webp) | ![](images/broker-distributed-directory.webp) |
 
 
 

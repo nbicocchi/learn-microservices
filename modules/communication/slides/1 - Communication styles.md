@@ -35,7 +35,7 @@ Client-service interactions form the backbone of distributed systems and can be 
 - **Asynchronous**: Asynchronous interactions **allow the client to continue processing other tasks without waiting** for a response. The client may receive the response later or be notified when the response is ready. This non-blocking approach **improves responsiveness and user experience but introduces complexity**. 
   - **Example**: A user uploads a large file to a cloud storage service. Instead of waiting for the upload to complete, the user can continue working, and the service notifies them when the upload is finished.
 
-![](images/synchronous-asynchronous.avif)
+![](images/synchronous-asynchronous.webp)
 
 ## Types of interaction
 
