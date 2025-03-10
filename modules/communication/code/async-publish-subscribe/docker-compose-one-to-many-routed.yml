@@ -2,61 +2,57 @@ services:
   publisher:
     image: async-rabbitmq-publisher
     build: async-rabbitmq-publisher
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed
     depends_on:
       lavinmq:
         condition: service_healthy
     deploy:
-      mode: replicated
-      replicas: 1
+      resources:
+        limits:
+          memory: 512m
 
   consumer-0:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed_instance_CREATE
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   consumer-1:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed_instance_UPDATE
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   consumer-2:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed_instance_DELETE
     depends_on:
       lavinmq:
         condition: service_healthy
-
-  #  rabbitmq:
-  #    image: rabbitmq:latest
-  #    mem_limit: 512m
-  #    ports:
-  #      - 5672:5672
-  #      - 15672:15672
-  #    healthcheck:
-  #      test: ["CMD", "rabbitmqctl", "status"]
-  #      interval: 5s
-  #      timeout: 2s
-  #      retries: 60
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   lavinmq:
     image: cloudamqp/lavinmq:latest
-    mem_limit: 512m
     ports:
       - 5672:5672
       - 15672:15672
@@ -65,3 +61,7 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+    deploy:
+      resources:
+        limits:
+          memory: 512m

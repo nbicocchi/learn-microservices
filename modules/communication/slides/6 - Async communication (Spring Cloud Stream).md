@@ -1,22 +1,21 @@
 # Asynchronous communications (Spring Cloud Stream)
 
 ## Introduction
-Spring Cloud Stream also allows to abstract away the implementation details of the messaging platform that we’re using. We can use multiple message platforms, including Apache Kafka and RabbitMQ, and the platform’s implementation-specific details are kept out of the application code. The implementation of message publication and consumption in your application is done through platform-neutral Spring interfaces.
+[Spring Cloud Stream](https://spring.io/projects/spring-cloud-stream) allows to abstract away the implementation details of the messaging platform (e.g., Apache Kafka, RabbitMQ). Thus, **implementation-specific details are kept out of the application code**. The publication and consumption of messages in applications is done through platform-neutral Spring interfaces.
 
-Let’s begin our discussion by looking at the Spring Cloud Stream architecture through the lens of two services communicating via messaging. One service is the message publisher, and one service is the message consumer.
+Let’s begin our discussion by looking at the Spring Cloud Stream architecture through the lens of two services communicating via messaging. One service is the **message publisher**, and one service is the **message consumer**.
 
 ![](images/spring-cloud-stream-architecture.webp)
 
-A **source** takes a Plain Old Java Object (POJO), which represents the message to be published, serializes it (the default serialization is JSON), and publishes the message to a channel.
+**Source**: takes a [Plain Old Java Object (POJO)](https://en.wikipedia.org/wiki/Plain_Old_Java_Object), which represents the message to be published, serializes it (the default serialization is JSON), and publishes the message to a channel.
 
-A **channel** is an abstraction over the queue that’s going to hold the message. It is always associated with a target queue name, but that queue name is never directly exposed to the code, which means that we can switch the queues the channel reads or writes without changing the application’s code (only the configuration).
+**Channel**: is an abstraction over the queue that’s going to hold the message. It is always associated with a target queue name, but that queue name is never directly exposed to the code, which means that we can switch the queues the channel reads or writes without changing the application’s code (only the configuration).
 
-A **binder** talks to a specific message platform. The binder part of the Spring Cloud Stream framework allows us to work with messages without having to be exposed to platform-specific libraries and APIs for publishing and consuming messages.
+**Binder**: talks to a specific message platform. The binder part of the Spring Cloud Stream framework allows us to work with messages without having to be exposed to platform-specific libraries and APIs for publishing and consuming messages.
 
-A **sink** listens to a channel for incoming messages and deserializes the message back into a POJO object. From there, the message can be processed by the business logic of the Spring service.
+**Sink**: listens to a channel for incoming messages and deserializes the message back into a POJO object. From there, the message can be processed by the business logic of the Spring service.
 
 ## Defining events
-Messaging systems handle messages that typically consist of headers and a body. An event is a message that describes something that has happened. For events, the message body can be used to describe the type of event, the event data, and a timestamp for when the event occurred.
 
 An event could be defined by the following:
 * The type of event, for example, a create or delete event
@@ -27,20 +26,15 @@ An event could be defined by the following:
 ```java
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Data
+@Builder
 public class Event<K, T> {
     public enum Type {CREATE, DELETE, UPDATE}
     @NonNull private Type eventType;
-    private K key;
-    private T data;
-    private ZonedDateTime eventCreatedAt;
-
-    public Event(@NonNull Type eventType, K key, T data) {
-        this.eventType = eventType;
-        this.key = key;
-        this.data = data;
-        this.eventCreatedAt = ZonedDateTime.now();
-    }
+    @NonNull private K key;
+    @NonNull private T data;
+    private ZonedDateTime eventCreatedAt = ZonedDateTime.now();
 }
 ```
 
@@ -48,6 +42,8 @@ public class Event<K, T> {
 ## Project dependencies
 
 To include Spring Cloud Stream in our project, we need to add *spring-cloud-stream* and at least one binder (e.g., spring-cloud-starter-stream-rabbit or spring-cloud-starter-stream-kafka) as shown below.
+
+The `<dependencyManagement>` section is typically used in Spring-based projects to manage Spring Cloud dependencies consistently. By using the `spring-cloud-dependencies` BOM, you can ensure that the correct versions of Spring Cloud dependencies are used and avoid version conflicts.
 
 ```
     <properties>
@@ -72,6 +68,7 @@ To include Spring Cloud Stream in our project, we need to add *spring-cloud-stre
         </dependency>
         ...
     </dependencies>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -166,31 +163,27 @@ spring.cloud.stream:
 ## Receiving events
 
 To be able to consume events, we need to do the following:
-* Declare message processors that consume events published on specific topics
-* Add configuration required for consuming events
+* Add the configuration required for consuming events from the broker.
+* Declare *message processors* (methods) that consume those events.
 
-The message receiver (frequently called *processor*) is declared as below. From the code, we can see that:
-* The class is annotated with *@Configuration*, telling Spring to look for Spring beans in the class.
-* We declare a Spring bean that implements the functional interface *Consumer*, accepting an event as an input parameter of type Event<String,Integer>.
+An example of *message processor* is declared below. We can see that the class is annotated with *@Configuration*, telling Spring to look for Spring beans in the class. The class actually provides a bean providing an implementation of the *Consumer<Event<String, Integer>>* interface.
 
 ```java
+@Log4j2
 @Configuration
 public class EventReceiver {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EventReceiver.class);
-
     @Bean
     public Consumer<Event<String, Integer>> messageProcessor() {
         return event -> {
             switch (event.getEventType()) {
                 case CREATE:
-                    LOG.info(String.format("[CREATE] --> %s", event));
+                    log.info("[CREATE] --> {}", event);
                     break;
                 case DELETE:
-                    LOG.info(String.format("[DELETE] --> %s", event));
+                    log.info("[DELETE] --> {}", event);
                     break;
                 case UPDATE:
-                    LOG.info(String.format("[UPDATE] --> %s", event));
+                    log.info("[UPDATE] --> {}", event);
                     break;
                 default:
                     String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE/DELETE/UPDATE event";
@@ -234,7 +227,7 @@ spring.cloud.stream:
         - **`destination`**: Specifies the message queue to listen to, here set to `queue.messages`. This queue is where RabbitMQ will forward messages for the `messageProcessor` function to handle.
 
 ## Trying out the messaging system
-[LavinMQ](https://lavinmq.com/) is an extremely fast Message Broker that handles a large amounts of messages and connections. It implements the AMQP protocol (so that it can transparently replace RabbitMQ) and can run on both a single node or a cluster (more details [here](https://github.com/cloudamqp/lavinmq)).
+[LavinMQ](https://lavinmq.com/) is an extremely fast message broker capable of handling large amounts of messages and connections. It implements the AMQP protocol (so that it can transparently replace RabbitMQ) and can run on both a single node or a cluster.
 
 ### One publisher, one consumer
 
@@ -243,32 +236,31 @@ services:
   publisher:
     image: async-rabbitmq-publisher
     build: async-rabbitmq-publisher
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       lavinmq:
         condition: service_healthy
     deploy:
-      mode: replicated
-      replicas: 1
+      resources:
+        limits:
+          memory: 512m
 
   consumer:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       lavinmq:
         condition: service_healthy
     deploy:
-      mode: replicated
-      replicas: 1
+      resources:
+        limits:
+          memory: 512m
 
   lavinmq:
     image: cloudamqp/lavinmq:latest
-    mem_limit: 512m
     ports:
       - 5672:5672
       - 15672:15672
@@ -277,19 +269,22 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
-
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 ```
 
 Start the system landscape with the following commands:
 
-```
+```bash
 export COMPOSE_FILE=docker-compose-one-to-one.yml
 mvn clean package -Dmaven.test.skip=true
 docker compose build
 docker compose up --detach
 ```
 
-Using the [LavinMQ web interface](http://localhost:15672/) (login: guest/guest) we can see the *messages* exchange receiving 5 events/s and publishing the same events on one (anonymous) queue. 
+Using the [LavinMQ web interface](http://localhost:15672/) (login: guest/guest) we can see the *queue.messages* **topic exchange** receiving 5 events/s and publishing the same events on one (anonymous) queue. 
 
 ![](images/rabbitmq-one-consumer.webp)
 
@@ -299,7 +294,6 @@ Using the [LavinMQ web interface](http://localhost:15672/) (login: guest/guest) 
   consumer:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -308,16 +302,19 @@ Using the [LavinMQ web interface](http://localhost:15672/) (login: guest/guest) 
     deploy:
       mode: replicated
       replicas: 3
+      resources:
+        limits:
+          memory: 512m
 ```
 
-```
+```bash
 export COMPOSE_FILE=docker-compose-one-to-many.yml
 mvn clean package -Dmaven.test.skip=true
 docker compose build
 docker compose up --detach
 ```
 
-Using the [web interface](http://localhost:15672/) of LavinMQ (login: guest/guest) we can see the *messages* exchange receiving 5 events/s and publishing 15 same events on three different (anonymous) queue.
+Using the [LavinMQ web interface](http://localhost:15672/), we can see the *queue.messages* exchange receiving 5 events/s and publishing 15 same events on three different (anonymous) queue.
 
 ![](images/rabbitmq-three-consumers.webp)
 
@@ -331,7 +328,6 @@ Modify `docker-compose.yml` to activate the *groups* profile for the consumers.
   consumer:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups
     depends_on:
@@ -340,6 +336,9 @@ Modify `docker-compose.yml` to activate the *groups* profile for the consumers.
     deploy:
       mode: replicated
       replicas: 3
+      resources:
+        limits:
+          memory: 512m
 ```
 
 The *groups* profile, adds the following configurations (see *application.yml*):
@@ -354,62 +353,74 @@ spring.cloud.stream:
 
 Start the landscape with the following commands:
 
-```
+```bash
 export COMPOSE_FILE=docker-compose-one-to-many-groups.yml
 mvn clean package -Dmaven.test.skip=true
 docker compose build
 docker compose up --detach
 ```
 
-Using the [LavinMQ web interface](http://localhost:15672/), we can exchange that the exchange receives 5 events/s and publishes them to a single message group having three consumers. As a consequence, the output rate is 5 events/s.
+Using the [LavinMQ web interface](http://localhost:15672/), we can see that the exchange receives 5 events/s and publishes them to a single message group having three consumers. As a consequence, the output rate is 5 events/s.
 
 ![](images/rabbitmq-consumer-group.webp)
 
 ### Partitions
 
-The problem is, each event is received by only one consumer. However, we do have any guarantee that all the messages concerning the same ID (e.g. the same product) reach the same consumer instance. This might lead to misbehaviour. To solve this issue, we can activate the use of *partitions* with Spring profiles.
+The problem is, each event is received by only one consumer. However, we don't have any guarantee that all the messages concerning the same entity (e.g. the same product, the same order) reach the same consumer instance. This might lead to misbehaviour. To solve this issue, we can use *partitions*.
 
 ```yaml
 services:
   publisher:
     image: async-rabbitmq-publisher
     build: async-rabbitmq-publisher
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,partitioned
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   consumer-0:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_0
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   consumer-1:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_1
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   consumer-2:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_2
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 ```
 
 The *partitioned* profile, adds the following configurations.
@@ -456,14 +467,14 @@ The `instanceCount` value represents the total number of application instances b
 
 Start the system landscape with the following commands:
 
-```
+```bash
 export COMPOSE_FILE=docker-compose-one-to-many-partitions.yml
 mvn clean package -Dmaven.test.skip=true
 docker compose build
 docker compose up --detach
 ```
 
-Using the [web interface](http://localhost:15672/) of LavinMQ it is possible to observe that the messages exchange receives 5 events/s and publishes the same events on three different (named) queues. Each event is consumed once by only one consumer. Thus, the output rate is 5 events/s. However, by checking the logs, it is possible to observe how each consumer receives *all* five messages pertaining to same ID.
+Using the [LavinMQ web interface](http://localhost:15672/), we can see that the messages exchange receives 5 events/s and publishes the same events on three different (named) queues. Each event is consumed once by only one consumer. Thus, the output rate is 5 events/s. However, by checking the logs, it is possible to observe how each consumer receives *all* five messages pertaining to same ID.
 
 ![](images/rabbitmq-partitions.webp)
 
@@ -475,45 +486,54 @@ services:
   publisher:
     image: async-rabbitmq-publisher
     build: async-rabbitmq-publisher
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed
     depends_on:
       lavinmq:
         condition: service_healthy
     deploy:
-      mode: replicated
-      replicas: 1
+      resources:
+        limits:
+          memory: 512m
 
   consumer-0:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed_instance_CREATE
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   consumer-1:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed_instance_UPDATE
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   consumer-2:
     image: async-rabbitmq-consumer
     build: async-rabbitmq-consumer
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed_instance_DELETE
     depends_on:
       lavinmq:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 ```
 
 The *routed* profile, adds the following configurations.
@@ -562,7 +582,7 @@ spring.cloud.stream:
 
 Start the system landscape with the following commands:
 
-```
+```bash
 export COMPOSE_FILE=docker-compose-one-to-many-routed.yml
 mvn clean package -Dmaven.test.skip=true
 docker compose build
@@ -574,3 +594,4 @@ Using the [LavinMQ web interface](http://localhost:15672/), it is possible to ob
 ![](images/rabbitmq-routed.webp)
 
 ## Resources
+- https://www.baeldung.com/spring-maven-bom

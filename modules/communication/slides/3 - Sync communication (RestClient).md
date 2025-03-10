@@ -196,11 +196,5 @@ In Java, several libraries provide automatic mapping capabilities. Here are the 
 
 **Pydantic**: (Python) Pydantic is primarily used for data validation and settings management, but it also serves as a great DTO library. It provides data validation and conversion between Python objects and JSON-compatible formats.
 
-TODO
-* order service non ritorna numero dei prodotti
-* order potrebbe usare un vero dto per togliere il long id
-* mettere esempio di funzionamento
-* spiegare sync-r-r-slow come osservarlo in grafana
-
 ## Resources
 * https://www.baeldung.com/spring-boot-restclient
