@@ -19,24 +19,44 @@ public class UserController {
 **Spatial coupling** refers to the degree of dependency between different components or services in a system at a given point in time. A high degree of spatial coupling means that components are tightly connected, requiring direct knowledge of each other’s existence, interfaces, or locations. This can lead to reduced flexibility and increased maintenance complexity.
 
 ```java
+public class Payment {
+    private double amount;
+    private String paymentMethod;
+    private boolean isApproved;
+}
+```
+
+```java
 @RestController
 public class OrderController {
     
-    public String createOrder(Order order) {
-        // Directly calling Payment Service (tightly coupled)
+    public Order createOrder(Order order) {
+        // Directly calling Payment Service location, port, endpoint (tightly coupled)
         String url = "http://payment-service:8080/api/payments";
         RestClient restClient = RestClient.builder().build();
-        return restClient.get()
+        Payment payment = restClient.get()
                 .uri(url)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {});   
+        // ...
     }
 }
 ```
 
-**Temporal coupling** occurs when components or services must be available and responsive at the same time to function correctly. This often happens in synchronous communication patterns, where one component must wait for another to process a request before proceeding. In cases where a chain of multiple services need to communicate, the **cumulated latency** can significantly degrade performance. **[unsolvable with sync approaches!]**
+**Temporal coupling** occurs when components or services must be available and responsive at the same time to function correctly. This often happens in synchronous communication patterns, where one component must wait for another to process a request before proceeding. In cases where a chain of multiple services need to communicate, **the cumulated latency can significantly degrade performance**. **[unsolvable with sync approaches!]**
 
 **API coupling** refers to the degree of dependency between a client and an API. A highly coupled API means that changes in the API can easily break the client, while a loosely coupled API provides more flexibility and resilience to changes.
+
+What happens if we have to modify the *Payment* class?
+
+```java
+public class Payment {
+    private double amount;
+    private String currency;
+    private String paymentMethod;
+    private boolean isApproved;
+}
+```
 
 **Over-fetching** occurs when an API returns more data than the client actually needs, leading to wasted bandwidth and increased processing time. This typically happens in REST APIs with fixed response structures, where a client cannot specify exactly which fields it requires.
 
@@ -87,7 +107,7 @@ public class BookBasicDTO {
 public class BookController {
 
     @GetMapping
-    public Iterable<Book> findAll() {
+    public Iterable<BookBasicDTO> findAll() {
         List<Book> books = List.of(
                 new Book("Spring Boot", "John Doe", "123456789", "Comprehensive guide", "TechPub", 500),
                 new Book("Microservices", "Jane Smith", "987654321", "Detailed explanation", "CloudPub", 300)
@@ -155,6 +175,26 @@ public class BookController {
 
 ![](images/rest-vs-graphql.webp)
 
+
+**GraphQL Example Query**
+
+```graphql
+query {
+  user(id: "123") {
+    id
+    name
+    email
+    posts {
+      title
+      content
+    }
+  }
+}
+```
+
+- This query requests data for a specific user with `id: "123"`.
+- It retrieves the `id`, `name`, and `email` of the user.
+- It also fetches a list of posts written by the user, including each post's `title` and `content`.
 
 **How GraphQL Solves REST Limitations**:
 

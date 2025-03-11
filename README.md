@@ -76,3 +76,8 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * The MLOps model and its benefits in distributed contexts
 * Tracking ML experiments with MLFlow
 * Observing ML models in production with EvidentlyAI
+
+## Project Ideas
+* Modelling (which services? which APIs?)
+* Simple an comparative project REST/graphql/protobuf
+* Complete/advance social network example

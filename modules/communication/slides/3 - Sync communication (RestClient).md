@@ -1,21 +1,70 @@
 # Communication styles (RESTClient)
 
-## Key Principles of REST
+## Transition to Microservices: Data Model Changes  
 
-**REST** is an architectural style that leverages the existing protocols of the web, specifically HTTP/1.1. It emphasizes stateless communication and a uniform interface for resource manipulation. 
+In a monolithic architecture, all data resides in a **single database** with direct relationships (e.g., `JOIN` operations). In microservices, **each service has its own database**, leading to **data splitting**.
 
-1. **Client-Server Separation**: The client and server are independent entities that communicate over the network, allowing for changes on either side without affecting the other.
-2. **Resource Identification**: Resources are identified using URIs (Uniform Resource Identifiers), which can be represented in various formats, such as JSON or XML.
-3. **Statelessness**: Each request from a client to the server contains all the necessary information. The server does not store client context between requests.
+**Monolith:** `Order`, `OrderLine`, and `Product` in the same DB.
 
+```mermaid
+classDiagram
+direction LR
+    class Order {
+	    +long id
+	    +string uuid
+	    +datetime timeStamp
+    }
+    class OrderLine {
+	    +long id
+	    +int amount
+    }
+    class Product {
+	    +long id
+        +String uuid
+	    +string name
+	    +double weight
+    }
 
+    Order "1" -- "*" OrderLine
+    OrderLine "*" -- "1" Product
+```
+
+**Microservices:**
+   - **Order Service:** Manages `Order` and `OrderLine` (without product details).
+   - **Product Service:** Manages `Product` data separately.
+
+```mermaid
+classDiagram
+direction LR
+    class Order {
+	    +long id
+	    +string uuid
+	    +datetime timeStamp
+    }
+
+    class OrderLine {
+	    +long id
+        +int amount
+        +String uuid
+    }
+    
+    class Product {
+	    +long id
+        +String uuid
+	    +string name
+	    +double weight
+    }
+
+    Order "1" -- "*" OrderLine
+```
+
+Since data is no longer in the same database, **services must communicate!**
 
 ## Building RESTful Services
 
-To create a RESTful service in Spring Boot, follow these steps (tools/code/product-service-h2):
+We can use an existing REST service for managing products (tools/code/product-service-h2):
 
-1. **Define a Model Class**:
-   Create a model class that represents the data structure of the resource. For example, a `Product` class:
+The model class represents the data structure of the resource. In this case, a `Product`:
 
 ```java
 @AllArgsConstructor
@@ -33,8 +82,7 @@ public class Product {
 }
 ```
 
-2. **Create a REST Controller**:
-   Define a REST controller that handles incoming HTTP requests and responds with the appropriate data.
+The REST controller handles incoming HTTP requests and responds with the appropriate data:
 
 ```java
 @RestController
@@ -211,7 +259,7 @@ docker compose up --detach
 The following command shows the locally stored data about orders.
 
 ```bash
-curl -X GET http://localhost:8080/orders/local/2
+curl -X GET http://localhost:8080/orders/local/1 | jq
 ```
 
 ```json
@@ -237,7 +285,7 @@ curl -X GET http://localhost:8080/orders/local/2
 The following command shows the locally stored data about orders, augmented with product data.
 
 ```bash
-curl -X GET http://localhost:8080/orders/remote/2
+curl -X GET http://localhost:8080/orders/remote/1 | jq
 ```
 
 ```json
@@ -277,7 +325,7 @@ A **DTO (Data Transfer Object)** is a design pattern used in software engineerin
 Automatic mapping between entities and DTOs is a common requirement, as it simplifies the process of converting data between different layers of an application. In both Java and Python, libraries are available to facilitate this mapping, reducing boilerplate code and improving code readability.
 
 ### Entity-to-DTO Mapping
-In Java, several libraries provide automatic mapping capabilities. Here are the most popular ones:
+Several libraries provide automatic mapping capabilities. Here are the most popular ones:
 
 **MapStruct**: (Java) MapStruct is a powerful, compile-time, code-generating library that creates type-safe mappers between Java objects (e.g., entities and DTOs). It generates code at compile-time, so there's no runtime overhead, making it fast and efficient.
    

@@ -12,7 +12,7 @@ Asynchronous communication is a key architectural pattern in distributed systems
 2. **Better Resource Utilization**:
    In asynchronous communication, **system resources (such as threads and memory) are not blocked waiting for responses (solves thread pool exhaustion!)**. This improves resource utilization, especially in high-throughput environments.
 3. **Improved Scalability**:
-   Asynchronous systems are more scalable because services are not waiting for immediate responses. Instead, they handle tasks independently. Message queues can also scale horizontally, distributing load across services.
+   Asynchronous systems are more scalable because **services are not waiting for immediate responses**. Instead, they handle tasks independently. **Message queues can also scale horizontally**, distributing load across services.
 4. **Increased Resilience**:
    Since services do not rely on the immediate availability of others, the system is more resilient to failures. A **message broker can store messages** in case a service is down and deliver them when it becomes available again, making the system fault-tolerant.
 
@@ -51,8 +51,8 @@ Broker-based messaging systems rely on a **central message broker** to manage th
 * Google Cloud Pub/Sub (https://cloud.google.com/pubsub)
 
 #### Advantages
-1. **Decoupling**: Producers and consumers don’t need to know about each other’s existence. They only interact with the broker, making the system loosely coupled and easier to maintain and scale.
-2. **Reliability**: Message brokers store messages and provide delivery guarantees (e.g., at-least-once, exactly-once). Even if a consumer is down, the broker ensures that the message will be delivered when the consumer is available.
+1. **Decoupling**: Producers and consumers don’t need to know about each other’s existence **(solves spatial coupling!)**. They only interact with the broker, making the system loosely coupled and easier to maintain and scale.
+2. **Reliability**: Message brokers store messages and provide **delivery guarantees** (e.g., at-least-once, exactly-once). Even if a consumer is down, the broker ensures that the message will be delivered when the consumer is available.
 3. **Scalability**: With proper configuration (e.g., Kafka partitions, RabbitMQ clusters), brokers can handle massive amounts of data and scale horizontally to accommodate high-throughput use cases.
 
 #### Disadvantages
