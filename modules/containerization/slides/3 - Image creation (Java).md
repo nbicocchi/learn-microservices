@@ -220,14 +220,14 @@ COPY ${JAR_FILE} application.jar
 ENTRYPOINT ["java","-jar","/application.jar"]
 ```
 
-### Build your own image using jlink and multi-stage dockerfile
+### Build your own image using jlink and multi-stage dockerfiles
 
 `jlink` is a **JDK tool that can be used to create a custom runtime image** that contains only the modules that are needed to run your application. We can also make use of a **multi-stage process**:
 * The first stage is used to build a custom JRE image using jlink.
 * The second stage is used to package the application in a slim alpine image.
 
 
-In the first stage, we used the eclipse-temurin:17-jdk-alpine image to build a custom JRE image using jlink. Then we run jlink to build a small JRE image that contains all the modules by using --add-modules ALL-MODULE-PATH that are needed to run the application.
+In the first stage, we use the eclipse-temurin:17-jdk-alpine image to build a custom JRE image using jlink. Then we run jlink to build a small JRE image that contains all the modules by using --add-modules ALL-MODULE-PATH that are needed to run the application.
 
 ```dockerfile
 # First stage, build the custom JRE
@@ -242,7 +242,7 @@ RUN $JAVA_HOME/bin/jlink \
          --compress=2 \
          --output /optimized-jdk-21
 ```
-In the second stage, we used the alpine image (which is a quite small 3Mb) to package our application) as base image, we then took the custom JRE from the first stage and use it as our JAVA_HOME. We also run the application as a de-privileged user for improved security.
+In the second stage, we use *alpine* (which is only few megabytes) as base image, we then take the custom JRE from the first stage and use it as our *JAVA_HOME*. We also run the application as a de-privileged user for improved security.
 
 ```dockerfile
 # Second stage, Use the custom JRE and build the app image
