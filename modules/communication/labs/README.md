@@ -2,57 +2,68 @@
 
 ## Lab 1: Basic REST Communication
 
-**Instructions:**
-- Implement a service (*provider-service*) that exposes a REST endpoint (i.e., `/greet`) that returns a greeting message.
-- Implement another service (*consumer-service*) that consumes the `/greet` endpoint every 2 seconds and displays the response in its logs.
-- Use `RestClient` to make HTTP requests.
+1. Implement a **Provider Service** (*provider-service*) that exposes a REST endpoint (`/greet`) returning a greeting message.
+2. Implement a **Consumer Service** (*consumer-service*) that:
+  - Calls the `/greet` endpoint every 2 seconds (See @Scheduled annotation). 
+  - Logs the received message.
+3. Utilize `RestClient` to perform HTTP requests.
 
-## Lab 2: REST Communication for a social network
+## Lab 2: REST Communication for a Social Network
 
-**Instructions:**
-- Implement a service (*post-service*) exposing endpoints for managing posts on a social network. In particular:
-  - @Get /posts -> returning all posts
-  - @Get /posts/{userid} -> returning all posts of a specific user
+1. Implement a **Post Service** (`post-service`), exposing the following endpoints:
+  - `GET /posts` → Returns all posts.
+  - `GET /posts/{userUUID}` → Returns all posts created by a specific user.
 
-```java
-class Post {
-    Long id;
-    String userUUID;
-    String content;
-    LocalDateTime timestamp;
-}
-```
+   ```java
+   class Post {
+       Long id;
+       String userUUID;
+       LocalDateTime timestamp;
+       String content;
+   }
+   ```  
 
-- Implement a service (*user-service*) exposing endpoints for managing users of a social network. In particular:
-  - @Get /users -> returning all users (only local details)
-  - @Get /users/{userid} -> returning local details of the user and all its posts
+2. Implement a **User Service** (`user-service`), exposing the following endpoints:
+  - `GET /users` → Returns all users (only local details).
+  - `GET /users/{userUUID}` → Returns local details and all posts of a specific user.
 
-```java
-class User {
-    Long id;
-    String userUUID;
-    String nickname;
-    LocalDateTime birthDay;
-}
-```
+   ```java
+   class User {
+       Long id;
+       String userUUID;
+       String nickname;
+       LocalDate birthDay;
+   }
+   ```  
 
-- Both service must use DTOs for hiding implementation details (e.g., the primary key on the database). 
-- Run the two services within a Docker environment.
+3. Use DTOs to abstract internal details, such as database primary keys, in API responses.
+4. Deploy both services within a Docker environment.
 
-## Lab 3: Asynchronous Communication with RabbitMQ
-**Instructions:**
-- Implement a service capable of receiving asynchronous events for solving math problems. 
+## Lab 3: Asynchronous Math Service
 
-```java
-import java.time.LocalDateTime;
+1. Implement a **Math Service** (`math-service`)
+  - Listens for asynchronous events containing math problems.
+  - Computes either the `n`th Fibonacci or prime number based on the `type` field.
+  - Logs the computed result.
 
-class Event {
-    String type; // should be primes or fibonacci
-    LocalDateTime timestamp;
-    Long n;
-}
-```
+   ```java
+   class Event {
+       String type; // "primes" or "fibonacci"
+       LocalDateTime timestamp;
+       Long n;
+   }
+   ```  
 
+2. Implement a **Client Service** (`client-service`)
+  - Generates random math events (`primes` or `fibonacci`).
+  - Sends events asynchronously to a message broker (RabbitMQ).
+
+3. Scenarios to Implement:
+  - **Single Consumer**: One `client-service` communicates with one `math-service`.
+  - **Load Balancing**: One `client-service` communicates with three replicas of `math-service`, where each instance processes all event types.
+  - **Selective Routing**: One `client-service` communicates with two replicas of `math-service`, where each instance processes only one type of event (`primes` or `fibonacci`).
+
+4. Deploy all services using Docker, ensuring proper RabbitMQ configuration for message routing.
 
 # Questions
 1. Comment on the key fallacies of distributed systems.

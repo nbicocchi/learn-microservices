@@ -1,4 +1,4 @@
-package com.nbicocchi.consumer_service;
+package com.nbicocchi.consumer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

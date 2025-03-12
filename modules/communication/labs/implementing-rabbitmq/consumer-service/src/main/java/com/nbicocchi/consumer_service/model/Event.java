@@ -1,4 +1,4 @@
-package com.nbicocchi.consumer_service.model;
+package com.nbicocchi.consumer.model;
 
 import lombok.*;
 

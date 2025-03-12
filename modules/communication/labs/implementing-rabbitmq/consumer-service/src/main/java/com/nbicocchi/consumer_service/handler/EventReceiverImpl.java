@@ -1,6 +1,6 @@
-package com.nbicocchi.consumer_service.handler;
+package com.nbicocchi.consumer.handler;
 
-import com.nbicocchi.consumer_service.model.Event;
+import com.nbicocchi.consumer.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;

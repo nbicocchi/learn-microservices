@@ -1,0 +1,12 @@
+services:
+  post-service:
+    build: post-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  user-service:
+    build: user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"

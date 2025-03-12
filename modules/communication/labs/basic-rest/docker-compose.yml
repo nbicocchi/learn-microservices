@@ -1,0 +1,10 @@
+services:
+  provider-service:
+    build: provider-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  consumer-service:
+    build: consumer-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
