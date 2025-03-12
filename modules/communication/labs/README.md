@@ -2,8 +2,8 @@
 
 ## Lab 1: Basic REST Communication
 
-1. Implement a **Provider Service** (*provider-service*) that exposes a REST endpoint (`/greet`) returning a greeting message.
-2. Implement a **Consumer Service** (*consumer-service*) that:
+1. Implement a **Provider Service** (`provider-service`) that exposes a REST endpoint (`/greet`) returning a greeting message.
+2. Implement a **Consumer Service** (`consumer-service`) that:
   - Calls the `/greet` endpoint every 2 seconds (See @Scheduled annotation). 
   - Logs the received message.
 3. Utilize `RestClient` to perform HTTP requests.
@@ -43,36 +43,60 @@
 
 ## Lab 3: Basic RabbiMQ Communication
 
-1. Implement a **Provider Service** (*provider-service*) sending an *Event* to a message broker (*queue.messages* exchange) each second and logging its activity.
-2. Implement a **Consumer Service** (*consumer-service*) connecting to the same message broker and logging the received events. 
+1. Implement a **Provider Service** (`provider-service`) sending an *Event* to a message broker (*queue.messages* exchange) each second and logging its activity.
+2. Implement a **Consumer Service** (`consumer-service`) connecting to the same message broker and logging the received events. 
 3. Deploy both services and the message broker within a Docker environment.
 
 
+Here’s a more polished and structured version of your text:
+
+---
+
 ## Lab 4: Asynchronous Math Service
 
-1. Implement a **Math Service** (`math-service`)
-  - Listens for asynchronous events containing math problems.
-  - Computes either the `n`th Fibonacci or prime number based on the `type` field.
-  - Logs the computed result.
+In this lab, you'll implement an asynchronous system for computing prime numbers using two microservices:
+- **Proxy Service (`proxy-service`)**: Exposes an endpoint to receive requests.
+- **Math Service (`math-service`)**: Processes requests asynchronously and computes prime numbers.
 
-   ```java
-   class Event {
-       String type; // "primes" or "fibonacci"
-       LocalDateTime timestamp;
-       Long n;
-   }
-   ```  
+1. **Implement the Proxy Service** (`proxy-service`)
+Develop a **Proxy Service** that provides the following endpoint to accept prime number search requests:
 
-2. Implement a **Client Service** (`client-service`)
-  - Generates random math events (`primes` or `fibonacci`).
-  - Sends events asynchronously to a message broker (RabbitMQ).
+```java
+@PostMapping
+public ProxyRequest searchPrimes(@RequestBody ProxyRequest request) {
+    // Implementation goes here
+}
+```
 
-3. Scenarios to Implement:
-  - **Single Consumer**: One `client-service` communicates with one `math-service`.
-  - **Load Balancing**: One `client-service` communicates with three replicas of `math-service`, where each instance processes all event types.
-  - **Selective Routing**: One `client-service` communicates with two replicas of `math-service`, where each instance processes only one type of event (`primes` or `fibonacci`).
+Definition of `ProxyRequest`:
 
-4. Deploy all services using Docker, ensuring proper RabbitMQ configuration for message routing.
+```java
+public record ProxyRequest(Long lowerBound, Long upperBound, String email) {}
+```
+
+The **Proxy Service** communicates asynchronously with multiple instances of a **Math Service** (`math-service`), which is responsible for computing prime numbers.
+
+To facilitate this communication, use the following **Event** class:
+
+```java
+public class Event<K, T> {
+    private K key;
+    private T data;
+    private ZonedDateTime eventCreatedAt = ZonedDateTime.now();
+}
+```
+
+2. **Implement the Math Service** (`math-service`)
+Develop a **Math Service** that:
+- Listens for incoming **asynchronous events**.
+- Computes the requested prime numbers.
+- Logs the computed results.
+
+
+3. **Deploy Using Docker** To ensure scalability and reliability:
+- Deploy all services using **Docker**.
+- Run **three instances** of `math-service`, ensuring they share the same **consumer group** for load balancing.
+
 
 # Questions
 1. Comment on the key fallacies of distributed systems.
