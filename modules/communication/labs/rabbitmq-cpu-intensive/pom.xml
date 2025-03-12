@@ -3,13 +3,13 @@
     <packaging>pom</packaging>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nbicocchi</groupId>
-	<artifactId>basic-rabbitmq</artifactId>
+	<artifactId>rabbitmq-cpu-intensive</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>basic-rabbitmq</name>
+	<name>rabbitmq-cpu-intensive</name>
 
 	<modules>
-        <module>consumer-service</module>
-		<module>provider-service</module>
+        <module>math-service</module>
+		<module>proxy-service</module>
     </modules>
 
 </project>

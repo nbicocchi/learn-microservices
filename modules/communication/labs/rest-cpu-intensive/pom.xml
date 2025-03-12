@@ -3,13 +3,12 @@
     <packaging>pom</packaging>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nbicocchi</groupId>
-	<artifactId>social-network-rest</artifactId>
+	<artifactId>rest-cpu-intensive</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>social-network-rest</name>
+	<name>rest-cpu-intensive</name>
 
-    <modules>
-        <module>post-service</module>
-		<module>user-service</module>
+	<modules>
+        <module>math-service</module>
     </modules>
 
 </project>

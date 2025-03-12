@@ -3,13 +3,13 @@
     <packaging>pom</packaging>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nbicocchi</groupId>
-	<artifactId>basic-rest</artifactId>
+	<artifactId>rest-social-network</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>basic-rest</name>
+	<name>rest-social-network</name>
 
     <modules>
-        <module>consumer-service</module>
-		<module>provider-service</module>
+        <module>post-service</module>
+		<module>user-service</module>
     </modules>
 
 </project>

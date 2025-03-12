@@ -8,6 +8,7 @@
   - Logs the received message.
 3. Utilize `RestClient` to perform HTTP requests.
 
+---
 
 ## Lab 2: REST Communication for a Social Network
 
@@ -40,6 +41,7 @@
 3. Use DTOs to abstract internal details, such as database primary keys, in API responses.
 4. Deploy both services within a Docker environment.
 
+---
 
 ## Lab 3: Basic RabbiMQ Communication
 
