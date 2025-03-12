@@ -8,6 +8,7 @@
   - Logs the received message.
 3. Utilize `RestClient` to perform HTTP requests.
 
+
 ## Lab 2: REST Communication for a Social Network
 
 1. Implement a **Post Service** (`post-service`), exposing the following endpoints:
@@ -39,7 +40,15 @@
 3. Use DTOs to abstract internal details, such as database primary keys, in API responses.
 4. Deploy both services within a Docker environment.
 
-## Lab 3: Asynchronous Math Service
+
+## Lab 3: Basic RabbiMQ Communication
+
+1. Implement a **Provider Service** (*provider-service*) sending an *Event* to a message broker (*queue.messages* exchange) each second and logging its activity.
+2. Implement a **Consumer Service** (*consumer-service*) connecting to the same message broker and logging the received events. 
+3. Deploy both services and the message broker within a Docker environment.
+
+
+## Lab 4: Asynchronous Math Service
 
 1. Implement a **Math Service** (`math-service`)
   - Listens for asynchronous events containing math problems.
