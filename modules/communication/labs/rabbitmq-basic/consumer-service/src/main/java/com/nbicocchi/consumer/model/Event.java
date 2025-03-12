@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 @Data
 public class Event<K, T> {
-    public enum Type {TYPE1, TYPE2, TYPE3}
+    public enum Type {CREATE, DELETE, UPDATE}
     @NonNull private Type eventType;
     @NonNull private K key;
     @NonNull private T data;

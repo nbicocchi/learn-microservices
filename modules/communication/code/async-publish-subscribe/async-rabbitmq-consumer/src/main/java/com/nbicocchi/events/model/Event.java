@@ -1,4 +1,4 @@
-package com.nbicocchi.events.events.model;
+package com.nbicocchi.events.model;
 
 import lombok.*;
 

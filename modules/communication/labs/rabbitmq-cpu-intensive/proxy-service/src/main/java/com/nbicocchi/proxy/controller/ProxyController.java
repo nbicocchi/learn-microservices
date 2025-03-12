@@ -2,8 +2,10 @@ package com.nbicocchi.proxy.controller;
 
 import com.nbicocchi.proxy.model.Event;
 import com.nbicocchi.proxy.model.ProxyRequest;
-import com.nbicocchi.proxy.source.EventSender;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -12,10 +14,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/compute")
 public class ProxyController {
-    EventSender eventSender;
+    private final StreamBridge streamBridge;
 
-    public ProxyController(EventSender eventSender) {
-        this.eventSender = eventSender;
+    public ProxyController(StreamBridge streamBridge) {
+        this.streamBridge = streamBridge;
     }
 
     /**
@@ -27,7 +29,13 @@ public class ProxyController {
                 UUID.randomUUID().toString(),
                 request
         );
-        eventSender.sendMessage("message-out-0", event);
+        sendMessage("message-out-0", event);
         return request;
+    }
+
+    private void sendMessage(String bindingName, Event<String, ProxyRequest> event) {
+        Message<Event<String, ProxyRequest>> message = MessageBuilder.withPayload(event).build();
+        log.info("[SENDING] -> {} to {}", event, bindingName);
+        streamBridge.send(bindingName, message);
     }
 }

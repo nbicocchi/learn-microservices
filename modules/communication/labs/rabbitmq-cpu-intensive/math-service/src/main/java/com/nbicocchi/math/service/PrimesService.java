@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 @Service
-public class PrimeService {
+public class PrimesService {
 
     public List<Long> computePrimes(Long lowerBound, Long upperBound) {
         return LongStream.rangeClosed(lowerBound, upperBound)

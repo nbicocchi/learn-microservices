@@ -1,4 +1,4 @@
-package com.nbicocchi.provider.source;
+package com.nbicocchi.provider.task;
 
 import com.nbicocchi.provider.model.Event;
 import lombok.extern.log4j.Log4j2;
@@ -9,32 +9,29 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 @Log4j2
 @Component
-public class EventSender {
-    private static final RandomGenerator RANDOM = RandomGenerator.getDefault();
+public class ScheduledTask {
     private final StreamBridge streamBridge;
 
-    public EventSender(StreamBridge streamBridge) {
+    public ScheduledTask(StreamBridge streamBridge) {
         this.streamBridge = streamBridge;
     }
 
     @Scheduled(fixedRate = 1000)
     public void randomMessage() {
-        int index = RANDOM.nextInt(Event.Type.class.getEnumConstants().length);
-        Event<String, String> event = new Event(
-                Event.Type.class.getEnumConstants()[index],
+        Event<String, String> event = new Event<>(
+                Event.Type.CREATE,
                 UUID.randomUUID().toString(),
                 "Hello from provider-service!"
         );
         sendMessage("message-out-0", event);
     }
 
-    public void sendMessage(String bindingName, Event<String, String> event) {
-            Message<Event<String, String>> message = MessageBuilder.withPayload(event).build();
-            log.info("[SENDING] -> {} to {}", event, bindingName);
-            streamBridge.send(bindingName, message);
+    private void sendMessage(String bindingName, Event<String, String> event) {
+        Message<Event<String, String>> message = MessageBuilder.withPayload(event).build();
+        log.info("Sending message {} to {}", event, bindingName);
+        streamBridge.send(bindingName, message);
     }
 }

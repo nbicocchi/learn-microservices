@@ -6,6 +6,7 @@ spring.cloud.stream:
     definition: processPrimeRequest
   bindings:
     processPrimeRequest-in-0:
+      group: primesGroup
       binder: local_rabbit
       contentType: application/json
       destination: queue.messages
