@@ -19,7 +19,6 @@ public class GreetProviderController {
         log.info("endpoint /greet() invoked");
         Thread.sleep(delay);
         return Map.of(
-                "source", "provider-service",
                 "message", "hello world!",
                 "timestamp", LocalDateTime.now().toString());
     }

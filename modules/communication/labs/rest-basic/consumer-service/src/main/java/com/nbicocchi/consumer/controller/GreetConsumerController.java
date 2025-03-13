@@ -26,7 +26,7 @@ public class GreetConsumerController {
 
     /**
      * Use with:
-     * seq 1 30 | xargs -n1 -P3 -I{} curl "http://localhost:8080/greet" | jq
+     * seq 1 100 | xargs -n1 -P3 -I{} curl "http://localhost:8080/greet" | jq
      */
     @GetMapping("/greet")
     public Map<String, String> greet() {
