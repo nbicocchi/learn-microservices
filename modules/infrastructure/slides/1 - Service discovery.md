@@ -331,10 +331,9 @@ services:
 
 Once everything is set up, we can run the example project with:
 
-```
-$ mvn clean package
-$ docker compose build 
-$ docker compose up --detach
+```bash
+mvn clean package -Dmaven.test.skip=true
+docker compose up --build --detach
 ```
 
 Now, we can connect to the Spring Eureka Dashboard at http://localhost:8761/ to observe the registered services.

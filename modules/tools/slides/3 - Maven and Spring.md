@@ -24,7 +24,7 @@ First, we have a core part of the pom here, namely the _parent_:
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.4</version>
+    <version>3.4.3</version>
     <relativePath/> <!-- lookup parent from repository -->
 </parent>
 ```

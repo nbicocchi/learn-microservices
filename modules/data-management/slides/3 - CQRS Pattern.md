@@ -242,9 +242,8 @@ public class OrderEventHandler {
 Let's build and test our system.
 
 ```bash
-$ mvn clean package -Dmaven.test.skip=true
-$ docker compose build
-$ docker compose up --detach
+mvn clean package -Dmaven.test.skip=true
+docker compose up --build --detach
 ```
 The inventory microservice manages 3 products with ids: P-001, P-002, P-003. The warehouse contains 9, 0, and 1 instances
 of each of them, respectively (see `inventory/runners/DataLoader`).

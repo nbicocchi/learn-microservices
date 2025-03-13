@@ -280,8 +280,7 @@ Start the system landscape with the following commands:
 ```bash
 export COMPOSE_FILE=docker-compose-one-to-one.yml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 Using the [LavinMQ web interface](http://localhost:15672/) (login: guest/guest) we can see the *queue.messages* **topic exchange** receiving 5 events/s and publishing the same events on one (anonymous) queue. 
@@ -310,8 +309,7 @@ Using the [LavinMQ web interface](http://localhost:15672/) (login: guest/guest) 
 ```bash
 export COMPOSE_FILE=docker-compose-one-to-many.yml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 Using the [LavinMQ web interface](http://localhost:15672/), we can see the *queue.messages* exchange receiving 5 events/s and publishing 15 same events on three different (anonymous) queue.
@@ -356,8 +354,7 @@ Start the landscape with the following commands:
 ```bash
 export COMPOSE_FILE=docker-compose-one-to-many-groups.yml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 Using the [LavinMQ web interface](http://localhost:15672/), we can see that the exchange receives 5 events/s and publishes them to a single message group having three consumers. As a consequence, the output rate is 5 events/s.
@@ -470,8 +467,7 @@ Start the system landscape with the following commands:
 ```bash
 export COMPOSE_FILE=docker-compose-one-to-many-partitions.yml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 Using the [LavinMQ web interface](http://localhost:15672/), we can see that the messages exchange receives 5 events/s and publishes the same events on three different (named) queues. Each event is consumed once by only one consumer. Thus, the output rate is 5 events/s. However, by checking the logs, it is possible to observe how each consumer receives *all* five messages pertaining to same ID.
@@ -585,8 +581,7 @@ Start the system landscape with the following commands:
 ```bash
 export COMPOSE_FILE=docker-compose-one-to-many-routed.yml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 Using the [LavinMQ web interface](http://localhost:15672/), it is possible to observe that the messages exchange receives 5 events/s and publishes the same events on three different (anonymous) queues. Each event is consumed once by only one consumer. However, by checking the logs, it is possible to observe how each consumer receives *all* messages of the same type.

@@ -341,9 +341,8 @@ datasources:
 1. Compile the services and run the ecosystem
 
 ```bash
-$ mvn clean package -Dmaven.test.skip=true
-$ docker compose build
-$ docker compose up --detach
+mvn clean package -Dmaven.test.skip=true
+docker compose up --build --detach
 ```
 
 2. Install explore plugins in Grafana (execute the following command inside the running container)

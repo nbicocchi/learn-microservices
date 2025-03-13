@@ -66,8 +66,7 @@ Which is a short version of these:
 ```bash
 export COMPOSE_FILE=<compose-configuration>.yaml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ## Simple example
@@ -105,8 +104,7 @@ public class EchoController {
 ```bash
 export COMPOSE_FILE=docker-compose-simple.yml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 To receive an echoed message:
@@ -174,8 +172,7 @@ services:
 ```bash
 unset COMPOSE_FILE
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ```bash
@@ -239,8 +236,7 @@ With the same procedure seen above, we start up the ecosystem.
 ```bash
 export COMPOSE_FILE=docker-compose-replicas.yaml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ```bash
@@ -287,8 +283,7 @@ We can stop the container, restart the container and see that the previous logs 
 ```bash
 $ export COMPOSE_FILE=docker-compose-simple.yaml
 $ mvn clean package -Dmaven.test.skip=true
-$ docker compose build
-$ docker compose up --detach
+$ docker compose up --build --detach
 $ curl -X GET http://localhost:5000/logs | jq
 
 {
@@ -339,8 +334,7 @@ volumes:
 ```bash
 export COMPOSE_FILE=docker-compose-volume.yaml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ### Anonymous Volume
@@ -366,8 +360,7 @@ services:
 ```bash
 export COMPOSE_FILE=docker-compose-anonvolume.yaml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ### Bind mount
@@ -394,8 +387,7 @@ services:
 mkdir data
 export COMPOSE_FILE=docker-compose-bind.yaml
 mvn clean package -Dmaven.test.skip=true
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ## Networks
@@ -472,8 +464,7 @@ unset COMPOSE_FILE
 cd echo-server-logs-db-java
 mvn clean package -Dmaven.test.skip=true
 cd ..
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ### Second example
@@ -545,8 +536,7 @@ export COMPOSE_FILE=docker-compose-isolation.yaml
 cd echo-server-logs-db-java
 mvn clean package -Dmaven.test.skip=true
 cd ..
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 ## Heartbeats

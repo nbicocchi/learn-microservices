@@ -95,9 +95,8 @@ public LocalTime getTimeFallbackValue(int delay, int faultPercent, CallNotPermit
 Let's build and run the microservice ecosystem:
 
 ```bash
-$ mvn clean package
-$ docker compose build
-$ docker compose up --detach
+mvn clean package -Dmaven.test.skip=true
+docker compose up --build --detach
 ```
 
 Inside the /testing directory you can find two files that can be used with curl.

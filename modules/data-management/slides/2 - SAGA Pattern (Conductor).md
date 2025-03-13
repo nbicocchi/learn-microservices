@@ -233,10 +233,9 @@ Essentially, each Worker is associated with a Task, and the task's logic is impl
 
 Now that we have defined the workflow (both theoretically and practically), as well as the tasks and written the code to manage JPA `@Entity` classes, we can move on to see how to actually execute the workflow.
 
-```sh
-$ mvn clean package -Dmaven.test.skip=true
-$ docker compose build
-$ docker compose up --detach
+```bash
+mvn clean package -Dmaven.test.skip=true
+docker compose up --build --detach
 ```
 
 The *inventory* microservice manages 3 products with ids: *P-001, P-002, P-003*. The warehouse contains 9, 0, and 1 instances of each of them, respectively (see inventory/runners/DataLoader).

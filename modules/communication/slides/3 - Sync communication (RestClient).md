@@ -252,8 +252,7 @@ services:
 cd order-service
 mvn clean package -Dmaven.test.skip=true
 cd ..
-docker compose build
-docker compose up --detach
+docker compose up --build --detach
 ```
 
 The following command shows the locally stored data about orders.
