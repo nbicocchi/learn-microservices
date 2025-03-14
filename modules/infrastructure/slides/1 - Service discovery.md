@@ -82,7 +82,7 @@ To include Netflix Eureka in our project, we need to add the *spring-cloud-start
 ```
     <properties>
         <java.version>21</java.version>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
     
     <dependencies>
@@ -188,7 +188,7 @@ We only need to bring in a dependency on the corresponding implementation to con
 ```
     <properties>
         <java.version>21</java.version>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
     <dependencies>
     ...

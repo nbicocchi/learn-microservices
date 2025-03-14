@@ -9,7 +9,7 @@ For instrumentation, we make use of a Java Agent providing (zero-code instrument
 ```xml
 	<properties>
 		<java.version>21</java.version>
-		<spring-cloud.version>2023.0.3</spring-cloud.version>
+		<spring-cloud.version>2024.0.0</spring-cloud.version>
 		<resilience4j.version>2.2.0</resilience4j.version>
 		<micrometer-tracing.version>1.3.5</micrometer-tracing.version>
 	</properties>

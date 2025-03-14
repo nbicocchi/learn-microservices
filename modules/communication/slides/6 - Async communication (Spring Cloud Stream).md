@@ -48,7 +48,7 @@ The `<dependencyManagement>` section is typically used in Spring-based projects 
 ```
     <properties>
         <java.version>21</java.version>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
     
     <dependencies>

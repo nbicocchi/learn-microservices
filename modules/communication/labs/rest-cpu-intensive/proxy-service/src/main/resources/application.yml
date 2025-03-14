@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+app:
+  math-service:
+    host: nginx
+    port: 8080
+
+---
+spring.config.activate.on-profile: docker
