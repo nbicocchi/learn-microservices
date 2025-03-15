@@ -62,9 +62,6 @@ All exercises have to support both a development configuration (default profile)
 2. Implement a **Consumer Service** (`consumer-service`) connecting to the same message broker and logging the received events. 
 3. Deploy both services and the message broker within a Docker environment.
 
-
-Here’s a more polished and structured version of your text:
-
 ---
 
 ## Lab 4: Asynchronous Math Service
@@ -112,6 +109,7 @@ Develop a **Math Service** that:
 - Deploy all services using **Docker**.
 - Run **three instances** of `math-service`, ensuring they share the same **consumer group** for load balancing.
 
+---
 
 # Questions
 1. Comment on the key fallacies of distributed systems.
