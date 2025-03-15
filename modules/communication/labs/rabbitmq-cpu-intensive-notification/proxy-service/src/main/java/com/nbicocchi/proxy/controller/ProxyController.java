@@ -30,12 +30,12 @@ public class ProxyController {
                 request
         );
         sendMessage("commands-out-0", event);
+        log.info("[SENT] -> {}", event);
         return request;
     }
 
     private void sendMessage(String bindingName, Event<String, ProxyRequest> event) {
         Message<Event<String, ProxyRequest>> message = MessageBuilder.withPayload(event).build();
-        log.info("[SENDING] -> {} to {}", event, bindingName);
         streamBridge.send(bindingName, message);
     }
 }

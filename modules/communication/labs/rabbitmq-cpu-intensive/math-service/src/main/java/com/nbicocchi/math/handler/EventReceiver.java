@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Log4j2
@@ -20,7 +21,7 @@ public class EventReceiver {
     }
 
     @Bean
-    public Consumer<Event<String, ProxyRequest>> processPrimeRequest() {
+    public Consumer<Event<UUID, ProxyRequest>> processPrimeRequest() {
         return event -> {
             List<Long> primes = primeService.computePrimes(
                     event.getData().lowerBound(),

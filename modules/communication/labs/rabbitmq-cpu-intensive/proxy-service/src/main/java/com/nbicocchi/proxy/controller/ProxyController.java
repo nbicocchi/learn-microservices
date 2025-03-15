@@ -25,17 +25,18 @@ public class ProxyController {
      */
     @PostMapping()
     public ProxyRequest searchPrimes(@RequestBody ProxyRequest request) {
-        Event<String, ProxyRequest> event = new Event<>(
-                UUID.randomUUID().toString(),
+        Event<UUID, ProxyRequest> event = new Event<>(
+                Event.Type.CREATE,
+                UUID.randomUUID(),
                 request
         );
         sendMessage("message-out-0", event);
+        log.info("[SENT] -> {}", event);
         return request;
     }
 
-    private void sendMessage(String bindingName, Event<String, ProxyRequest> event) {
-        Message<Event<String, ProxyRequest>> message = MessageBuilder.withPayload(event).build();
-        log.info("[SENDING] -> {} to {}", event, bindingName);
+    private void sendMessage(String bindingName, Event<UUID, ProxyRequest> event) {
+        Message<Event<UUID, ProxyRequest>> message = MessageBuilder.withPayload(event).build();
         streamBridge.send(bindingName, message);
     }
 }

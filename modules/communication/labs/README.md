@@ -58,56 +58,44 @@ All exercises have to support both a development configuration (default profile)
 
 ## Lab 3: Basic RabbiMQ Communication
 
-1. Implement a **Provider Service** (`provider-service`) sending an *Event* to a message broker (*queue.messages* exchange) each second and logging its activity.
-2. Implement a **Consumer Service** (`consumer-service`) connecting to the same message broker and logging the received events. 
-3. Deploy both services and the message broker within a Docker environment.
+1. Implement a **provider-service** sending an *Event* to a message broker (*queue.messages* exchange) each second and logging its activity.
+2. Implement a **consumer-service** connecting to the same message broker (*queue.messages* exchange) and logging the received events.
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Data
+public class Event<K, T> {
+    public enum Type {CREATE, DELETE, UPDATE}
+
+    @NonNull private Type type;
+    @NonNull private K key;
+    @NonNull private T data;
+    private LocalDateTime timestamp = LocalDateTime.now();
+}
+```
 
 ---
 
 ## Lab 4: Asynchronous Math Service
 
-In this lab, you'll implement an asynchronous system for computing prime numbers using two microservices:
-- **Proxy Service (`proxy-service`)**: Exposes an endpoint to receive requests.
-- **Math Service (`math-service`)**: Processes requests asynchronously and computes prime numbers.
+In this lab, you'll implement an asynchronous system for computing prime numbers based of three microservices:
+- **proxy-service**: Exposes an endpoint to receive HTTP requests.
+- **math-service**: Computes prime numbers.
+- **notification-service**: Receives the prime numbers computed by an instance of **math-service** and logs them.
 
-1. **Implement the Proxy Service** (`proxy-service`)
-Develop a **Proxy Service** that provides the following endpoint to accept prime number search requests:
+1. Implement a **proxy-service** for consuming **math-service**:
+   * `POST /primes {lowerbound, upperbound, email}` → communicates asynchronously with multiple instances of **math-service**.
 
-```java
-@PostMapping
-public ProxyRequest searchPrimes(@RequestBody ProxyRequest request) {
-    // Implementation goes here
-}
-```
-
-Definition of `ProxyRequest`:
-
-```java
-public record ProxyRequest(Long lowerBound, Long upperBound, String email) {}
-```
-
-The **Proxy Service** communicates asynchronously with multiple instances of a **Math Service** (`math-service`), which is responsible for computing prime numbers.
-
-To facilitate this communication, use the following **Event** class:
-
-```java
-public class Event<K, T> {
-    private K key;
-    private T data;
-    private ZonedDateTime eventCreatedAt = ZonedDateTime.now();
-}
-```
-
-2. **Implement the Math Service** (`math-service`)
-Develop a **Math Service** that:
-- Listens for incoming **asynchronous events**.
+2. Implement a **math-service**:
+- Listens for incoming asynchronous events.
 - Computes the requested prime numbers.
+- Send a notification event to the **notification-service**.
+
+2. Implement a **notification-service**:
+- Listens for incoming **asynchronous events**.
 - Logs the computed results.
-
-
-3. **Deploy Using Docker** To ensure scalability and reliability:
-- Deploy all services using **Docker**.
-- Run **three instances** of `math-service`, ensuring they share the same **consumer group** for load balancing.
 
 ---
 

@@ -27,11 +27,11 @@ public class ScheduledTask {
                 "Hello from provider-service!"
         );
         sendMessage("message-out-0", event);
+        log.info("[SENT] -> {}", event);
     }
 
     private void sendMessage(String bindingName, Event<String, String> event) {
         Message<Event<String, String>> message = MessageBuilder.withPayload(event).build();
-        log.info("Sending message {} to {}", event, bindingName);
         streamBridge.send(bindingName, message);
     }
 }

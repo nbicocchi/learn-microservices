@@ -2,14 +2,17 @@ package com.nbicocchi.proxy.model;
 
 import lombok.*;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Data
+@Builder
 public class Event<K, T> {
+    public enum Type {CREATE, DELETE, UPDATE}
+    @NonNull private Type type;
     @NonNull private K key;
     @NonNull private T data;
-    private ZonedDateTime eventCreatedAt = ZonedDateTime.now();
+    private LocalDateTime timestamp = LocalDateTime.now();
 }

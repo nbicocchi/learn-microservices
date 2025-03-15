@@ -28,6 +28,7 @@ public class EventReceiver {
     @Bean
     public Consumer<Event<String, ProxyRequest>> primeProcessor() {
         return event -> {
+            log.info("[RECV] -> {}", event);
             List<Long> primes = primeService.computePrimes(
                     event.getData().lowerBound(),
                     event.getData().upperBound());
@@ -37,13 +38,12 @@ public class EventReceiver {
                     primes
             );
             sendMessage("primeProcessor-out-0", newEvent);
+            log.info("[SENT] -> {}", newEvent);
         };
     }
 
     private void sendMessage(String bindingName, Event<String, Iterable<Long>> event) {
         Message<Event<String, Iterable<Long>>> message = MessageBuilder.withPayload(event).build();
-        log.info("[SENDING] -> {} to {}", event, bindingName);
         streamBridge.send(bindingName, message);
     }
-
 }
