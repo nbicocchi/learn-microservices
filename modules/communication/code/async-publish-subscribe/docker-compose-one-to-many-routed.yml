@@ -7,10 +7,6 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 512m
 
   consumer-0:
     image: async-rabbitmq-consumer
@@ -20,10 +16,6 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 512m
 
   consumer-1:
     image: async-rabbitmq-consumer
@@ -33,10 +25,6 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 512m
 
   consumer-2:
     image: async-rabbitmq-consumer
@@ -46,10 +34,15 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 512m
+
+  consumer-3:
+    image: async-rabbitmq-consumer
+    build: async-rabbitmq-consumer
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,routed_instance_ALL
+    depends_on:
+      lavinmq:
+        condition: service_healthy
 
   lavinmq:
     image: cloudamqp/lavinmq:latest

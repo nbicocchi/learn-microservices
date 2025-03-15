@@ -3,7 +3,6 @@ package com.nbicocchi.events.handler;
 import com.nbicocchi.events.model.Event;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
@@ -14,18 +13,20 @@ public class EventReceiver {
     @Bean
     public Consumer<Event<String, Integer>> messageProcessor() {
         return event -> {
-            switch (event.getEventType()) {
+            log.info(event.toString());
+
+            switch (event.getType()) {
                 case CREATE:
-                    log.info("[CREATE] --> {}", event);
+                    // do something
                     break;
                 case DELETE:
-                    log.info("[DELETE] --> {}", event);
+                    // do something
                     break;
                 case UPDATE:
-                    log.info("[UPDATE] --> {}", event);
+                    // do something
                     break;
                 default:
-                    String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE/DELETE/UPDATE event";
+                    String errorMessage = "Incorrect event type: " + event.getType() + ", expected a CREATE/DELETE/UPDATE event";
                     throw new RuntimeException(errorMessage);
             }
         };

@@ -1,0 +1,15 @@
+<configuration>
+
+    <!-- Define the Pattern Layout for the console output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%message%n</pattern>  <!-- Log timestamp and message -->
+        </encoder>
+    </appender>
+
+    <!-- Define the root logger -->
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

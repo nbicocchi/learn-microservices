@@ -89,3 +89,12 @@ spring.cloud.stream:
       messageProcessor-in-0:
         consumer:
           binding-routing-key: 'DELETE'
+
+---
+spring.config.activate.on-profile: routed_instance_ALL
+spring.cloud.stream:
+  rabbit:
+    bindings:
+      messageProcessor-in-0:
+        consumer:
+          binding-routing-key: '#'

@@ -7,10 +7,6 @@ services:
     depends_on:
       lavinmq:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 512m
 
   consumer:
     image: async-rabbitmq-consumer
@@ -23,9 +19,6 @@ services:
     deploy:
       mode: replicated
       replicas: 3
-      resources:
-        limits:
-          memory: 512m
 
   lavinmq:
     image: cloudamqp/lavinmq:latest
