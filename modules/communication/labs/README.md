@@ -14,7 +14,7 @@ All exercises have to support both a development configuration (default profile)
 
 ---
 
-## Lab 2: Scaling with REST Communication
+## Lab 2: Scaling services with REST Communication
 
 1. Implement a **math-service** for computing prime numbers.
     * `POST /primes {lowerbound, upperbound, email}` → returns the list of all prime numbers between `lowerbound` and `upperbound`.
@@ -78,11 +78,11 @@ public class Event<K, T> {
 
 ---
 
-## Lab 4: Asynchronous Math Service
+## Lab 4: Scaling services with Asynchronous Communication
 
 In this lab, you'll implement an asynchronous system for computing prime numbers based of three microservices:
 - **proxy-service**: Exposes an endpoint to receive HTTP requests.
-- **math-service**: Computes prime numbers.
+- **math-service**: Computes prime numbers (deploy three instances).
 - **notification-service**: Receives the prime numbers computed by an instance of **math-service** and logs them.
 
 1. Implement a **proxy-service** for consuming **math-service**:
