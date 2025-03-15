@@ -1,18 +1,32 @@
 # Labs
 
+All exercises have to support both a development configuration (default profile) and a production configuration (docker profile).
+
 ## Lab 1: Basic REST Communication
 
-1. Implement a **Provider Service** (`provider-service`) that exposes a REST endpoint (`/greet`) returning a greeting message.
-2. Implement a **Consumer Service** (`consumer-service`) that:
-  - Calls the `/greet` endpoint every 2 seconds (See @Scheduled annotation). 
-  - Logs the received message.
-3. Utilize `RestClient` to perform HTTP requests.
+1. Implement a **provider-service** returning a greeting message.
+   * `GET /greet` → returns a greet message
+   * `POST /setDelay {delay}` → set a wait delay before replying to `/greet`
+2. Implement a **consumer-service**.
+   * `GET /greet` → consumes `/greet` on the **provider-service** and returns the message
+   * Logs the received message.
+3. Use **prometheus** to show the changes in *peak threads* within both services after calling **consumer-service**/greet 100 times in parallel.
+
+---
+
+## Lab 2: Scaling with REST Communication
+
+1. Implement a **math-service** for computing prime numbers.
+    * `POST /primes {lowerbound, upperbound, email}` → returns the list of all prime numbers between `lowerbound` and `upperbound`.
+2. Implement a **proxy-service** for consuming **math-service**.
+   * `POST /primes {lowerbound, upperbound, email}` → returns the list of all prime numbers between `lowerbound` and `upperbound`.
+3. After testing the two services by themselves, add a containerized nginx service acting as a load balancer. Refer to the `docker-compose.yml` file and `nginx` folder for properly running it.
 
 ---
 
 ## Lab 2: REST Communication for a Social Network
 
-1. Implement a **Post Service** (`post-service`), exposing the following endpoints:
+1. Implement a **post-service** for managing posts on a social network.
   - `GET /posts` → Returns all posts.
   - `GET /posts/{userUUID}` → Returns all posts created by a specific user.
 
@@ -25,7 +39,7 @@
    }
    ```  
 
-2. Implement a **User Service** (`user-service`), exposing the following endpoints:
+2. Implement a **user-service**, exposing the following endpoints:
   - `GET /users` → Returns all users (only local details).
   - `GET /users/{userUUID}` → Returns local details and all posts of a specific user.
 
@@ -39,7 +53,6 @@
    ```  
 
 3. Use DTOs to abstract internal details, such as database primary keys, in API responses.
-4. Deploy both services within a Docker environment.
 
 ---
 

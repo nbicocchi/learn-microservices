@@ -14,7 +14,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Log4j2
 @RestController
-@RequestMapping("/compute")
 public class ProxyController {
     String mathServiceUrl;
 
@@ -25,14 +24,14 @@ public class ProxyController {
     }
 
     /**
-     * curl -X POST "http://localhost:8080/compute" -H "Content-Type: application/json" -d '{ "lowerBound": 10, "upperBound": 1000, "email": "example@example.com" }'
+     * curl -X POST "http://localhost:8080/primes" -H "Content-Type: application/json" -d '{ "lowerBound": 10, "upperBound": 1000, "email": "example@example.com" }'
      */
-    @PostMapping()
-    public Iterable<Long> searchPrimes(@RequestBody ProxyRequest request) {
-        log.info("endpoint /searchPrimes() invoked");
+    @PostMapping("/primes")
+    public Iterable<Long> primes(@RequestBody ProxyRequest request) {
+        log.info("endpoint /primes() invoked");
         RestClient restClient = RestClient.builder().build();
         return restClient.post()
-                .uri(mathServiceUrl + "/compute")
+                .uri(mathServiceUrl + "/primes")
                 .contentType(APPLICATION_JSON)
                 .body(request)
                 .retrieve()

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController
-@RequestMapping("/compute")
 public class MathController {
     PrimesService primeService;
 
@@ -19,9 +18,9 @@ public class MathController {
     }
 
     /**
-     * curl -X POST "http://localhost:8081/compute" -H "Content-Type: application/json" -d '{ "lowerBound": 10, "upperBound": 1000, "email": "example@example.com" }'
+     * curl -X POST "http://localhost:8081/primes" -H "Content-Type: application/json" -d '{ "lowerBound": 10, "upperBound": 1000, "email": "example@example.com" }'
      */
-    @PostMapping()
+    @PostMapping("/primes")
     public Iterable<Long> searchPrimes(@RequestBody ProxyRequest request) {
         log.info("searchPrimes() request: {}", request);
         return primeService.computePrimes(
