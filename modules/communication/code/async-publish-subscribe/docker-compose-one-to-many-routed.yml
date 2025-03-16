@@ -13,6 +13,8 @@ services:
     build: async-rabbitmq-consumer
     environment:
       - SPRING_PROFILES_ACTIVE=docker,routed_instance_CREATE
+    ports:
+      - "8080:8080"
     depends_on:
       lavinmq:
         condition: service_healthy

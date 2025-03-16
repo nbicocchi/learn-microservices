@@ -1,4 +1,5 @@
-server.port: 8082
+server:
+  port: 8082
 
 spring.cloud.stream:
   function:
@@ -21,6 +22,10 @@ spring.cloud.stream:
 
 ---
 spring.config.activate.on-profile: docker
+
+server:
+  port: 8080
+
 spring.cloud.stream:
   binders:
     local_rabbit:

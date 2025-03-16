@@ -24,7 +24,7 @@ All exercises have to support both a development configuration (default profile)
 
 ---
 
-## Lab 2: REST Communication for a Social Network
+## Lab 3: REST Communication for a Social Network
 
 1. Implement a **post-service** for managing posts on a social network.
   - `GET /posts` → Returns all posts.
@@ -56,7 +56,7 @@ All exercises have to support both a development configuration (default profile)
 
 ---
 
-## Lab 3: Basic RabbiMQ Communication
+## Lab 4: Basic RabbiMQ Communication
 
 1. Implement a **provider-service** sending an *Event* to a message broker (*queue.messages* exchange) each second and logging its activity.
 2. Implement a **consumer-service** connecting to the same message broker (*queue.messages* exchange) and logging the received events.
@@ -78,7 +78,7 @@ public class Event<K, T> {
 
 ---
 
-## Lab 4: Scaling services with Asynchronous Communication
+## Lab 5: Scaling services with Asynchronous Communication
 
 In this lab, you'll implement an asynchronous system for computing prime numbers based of three microservices:
 - **proxy-service**: Exposes an endpoint to receive HTTP requests.
