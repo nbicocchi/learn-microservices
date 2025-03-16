@@ -1,70 +1,11 @@
 # Communication styles (RESTClient)
 
-## Transition to Microservices: Data Model Changes  
+## RESTful Providers
 
-In a monolithic architecture, all data resides in a **single database** with direct relationships (e.g., `JOIN` operations). In microservices, **each service has its own database**, leading to **data splitting**.
+Refer to the *rest-social-network* example (labs/rest-social-network):
 
-**Monolith:** `Order`, `OrderLine`, and `Product` in the same DB.
-
-```mermaid
-classDiagram
-direction LR
-    class Order {
-	    +long id
-	    +string uuid
-	    +datetime timeStamp
-    }
-    class OrderLine {
-	    +long id
-	    +int amount
-    }
-    class Product {
-	    +long id
-        +String uuid
-	    +string name
-	    +double weight
-    }
-
-    Order "1" -- "*" OrderLine
-    OrderLine "*" -- "1" Product
-```
-
-**Microservices:**
-   - **Order Service:** Manages `Order` and `OrderLine` (without product details).
-   - **Product Service:** Manages `Product` data separately.
-
-```mermaid
-classDiagram
-direction LR
-    class Order {
-	    +long id
-	    +string uuid
-	    +datetime timeStamp
-    }
-
-    class OrderLine {
-	    +long id
-        +int amount
-        +String uuid
-    }
-    
-    class Product {
-	    +long id
-        +String uuid
-	    +string name
-	    +double weight
-    }
-
-    Order "1" -- "*" OrderLine
-```
-
-Since data is no longer in the same database, **services must communicate!**
-
-## Building RESTful Services
-
-We can use an existing REST service for managing products (tools/code/product-service-h2):
-
-The model class represents the data structure of the resource. In this case, a `Product`:
+The **post-service** manages posts on a social network. It does not store details about users.
+The model class is reported below:
 
 ```java
 @AllArgsConstructor
@@ -72,136 +13,123 @@ The model class represents the data structure of the resource. In this case, a `
 @RequiredArgsConstructor
 @Data
 @Entity
-public class Product {
+public class Post {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
-   @NonNull @EqualsAndHashCode.Include private String uuid;
-   @NonNull private String name;
-   @NonNull private Double weight;
+   @NonNull @EqualsAndHashCode.Include private String userUUID;
+   @NonNull @EqualsAndHashCode.Include private LocalDateTime timestamp;
+   @NonNull private String content;
 }
 ```
 
-The REST controller handles incoming HTTP requests and responds with the appropriate data:
+The REST controller handles incoming HTTP requests and responds with the appropriate data. It supports two key endpoints:
+- `GET /posts` → Returns all posts.
+- `GET /posts/{userUUID}` → Returns all posts created by a specific user.
 
 ```java
 @RestController
-@RequestMapping("/products")
-public class ProductController {
-   ProductService productService;
+@RequestMapping("/posts")
+public class PostController {
+   PostRepository postRepository;
 
-   public ProductController(ProductService productService) {
-      this.productService = productService;
+   public PostController(PostRepository postRepository) {
+      this.postRepository = postRepository;
    }
 
-   @GetMapping("/{uuid}")
-   public Product findByUuid(@PathVariable String uuid) {
-      return productService.findByUuid(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+   @GetMapping("/{userUUID}")
+   public Iterable<PostDTO> findByUuid(@PathVariable String userUUID) {
+      Iterable<Post> foundPosts = postRepository.findByUserUUID(userUUID);
+      return mapToDTO(foundPosts);
    }
 
    @GetMapping
-   public Iterable<Product> findAll() {
-      return productService.findAll();
+   public Iterable<PostDTO> findAll() {
+      Iterable<Post> foundPosts = postRepository.findAll();
+      return mapToDTO(foundPosts);
    }
 
-   @PostMapping
-   public Product create(@RequestBody Product product) {
-      return productService.save(product);
-   }
-
-   @PutMapping("/{uuid}")
-   public Product update(@PathVariable String uuid, @RequestBody Product product) {
-      Optional<Product> optionalProject = productService.findByUuid(uuid);
-      optionalProject.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-      product.setId(optionalProject.get().getId());
-      return productService.save(product);
-   }
-
-   @DeleteMapping("/{uuid}")
-   public void delete(@PathVariable String uuid) {
-      Optional<Product> optionalProject = productService.findByUuid(uuid);
-      optionalProject.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-      productService.delete(optionalProject.get());
+   private Iterable<PostDTO> mapToDTO(Iterable<Post> posts) {
+      return StreamSupport.stream(posts.spliterator(), false)
+              .map(p -> new PostDTO(p.getUserUUID(), p.getTimestamp(), p.getContent()))
+              .collect(Collectors.toList());
    }
 }
 ```
 
-## Consuming RESTful Services (RestClient)
+## RESTful Consumers
 
-In a microservices architecture, it is often necessary for services to consume APIs provided by other services. Spring Boot provides a simple way to achieve this through the `RestClient` class, which allows for HTTP requests to be made and handled effectively.
-
-To consume a RESTful service, follow these steps (code/sync-request-response):
-
-1. **Use RestClient**:
-   Use `RestClient` to make HTTP requests to other services. Here's an example of a service that consumes a REST API to fetch product data using a dedicated bean named _ProductIntegration_:
+The **user-service** manages data about users. It does expose the following endpoints:
+- `GET /users` → Returns all users (only local details).
+- `GET /users/{userUUID}` → Returns local details and all posts of a specific user (**need to communicate here!**).
 
 ```java
 @RestController
-@RequestMapping("/orders")
-public class OrderController {
-   OrderRepository orderRepository;
-   ProductIntegration productIntegration;
+@RequestMapping("/users")
+public class UserController {
+   UserRepository userRepository;
+   PostIntegration postIntegration;
 
-   public OrderController(OrderRepository orderRepository, ProductIntegration productIntegration) {
-      this.orderRepository = orderRepository;
-      this.productIntegration = productIntegration;
+   public UserController(UserRepository userRepository, PostIntegration postIntegration) {
+      this.userRepository = userRepository;
+      this.postIntegration = postIntegration;
    }
 
-   @GetMapping(value = "/local/{id}")
-   public Order findById(@PathVariable Long id) {
-      return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+   @GetMapping
+   public Iterable<UserDTO> findAll() {
+      Iterable<UserModel> foundUsers = userRepository.findAll();
+      return mapToDTO(foundUsers);
    }
 
-   @GetMapping(value = "/remote/{id}")
-   public OrderDto findByIdWithRemoteCall(@PathVariable Long id) {
-      Optional<Order> optionalOrder = orderRepository.findById(id);
-      optionalOrder.orElseThrow(() -> new RuntimeException("Order not found"));
+   @GetMapping("/{userUUID}")
+   public UserDTO findByUuid(@PathVariable String userUUID) {
+      Optional<UserModel> optionalUserModel = userRepository.findByUserUUID(userUUID);
+      optionalUserModel.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+      UserDTO userDTO = mapToDTO(optionalUserModel.get());
 
-      Order foundOrder = optionalOrder.get();
-      OrderDto orderDto = new OrderDto(
-              foundOrder.getUuid(),
-              foundOrder.getTimestamp(),
-              new HashSet<>()
-      );
-
-      for (OrderLine orderLine : foundOrder.getOrderLines()) {
-         ProductDto product = productIntegration.findbyUuid(orderLine.getUuid());
-         orderDto.getOrderLineDtos().add(
-                 new OrderLineDto(
-                         product.getUuid(),
-                         product.getName(),
-                         product.getWeight(),
-                         orderLine.getAmount()));
+      // communication here!
+      Iterable<PostDTO> posts = postIntegration.findbyUserUUID(userUUID);
+      
+      for (PostDTO postDTO : posts) {
+         userDTO.getPosts().add(postDTO);
       }
-      return orderDto;
+
+      return userDTO;
+   }
+
+   private UserDTO mapToDTO(UserModel user) {
+      return new UserDTO(
+              user.getUserUUID(),
+              user.getNickname(),
+              user.getBirthDate()
+      );
+   }
+
+   private Iterable<UserDTO> mapToDTO(Iterable<UserModel> users) {
+      return StreamSupport.stream(users.spliterator(), false)
+              .map(u -> new UserDTO(u.getUserUUID(), u.getNickname(), u.getBirthDate()))
+              .collect(Collectors.toList());
    }
 }
 ```
+
+The communication part is entirely managed by a dedicated bean named *PostIntegration*. Connection data describing the network location of the service to be consumed (in this case, the **post-service**) are externalized to the **application.yml** file and fetched with the **@Value** annotation.
 
 ```java
 @Component
-public class ProductIntegration {
-   String productServiceHost;
-   int productServicePort;
+public class PostIntegration {
+   String postServiceHost;
+   int postServicePort;
 
-   public ProductIntegration(
-           @Value("${app.product-service.host}") String productServiceHost,
-           @Value("${app.product-service.port}") int productServicePort) {
-      this.productServiceHost = productServiceHost;
-      this.productServicePort = productServicePort;
+   public PostIntegration(
+           @Value("${app.post-service.host}") String postServiceHost,
+           @Value("${app.post-service.port}") int postServicePort) {
+      this.postServiceHost = postServiceHost;
+      this.postServicePort = postServicePort;
    }
 
-   public List<ProductDto> findAll() {
-      String url = "http://" + productServiceHost + ":" + productServicePort + "/products";
-      RestClient restClient = RestClient.builder().build();
-      return restClient.get()
-              .uri(url)
-              .retrieve()
-              .body(new ParameterizedTypeReference<>() {});
-   }
-
-   public ProductDto findbyUuid(String uuid) {
-      String url = "http://" + productServiceHost + ":" + productServicePort + "/products" + "/" + uuid;
+   public Iterable<PostDTO> findbyUserUUID(String userUUID) {
+      String url = "http://" + postServiceHost + ":" + postServicePort + "/posts" + "/" + userUUID;
       RestClient restClient = RestClient.builder().build();
       return restClient.get()
               .uri(url)
@@ -209,16 +137,7 @@ public class ProductIntegration {
               .body(new ParameterizedTypeReference<>() {});
    }
 }
-```
 
-When consuming external APIs, it is important to handle errors properly. You can use try-catch blocks to manage exceptions that may occur during API calls.
-
-```
-try {
-    User user = restClient.getForObject(url, User.class);
-} catch (RestClientException e) {
-    // Handle the error, e.g., log it or throw a custom exception
-}
 ```
 
 
@@ -226,85 +145,75 @@ try {
 
 ```yaml
 services:
-   product-service:
-      image: product-service-h2
-      environment:
-         - SPRING_PROFILES_ACTIVE=docker
-      deploy:
-         resources:
-            limits:
-               memory: 512m
+  post-service:
+    build: post-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
 
-   order-service:
-      build: order-service
-      image: order-service
-      ports:
-         - 8080:8080
-      environment:
-         - SPRING_PROFILES_ACTIVE=docker
-      deploy:
-         resources:
-            limits:
-               memory: 512m
+  user-service:
+    build: user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8081:8080"
 ```
 
 ```bash
-cd order-service
 mvn clean package -Dmaven.test.skip=true
-cd ..
 docker compose up --build --detach
 ```
 
-The following command shows the locally stored data about orders.
+The following command shows the locally stored data about posts (without details about users).
 
 ```bash
-curl -X GET http://localhost:8080/orders/local/1 | jq
+curl -X GET http://localhost:8080/posts | jq
+```
+
+```json
+[
+  {
+    "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
+    "timestamp": "2025-03-01T10:30:00",
+    "content": "hello!"
+  },
+  {
+    "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
+    "timestamp": "2025-03-01T10:32:00",
+    "content": "i'm json!"
+  },
+  {
+    "userUUID": "b1f4748a-f3cd-4fc3-be58-38316afe1574",
+    "timestamp": "2025-03-01T10:32:00",
+    "content": "looking for an apartment"
+  }
+]
+```
+
+The following query shows data about users, augmented with posts data.
+
+```bash
+curl -X GET http://localhost:8081/users/171f5df0-b213-4a40-8ae6-fe82239ab660 | jq
 ```
 
 ```json
 {
-   "id": 2,
-   "uuid": "45750c00-c7cf-4987-ab94-de5920f3a7ca",
-   "timestamp": "2025-03-10T22:04:59.287086",
-   "orderLines": [
-      {
-         "id": 3,
-         "uuid": "b1f4748a-f3cd-4fc3-be58-38316afe1574",
-         "amount": 2
-      },
-      {
-         "id": 2,
-         "uuid": "f89b6577-3705-414f-8b01-41c091abb5e0",
-         "amount": 2
-      }
-   ]
-}
-```
-
-The following command shows the locally stored data about orders, augmented with product data.
-
-```bash
-curl -X GET http://localhost:8080/orders/remote/1 | jq
-```
-
-```json
-{
-   "uuid": "45750c00-c7cf-4987-ab94-de5920f3a7ca",
-   "timestamp": "2025-03-10T22:04:59.287086",
-   "orderLineDtos": [
-      {
-         "uuid": "b1f4748a-f3cd-4fc3-be58-38316afe1574",
-         "name": "Shirt",
-         "weight": 0.2,
-         "amount": 2
-      },
-      {
-         "uuid": "f89b6577-3705-414f-8b01-41c091abb5e0",
-         "name": "Bike",
-         "weight": 5.5,
-         "amount": 2
-      }
-   ]
+  "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
+  "nickname": "hannibal",
+  "birthDate": "2000-03-01",
+  "posts": [
+    {
+      "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
+      "timestamp": "2025-03-01T10:32:00",
+      "content": "i'm json!"
+    },
+    {
+      "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
+      "timestamp": "2025-03-01T10:30:00",
+      "content": "hello!"
+    }
+  ]
 }
 ```
 

@@ -1,5 +1,65 @@
 # Communication styles
 
+## Towards a Distributed Data Model
+
+In a monolithic architecture, all data resides in a **single database** with direct relationships (e.g., `JOIN` operations). In microservices, **each service has its own database**, leading to **data splitting**.
+
+**Monolith:** `Order`, `OrderLine`, and `Product` in the same DB. **It is straightforward to determine which products belong to the same order**.
+
+```mermaid
+classDiagram
+direction LR
+    class Order {
+	    +long id
+	    +string uuid
+	    +datetime timeStamp
+    }
+    class OrderLine {
+	    +long id
+	    +int amount
+    }
+    class Product {
+	    +long id
+        +String uuid
+	    +string name
+	    +double weight
+    }
+
+    Order "1" -- "*" OrderLine
+    OrderLine "*" -- "1" Product
+```
+
+**Microservices:**
+- **Order Service:** Manages `Order` and `OrderLine` (without product details).
+- **Product Service:** Manages `Product` data separately.
+
+```mermaid
+classDiagram
+direction LR
+    class Order {
+	    +long id
+	    +string uuid
+	    +datetime timeStamp
+    }
+
+    class OrderLine {
+	    +long id
+        +int amount
+        +String uuid
+    }
+    
+    class Product {
+	    +long id
+        +String uuid
+	    +string name
+	    +double weight
+    }
+
+    Order "1" -- "*" OrderLine
+```
+Since data is no longer in the same database, **to determine which products belong to the same order, services must communicate!**
+
+## Fallacies of Distributed Computing
 **The biggest challenge when changing from a monolithic application to a microservices-based application lies in changing the communication mechanism.** A direct conversion from in-process method calls into RPC calls to services will cause a chatty and not efficient communication that won't perform well in distributed environments.
 
 The challenges of designing distributed system are so notorious that there's even a canon known as the [Fallacies of Distributed Computing](0%20-%20Fallacies%20of%20distributed%20computing.md) listing **wrong assumptions that developers often make** when moving from monolithic to distributed designs.
