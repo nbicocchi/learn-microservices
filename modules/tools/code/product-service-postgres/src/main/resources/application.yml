@@ -1,4 +1,6 @@
-server.port: 7001
+server:
+  port: 7001
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/jdbc_schema
