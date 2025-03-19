@@ -1,43 +1,76 @@
 # Service Discovery
 
-In any distributed architecture, we need to find the hostname or IP address of where a machine is located. This concept has been around since the beginning of distributed computing and is known formally as *service discovery*.
+In a distributed architecture, locating the IP addresses of services for communication is essential. This process, known as **service discovery**, has been a fundamental concept in distributed computing since its inception.
 
-Service discovery is critical to microservices for two key reasons:
-* **Horizontal scaling:** **Microservice architectures need adjustments in the application architecture, such as adding more instances of a service (i.e., more containers)**. This ability to quickly scale services can move a development team that’s used to building monolithic applications away from vertical scaling to
-the more robust approach of horizontal scaling.
+Service discovery is essential in microservices architectures for two key reasons:
 
-* **Resiliency:** Microservice architectures have to be designed to prevent a problem in a single service from cascading up to its consumers. **When a microservice instance becomes unhealthy or unavailable, service discovery engines have to remove that instance from the list of available services**. The damage is thus minimized because the service discovery engine routes consumers around the unavailable service.
+- **Horizontal Scaling:** Microservices architectures require dynamic adjustments, such as scaling out by adding more service instances (e.g., additional containers). This capability shifts development teams away from vertical scaling, enabling a more resilient and scalable approach.
 
-You might be wondering why we can’t use known approaches such as DNS or load balancers to facilitate service discovery.
+- **Resiliency:** To prevent failures from propagating to dependent services, microservices architectures must handle unhealthy or unavailable instances effectively. Service discovery engines continuously monitor service health and remove failed instances from the registry, ensuring that traffic is rerouted to healthy instances, minimizing disruption.
 
 
 ## The problem with DNS-based service discovery
-If you have an application that calls resources spread across multiple servers, it needs to find the physical location of those resources. In the non-cloud world, service location resolution was often solved through a combination of a DNS and a network load balancer.
+In the non-cloud world, service location resolution was often solved through a combination of a DNS and a network load balancer.
 
 ![](images/traditional-load-balancer.webp)
 
 While this type of model works well with applications with a relatively small number of services running on a group of static servers, it doesn't work well for microservice architectures. The reasons for this include the following:
+* Traditional load balancers are **statically managed**. They aren’t designed for fast registration and de-registration of services. In a traditional load balancer scenario, **the registration of new service instances is not done when a new service instance starts**. Below an example nginx configuration managing a set of three replicas. It's static nature is self-evident.
+
+```text
+worker_processes auto;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream mathservice {
+        server math-service-1:8080;
+        server math-service-2:8080;
+        server math-service-3:8080;
+    }
+
+    server {
+        listen 8080;
+
+        location /primes {
+            proxy_pass http://mathservice;
+        }
+
+        location / {
+            return 200 'Welcome to the Frontend!\n';
+            add_header Content-Type text/plain;
+        }
+    }
+}
+```
+* Centralizing your services behind a single cluster of load balancers **limits your ability to scale horizontally** (all traffic is routed through a single dispatching point).
 * While the load balancer can be made highly available, it’s a **single point of failure for your entire infrastructure**. 
-* Centralizing your services behind a single cluster of load balancers **limits your ability to scale horizontally** (all traffic is routed through a single dispatching point). 
-* Most traditional load balancers are statically managed. They aren’t designed for fast registration and de-registration of services. In a traditional load balancer scenario, **the registration of new service instances is not done when a new service instance starts**.
+
+
 
 
 ## Cloud-native service discovery
 
-The principal objective of service discovery is to **have an architecture where services indicate where they are physically located instead of having to manually configure a load balancer**. Key steps are:
-* **Service registration:** As service instances start, they’ll register their physical location (ip and port) that can be used to access them.
-* **Information sharing:** A service usually only registers with one service discovery service instance. Most service discovery implementations use a peer-to-peer model of data propagation, where the data around each service instance is communicated to all the other nodes in the cluster.
-* **Health monitoring:** A service instance pushes to or pulls from its status by the service discovery service. Any services failing to return a good health check are removed from the pool of available service instances.
-* **Client lookup of service address**: There are two ways to load balance clients requests to services. One involving a third component (Server-Side Load Balancer), the other involving only the client and the service (Client-Side Load Balancer).
+A robust service discovery mechanism ensures that services dynamically indicate their physical location instead of requiring manual DNS or load balancer configuration. To achieve this, service discovery must be:
+
+- **Highly available** – Supports clustering to enable seamless failover if a node becomes unavailable.
+- **Peer-to-peer** – Shares service health information across nodes, often using gossip-style protocols for efficient data propagation.
+- **Load balanced** – Distributes requests evenly across all service instances.
+- **Resilient** – Caches service information locally, allowing continued operation even if the discovery service becomes unavailable.
+- **Fault-tolerant** – Automatically detects and removes unhealthy service instances without manual intervention.
+
+Key components of service discovery include:
+
+- **Service registration** – As instances start, they register their physical location (IP/port) for accessibility.
+- **Information sharing** – Each service registers with one discovery node, which propagates data to all nodes in a peer-to-peer manner.
+- **Health monitoring** – Instances continuously update their status, and failing services are removed from the pool.
+- **Client lookup & load balancing** – Requests can be routed using either a **Server-Side Load Balancer** (a separate intermediary) or a **Client-Side Load Balancer** (where the client directly selects a service instance).
 
 ![](images/service-discovery.webp)
 
-The solution for a cloud-based microservice environment is to use a service discovery mechanism that is:
-* **Highly available** Service discovery needs to support a “hot” clustering environment where service lookups can be shared across multiple nodes in a service discovery cluster. If a node becomes unavailable, other nodes in the cluster should be able to take over.
-* **Peer-to-peer** Service discovery nodes share service instance health information with each other. If you are interested in gossip-style protocols for information propagation, you can have a look at [The Gossip Protocol](https://www.consul.io/docs/internals/gossip.html) or [SWIM: The scalable membership protocol](https://www.brianstorti.com/swim/) articles.
-* **Load balanced** Service discovery needs to load balance requests across all service instances. This ensures that the service invocations are spread across all the service instances.
-* **Resilient** The service discovery’s client should cache service information locally. Local caching allows for gradual degradation of the service discovery feature so that if the service discovery service becomes unavailable, applications can still function with local information.
-* **Fault-tolerant** Service discovery needs to detect when a service instance isn't healthy and remove it from the list of available services without any human intervention.
+
 
 
 ## Load Balancing and Service Discovery
