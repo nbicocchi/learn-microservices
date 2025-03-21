@@ -2,14 +2,18 @@ services:
   eureka:
     build: eureka-service
     mem_limit: 512m
+
+  gateway:
+    build: gateway-service
+    mem_limit: 512m
     ports:
-      - "8761:8761"
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
 
   datetime-composite:
     build: datetime-composite-service
     mem_limit: 512m
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 

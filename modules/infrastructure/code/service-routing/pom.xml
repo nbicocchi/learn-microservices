@@ -4,7 +4,7 @@
     <description>Demo project for Spring Boot</description>
 
     <groupId>com.nbicocchi</groupId>
-    <artifactId>service-discovery-routing</artifactId>
+    <artifactId>service-routing</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 

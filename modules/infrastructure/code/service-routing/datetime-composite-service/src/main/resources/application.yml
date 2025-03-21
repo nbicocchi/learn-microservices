@@ -1,7 +1,5 @@
-server.port: 9001
-spring.application.name: datetime-service
-
-app.default.zone: "Europe/Rome"
+server.port: 8080
+spring.application.name: composite-service
 
 eureka:
   client:
