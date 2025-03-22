@@ -1,70 +1,90 @@
 # Asynchronous communications (RabbitMQ)
 
-[RabbitMQ](https://www.rabbitmq.com/) is a widely used open-source message broker that facilitates communication between different parts of a distributed system. It enables applications to send and receive messages through a robust and flexible messaging system based on the [Advanced Message Queuing Protocol (AMQP)](https://www.amqp.org/). RabbitMQ supports various messaging patterns, making it suitable for various use cases.
+The [Advanced Message Queuing Protocol (AMQP)](https://www.amqp.org/) is an open standard designed to efficiently support a wide variety of messaging applications and communication patterns.
+
+[RabbitMQ](https://www.rabbitmq.com/) is a robust and widely used open-source message **broker**  based on AMQP.
+It facilitates communication between different parts of a distributed system, enabling applications to send and receive messages.
+RabbitMQ supports various messaging patterns, making it suitable for various use cases.
 
 RabbitMQ can be managed via its management UI, or via command-line tools, or via code using RabbitMQ client libraries.
 
-## Key Components of RabbitMQ
+## Key Components
 
-- **Producer**: The application that sends messages to the broker.
-- **Consumer**: The application that receives messages from a queue.
-- **Queue**: A buffer that stores messages until they are consumed by a consumer.
-- **Exchange**: A routing mechanism that determines how messages are distributed to queues.
-- **Routing Key**: The routing key is a message attribute taken into account by the exchange when deciding how to route a message.
-- **Binding**: A link between an exchange and a queue that defines the routing rules for messages.
+- **Broker**: system that implements AMQP (e.g., RabbitMQ) and handles message exchange between *producers* and *consumers*
+- **Producer**: application that sends messages to broker
+- **Consumer**: application that receives messages from broker
+
+Broker is internally composed by two main components:
+
+- [**Exchange**](#exchange)
+- [**Queue**](#queue)
 
 ![](images/rabbitMQ-message-cycle.webp)
 
-## Exchanges
+## Exchange
 
-Exchanges are the AMPQ entities responsible for sending messages to the message broker. Exchanges take messages and route them to one or multiple queues. Each exchange is declared with a number of different attributes (name, durability, auto-delete, arguments, etc.).
+**Exchange** is the AMPQ entity which receives messages from producers and routes them to one or more [queues](#queue) based on routing rules.
 
-RabbitMQ provides four different types of exchanges :
-* Fanout exchanges
-* Direct exchanges
-* Topic exchanges 
-* Header exchanges
+The relationship between an exchange and a queue (including routing rules) is called **binding**.
+
+Each exchange is declared with a number of different attributes (name, durability, auto-delete, arguments, etc.).
+
+RabbitMQ provides four different types of exchanges:
+
+- Fanout exchanges
+- Direct exchanges
+- Topic exchanges 
+- Header exchanges
 
 
 ### 1. Fanout Exchange
 
-![](images/exchange-fanout.webp)
+A fanout exchange **routes messages to all queues that are bound to it, regardless of the routing key**. It broadcasts messages to multiple consumers.
 
-- **Description**: A fanout exchange **routes messages to all queues that are bound to it, regardless of the routing key**. It broadcasts messages to multiple consumers.
-- **Use Case**: Useful for scenarios where messages need to be delivered to multiple subscribers.
+The **routing key** is a message attribute generally provided by producer and taken into account by the exchange to decide how to route a message.
+
+**Use Case**: Useful for scenarios where messages need to be delivered to multiple subscribers.
 
 **Example**: A notification system where updates are sent to all subscribers regardless of their interests.
 
+![](images/exchange-fanout.webp)
+
+
 ### 2. Direct Exchange
 
-![](images/exchange-direct.webp)
+A direct exchange **routes messages with a specific routing key** to the queues that are bound to the exchange with the same routing key.
 
-- **Description**: A direct exchange **routes messages with a specific routing key** to the queues that are bound to the exchange with the same routing key.
-- **Use Case**: Useful for point-to-point communication where messages must be routed to a specific queue.
+**Use Case**: Useful for point-to-point communication where messages must be routed to a specific queue.
 
 **Example**: A logging system where logs of different severity levels (e.g., INFO, ERROR) are sent to different queues based on their severity.
 
+![](images/exchange-direct.webp)
+
+
 ### 3. Topic Exchange
 
-![](images/exhange-topic.webp)
+A topic exchange **routes messages to one or more queues based on wildcard patterns in the routing key**. This allows for more complex routing logic.
 
-- **Description**: A topic exchange **routes messages to one or more queues based on wildcard patterns in the routing key**. This allows for more complex routing logic.
-- **Use Case**: Useful for scenarios where messages need to be filtered based on multiple criteria.
+**Use Case**: Useful for scenarios where messages need to be filtered based on multiple criteria.
 
 **Example**: A news service where articles can be tagged with multiple categories (e.g., sports, politics), allowing subscribers to receive only the articles of interest.
 
+![](images/exhange-topic.webp)
+
+
 ### 4. Headers Exchange
 
-![](images/exchange-header.webp)
+A headers exchange **routes messages based on the message's header attributes rather than the routing key**. It matches the headers against specified criteria.
 
-- **Description**: A headers exchange **routes messages based on the message's header attributes rather than the routing key**. It matches the headers against specified criteria.
-- **Use Case**: Useful for scenarios requiring routing based on multiple attributes rather than a single routing key.
+**Use Case**: Useful for scenarios requiring routing based on multiple attributes rather than a single routing key.
 
 **Example**: An order processing system where orders are routed based on multiple criteria such as customer location, product type, and priority.
 
-## Queues
+![](images/exchange-header.webp)
 
-In RabbitMQ, queues are a fundamental component that stores messages. They act as intermediaries between message producers and consumers. Messages sent by applications are routed through exchanges and then land in queues, waiting to be processed by consumer applications.
+## Queue
+
+**Queue** is the fundamental component that stores messages sent by producers. In fact, messages sent by producers (and routed by exchanges) wait to be processed by consumer applications in queues.
 
 Key attributes of queues in RabbitMQ include:
 
