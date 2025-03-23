@@ -2,7 +2,7 @@
 
 In a distributed architecture, locating the IP addresses of services for communication is essential. This process, known as **service discovery**, has been a fundamental concept in distributed computing since its inception.
 
-Service discovery is essential in microservices architectures for two key reasons:
+Service discovery is essential for two key reasons:
 
 - **Horizontal Scaling:** Microservices architectures require dynamic adjustments, such as scaling out by adding more service instances (e.g., additional containers). This capability shifts development teams away from vertical scaling, enabling a more resilient and scalable approach.
 

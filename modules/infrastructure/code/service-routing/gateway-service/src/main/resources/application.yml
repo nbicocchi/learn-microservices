@@ -1,15 +1,11 @@
-server.port: 8081
-spring.application.name: gateway-service
-app.eureka-server: localhost
+server.port: 7004
 
-management.endpoint.gateway.enabled: true
-management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
+spring.application.name: gateway-service
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
   instance:
@@ -23,28 +19,23 @@ logging:
     org.springframework.cloud.gateway: TRACE
 
 spring.cloud.gateway.routes:
-  - id: composite-service
-    uri: lb://composite-service
+  - id: bff-service
+    uri: lb://bff-service
     predicates:
-      - Path=/datetime/**
-  - id: time-service
-    uri: lb://datetime-service
+      - Path=/bff/**
+  - id: user-service
+    uri: lb://user-service
     predicates:
-      - Path=/time/**
-  - id: date-service
-    uri: lb://datetime-service
+      - Path=/users/**
+  - id: post-service
+    uri: lb://post-service
     predicates:
-      - Path=/date/**
-  - id: eureka-web-start
-    uri: http://${app.eureka-server}:8761
+      - Path=/posts/**
+  - id: comment-service
+    uri: lb://comment-service
     predicates:
-      - Path=/eureka/web
-    filters:
-      - SetPath=/
-  - id: eureka-web-other
-    uri: http://${app.eureka-server}:8761
-    predicates:
-      - Path=/eureka/**
+      - Path=/comments/**
+
   - id: host_route_200
     uri: http://httpstat.us
     predicates:
@@ -69,5 +60,9 @@ spring.cloud.gateway.routes:
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
-app.eureka-server: eureka
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
 

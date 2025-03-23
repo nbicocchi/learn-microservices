@@ -9,10 +9,12 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>datetime-service</module>
-        <module>datetime-composite-service</module>
-        <module>gateway-service</module>
         <module>eureka-service</module>
+        <module>gateway-service</module>
+        <module>bff-service</module>
+        <module>user-service</module>
+        <module>post-service</module>
+        <module>comment-service</module>
     </modules>
 
 </project>

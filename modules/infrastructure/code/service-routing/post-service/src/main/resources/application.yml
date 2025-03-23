@@ -1,0 +1,39 @@
+server:
+  port: 7002
+
+spring.application.name: post-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init.mode: always
+  h2:
+    console:
+      enabled: true
+
+---
+spring.config.activate.on-profile: docker
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
