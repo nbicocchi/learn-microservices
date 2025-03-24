@@ -9,7 +9,7 @@ Let’s begin our discussion by looking at the Spring Cloud Stream architecture 
 
 **Source**: takes a [Plain Old Java Object (POJO)](https://en.wikipedia.org/wiki/Plain_Old_Java_Object), which represents the message to be published, serializes it (the default serialization is JSON), and publishes the message to a channel.
 
-**Channel**: is an abstraction over the queue that’s going to hold the message. It is always associated with a target queue name, but that queue name is never directly exposed to the code, which means that we can switch the queues the channel reads or writes without changing the application’s code (only the configuration).
+**Channel**: is an *abstraction over the queue* that’s going to hold the message. It is always associated with a target queue name, but that queue name is never directly exposed to the code, which means that we can switch the queues the channel reads or writes without changing the application’s code (only the configuration).
 
 **Binder**: talks to a specific message platform. The binder part of the Spring Cloud Stream framework allows us to work with messages without having to be exposed to platform-specific libraries and APIs for publishing and consuming messages.
 
@@ -45,40 +45,42 @@ To include Spring Cloud Stream in our project, we need to add `spring-cloud-stre
 
 The `<dependencyManagement>` section is typically used in Spring-based projects to manage Spring Cloud dependencies consistently. By using the `spring-cloud-dependencies` [BOM](https://www.baeldung.com/spring-maven-bom), you can ensure that the correct dependencies are used and avoid version conflicts.
 
-```
-    <properties>
-        <spring-cloud.version>2024.0.0</spring-cloud.version>
-    </properties>
-    
+```xml
+<properties>
+    <spring-cloud.version>2024.0.0</spring-cloud.version>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-stream</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+    </dependency>
+</dependencies>
+
+<dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring-cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
         </dependency>
     </dependencies>
-    
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+</dependencyManagement>
 ```
 
 ## Publishing events
+
 To publish an event we need to:
-* Create an Event object
-* Use the *StreamBridge* class to publish events on the desired topic
-* Add configuration required for publishing events
+
+- Create an `Event` object
+- Use the `StreamBridge` class to publish events on the desired topic
+- Add configuration required for publishing events
 
 ```java
 @Log4j2
@@ -91,11 +93,13 @@ public class ScheduledTask {
     @Scheduled(fixedRate = 100)
     public void randomMessage() {
         Event<UUID, Integer> event = new Event<>(
-                randomType,
-                randomUUID,
-                randomData
+                // fill with right information...
+                type,
+                uuid,
+                data
         );
 
+        //          <binding-name>, <payload>
         sendMessage("message-out-0", event);
         log.info(event.toString());
     }
@@ -109,6 +113,8 @@ public class ScheduledTask {
     }
 }
 ```
+
+Note that, in order be able to use `@Scheduled` capabilities, we must decorate application main with `@EnableScheduling`
 
 Regarding the configuration, we need to provide RabbitMQ as the default messaging system (including connectivity information), JSON as the default content type, and which topics should be used.
 
@@ -132,13 +138,17 @@ spring.cloud.stream:
 ```
 
 
-- `spring.cloud.stream.bindings`
-    - **`message-out-0`**: This is a defined output binding (a channel) for sending messages.
+- `spring.cloud.stream.bindings`: list of all available bindings (i.e. channels in which application shares messages) 
+    - **`message-out-0`**: binding (*channel*) name in which messages are sent, it is used as a reference in the code.
         - **`contentType`**: Sets the message format to `application/json`, meaning messages sent to this channel will be serialized as JSON.
         - **`destination`**: Sets the target destination (queue) for messages to `queue.messages`.
         - **`binder`**: Specifies `local_rabbit` as the binder to be used, which connects this binding to the defined RabbitMQ setup.
 
-- `spring.cloud.stream.binders`
+Output binding names follow a convention: `<binding-name>-out-<n>` 
+
+`out` indicates to Spring that the binding is used as an *output channel*. While, number `n` is used to enumerate the binding (i.e. in this case there is only one binding associated to `message`).
+
+- `spring.cloud.stream.binders`: list of all available binders (i.e. brokers)
     - **`local_rabbit`**: Defines a custom RabbitMQ binder.
         - **`type`**: Specifies the type as `rabbit`, indicating that RabbitMQ is the message broker.
         - **`environment`**: Configures the environment-specific RabbitMQ settings.
@@ -153,7 +163,7 @@ To be able to consume events, we need to do the following:
 * Declare *message processors* which are methods that consume events.
 * Add the configuration required for consuming events from the broker.
 
-An example of *message processor* is declared below. We can see that the class is annotated with *@Configuration*, telling Spring to look for Spring beans in the class. The class actually provides a bean providing an implementation of the *Consumer<Event<String, Integer>>* interface.
+An example of *message processor* is declared below. We can see that the class is annotated with `@Configuration`, telling Spring to look for Spring beans in the class. The class actually provides a bean providing an implementation of the `Consumer<Event<String, Integer>>` interface.
 
 ```java
 @Log4j2
@@ -175,7 +185,7 @@ public class EventReceiver {
                     // do something
                     break;
                 default:
-                    String errorMessage = "Incorrect event type: " + event.getType() + ", expected a CREATE/DELETE/UPDATE event";
+                    String errorMessage = "Incorrect event type: " + event.getType();
                     throw new RuntimeException(errorMessage);
             }
         };
@@ -213,7 +223,13 @@ spring.cloud.stream:
         - **`contentType`**: Sets the message format as `application/json`, meaning the incoming messages will be deserialized from JSON.
         - **`destination`**: Specifies the message queue to listen to, here set to `queue.messages`. This queue is where RabbitMQ will forward messages for the `messageProcessor` function to handle.
 
+Similarly to output binding names, input binding names follow a convention: `<binding-name>-in-<n>` 
+
+`in` indicates to Spring that the binding is used as an *input channel*. While, number `n` is used to enumerate the parameters of binding (in this case there is only one parameter sent to binding, i.e. `event`).
+
+
 ## Trying out the messaging system
+
 [LavinMQ](https://lavinmq.com/) is an extremely fast message broker capable of handling large amounts of messages and connections. It implements the AMQP protocol (so that it can transparently replace RabbitMQ) and can run on both a single node or a cluster.
 
 ### One publisher, many consumers (publish-subscribe)
