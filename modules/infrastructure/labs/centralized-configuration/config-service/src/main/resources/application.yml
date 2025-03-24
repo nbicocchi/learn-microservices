@@ -27,6 +27,7 @@ eureka:
 
 ---
 spring.config.activate.on-profile: docker
+
 eureka:
   client:
     serviceUrl:

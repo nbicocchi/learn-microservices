@@ -1,5 +1,6 @@
 package com.nbicocchi.composite.controller;
 
+import com.nbicocchi.composite.integration.DateTimeIntegration;
 import com.nbicocchi.composite.model.LocalDateTimeWithTimestamp;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -13,30 +14,16 @@ import java.time.LocalTime;
 
 @RestController
 public class CompositeController {
-    private static final Logger LOG = LoggerFactory.getLogger(CompositeController.class);
-    private final RestClient restClient;
+    DateTimeIntegration dateTimeIntegration;
 
-    public CompositeController(RestClient.Builder builder) {
-        restClient = builder.build();
+    public CompositeController(DateTimeIntegration dateTimeIntegration) {
+        this.dateTimeIntegration = dateTimeIntegration;
     }
 
     @GetMapping(value = "/datetime")
     public LocalDateTimeWithTimestamp dateTime() {
-        String urlTime = "http://DATETIME-SERVICE/time";
-        String urlDate = "http://DATETIME-SERVICE/date";
-
-        LOG.info("Calling time API on URL: {}", urlTime);
-        LocalTime localTime = restClient.get()
-                .uri(urlTime)
-                .retrieve()
-                .body(LocalTime.class);
-
-        LOG.info("Calling time API on URL: {}", urlDate);
-        LocalDate localDate = restClient.get()
-                .uri(urlDate)
-                .retrieve()
-                .body(LocalDate.class);
-
-        return new LocalDateTimeWithTimestamp(localDate, localTime, LocalDateTime.now());
+        LocalDate date = dateTimeIntegration.getDate();
+        LocalTime time = dateTimeIntegration.getTime();
+        return new LocalDateTimeWithTimestamp(date, time, LocalDateTime.now());
     }
 }

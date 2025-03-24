@@ -17,11 +17,9 @@ Spring Cloud Config server supports the storing of configuration files in a numb
 See the [reference documentation](https://docs.spring.io/spring-cloud-config/reference/server.html) for the full list.
 
 ### Initial client connection
-**By default, a client connects first to the config server to retrieve its configuration**. Based on the configuration, it connects to the discovery server, to register itself. With this approach, it is possible to store the configuration of the discovery server in the config server. **One concern with connecting to the config server first is that the config server can become a single point of failure (i.e., Spring Config Server is not a distributed application!).**
+- **Config Server First:** The client first connects to the Config Server to retrieve its configuration and then registers with the Discovery Server. This approach allows storing the Discovery Server's configuration in the Config Server but creates a single point of failure since Spring Config Server is not distributed.
 
-It is also possible the other way around, that is, the client first connects to the discovery server to find a config server instance and then connects to the config server to get its configuration. If the clients connect first to a discovery server there can be multiple config server instances registered so that a single point of failure can be avoided.
-
-If you prefer to use the discovery server to locate the config server, you can do so by setting _spring.cloud.config.discovery.enabled=true_ (the default is false). The net result of doing so is that client applications only need the appropriate discovery configuration. For example, you need to define the Eureka server address (_eureka.client.serviceUrl.defaultZone_). The price for using this option is an extra network round trip on startup, to locate the service registration. The benefit is that, as long as the discovery server is a fixed point, the config server can change its coordinates.
+- **Discovery Server First:** The client first connects to the Discovery Server to find an available Config Server instance, reducing the risk of a single point of failure. This approach requires setting `spring.cloud.config.discovery.enabled=true` (default is false) but adds an extra network round trip during startup.
 
 See the [reference documentation](https://docs.spring.io/spring-cloud-config/reference/client.html#discovery-first-bootstrap) for more details.
 
@@ -47,30 +45,136 @@ The config server exposes a REST API that can be used by its clients to retrieve
 
 ### Maven dependencies
 
-```xml
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-config-server</artifactId>
-		</dependency>
-	</dependencies>
+```text
+<properties>
+    <java.version>21</java.version>
+    <spring-cloud.version>2024.0.0</spring-cloud.version>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-config-server</artifactId>
+    </dependency>
+</dependencies>
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring-cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
 ```
 
 ### Configuration
 
 ```yaml
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/nbicocchi/learn-microservices-config
+          skipSslValidation: true
+          timeout: 4
+
+encrypt:
+  key: ${CONFIG_SERVER_ENCRYPT_KEY}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+---
+spring.config.activate.on-profile: docker
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
+```
+
+### Server code
+
+```java
+@SpringBootApplication
+@EnableConfigServer
+public class App {
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
+}
+```
+
+### Docker configuration
+
+```yaml
+  config:
+    build: config-service
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
+```
+
+The values of the preceding environment variables, marked in the Docker Compose file with ${...}, are fetched from the `.env` file:
+
+```
+CONFIG_SERVER_ENCRYPT_KEY=ninna-nanna-ninna-0h
+SPRING_PROFILES_ACTIVE=docker
+CONFIG_SERVER_HOST=config
+CONFIG_SERVER_PORT=8888
+```
+
+These environmental variables can be injected in IntelliJ Configurations using third party plugins such as [EnvFile](https://github.com/ashald/EnvFile).
+
+### Config Repository
+
+After moving the configuration files from each client’s source code to the [configuration repository](https://github.com/nbicocchi/learn-microservices-config), we will have some common configuration in many of the configuration files:
+* the common parts have to be placed in a common configuration file _application.yml_
+* this file is shared by all clients
+
+The configuration can be found in _nbicocchi/learn-microservices-config_ repository.
+
+```
+config-repo/
+├── application.yml
+├── datetime-composite-service.yml
+├── datetime-service.yml
+└── gateway-service.yml
+```
+
+The most of these files are simple and similar to each because all common parts have been included in _application.yml_. 
+
+```text
 eureka:
   client:
     serviceUrl:
@@ -95,74 +199,11 @@ eureka:
       defaultZone: http://eureka:8761/eureka/
 ```
 
-### Server code
+Below you can see the content of _datetime-composite-service.yml_.
 
-```java
-@SpringBootApplication
-@EnableConfigServer
-public class App {
-    private static final Logger LOG = LoggerFactory.getLogger(App.class);
-
-    public static void main(String[] args) {
-        ConfigurableApplicationContext ctx = SpringApplication.run(App.class, args);
-        String repoLocation = ctx.getEnvironment().getProperty("spring.cloud.config.server.native.searchLocations");
-        LOG.info("Serving configurations from folder: {}", repoLocation);
-    }
-}
-```
-
-### Docker configuration
-
-```yaml
-  config:
-    build: config-service
-    mem_limit: 512m
-    ports:
-      - 8888:8888
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
-    healthcheck:
-      test: "curl -f localhost:8888/actuator/health"
-      interval: 5s
-      timeout: 5s
-      retries: 20
-    depends_on:
-      eureka:
-        condition: service_healthy
-```
-
-The values of the preceding environment variables, marked in the Docker Compose file with ${...}, are fetched from the `.env` file:
-
-```
-CONFIG_SERVER_ENCRYPT_KEY=ninna-nanna-ninna-0h
-CONFIG_SERVER_USR=user
-CONFIG_SERVER_PWD=secret
-```
-
-These environmental variables can be injected in IntelliJ Configurations using third party plugins such as [EnvFile](https://github.com/ashald/EnvFile).
-
-### Config Repository
-
-After moving the configuration files from each client’s source code to the [configuration repository](https://github.com/nbicocchi/learn-microservices-config), we will have some common configuration in many of the configuration files, for example, for the configuration of actuator endpoints and how to connect to Eureka.
-* the common parts have to be placed in a common configuration file _application.yml_
-* this file is shared by all clients
-
-The configuration repository can be found in _/config-repo_.
-
-```
-config-repo/
-├── application.yml
-├── datetime-composite-service.yml
-├── datetime-service.yml
-└── gateway-service.yml
-```
-
-The most of these files are simple and similar to each because all common parts have been included in _application.yml_. Below you can see the content of _datetime-service.yml_.
-
-```
-server.port: 9001
-spring.application.name: datetime-service
+```text
+server.port: 9000
+spring.application.name: datetime-composite-service
 
 ---
 spring.config.activate.on-profile: docker
@@ -176,44 +217,79 @@ server.port: 8080
 **Configuration retrieval** Configurations can be retrieved using the */service/profile* endpoint exposed by the configuration server. For example, you can use the following command to retrieve the _datetime-service_ configuration for the docker profile. You can test all the other combinations by changing the name either of the *service* or of the *profile*.
 
 ```bash
-$ curl http://localhost:8888/datetime-service/docker | jq
+curl http://localhost:8888/datetime-service/docker | jq
+```
 
+```json
 {
-  "name": "time-service",
+  "name": "datetime-service",
   "profiles": [
     "docker"
   ],
   "label": null,
-  "version": null,
-  "state": null,
+  "version": "f0713f611970dc1b8264e9511d75550651200fc9",
+  "state": "",
   "propertySources": [
     {
-      "name": "Config resource 'file [/Users/nicola/IdeaProjects/learn-spring-boot/code/learn-spring-m6/spring-cloud-config-end/config-repo/time-service.yml]' via location 'file:/Users/nicola/IdeaProjects/learn-spring-boot/code/learn-spring-m6/spring-cloud-config-end/config-repo/' (document #1)",
+      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/datetime-service.yml' via location '' (document #1)",
       "source": {
         "spring.config.activate.on-profile": "docker",
         "server.port": 8080
       }
     },
-    ...
+    {
+      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/datetime-service.yml' via location '' (document #0)",
+      "source": {
+        "server.port": 9001,
+        "spring.application.name": "datetime-service",
+        "app.default.zone": "US/Eastern"
+      }
+    },
+    {
+      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/application.yml' via location '' (document #1)",
+      "source": {
+        "spring.config.activate.on-profile": "docker",
+        "eureka.client.serviceUrl.defaultZone": "http://eureka:8761/eureka/"
+      }
+    },
+    {
+      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/application.yml' via location '' (document #0)",
+      "source": {
+        "eureka.client.serviceUrl.defaultZone": "http://localhost:8761/eureka/",
+        "eureka.client.initialInstanceInfoReplicationIntervalSeconds": 5,
+        "eureka.client.registryFetchIntervalSeconds": 5,
+        "eureka.instance.leaseRenewalIntervalInSeconds": 5,
+        "eureka.instance.leaseExpirationDurationInSeconds": 5,
+        "management.endpoints.web.exposure.include": "health,info,env,refresh"
+      }
+    }
+  ]
+}
 ```
 
-The response contains properties from a number of property sources, one per property file and Spring profile that matched the API request. The property sources are returned in priority order; if a property is specified in multiple property sources, the first property in the response takes precedence.
+The property sources are returned in priority order; if a property is specified in multiple property sources, the first property in the response takes precedence.
 
 **Encryption** Information can be encrypted and decrypted using the /encrypt and /decrypt endpoints exposed by the config server.
 
-```
+```bash
 curl http://localhost:8888/encrypt -d my-super-secure-password
-4d28a7cb6eb9976dbeae0eb1cc0cb05672f01789140394fe4d93069d3622ab10a25ba9cf2b4ae3fcbc566dfb6cf13403%   
 ```
 
 ```
-curl http://localhost:8888/decrypt -d 4d28a7cb6eb9976dbeae0eb1cc0cb05672f01789140394fe4d93069d3622ab10a25ba9cf2b4ae3fcbc566dfb6cf13403
+b5bceeba6c1f03f807e286b1352aceac4002e27f01bbb4384aa8399a11c8f9853c37b073cdda13b2445043f241de8759%   
+```
+
+```bash
+curl http://localhost:8888/decrypt -d b5bceeba6c1f03f807e286b1352aceac4002e27f01bbb4384aa8399a11c8f9853c37b073cdda13b2445043f241de8759
+```
+
+```
 my-super-secure-password%    
 ```
 
-If you want to use an encrypted value in a configuration file, you need to prefix it with {cipher} and wrap it in ''. For example, to store the encrypted version of 'my-super-secure-password', add the following line in a YAML-based configuration file:
+If you want to use an encrypted value in a configuration file, you need to prefix it with {cipher} and wrap it in. For example, to store the encrypted version of 'my-super-secure-password', add the following line in a YAML-based configuration file:
 ```
-secret-password: '{cipher}4d28a7cb6eb9976dbeae0eb1cc0cb05672f01789140394fe4d93069d3622ab10a25ba9cf2b4ae3fcbc566dfb6cf13403'
+secret-password: '{cipher}b5bceeba6c1f03f807e286b1352aceac4002e27f01bbb4384aa8399a11c8f9853c37b073cdda13b2445043f241de8759'
 ```
 
 When the config server detects values in the format '{cipher}...', it tries to decrypt them using its encryption key before sending them to a client.
@@ -222,62 +298,87 @@ When the config server detects values in the format '{cipher}...', it tries to d
 
 ### Maven dependencies
 
-```xml
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-	</dependencies>
+```text
+<properties>
+    <java.version>21</java.version>
+    <spring-cloud.version>2024.0.0</spring-cloud.version>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-config</artifactId>
+    </dependency>
+</dependencies>
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring-cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
 ```
-
-### Configuration
-* Move the configuration file, _application.yml_, to the config repository and rename it with the name of the client as specified by the property _spring.application.name_.
-* Add a new _application.yml_ file to the _src/main/resources_ folder. This file will be used to hold the configuration required to connect to the config server.
-
-```yaml
-spring:
-  application:
-    name: datetime-service
-  config:
-    import: optional:configserver:http://${CONFIG_SERVER_HOST}:${CONFIG_SERVER_PORT}
-  cloud.config:
-    failFast: true
-    retry:
-      initialInterval: 3000
-      multiplier: 1.3
-      maxInterval: 10000
-      maxAttempts: 20
-```
-
-This configuration will make the client do the following:
-* Use environment variables to define the location of the config server
-* Try to reconnect to the config server during startup up to 20 times, if required. If the connection attempt fails, the client will initially wait for 3 seconds before trying to reconnect. The wait time for subsequent retries will increase by a factor of 1.3. The maximum wait time between connection attempts will be 10 seconds. If the client can’t connect to the config server after 20 attempts, the startup sequence will fail
-
-This configuration is generally good for resilience against temporary connectivity problems with the config server. It is especially useful when the whole landscape of microservices and its config server are started up at once, for example, when using the docker-compose up command. In this scenario, many of the clients will be trying to connect to the config server before it is ready, and the retry logic will make the clients connect to the config server successfully once it is up and running.
 
 ### Updating the configuration
 
-TBD
+To update the configuration across all services, we must call the `/actuator/refresh` endpoint on each service. This can be achieved by using a simple shell script that iterates over the list of services and triggers the refresh. 
 
 ```bash
-$ curl -X POST HOST:PORT/actuator/refresh -d {} -H "Content-Type: application/json"
+#!/bin/bash
+
+# List of service URLs (replace with actual service URLs)
+SERVICES=("http://service1:8080" "http://service2:8080" "http://service3:8080")
+
+# Loop through each service and trigger the /actuator/refresh endpoint
+for SERVICE in "${SERVICES[@]}"
+do
+  echo "Refreshing config for $SERVICE"
+  if curl -X POST "$SERVICE/actuator/refresh" -s -o /dev/null
+    echo "✅ Config refreshed for $SERVICE"
+  else
+    echo "❌ Failed to refresh config for $SERVICE"
+  fi
+done
+```
+
+However, if we have replicated services or services are hidden behind a gateway, it becomes more complex, as the configuration must be refreshed on all instances of each service. In this case, we can implement a cross-cutting concern directly into the API gateway. By leveraging the Discovery Client and RestClient, the gateway can dynamically discover all replicas of a service and send a `/actuator/refresh` request to each instance. This approach ensures that configuration updates are propagated consistently across all replicas without the need for manually handling each service instance.
+
+```java
+@Service
+public class ServiceRefresher {
+    private final ReactiveDiscoveryClient discoveryClient;
+    private final WebClient webClient;
+
+    public ServiceRefresher(ReactiveDiscoveryClient discoveryClient, WebClient.Builder webClientBuilder) {
+        this.discoveryClient = discoveryClient;
+        this.webClient = webClientBuilder.build();
+    }
+
+    public Mono<Void> refreshAllServices() {
+        return discoveryClient.getServices() // Fetch all registered services reactively
+                .flatMap(discoveryClient::getInstances) // Get instances for each service
+                .flatMap(this::refreshInstance) // Call /actuator/refresh for each instance
+                .then(); // Return Mono<Void>
+    }
+
+    private Mono<Void> refreshInstance(ServiceInstance instance) {
+        String url = instance.getUri().toString() + "/actuator/refresh";
+        System.out.println("Refreshing: " + url);
+
+        return webClient.post()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .doOnSuccess(v -> System.out.println("✅ Refreshed: " + url))
+                .doOnError(e -> System.err.println("❌ Failed to refresh " + url + " - " + e.getMessage()))
+                .onErrorResume(e -> Mono.empty()); // Avoid breaking the chain if one request fails
+    }
+}
 ```
 
 ## Resources
