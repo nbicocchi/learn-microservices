@@ -23,17 +23,6 @@ See the [reference documentation](https://docs.spring.io/spring-cloud-config/ref
 
 See the [reference documentation](https://docs.spring.io/spring-cloud-config/reference/client.html#discovery-first-bootstrap) for more details.
 
-### Securing the configuration
-To protect configurations, Spring Cloud Config Server incorporates several security mechanisms and best practices:
-
-* Use TLS for encrypting data in transit. 
-* Secure sensitive properties using encryption mechanisms (symmetric or asymmetric). 
-* Leverage OAuth 2.0 or other strong authentication mechanisms to protect access to configuration data. 
-* Regularly rotate encryption keys and credentials. 
-* Limit access to sensitive configurations by enforcing RBAC. 
-* Use a private and secured repository for storing configuration files. 
-* Regularly audit and monitor configuration access through logs and monitoring tools.
-
 ### The Config Server API
 The config server exposes a REST API that can be used by its clients to retrieve their configuration. We will use the following endpoints in the API:
 
@@ -269,7 +258,18 @@ curl http://localhost:8888/datetime-service/docker | jq
 
 The property sources are returned in priority order; if a property is specified in multiple property sources, the first property in the response takes precedence.
 
-**Encryption** Information can be encrypted and decrypted using the /encrypt and /decrypt endpoints exposed by the config server.
+### Securing the configuration
+To protect configurations, Spring Cloud Config Server incorporates several security mechanisms and best practices:
+
+* Use TLS for encrypting data in transit.
+* **Secure sensitive properties using encryption mechanisms (symmetric or asymmetric).**
+* Leverage OAuth 2.0 or other strong authentication mechanisms to protect access to configuration data.
+* Regularly rotate encryption keys and credentials.
+* Limit access to sensitive configurations by enforcing RBAC.
+* Use a private and secured repository for storing configuration files.
+* Regularly audit and monitor configuration access through logs and monitoring tools.
+
+As described above, sensitive data can be encrypted and decrypted using the /encrypt and /decrypt endpoints exposed by the config server.
 
 ```bash
 curl http://localhost:8888/encrypt -d my-super-secure-password
