@@ -151,8 +151,6 @@ After moving the configuration files from each client’s source code to the [co
 * the common parts have to be placed in a common configuration file _application.yml_
 * this file is shared by all clients
 
-The configuration can be found in _nbicocchi/learn-microservices-config_ repository.
-
 ```
 config-repo/
 ├── application.yml
