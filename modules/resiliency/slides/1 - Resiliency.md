@@ -1,78 +1,63 @@
 # Microservices resiliency
 
 ## What is Resilience?
-**Microservices are distributed in nature**. When you work with distributed systems, always remember this number one rule **anything could happen**. We might be dealing with network issues, service unavailability, application slowness etc. (remember [Fallacies of Distributed Systems](https://www.youtube.com/watch?v=8fRzZtJ_SLk&list=PL1DZqeVwRLnD3EjyciYAO82dT9Owiq8I5)!) **An issue with one system might affect another system behavior/performance**. The capacity of a system to recover from such failures, remain functional, and avoid cascading failures to downstream services makes it **resilient**.
+**Microservices are distributed in nature**. When you work with distributed systems, always remember this number one rule **anything could happen**. We might be dealing with network issues, service unavailability, application slowness etc. (remember [Fallacies of Distributed Systems](https://www.youtube.com/watch?v=8fRzZtJ_SLk&list=PL1DZqeVwRLnD3EjyciYAO82dT9Owiq8I5)!) **An issue with one system might affect another system behavior/performance**. The capacity of a system to recover from such failures, remain functional, and avoid cascading failures makes it **resilient**.
 
-## Threads and thread-related risks
+## Thread-related risks
 
 ### One Thread Per Request Design Pattern
 
-The "One Thread Per Request" design pattern is commonly used in traditional server-side applications. In this model, when a client sends a request to a server (e.g., via HTTP), the server creates or assigns a dedicated thread to handle that request. The thread is responsible for executing the necessary operations (e.g., database queries, computations) and preparing the response to send back to the client. These are often **I/O-bound operations** that can take some time to complete.
+In this model, when a client sends a request to a server (e.g., via HTTP), the server creates or assigns a dedicated thread to handle that request. The thread is responsible for executing the necessary operations (e.g., database queries, computations) and preparing the response to send back to the client. These are often **I/O-bound operations** that can take some time to complete.
 
-During these I/O operations, the thread is **blocked**, meaning it cannot proceed with the next steps until the operation is finished. While blocked, the thread remains in a **waiting state**, simply consuming system resources without doing any actual work. This is problematic for the following reasons:
+During these I/O operations, the thread is **blocked**, meaning it cannot proceed with the next steps until the operation is finished. While blocked, the thread remains in a **waiting state**, simply consuming system resources without doing any actual work. [Spring Boot Starter Web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web) is the key starter dependency to enable this traditional paradigm.
 
-1. **Memory Consumption**: Each thread consumes memory, primarily for its stack space. Even though the thread is waiting and not using CPU resources, it still occupies memory, which increases with the number of concurrent requests.
+![](images/one-thread-request-pattern.webp)
 
-2. **Thread Pool Saturation**: If many threads are simultaneously waiting for I/O to complete, the thread pool can become exhausted or saturated. When no free threads are available, the system may queue incoming requests, leading to increased response times, or worse, it may reject new requests altogether.
+This is problematic for the following reasons:
+
+1. **Memory Consumption**: Even though the thread is waiting and not using CPU resources, it still occupies memory (1MB each approximately), which increases with the number of concurrent requests.
+
+2. **Thread Pool Saturation**: If many threads are simultaneously waiting for I/O to complete, the thread pool can become exhausted or saturated (see `server.tomcat.threads.max` property). When no free threads are available, the system may queue incoming requests, leading to increased response times, or even reject new requests altogether (**DoS**).
 
 3. **Resource Inefficiency**: Having a large number of threads that are mostly idle (waiting for I/O) leads to inefficient use of system resources. The system could be using the available CPU and memory more effectively to handle more requests or perform useful work, but instead, these resources are tied up by threads in a waiting state.
 
-As such, if many requests arrive simultaneously or long-running requests consume threads for extended periods, the pool can become exhausted, meaning no threads are available to process new requests. This can lead to:
-- **Increased Latency**: New requests may be queued or delayed until a thread becomes available.
-- **Denial of Service (DoS)**: In extreme cases, the system may fail to handle incoming requests entirely, resulting in service outages.
-- **High Resource Consumption**: Each thread consumes memory (for stack space) and CPU time. Running many threads concurrently increases memory usage and context-switching overhead, potentially degrading performance.
-
 ### Reactive Programming as a Solution
 
-Reactive programming is an asynchronous, non-blocking paradigm that allows applications to handle a high volume of requests or events efficiently by using fewer threads. Instead of dedicating one thread per request, reactive applications handle requests via event-driven models. Operations that would typically block a thread (such as waiting for I/O) are handled asynchronously. When a response is ready (e.g., when data from a database becomes available), a callback mechanism resumes the computation.
+Instead of dedicating one thread per request, reactive applications handle requests via event-driven models. Operations that would typically block a thread (such as waiting for I/O) are handled asynchronously. When a response is ready (e.g., when data from a database becomes available), a callback mechanism resumes the computation. [Spring Boot Starter WebFlux](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux) is the key starter dependency to enable the reactive paradigm. Take a look at [Quarkus](https://quarkus.io/) as an example of a fully-reactive microservices framework.
 
-**Key Benefits**:
+![](images/reactor-pattern.webp)
+
+**Key Features**:
 - **Non-blocking I/O**: Instead of a thread waiting for I/O operations (e.g., database or network calls), the system registers a callback to handle the operation once it's done, freeing up the thread for other work.
 - **Efficient Resource Usage**: By leveraging non-blocking I/O, a reactive system can handle many more concurrent requests with fewer threads.
 - **Scalability**: Reactive systems scale better because they can handle higher loads without a significant increase in resource consumption.
 
-**Java and Reactive Programming**:
-In Java, frameworks like **Spring WebFlux** and libraries like **Project Reactor** and **RxJava** are designed to build reactive applications. These libraries provide abstractions like reactive streams (Publisher, Subscriber, etc.), which allow for asynchronous, non-blocking communication.
 
-### Java Virtual Threads (Project Loom) as a Solution
+### Java Virtual Threads as a Solution
 
-Java Virtual Threads, introduced as part of **Project Loom**, offer an alternative solution to traditional "One Thread Per Request" models. Unlike platform (OS) threads, which are heavy-weight and tied to the underlying operating system, virtual threads are light-weight and managed by the JVM itself. Virtual threads allow Java applications to create a large number of concurrent threads without the usual overhead associated with traditional threads.
+Java Virtual Threads, offer an alternative solution. Unlike platform (OS) threads, which are heavy-weight and tied to the underlying operating system, virtual threads are light-weight and managed by the JVM itself. Virtual threads allow Java applications to create a large number of concurrent threads without the usual overhead associated with traditional threads.
+
+![](images/virtual-threads-pattern.webp)
 
 **Key Features**:
 - **Lightweight**: Virtual threads are much cheaper to create and manage than platform threads, allowing thousands or even millions of threads to be created without significant resource strain.
-- **Blocking and Non-blocking Together**: Virtual threads allow developers to write blocking code (e.g., blocking on I/O operations) without the performance penalties typically associated with blocking. This makes it easier to reason about thread management and write simpler, sequential code that is still scalable.
 - **No Need for Callbacks**: Unlike reactive programming, where callbacks are often used, virtual threads allow traditional, synchronous-looking code to be written, avoiding the complexity and cognitive overhead of managing asynchronous callbacks.
 
-**How Java Virtual Threads Solve Thread Exhaustion**:
-- **Massive Concurrency**: With virtual threads, the JVM can manage a huge number of threads concurrently, reducing the risk of thread pool exhaustion. Each request can still have its own thread, but the threads are much more lightweight than traditional threads.
-- **Lower Overhead**: Since virtual threads are not tied directly to OS threads, they consume fewer resources, enabling the server to handle a higher volume of concurrent requests without the typical memory and CPU overhead.
-
-### Comparison Between Reactive Programming and Virtual Threads
-
-| **Aspect**               | **Reactive Programming**                               | **Java Virtual Threads**                             |
-|--------------------------|--------------------------------------------------------|-----------------------------------------------------|
-| **Concurrency Model**     | Asynchronous, non-blocking                            | Synchronous, blocking (but with lightweight threads) |
-| **Thread Management**     | Minimal thread use, relies on event loops              | Massive number of lightweight threads managed by JVM|
-| **Programming Model**     | Uses reactive streams, callbacks, and event-driven code| Traditional, imperative programming                 |
-| **Learning Curve**        | Higher, requires understanding of reactive streams     | Lower, since developers can write familiar blocking code |
-| **Use Case**              | Best for event-driven systems with complex I/O         | Great for applications that require simplicity and high concurrency |
-| **Performance**           | High throughput for I/O-bound workloads                | Good performance with easier coding patterns         |
-
-
-
-
 ## Understanding the Importance of Resiliency
-When it comes to building resilient systems, most software engineers only take into account the complete failure of a piece of infrastructure or critical service. **They focus on building redundancy into each layer of their application** using techniques such as:
-* clustering key servers
-* load balancing between services
+When it comes to building resilient systems, focus usually on:
+* **Complete failure of a piece of infrastructure.** 
+* **Building redundancy into each layer of their application**.
+
+Techniques:
+* clustering/load balancing between services
 * segregating infrastructure into multiple locations
 
 However, when a service is running slow, detecting that poor performance and routing around it is often difficult:
-* Service degradation can start out as intermittent and then build momentum. Service degradation might also occur only in small bursts. **The first signs of failure might be a small group of users complaining about a problem until, suddenly, the application container exhausts its thread pool and collapses completely.**
-* Calls to remote services are usually synchronous and imply a wait for the service to return. **The caller has no concept of a timeout to keep the service call from hanging.**
+* **Service degradation can start out as intermittent and then quickly build momentum**.
+* **The caller has no concept of a timeout to keep the service call from hanging.**
 * **Applications are often designed to deal with complete failures of remote resources, not partial degradations**. Often, as long as the service has not entirely failed, an application will continue to call a poorly behaving service and won’t fail fast. In this case, the calling service is at risk of crashing because of resource exhaustion.
 
-What’s insidious about problems caused by **poorly performing remote services is that they are not only difficult to detect but can trigger a cascading effect (callers might exhaust their thread pools!) that can ripple throughout an entire application ecosystem**. Without safeguards in place, a single, poorly performing service can quickly take down entire applications.
+**Poorly performing remote services are not only difficult to detect but can trigger a cascading effect (callers might exhaust their thread pools!) that can ripple throughout an entire application ecosystem**. Without safeguards in place, a single, poorly performing service can quickly take down entire applications.
 
 ### A real-world story
 
@@ -89,11 +74,11 @@ The developers who wrote the organization service never anticipated slowdowns oc
 Now the licensing service starts running out of resources because it’s calling the organization service, which is running slow because of the inventory service. Eventually, all three services stop responding because they run out of resources while waiting for the requests to complete.
 
 ### State of Resilience 2025 Survey
-The [State of Resilience 2025 Survey](https://www.cockroachlabs.com/guides/the-state-of-resilience-2025/) conducted among 1,000 senior cloud architects, engineers, and technology executives across North America, EMEA, and APAC showed:
+The [State of Resilience 2025 Survey](../../../books/the-state-of-resilience-2025.pdf) conducted among 1,000 senior cloud architects, engineers, and technology executives across North America, EMEA, and APAC showed:
 
 * **Widespread Operational Weaknesses**: 95% of executives are aware of existing operational weaknesses that leave their organizations vulnerable to financial and operational damage from unplanned outages. Nearly half (48%), however, admit their companies’ efforts are insufficient to address these issues.
 
-* **High Cost of Service Disruption**: All surveyed organizations reported suffering outage-related revenue loss over the last twelve months, with 84% losing at least $10,000. One-third indicated that their per-outage revenue loss ranged from $100,000 to $1,000,000 or more, highlighting the severe economic consequences when resilience measures fall short.
+* **High Cost of Service Disruption**: All surveyed organizations reported suffering outage-related revenue loss over the last twelve months, with 84% losing at least \$10,000. One-third indicated that their per-outage revenue loss ranged from \$100,000 to \$1,000,000 or more, highlighting the severe economic consequences when resilience measures fall short.
 
 * **Frequent Outages are the New Normal**: Organizations reported experiencing 86 outages annually on average, with 55% experiencing disruptions at least once a week. Notably, 70% of large enterprises said their outages typically take 60 minutes or more to resolve – and almost half experienced downtime for two hours or more.
 
