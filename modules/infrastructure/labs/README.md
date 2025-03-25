@@ -63,8 +63,6 @@
 5. Implement an architecture delivering the above service in which Spring Cloud Gateway is used (in tandem with Eureka) for consolidating the external API on a single interface.
 6. Implement an architecture delivering the above service in which nginx (without Eureka which is not supported) is used for consolidating the external API on a single interface.
 
-
-
 ## Lab 3: Centralized Configuration
 1. Implement a **datetime-service** returning the current date and time (read from internal clock).
    * `GET /date` → returns the current date
