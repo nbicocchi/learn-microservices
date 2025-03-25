@@ -1,41 +1,88 @@
 # Labs
 
-## Lab 1: Implementing Service Discovery with Eureka
-**Objective:** Set up a service discovery mechanism using Netflix Eureka in a Spring Boot application.
+## Lab 1: Service Discovery with Eureka
 
-**Instructions:**
-- Create a Spring Boot application to act as the Eureka server using the `spring-cloud-starter-netflix-eureka-server` dependency.
-- Develop another Spring Boot application that registers itself with the Eureka server.
-- Configure the client application to discover other services via the Eureka server.
-- Test the registration and discovery process by accessing the Eureka dashboard and verifying the registered services.
-- Using replicas, show that the heartbeats mechanism allow the system to be resilient to failing services.
+1. Implement a **datetime-service** returning the current date and time (read from internal clock).
+    * `GET /date` → returns the current date
+    * `GET /time` → returns the current time
+2. Implement a **datetime-composite-service** returning the current date and time (communicates with a pool of instances of **datetime-service** for getting the current date and time).
+    * `GET /datetime` → returns the current date and time
+3. Implement an architecture delivering the above service in which **datetime-composite-service** finds healthy instances of **datetime-service** using Eureka service discovery and client-side load balancing.
+4. Implement an architecture delivering the above service in which **datetime-composite-service** finds healthy instances of **datetime-service** using nginx and server-side load balancing.
 
 ## Lab 2: Service Routing with Spring Cloud Gateway
-**Objective:** Implement API Gateway functionality using Spring Cloud Gateway for routing requests to multiple microservices.
 
-**Instructions:**
-- Set up a Spring Boot application as an API Gateway using the `spring-cloud-starter-gateway` dependency.
-- Configure routes in the `application.yml` file to direct incoming requests to appropriate backend services.
-- Develop two simple microservices that the gateway will route requests to.
-- Test the gateway by sending requests through it and verifying the responses from the backend services.
+1. Implement a **user-service** returning data about users:
+    * `GET /` → returns data on all users.
+    * `GET /{userUUID}` → returns data on the specified user.
 
-## Lab 3: Service Routing with Nginx
-**Objective:** Implement API Gateway functionality using nginx for routing requests to multiple microservices.
+    ```java
+    public class UserModel {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        @NonNull @EqualsAndHashCode.Include private String userUUID;
+        @NonNull private String nickname;
+        @NonNull private LocalDate birthDate;
+    }
+    ```
+2. Implement a **post-service** returning data about users' posts:
+    * `GET /` → returns data on all posts.
+    * `GET /{userUUID}` → returns data on posts of the specified user.
 
-**Instructions:**
-- Configure routes in Nginx configuration file to direct incoming requests to appropriate backend services.
-- Develop two simple microservices that the gateway will route requests to.
-- Test the gateway by sending requests through it and verifying the responses from the backend services.
+    ```java
+    public class Post {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        @NonNull @EqualsAndHashCode.Include private String postUUID;
+        @NonNull @EqualsAndHashCode.Include private String userUUID;
+        @NonNull @EqualsAndHashCode.Include private LocalDateTime timestamp;
+        @NonNull private String content;
+    }
+   ```
+   
+3. Implement a **comment-service** returning data about users' comments:
+    * `GET /` → returns data on all comments.
+    * `GET /{postUUID}` → returns data on comments of the specified post.
+
+    ```java
+    public class Comment {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        @NonNull @EqualsAndHashCode.Include private String commentUUID;
+        @NonNull @EqualsAndHashCode.Include private String postUUID;
+        @NonNull @EqualsAndHashCode.Include private LocalDateTime timestamp;
+        @NonNull private String content;
+    }
+    ```
+
+4. Implement a BFF service returning data on a specific user. The service communicates with all three core services (**user**, **post**, **comment**) for returning a complete profile of the user.
+   * `GET /{userUUID}` → returns data on the specified user.
+5. Implement an architecture delivering the above service in which Spring Cloud Gateway is used (in tandem with Eureka) for consolidating the external API on a single interface.
+6. Implement an architecture delivering the above service in which nginx (without Eureka which is not supported) is used for consolidating the external API on a single interface.
+
+
+
+## Lab 3: Centralized Configuration
+1. Implement a **datetime-service** returning the current date and time (read from internal clock).
+   * `GET /date` → returns the current date
+   * `GET /time` → returns the current time
+2. Implement a **datetime-composite-service** returning the current date and time (communicates with a pool of instances of **datetime-service** for getting the current date and time).
+   * `GET /datetime` → returns the current date and time
+3. Implement an architecture delivering the above service in which **datetime-composite-service** finds healthy instances of **datetime-service** using Eureka service discovery and client-side load balancing.
+4. Externalize the configuration of the two core services (i.e., **datetime**, **datetime-composite**) to a Git repository using Spring Config Server.
 
 # Questions
 1. What is service discovery, and why is it important in microservices architecture?
 2. Explain the key differences between client-side and server-side load balancing.
-3. Explain the role of heartbeats (towards a Eureka node) in client-side load balancing.
-4. Explain the role of the Eureka server and its client in the service discovery process.
+3. Explain the key differences in using Spring Cloud Gateway or nginx as a server-side load balancer.
+4. Explain the role of heartbeats (towards a Eureka node) in client-side load balancing.
 5. What is an API Gateway? Is this pattern correlated with Server-side load balancing? How?
-6. What is a cross-cutting concern and how it could be addressed with a gateway service?
-7. Discuss the differences and similarities between the API gateway and backend for frontends pattern.
-8. What are the advantages of using centralized configuration management in microservices?
+6. What is a cross-cutting concern and how it could be addressed with a gateway service? Is a shared library a viable alternative?
+7. Discuss the differences and similarities between the API gateway and BFF pattern.
+8. What are the advantages of using centralized configuration management in distributed architectures?
 9. How does Spring Cloud Config Server work, and what are its main components?
 10. What is the significance of using a Git repository for centralized configuration management?
 
