@@ -6,6 +6,12 @@ server:
 
 spring.application.name: composite-service
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
 eureka:
   client:
     serviceUrl:
@@ -15,15 +21,6 @@ eureka:
   instance:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
-
-management:
-  endpoint:
-    health:
-      show-details: "ALWAYS"
-  endpoints:
-    web:
-      exposure:
-        include: "*"
 
 resilience4j.bulkhead:
   configs:

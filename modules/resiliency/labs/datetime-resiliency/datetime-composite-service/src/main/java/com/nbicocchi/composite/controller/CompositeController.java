@@ -1,20 +1,18 @@
 package com.nbicocchi.composite.controller;
 
 import com.nbicocchi.composite.model.LocalDateTimeWithTimestamp;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
+import com.nbicocchi.composite.service.DateTimeIntegration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 
 @RestController
 public class CompositeController {
-    private static final Logger LOG = LoggerFactory.getLogger(CompositeController.class);
     DateTimeIntegration dateTimeIntegration;
 
     public CompositeController(DateTimeIntegration dateTimeIntegration, DateTimeIntegration blockingDateTimeIntegration) {
@@ -22,19 +20,19 @@ public class CompositeController {
     }
 
     @GetMapping(value = "/time")
-    public LocalTime time(
+    public Map<String, LocalTime> time(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
     ) {
-        return dateTimeIntegration.getTime(delay, faultPercent);
+        return Map.of("time", dateTimeIntegration.getTime(delay, faultPercent));
     }
 
     @GetMapping(value = "/date")
-    public LocalDate date(
+    public Map<String, LocalDate> date(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
     ) {
-        return dateTimeIntegration.getDate(delay, faultPercent);
+        return Map.of("date", dateTimeIntegration.getDate(delay, faultPercent));
     }
 
     @GetMapping(value = "/datetime")
@@ -48,18 +46,18 @@ public class CompositeController {
     }
 
     @GetMapping(value = "/timeBulkhead")
-    public LocalTime timeBulkhead(
+    public Map<String, LocalTime> timeBulkhead(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
     ) {
-        return dateTimeIntegration.getTimeWithBulkhead(delay, faultPercent);
+        return Map.of("time", dateTimeIntegration.getTimeWithBulkhead(delay, faultPercent));
     }
 
     @GetMapping(value = "/dateBulkhead")
-    public LocalDate dateBulkhead(
+    public Map<String, LocalDate> dateBulkhead(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
     ) {
-        return dateTimeIntegration.getDateWithBulkhead(delay, faultPercent);
+        return Map.of("date", dateTimeIntegration.getDateWithBulkhead(delay, faultPercent));
     }
 }

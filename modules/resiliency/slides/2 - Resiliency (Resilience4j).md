@@ -1,9 +1,7 @@
 # Microservices resiliency
 
 ## Resilience4j
-**Resilience4j is a lightweight fault tolerance library designed for functional programming. It provides higher-order functions (decorators) to enhance any functional interface, lambda expression or method reference with a Circuit Breaker, Rate Limiter, Retry or Bulkhead.**
-
-You can stack more than one decorator on any functional interface, lambda expression or method reference. The advantage is that you have the choice to select the decorators you need and nothing else.
+**Resilience4j is a lightweight fault tolerance library designed for functional programming. It provides decorators to enhance any functional interface, with Circuit Breaker, Rate Limiter, Retry or Bulkhead patterns.** The advantage in using it is that you have the choice to select the decorators you need and nothing else.
 
 ```java
 Supplier<String> supplier = () -> service.sayHelloWorld(param1);
@@ -17,10 +15,14 @@ String result = Decorators.ofSupplier(supplier)
   .get();
 ```
 
-To use the library as an integration in Spring Boot add the following Maven dependencies:
+To use the library integrated in Spring Boot (not in its native form) add the following Maven dependencies:
 
 ```xml
 <dependencies>
+    <dependency>
+      <groupId>io.github.resilience4j</groupId>
+      <artifactId>resilience4j-spring-boot3</artifactId>
+    </dependency>
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-aop</artifactId>
@@ -29,20 +31,19 @@ To use the library as an integration in Spring Boot add the following Maven depe
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.github.resilience4j</groupId>
-      <artifactId>resilience4j-spring-boot3</artifactId>
-    </dependency>
 </dependencies>
 ```
 
 ### Circuit Breaker
 
 Resilience4j exposes information about circuit breakers at runtime in a number of ways:
-* The current state of a circuit breaker can be monitored using the microservice’s actuator endpoint, **/actuator/metrics**.
-* The circuit breaker also publishes events on an actuator endpoint, for example, state transitions and **/actuator/circuitbreakevents**.
+* The current state of a circuit breaker can be monitored using the microservice’s actuator endpoint:
+  * [/actuator/metrics](http://localhost:8080/actuator/metrics)
+  * [/actuator/circuitbreakers](http://localhost:8080/actuator/circuitbreakers)
+  * [/actuator/circuitbreakerevents](http://localhost:8080/actuator/circuitbreakerevents)
 
-To control the logic in a circuit breaker, Resilience4j can be configured using standard Spring Boot configuration files. We will use the following configuration parameters:
+
+To control the logic in a circuit breaker, we use the following configuration:
 
 ```yaml
 resilience4j.circuitbreaker:
@@ -76,17 +77,18 @@ Now, it is enough to annotate methods using external resources (e.g., other serv
 ```java
 @CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
 public LocalTime getTime(int delay, int faultPercent) {
-    URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
+    URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "/time" + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
 
-    LOG.info("Calling time API on URL: {}", url);
-    return restClient.get()
+    log.info("Calling time API on URL: {}", url);
+    Map<String, LocalTime> map = restClient.get()
             .uri(url)
             .retrieve()
-            .body(LocalTime.class);
+            .body(new ParameterizedTypeReference<>() {});
+    return map.get("time");
 }
 
 public LocalTime getTimeFallbackValue(int delay, int faultPercent, CallNotPermittedException e) {
-    return LocalTime.of(11, 11, 11);
+    return LocalTime.of(LocalTime.now().getHour(), 0, 0);
 }
 ```
 
@@ -99,9 +101,9 @@ mvn clean package -Dmaven.test.skip=true
 docker compose up --build --detach
 ```
 
-Inside the /testing directory you can find two files that can be used with curl.
+Inside the /testing directory you can find two files that can be used with curl:
 
-**urls-circuit-breaker-open.txt**
+urls-circuit-breaker-open.txt
 
 ```yaml
 url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"
@@ -111,7 +113,7 @@ url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"
 url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"
 ```
 
-**urls-circuit-breaker-close.txt**
+urls-circuit-breaker-close.txt
 
 ```yaml
 url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=0"
@@ -122,11 +124,15 @@ url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=0"
 
 The following command opens the circuit breaker with 5 failed requests.
 
+```bash
+curl --parallel --parallel-immediate --config urls-circuit-breaker-open.txt
 ```
-$ curl --parallel --parallel-immediate --config urls-circuit-breaker-open.txt
-...
 
-$ curl -sS 'http://127.0.0.1:8080/actuator/circuitbreakers' | jq   
+```bash
+curl -sS 'http://localhost:8080/actuator/circuitbreakers' | jq
+```
+
+```json
 {
   "circuitBreakers": {
     "time": {
@@ -147,7 +153,7 @@ $ curl -sS 'http://127.0.0.1:8080/actuator/circuitbreakers' | jq
 
 After 10 seconds (see configuration), the circuit breaker automatically transition to the HALF_OPEN state.
 
-```
+```json
 {
   "circuitBreakers": {
     "time": {
@@ -166,13 +172,17 @@ After 10 seconds (see configuration), the circuit breaker automatically transiti
 }
 ```
 
-Instead, the following command closes the circuit breaker with 5 succeeded requests. Note well: the "11:11:11" is the fallback value returned when the circuit breaker is open.
+Instead, the following command closes the circuit breaker with 5 succeeded requests. Note well: the "hh:00:00" is the fallback value returned when the circuit breaker is open.
 
+```bash
+curl --parallel --parallel-immediate --config urls-circuit-breaker-close.txt
 ```
-$ curl --parallel --parallel-immediate --config urls-circuit-breaker-close.txt
-"11:11:11""15:14:54.76469185""15:14:54.764691868""15:14:54.764691817"%   
 
-$ curl -sS 'http://127.0.0.1:8080/actuator/circuitbreakers' | jq  
+```bash
+curl -sS 'http://localhost:8080/actuator/circuitbreakers' | jq  
+```
+
+```json
 {
   "circuitBreakers": {
     "time": {

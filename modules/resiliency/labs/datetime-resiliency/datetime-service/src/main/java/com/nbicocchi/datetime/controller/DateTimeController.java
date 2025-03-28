@@ -5,7 +5,9 @@ import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -51,7 +53,7 @@ public class DateTimeController {
         int randomNumber = RND.nextInt(0, 100);
         if (randomNumber < faultPercent) {
             log.info("Bad luck, an error occurred, {} >= {}", faultPercent, randomNumber);
-            throw new RuntimeException("Something went wrong...");
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

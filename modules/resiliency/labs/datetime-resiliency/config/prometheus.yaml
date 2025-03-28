@@ -1,0 +1,6 @@
+scrape_configs:
+  - job_name: 'application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 1s
+    static_configs:
+      - targets: ['datetime-composite:8080']
