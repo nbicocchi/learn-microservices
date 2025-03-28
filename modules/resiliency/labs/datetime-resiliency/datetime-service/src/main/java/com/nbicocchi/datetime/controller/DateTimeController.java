@@ -1,6 +1,7 @@
 package com.nbicocchi.datetime.controller;
 
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,11 +13,12 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.random.RandomGenerator;
 
+@Log4j2
 @RestController
 public class DateTimeController {
-    private static final Logger LOG = LoggerFactory.getLogger(DateTimeController.class);
     private static final RandomGenerator RND = RandomGenerator.getDefault();
 
     @Value("${app.default.zone}")
@@ -24,27 +26,38 @@ public class DateTimeController {
 
     @GetMapping(value = "/date")
     //@RateLimiter(name = "date")
-    public LocalDate date(
+    public Map<String,LocalDate> date(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent) throws InterruptedException {
+        log.info("invoked date()");
         Thread.sleep(delay);
         throwErrorIfBadLuck(faultPercent);
-        return LocalDate.now(ZoneId.of(zoneId));
+        return Map.of("date", LocalDate.now(ZoneId.of(zoneId)));
     }
 
     @GetMapping(value = "/time")
     //@RateLimiter(name = "time")
-    public LocalTime time(
+    public Map<String, LocalTime> time(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent) throws InterruptedException {
+        log.info("invoked time()");
         Thread.sleep(delay);
         throwErrorIfBadLuck(faultPercent);
-        return LocalTime.now(ZoneId.of(zoneId));
+        return Map.of("time", LocalTime.now(ZoneId.of(zoneId)));
+    }
+
+    private void throwErrorIfBadLuck(int faultPercent) {
+        if (faultPercent == 0) return;
+        int randomNumber = RND.nextInt(0, 100);
+        if (randomNumber < faultPercent) {
+            log.info("Bad luck, an error occurred, {} >= {}", faultPercent, randomNumber);
+            throw new RuntimeException("Something went wrong...");
+        }
     }
 
     @GetMapping(value = "/zone")
-    public String zone() {
-        return zoneId;
+    public Map<String, String> zone() {
+        return Map.of("zone", zoneId);
     }
 
     @PostMapping(value = "/zone")
@@ -59,14 +72,5 @@ public class DateTimeController {
         List<String> zones = new ArrayList<>(ZoneId.getAvailableZoneIds());
         Collections.sort(zones);
         return zones;
-    }
-
-    private void throwErrorIfBadLuck(int faultPercent) {
-        if (faultPercent == 0) return;
-        int randomNumber = RND.nextInt(0, 100);
-        if (randomNumber < faultPercent) {
-            LOG.info("Bad luck, an error occurred, {} >= {}", faultPercent, randomNumber);
-            throw new RuntimeException("Something went wrong...");
-        }
     }
 }

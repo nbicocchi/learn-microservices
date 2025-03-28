@@ -17,8 +17,7 @@ import java.time.LocalTime;
 @Component
 public class DateTimeIntegration {
     private static final Logger LOG = LoggerFactory.getLogger(DateTimeIntegration.class);
-    private static final String TIME_SERVICE_URL = "http://DATETIME-SERVICE/time";
-    private static final String DATE_SERVICE_URL = "http://DATETIME-SERVICE/date";
+    private static final String DATETIME_SERVICE_URL = "http://DATETIME-SERVICE";
     RestClient restClient;
 
     public DateTimeIntegration(RestClient.Builder builder) {

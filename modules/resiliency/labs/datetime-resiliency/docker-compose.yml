@@ -23,8 +23,6 @@ services:
 
   datetime:
     build: datetime-service
-    ports:
-      - "9001:9001"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     deploy:
