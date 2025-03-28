@@ -21,10 +21,23 @@ services:
       timeout: 5s
       retries: 5
 
-  datetime:
+  date:
     build: datetime-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,date
+    deploy:
+      mode: replicated
+      replicas: 1
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  time:
+    build: datetime-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,time
     deploy:
       mode: replicated
       replicas: 1
