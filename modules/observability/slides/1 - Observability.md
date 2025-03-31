@@ -39,13 +39,9 @@ The three pillars of observability—**metrics**, **logs**, and **traces**—pla
 Metrics are numerical values that capture key performance indicators (KPIs) about your system over time. They are typically aggregated and provide an overview of system health and performance.
 
 **Characteristics**:
-  - **Quantitative Data**: Metrics are quantitative and can be counted or measured (e.g., CPU usage, memory consumption, request latency).
+  - **Quantitative Data**: Metrics are quantitative and can be counted or measured (e.g., CPU, memory, disk, threads, latency, etc.).
   - **Low Cardinality**: Metrics tend to have low cardinality (limited number of possible values), when compared to logs or traces.
   - **Time-Series Nature**: Metrics are usually collected as time-series data and plotted on dashboards to show trends over time.
-
-**Types**:
-  - **System Metrics**: CPU, memory, disk, and network usage.
-  - **Application Metrics**: Request count, error rate, request latency, and throughput.
 
 **Use Cases**:
   - **Monitoring**: Continuous monitoring of performance indicators like latency, error rates, and resource consumption.
@@ -54,7 +50,7 @@ Metrics are numerical values that capture key performance indicators (KPIs) abou
 
 **Cardinality Explosion**:
 
-**Cardinality** refers to the number of unique combinations of label values (or dimensions) associated with a particular metric. Each unique combination creates a new "time series" that must be stored and tracked over time.
+**Cardinality** refers to the number of unique combinations of label values (or dimensions) associated with a particular metric. Each unique combination creates a time series that must be stored and tracked over time.
 
 Consider a metric that tracks the latency of API requests. It might have the following labels (dimensions):
 - `endpoint`: The specific API endpoint being accessed (e.g., `/users`, `/orders`).
@@ -74,7 +70,7 @@ For each unique combination of these labels, a new time series is created:
 
 If we have **1,000 endpoints** running on **100 nodes** distributed across **3 regions**, we could end up collecting **300,000 time series** at each time step.
 
-If we were to replace `nodeid` with `user_id`, the number of unique label combinations would **skyrocket**, drastically increasing cardinality and potentially overwhelming the monitoring system.
+If we were to replace `nodeid` with `user_id`, the number of unique label combinations would **skyrocket**, potentially overwhelming the monitoring system.
 
 
 ### Logs
@@ -105,28 +101,26 @@ Logs are detailed, unstructured or semi-structured textual records that describe
 ```
 
 ### Traces
-- **Definition**: Traces track the path of a request as it moves through various services in a distributed system. They help visualize and analyze how requests propagate across different components.
+Traces track the path of a request as it moves through various services in a distributed system. They help visualize how requests propagate across different components.
+
 - **Characteristics**:
-    - **Distributed Context**: Traces are particularly valuable in microservices architectures where a request can span multiple services, databases, and external APIs.
-    - **Span and Trace IDs**: Traces are composed of spans, which represent a single operation within a service. Each span contains a unique ID, and all spans related to a single request share the same trace ID, allowing you to track the request end-to-end.
+    - **Distributed Context**: Traces are particularly valuable in distributed architectures where a request can span multiple services, databases, and external APIs.
+    - **Span and Trace IDs**: Traces are composed of spans, which represent a single operation within a service. Each span contains a unique ID, and all spans related to a single request share the same trace ID.
     - **End-to-End Latency**: Traces provide visibility into the time taken by each service involved in processing a request.
-- **Types**:
-    - **Root Span**: The first span in a trace, usually representing the entry point of a request into the system.
-    - **Child Spans**: Represent operations in downstream services, each tracked independently but associated with the same trace ID.
 - **Use Cases**:
-    - **Performance Optimization**: Traces help identify bottlenecks by showing how long each service or component takes to process a request.
-    - **Root Cause Analysis**: Tracing allows you to pinpoint which service or component is causing slowdowns or errors.
+    - **Performance Optimization**: Traces help identify bottlenecks by showing how long each service takes to process a request.
+    - **Root Cause Analysis**: Tracing allows you to pinpoint which service is causing slowdowns or errors.
     - **Dependency Visualization**: Traces give a clear picture of how services interact, making it easier to understand complex dependencies in a microservice architecture.
 
 ![](images/tracing.webp)
 
 ### Combining Metrics, Logs, and Traces
 Although each pillar serves a different purpose, they complement one another to provide full visibility into system health:
-- **Metrics** provide the "what" (e.g., high CPU usage or slow response times).
-- **Logs** offer the "why" by showing the details of events leading up to or during an issue.
-- **Traces** offer the "how" by revealing the flow of requests through different parts of the system, making it possible to locate performance bottlenecks or failures in distributed environments.
+- **Metrics** indicate **what** is happening, such as high CPU usage or slow response times.
+- **Logs** provide the **why** by capturing detailed event data preceding or occurring during an issue.
+- **Traces** illustrate the **how** by mapping request flows across system components, enabling the identification of performance bottlenecks or failures.
 
-By integrating these pillars using observability tools (e.g., Prometheus for metrics, ELK stack for logs, Jaeger for tracing), teams can achieve comprehensive insight into the behavior of their systems, which is essential for effective monitoring, debugging, and optimizing modern software systems.
+By integrating these observability pillars with specialized tools—such as Prometheus for metrics, the ELK stack for logs, and Jaeger for tracing—teams can gain comprehensive visibility into system behavior. This integration is crucial for effective monitoring, debugging, and optimization of modern software systems.
 
 ## Instrumentation
 
@@ -144,7 +138,7 @@ In an ideal world, the B2I ratio would be 1, representing zero instrumentation c
 
 **Metrics**
 
-Micrometer is a popular metrics collection library in the Spring ecosystem, often used with Prometheus or other monitoring tools. Adding metrics introduces costs in terms of resource usage and infrastructure needs.
+Micrometer is a popular metrics collection library in the Spring ecosystem, often used with Prometheus or other monitoring tools. 
 
 ```java
 import io.micrometer.core.instrument.MeterRegistry;
@@ -169,12 +163,9 @@ public class ExampleController {
 }
 ```
 
-- **Resource Overhead**: Each request increments a counter. In high-traffic applications, this small overhead accumulates.
-- **Infrastructure Costs**: Storing and querying metrics in Prometheus or another monitoring system requires resources, including storage and compute.
-
 **Logs**
 
-Logging is essential for debugging and monitoring microservices, but excessive logging can consume storage, network bandwidth, and degrade performance.
+SLF4J (Simple Logging Facade for Java) is a popular logging abstraction in the Java ecosystem, commonly used with logging frameworks like **Logback** or **Log4j** to provide a flexible and consistent logging API.
 
 ```java
 import org.slf4j.Logger;
@@ -196,11 +187,9 @@ public class LoggingController {
 }
 ```
 
-- **Storage Costs**: Logs can grow quickly, especially in microservices architectures where each service generates logs. Storing these logs (e.g., in ELK stack) adds to infrastructure costs.
-- **Performance Impact**: Writing logs to disk or sending them to a centralized logging service can introduce latency.
-
 **Traces**
-Distributed tracing helps in understanding requests flowing through various microservices. It can introduce performance overhead due to the additional tracking, logging, and transmission of trace data.
+
+OpenTelemetry is a widely adopted observability framework that provides **tracing, metrics, and logging** capabilities, often used with backend systems like **Prometheus, Jaeger, and Grafana** for monitoring and analysis.
 
 ```java
 import io.opentelemetry.api.trace.Span;
@@ -234,21 +223,11 @@ public class TracingController {
 }
 ```
 
-- **Performance Overhead**: Tracing adds latency to each request as spans are created, propagated, and sent to a tracing backend (e.g., Jaeger, Zipkin).
-- **Operational Costs**: Setting up and maintaining tracing infrastructure requires additional resources, especially for high-volume traffic and complex distributed systems.
-
 ### Zero-code instrumentation
 
-**Zero Code Instrumentation** refers to a technique where no code changes are required to instrument an application for monitoring, observability, or performance tracking. This is typically achieved through automatic instrumentation provided by agents (such as Java agents) or frameworks.
+**Zero Code Instrumentation** refers to a technique where no code changes are required to instrument an application for monitoring, observability, or performance tracking. This is typically achieved through automatic instrumentation provided by agents (such as [OpenTelemetry Java agent](https://opentelemetry.io/docs/zero-code/java/agent/)) or frameworks.
 
 A **Java agent** is a special type of Java program that can modify the behavior of Java bytecode at runtime. It leverages the Java Instrumentation API, allowing developers or tools to inject custom behavior into Java classes before they are loaded into memory by the JVM.
-
-**How It Works**
-* **Bytecode Manipulation**: The Java agent can modify the bytecode of the application’s classes to introduce additional behavior, such as tracing, logging, or collecting metrics, without changing the application code itself.
-* **Premain and Agentmain Methods**: Java agents have two key methods:
-  - **premain()**: Invoked before the main method of the application, allowing agents to attach at startup.
-  - **agentmain()**: Allows agents to attach to a running JVM (dynamic attachment).
-* **JVM Argument**: To use a Java agent, it is added as a JVM argument, such as:
 
 ```bash
 java -javaagent:/path/to/agent.jar -jar your-application.jar
@@ -256,47 +235,16 @@ java -javaagent:/path/to/agent.jar -jar your-application.jar
 
 
 ## Sources
-We categorize sources using a simple and widely used trichotomy: **compute**, **storage**, and **network**. By categorizing observability into compute, storage, and network, you can better understand where issues arise, how they propagate through the system, and what steps to take to maintain the health and performance of distributed microservice architectures.
+We categorize sources using a simple and widely used trichotomy: **compute**, **storage**, and **network**. This broad categorization helps understand where issues arise, how they propagate through the system, and what steps to take to maintain the health and performance of distributed architectures.
 
+| **Category**  | **Description** | **Key Observability Data** | **Specific Metrics** |  
+|--------------|---------------|---------------------------|----------------------|  
+| **Compute**  | The runtime environments where code executes, including VMs, containers, and serverless functions. Observability focuses on performance, resource usage, and health. | - **CPU**: Tracks CPU usage per microservice, container, or VM, detecting inefficiencies or bottlenecks.  <br> - **Memory**: Monitors usage, memory leaks, and inefficiencies.  <br> - **Disk I/O**: Observes read/write operations to detect bottlenecks in data-heavy services. | - **Container-level metrics**: CPU, memory, and disk I/O from Docker/Kubernetes.  <br> - **Function invocation times**: Execution time, cold start duration, and memory usage for AWS Lambda/Google Cloud Functions. |  
+| **Storage**  | Components responsible for persisting and managing data, such as databases, file systems, and object stores. Observability focuses on performance, health, and availability. | - **Query Performance**: Monitors slow queries, lock contention, and transaction times (PostgreSQL, MySQL).  <br> - **Latency**: Tracks read/write latency for NoSQL stores (Redis, DynamoDB).  <br> - **Capacity & Availability**: Ensures storage doesn’t run out and remains accessible. | - **DB Metrics**: Queries per second (QPS), read/write latency, connection pool size, rollback rates.  <br> - **Object Storage Metrics**: S3 `GetObject` latency, `PutObject` success/failure rates. |  
+| **Network**  | Ensures smooth communication between microservices by monitoring connectivity, throughput, and latency. | - **Throughput**: Measures data transfer between services to detect bottlenecks.  <br> - **Latency**: Tracks round-trip times between services and clients.  <br> - **Error Rates**: Detects packet loss, failed connections, and dropped messages. | - **API Gateway Metrics**: Request/response latency, success/failure rates, throttled requests.  <br> - **Load Balancer Metrics**: AWS ELB `RequestCount`, `HTTPCode_ELB_5XX_Count` (errors), `Latency`.  <br> - **Network Traffic**: Data transfer rates, packet loss, bandwidth usage. |  
 
-### Compute
-This refers to the actual runtime environments where code executes, and it covers virtual machines, containers, serverless functions, and other compute units. Observability in this area focuses on gathering data related to the performance, resource usage, and health of the compute environments.
+**Extended Considerations for Observability Sources:**
 
-**Key Observability Data:**
-  - **CPU**: Tracking how much CPU is consumed by a microservice, container, or VM. Spikes or high sustained CPU usage can indicate inefficient code, overloaded instances, or performance bottlenecks.
-  - **Memory**: Monitoring memory usage and checking for memory leaks or inefficient memory management.
-  - **Disk I/O**: Observing read/write operations to detect bottlenecks in services that handle large data transfers.
-
-**Compute-Specific Metrics:**
-- **Container-level metrics**: For instance, Docker and Kubernetes expose metrics such as container CPU, memory, and disk I/O, which are crucial for performance tuning and resource scaling.
-- **Function invocation times (serverless)**: For AWS Lambda or Google Cloud Functions, the focus is on execution time, cold start duration, and memory usage per function execution.
-
-### Storage
-This category includes all components responsible for persisting and managing data. Observability in storage focuses on the health, performance, and availability of databases, file systems, and object stores.
-
-**Key Observability Data:**
-- **Query Performance**: For relational databases (e.g., PostgreSQL, MySQL), tracking slow queries, lock contention, and transaction times provides insights into bottlenecks that affect application performance.
-- **Latency**: For NoSQL stores like Redis and DynamoDB, latency of read and write operations is critical to maintaining the performance of high-throughput systems.
-- **Capacity and Availability**: Monitoring disk space and usage trends ensures that storage does not run out of capacity unexpectedly, while availability metrics (uptime/downtime) ensure that storage systems are accessible when needed.
-
-**Storage-Specific Metrics:**
-- **DB Metrics**: Queries per second (QPS), read/write latency, connection pool size, and transaction rollback rates.
-- **Object Storage Metrics**: S3 provides metrics like `GetObject` latency and `PutObject` success/failure rates.
-
-### Network
-Networking is crucial in distributed systems, as microservices rely heavily on network communication. Observability here focuses on monitoring the flow of data across different services, ensuring that connectivity, throughput, and latency are within acceptable limits.
-
-**Key Observability Data:**
-- **Throughput**: Measuring how much data is being transferred between services. Network bottlenecks can indicate issues with data flow or congestion.
-- **Latency**: Tracking round-trip times between services and clients. Latency spikes often highlight performance degradation in a service-to-service interaction.
-- **Error Rates**: High rates of packet loss, failed connections, or dropped messages can signal issues with the underlying network infrastructure or service health.
-
-**Network-Specific Metrics:**
-- **API Gateway Metrics**: For APIs, metrics like request/response latency, success/failure rates, and throttled requests give insights into network performance.
-- **Load Balancer Metrics**: Load balancers like AWS ELB expose metrics such as `RequestCount`, `HTTPCode_ELB_5XX_Count` (errors), and `Latency`.
-- **Network Traffic**: Monitoring data transfer rates, packet loss, or bandwidth usage helps in understanding network capacity and diagnosing bottlenecks.
-
-### Extended Considerations for Observability Sources:
 - **Granularity**: For each of these categories, observability can be applied at different granularities. For example, at the compute level, you can track metrics at the VM level, container level, or process level, depending on the level of detail required.
 
 - **Correlation**: Effective observability often involves correlating data from these three sources. For instance, high latency in the network may coincide with increased CPU usage on the compute side, or a database experiencing long-running queries could cause cascading slowdowns across the network.
@@ -305,44 +253,22 @@ Networking is crucial in distributed systems, as microservices rely heavily on n
 
 ## Metrics: Prometheus
 
-**Prometheus** is an open-source monitoring and alerting toolkit widely used for recording real-time metrics and generating alerts. Prometheus was developed at SoundCloud in 2012 and later became a standalone project under the umbrella of the Cloud Native Computing Foundation (CNCF). It is designed for reliability and scalability in monitoring and alerting, with a strong emphasis on time-series data.
+[Prometheus](https://prometheus.io/) is an open-source monitoring and alerting toolkit widely used for recording real-time metrics and generating alerts. Prometheus was developed at [SoundCloud](https://soundcloud.com/) in 2012 and later became a standalone project under the umbrella of the [Cloud Native Computing Foundation](https://www.cncf.io/). It is designed for reliability and scalability in monitoring and alerting, with a strong emphasis on time-series data.
 
 ![](images/prometheus-architecture.webp)
 
-### Key Features of Prometheus
+- **Prometheus Server**: Core component that collects, stores, and queries metrics.
+- **Data Storage**: Uses a built-in time-series database (TSDB) for efficient metric storage and retrieval.
+- **Alertmanager**: Manages, deduplicates, and routes alerts to notification channels.
+- **Client Libraries**: Enable applications to expose custom metrics using libraries for Go, Java, Python, and more.
 
-- **Multi-dimensional Data Model**: Prometheus uses a flexible data model that allows metrics to be identified by key-value pairs known as labels. This supports the creation of highly dimensional queries.
-- **Powerful Query Language**: Prometheus provides a query language called **PromQL** (Prometheus Query Language) for retrieving and manipulating time-series data, making it easy to create complex queries and aggregations.
-- **Pull Model**: Prometheus primarily uses a pull model for data collection, where it scrapes metrics from configured targets at specified intervals, making it suitable for dynamic environments.
-- **Alerting**: Prometheus supports alerting based on specific conditions defined in alerting rules. Alerts can be sent to various notification channels, including email, Slack, and PagerDuty.
-- **Integration**: It integrates well with various data sources, exporters, and monitoring tools, allowing for comprehensive monitoring across applications and infrastructure.
+**Key Features:**
 
-### Prometheus Architecture
-
-The architecture of Prometheus consists of several key components:
-
-1. **Prometheus Server**: The core component that collects, stores, and processes metrics data. It performs scraping, data storage, and querying.
-2. **Data Storage**: Prometheus stores time-series data in its own time-series database (TSDB), optimized for fast retrieval and storage of metric data.
-3. **Exporters**: Exporters are components that expose metrics in a format Prometheus can scrape. There are various exporters available, such as node_exporter for system metrics, and application-specific exporters for popular technologies like MySQL and Redis.
-4. **Alertmanager**: This component handles alerts generated by the Prometheus server. It manages alert notifications, deduplicates them, and routes them to the appropriate notification channels.
-5. **Client Libraries**: These libraries allow application developers to instrument their code and expose metrics directly to Prometheus. Libraries are available for various programming languages (e.g., Go, Java, Python).
-
-### Prometheus as an Agent
-
-When we refer to **Prometheus as an agent**, we typically focus on its role in data collection and metrics scraping.
-
-- **Scraping Metrics**: Prometheus acts as a data collector (or agent) that scrapes metrics from various targets at configured intervals. Targets can include applications, services, or systems exposing metrics through HTTP endpoints.
-- **Service Discovery**: Prometheus supports various service discovery mechanisms (e.g., Kubernetes, Consul, static configuration) to automatically identify and scrape targets. This is especially useful in dynamic environments where services may frequently change.
-- **Metrics Formatting**: Targets expose metrics in a specific text-based format that Prometheus understands. The metrics can include information about CPU usage, memory consumption, request counts, error rates, and more.
-
-### Prometheus as a Backend Service
-
-When we refer to **Prometheus as a backend service**, we emphasize its capabilities as a metrics storage and querying system.
-
-- **Time-Series Data Storage**: Prometheus stores scraped metrics in a time-series database optimized for quick lookups, aggregations, and high-dimensional queries.
-- **PromQL Queries**: Users can use PromQL to query and analyze metrics data efficiently. This allows for complex aggregations, filtering, and transformation of metrics, enabling insightful monitoring and alerting.
-- **Alerting**: The Prometheus server evaluates alerting rules based on the collected metrics, generating alerts when conditions are met. Alerts are then forwarded to Alertmanager for handling and notification.
-- **Long-Term Storage**: While Prometheus is not designed for long-term storage, it can integrate with remote storage solutions (e.g., Thanos, Cortex, InfluxDB) to store metrics data for extended periods.
+- **Service Discovery**: Automatically detects and scrapes targets using mechanisms like Kubernetes, Eureka, static configs (easy replica management).
+- **Scraping Metrics**: Collects data from targets (applications, services, systems) via HTTP at set intervals.
+- **Metrics Formatting**: Uses a structured, text-based format to expose metrics (CPU, memory, requests, errors, etc.).
+- **Powerful Query Language**: Provides **PromQL** for querying and analyzing time-series data.
+- **Alerting**: Supports rule-based alerts, sending notifications.
 
 ## Logs: ELK Stack
 
