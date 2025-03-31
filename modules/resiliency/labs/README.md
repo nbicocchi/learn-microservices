@@ -2,13 +2,21 @@
 
 ## Lab 1: Implementing Resiliency Patterns
 
-1. Implement a **datetime-service** returning the current date and time (read from internal clock).
-    * `GET /date` → returns the current date
-    * `GET /time` → returns the current time
-2. Implement a **datetime-composite-service** returning the current date and time (communicates with a pool of instances of **datetime-service** for getting the current date and time).
-    * `GET /datetime` → returns the current date and time
-3. Implement an architecture delivering the above service in which **datetime-composite-service** finds healthy instances of **datetime-service** using Eureka service discovery and client-side load balancing.
-4. ...
+1. Develop a **datetime-service** that provides the current date and time based on the system clock.
+   - `GET /date` → Returns the current date.
+   - `GET /time` → Returns the current time.
+
+2. Develop a **datetime-composite-service** that aggregates the current date and time by querying multiple instances of **datetime-service**.
+   - `GET /datetime` → Returns the current date and time.
+
+3. Implement resilience mechanisms to enhance system reliability:
+   - Utilize Eureka service discovery and client-side load balancing to identify and route requests to healthy instances of **datetime-service**.
+   - Retry synchronous requests to **datetime-service** up to three times before marking them as failed.
+   - Integrate a circuit breaker within **datetime-composite-service** to trigger a fail-fast fallback mechanism when 50% of requests fail.
+   - Enforce a rate limit of 100 synchronous requests per minute to **datetime-service**.
+   - Configure **datetime-service** with two distinct thread pools, one for each endpoint.
+
+4. Validate the effectiveness of the implemented resilience strategies using HTTP testing tools such as `curl` or `vegeta`.
 
 
 # Questions
