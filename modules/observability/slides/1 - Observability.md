@@ -1,22 +1,23 @@
 # Observability
 
-While decoupled services are easy to scale and manage, increasing interactions between those services have created a new set of problems. It’s no surprise that debugging was listed as a major challenge in the [annual state of microservices report](https://tsh.io/blog/what-are-microservices-in-2020-key-findings-from-survey-report/).
-
 When your systems are distributed, various things can go wrong. Even if you’ve written the perfect code, a node may fail, a connection may timeout, or participant servers may act arbitrarily. **The bottom line is that things will break**. And when they do, you want to be able to identify and fix the problem as soon as possible before it alters the entire system’s performance, or affects customers or your organization’s reputation. For this reason, we need observability to run today’s services and infrastructure.
 
-People have varying knowledge of what observability means. For some engineers, it’s the old wine of [monitoring](https://iamondemand.com/blog/how-to-properly-monitor-your-k8s-clusters-and-pods/) in a pristine bottle. For others, it’s an umbrella concept that includes log analysis, trace analysis for distributed systems, visualization, and alerts management. Honeycomb, in its [Guide to Achieving Observability](https://www.honeycomb.io/wp-content/uploads/2018/07/Honeycomb-Guide-Achieving-Observability-v1.pdf), defines observability as the ability to ask arbitrary questions about your production environment without having to know beforehand what you wanted to ask. 
+People have varying knowledge of what observability means: 
+* For some engineers, it’s the old wine of [monitoring](https://iamondemand.com/blog/how-to-properly-monitor-your-k8s-clusters-and-pods/) in a pristine bottle.
+* For others, it’s an umbrella concept including analysis for distributed systems, visualization, and alerts management.
+* Honeycomb, in its [Guide to Achieving Observability](https://www.honeycomb.io/wp-content/uploads/2018/07/Honeycomb-Guide-Achieving-Observability-v1.pdf), defines observability as the ability to ask arbitrary questions about your production environment.
 
-Despite the variability in these definitions, they all explain **the overarching goal of observability, which is to achieve better, unprecedented visibility into systems. Observability is a property enabling you to understand what’s happening inside your software, from the outside.** An observable system provides all the information you need in real time to address the day-to-day questions you might have about a system. It also enables you to navigate from effect to cause whenever the system develops a fault.
+Despite the variability in these definitions, **the overarching goal of observability is to achieve better visibility into systems:** 
+* Observability is a property enabling you to understand what’s happening inside your software, from the outside.
+* An observable system provides all the information you need to address day-to-day questions about a system. It also enables you to navigate into the system’s failure modes and **trace issues to their root cause**.
 
 An effective observability solution may address questions like:
 
 * Why is “y” broken?
 * What went wrong during the release of feature “x”?
-* Why has system performance degraded over the past few months?
+* Why has system performance degraded over the past few days?
 * What did my service look like at point “y”?
 * Is this system issue affecting specific users or all of them?
-
-The inherent integrations and nature of distributed systems lead to *layers of distinct ownership* which are sometimes challenging to manage. **By implementing observability across a development environment, you might be able to understand your system’s failure modes and trace issues to their root cause.**
 
 ## Pillars of Observability
 
@@ -30,7 +31,7 @@ The inherent integrations and nature of distributed systems lead to *layers of d
 ![](images/observability-overview.webp)
 
 ## Signals
-Observability is a critical concept in modern distributed systems, particularly in microservices architectures, as it enables teams to understand and troubleshoot systems effectively. The three pillars of observability—**metrics**, **logs**, and **traces**—play a vital role in providing insights into the system’s behavior and performance. 
+The three pillars of observability—**metrics**, **logs**, and **traces**—play a vital role in providing insights into the system’s behavior and performance. 
 
 ![](images/primary-signals.webp)
 
@@ -39,7 +40,7 @@ Metrics are numerical values that capture key performance indicators (KPIs) abou
 
 **Characteristics**:
   - **Quantitative Data**: Metrics are quantitative and can be counted or measured (e.g., CPU usage, memory consumption, request latency).
-  - **Low Cardinality**: Metrics tend to have low cardinality, meaning they track fewer distinct values compared to logs or traces.
+  - **Low Cardinality**: Metrics tend to have low cardinality (limited number of possible values), when compared to logs or traces.
   - **Time-Series Nature**: Metrics are usually collected as time-series data and plotted on dashboards to show trends over time.
 
 **Types**:
@@ -51,37 +52,29 @@ Metrics are numerical values that capture key performance indicators (KPIs) abou
   - **Alerting**: Alerts can be set when metrics exceed predefined thresholds (e.g., high CPU usage or request errors).
   - **Capacity Planning**: Helps in predicting future resource needs based on trends in usage patterns.
 
-
-| **Metric Name**       | **Label Key** | **Label Value** | **Label Key** | **Label Value** | **Value T0 (ms)** | **Value T1 (ms)** |
-|-----------------------|---------------|-----------------|---------------|-----------------|-------------------|-------------------|
-| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/users`        | 120               | 150               |
-| `api_request_latency`  | `status_code` | `404`           | `endpoint`    | `/orders`       | 250               | 260               |
-| `api_request_latency`  | `status_code` | `500`           | `endpoint`    | `/products`     | 350               | 400               |
-| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/users/{id}`   | 90                | 95                |
-| `api_request_latency`  | `status_code` | `500`           | `endpoint`    | `/checkout`     | 500               | 510               |
-| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/login`        | 180               | 190               |
-| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/orders/{id}`  | 75                | 80                |
-| `api_request_latency`  | `status_code` | `500`           | `endpoint`    | `/cart`         | 400               | 420               |
-| `api_request_latency`  | `status_code` | `200`           | `endpoint`    | `/health`       | 60                | 65                |
-| `api_request_latency`  | `status_code` | `404`           | `endpoint`    | `/products`     | 220               | 230               |
-
-
-**Cardinality Explosion**
+**Cardinality Explosion**:
 
 **Cardinality** refers to the number of unique combinations of label values (or dimensions) associated with a particular metric. Each unique combination creates a new "time series" that must be stored and tracked over time.
 
 Consider a metric that tracks the latency of API requests. It might have the following labels (dimensions):
-- `status_code`: HTTP status code of the request (e.g., 200, 404, 500).
 - `endpoint`: The specific API endpoint being accessed (e.g., `/users`, `/orders`).
-- `region`: The geographical location of the server (e.g., `us-east-1`, `eu-west-1`).
 - `nodeid`: The id of the server (e.g., `node-567`, `node-343`).
+- `region`: The geographical location of the server (e.g., `us-east-1`, `eu-west-1`).
 
 For each unique combination of these labels, a new time series is created:
-- `latency{status_code="200", endpoint="/users", region="us-east-1", "node-567"}`
-- `latency{status_code="404", endpoint="/users", region="us-east-1", "node-343"}`
 
-If each label can take on many unique values, the number of possible combinations (and hence the number of time series) increases exponentially. For example, under the assumption of observing 1000 endpoints, running on 100 nodes, and considering only 20 status codes, **we would have to store 2M values each time step**. 
+| **endpoint**  | **nodeid**   | **region**     | **Latency (ms) - T1** | **Latency (ms) - T2** |  
+|--------------|-------------|---------------|----------------|----------------|  
+| `/users`     | `node-567`  | `us-east-1`   | 120            | 130            |  
+| `/users`     | `node-343`  | `us-east-1`   | 135            | 140            |  
+| `/orders`    | `node-567`  | `us-east-1`   | 200            | 210            |  
+| `/orders`    | `node-343`  | `us-east-1`   | 220            | 225            |  
+| `/users`     | `node-567`  | `eu-west-1`   | 180            | 185            |  
+| `/orders`    | `node-567`  | `eu-west-1`   | 190            | 195            |  
 
+If we have **1,000 endpoints** running on **100 nodes** distributed across **3 regions**, we could end up collecting **300,000 time series** at each time step.
+
+If we were to replace `nodeid` with `user_id`, the number of unique label combinations would **skyrocket**, drastically increasing cardinality and potentially overwhelming the monitoring system.
 
 
 ### Logs
