@@ -14,6 +14,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
+import java.util.Objects;
 
 @Log4j2
 @Component
@@ -26,29 +27,31 @@ public class DateTimeIntegration {
         restClient = builder.build();
     }
 
-    //@Retry(name = "time")
-    //@TimeLimiter(name = "time")
+    @Retry(name = "time")
     @CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
+    //@TimeLimiter(name = "time")
     public LocalTime getTime(int delay, int faultPercent) {
         URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "/time" + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
+        log.info("Calling: {}", url);
 
-        log.info("Calling time API on URL: {}", url);
         Map<String, LocalTime> map = restClient.get()
                 .uri(url)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-        return map.get("time");
+                .body(new ParameterizedTypeReference<>() {
+                });
+        return Objects.requireNonNull(map).get("time");
     }
 
     public LocalDate getDate(int delay, int faultPercent) {
         URI url = UriComponentsBuilder.fromUriString(DATE_SERVICE_URL + "/date" + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
 
-        log.info("Calling date API on URL: {}", url);
+        log.info("Calling: {}", url);
         Map<String, LocalDate> map = restClient.get()
                 .uri(url)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-        return map.get("date");
+                .body(new ParameterizedTypeReference<>() {
+                });
+        return Objects.requireNonNull(map).get("date");
     }
 
     @Bulkhead(name = "time")
@@ -61,11 +64,11 @@ public class DateTimeIntegration {
         return getDate(delay, faultPercent);
     }
 
-    public LocalTime getTimeFallbackValue(int delay, int faultPercent, CallNotPermittedException e) {
+    public LocalTime getTimeFallbackValue(int delay, int faultPercent, CallNotPermittedException ex) {
         return LocalTime.of(LocalTime.now().getHour(), 0, 0);
     }
 
-    public LocalDate getDateFallbackValue(int delay, int faultPercent, CallNotPermittedException e) {
+    public LocalDate getDateFallbackValue(int delay, int faultPercent, CallNotPermittedException ex) {
         return LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 0);
     }
 }

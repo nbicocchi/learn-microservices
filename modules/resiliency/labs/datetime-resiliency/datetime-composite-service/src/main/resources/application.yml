@@ -60,7 +60,7 @@ resilience4j.circuitbreaker:
     default:
       allowHealthIndicatorToFail: false
       slidingWindowType: COUNT_BASED
-      slidingWindowSize: 5
+      slidingWindowSize: 13
       failureRateThreshold: 50
       waitDurationInOpenState: 10000
       permittedNumberOfCallsInHalfOpenState: 3

@@ -170,7 +170,37 @@ When a request fails, the Retry pattern initiates a retry mechanism, which can b
 |-----------------------------------|---------------------------------------|
 | ![](images/retry-applicable.webp) | ![](images/retry-not-applicable.webp) |
 
-Temporal heatmaps are often used to represent latency distribution over time.
+
+To characterize the latency profile of a service, [Vegeta HTTP load testing tool](https://github.com/tsenart/vegeta) can be used.
+
+```bash
+echo 'GET http://127.0.0.1:8080/time?delay=50&faultPercent=2' | vegeta attack -duration=5s | vegeta plot --title "Latency Chart" > time_service_latency.html
+```
+
+![](images/vegeta-plot.png)
+
+```bash
+echo 'GET http://127.0.0.1:8080/time?delay=50&faultPercent=2' | vegeta attack -duration=5s | vegeta report
+```
+
+```
+Requests      [total, rate, throughput]         250, 50.20, 49.25
+Duration      [total, attack, wait]             5.035s, 4.98s, 54.78ms
+Latencies     [min, mean, 50, 90, 95, 99, max]  53.268ms, 54.472ms, 54.49ms, 54.966ms, 55.187ms, 57.349ms, 59.074ms
+Bytes In      [total, mean]                     7377, 29.51
+Bytes Out     [total, mean]                     0, 0.00
+Success       [ratio]                           99.20%
+Status Codes  [code:count]                      200:248  500:2  
+Error Set:
+500 
+```
+
+
+Temporal heatmaps are often used to represent latency distribution over time. They can be generated using both Vegeta and a charting library.
+
+```bash
+echo 'GET http://127.0.0.1:8080/time?delay=50&faultPercent=2' | vegeta attack -duration=5s | vegeta report --every 1s --type hdrplot
+```
 
 ![](images/latency-heatmap.webp)
 

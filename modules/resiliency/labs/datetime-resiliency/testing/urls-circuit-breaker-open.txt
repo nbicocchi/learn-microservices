@@ -1,5 +1,0 @@
-url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"
-url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"
-url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"
-url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"
-url = "http://127.0.0.1:8080/time?delay=1000&faultPercent=100"

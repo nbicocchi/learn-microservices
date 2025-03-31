@@ -49,10 +49,7 @@ public class DateTimeController {
     }
 
     private void throwErrorIfBadLuck(int faultPercent) {
-        if (faultPercent == 0) return;
-        int randomNumber = RND.nextInt(0, 100);
-        if (randomNumber < faultPercent) {
-            log.info("Bad luck, an error occurred, {} >= {}", faultPercent, randomNumber);
+        if (RND.nextInt(0, 100) < faultPercent) {
             throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

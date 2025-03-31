@@ -16,4 +16,10 @@ public class ExceptionHandler {
     public void bulkheadException() {
         log.info("bulkheadException()");
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(HttpServerErrorException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public void httpServerErrorException() {
+        log.info("httpServerErrorException()");
+    }
 }
