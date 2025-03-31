@@ -445,13 +445,13 @@ Read more: https://reflectoring.io/time-limiting-with-springboot-resilience4j/
 
 
 ### Rate Limiter
-Datetime-service is a simple service that returns the current time and date. In resilienc4j, the simple fixed window algorithm is implemented, so we will only have a few configuration options:
+datetime-service is a simple service that returns the current time and date. In Resilienc4j, the simple fixed window algorithm is implemented, so we will only have a few configuration options:
 
 ```yaml
 resilience4j.ratelimiter:
   configs:
     default:
-      limit-for-period: 20
+      limit-for-period: 100
       limit-refresh-period: 60s
       timeout-duration: 0s
   instances:
@@ -463,22 +463,10 @@ resilience4j.ratelimiter:
 
 * **limit-for-period**: Specifies the maximum number of requests allowed within a specific time period.
 * **limit-refresh-period**: Defines the time after which the limit will be reset.
-* **timeout-duration**: Determines how long a request can wait for the rate limiter to allow it to proceed. As an example, if we set timeout-duration to 10 seconds and the rate limit is exceeded,
-all further requests will wait for 10 seconds before they are stopped, but if during this time the rate limit resets, the requests will unlock and be served. This parameter can be used to implement a queue-like mechanism.
+* **timeout-duration**: Determines how long a request can wait for the rate limiter to allow it to proceed. As an example, if we set timeout-duration to 10 seconds and the rate limit is exceeded, all further requests will wait for 10 seconds before they are stopped, but if during this time the rate limit resets, the requests will unlock and be served. This parameter can be used to implement a queue-like mechanism.
 
-As always, we need to handle the generated exceptions by creating a dedicated class:
+As always, annotate the methods we want to protect with the `@RateLimiter` annotation:
 
-```java
-@ControllerAdvice
-public class ExceptionHandler {
-
-    @org.springframework.web.bind.annotation.ExceptionHandler(RequestNotPermitted.class)
-    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-    public void handleRequestNotPermitted() {}
-}
-```
-
-And annotate the methods we want to protect with the `@RateLimiter` annotation:
 ```java
 @GetMapping(value = "/date")
 @RateLimiter(name = "date")
@@ -503,8 +491,12 @@ public LocalTime time(
 
 #### Testing
 To test the limiter, fire up many requests and see what happens. A convenient bash oneliner would be:
+
 ```bash
-for i in {1..25}; do curl -i http://127.0.0.1:9001/date ; done
+for i in {1..105}; do curl -i http://127.0.0.1:8080/date ; done
+```
+
+```text
 HTTP/1.1 200 
 Content-Type: application/json
 Transfer-Encoding: chunked
@@ -529,11 +521,9 @@ Date: Tue, 15 Oct 2024 11:01:44 GMT
 Connection: close
 
 {"timestamp":"2024-10-15T11:01:45.002+00:00","status":500,"error":"Internal Server Error","path":"/date"}%   
-
-
 ```
 
-As we can see, the first 20 requests are served, and the next 5 are rejected with a 429 status code.
+The first 100 requests are served, but the last 5 are rejected.
 
 ## Resources
 * https://www.baeldung.com/resilience4j

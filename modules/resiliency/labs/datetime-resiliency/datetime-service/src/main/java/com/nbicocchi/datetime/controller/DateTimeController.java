@@ -27,7 +27,7 @@ public class DateTimeController {
     String zoneId;
 
     @GetMapping(value = "/date")
-    //@RateLimiter(name = "date")
+    @RateLimiter(name = "date")
     public Map<String,LocalDate> date(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent) throws InterruptedException {
@@ -38,7 +38,7 @@ public class DateTimeController {
     }
 
     @GetMapping(value = "/time")
-    //@RateLimiter(name = "time")
+    @RateLimiter(name = "time")
     public Map<String, LocalTime> time(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent) throws InterruptedException {

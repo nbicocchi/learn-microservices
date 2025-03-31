@@ -25,7 +25,7 @@ management:
 resilience4j.ratelimiter:
   configs:
     default:
-      limit-for-period: 20
+      limit-for-period: 100
       limit-refresh-period: 60s
       timeout-duration: 0s
   instances:
