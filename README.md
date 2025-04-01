@@ -80,4 +80,6 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Simple comparative project REST/graphql/protobuf
 * Advance social network example
 * Research how a large distributed architecture is organized (fabebook, uber, netflix etc)
+* Make resiliency lab more engaging using observability platforms
+* Read a recent research paper on a relate topic a make a presentation
 * https://github.com/yurishkuro/microsim
