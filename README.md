@@ -79,4 +79,5 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Modelling Distributed Systems (which services? which APIs? Bounded contexts)
 * Simple comparative project REST/graphql/protobuf
 * Advance social network example
+* Research how a large distributed architecture is organized (fabebook, uber, netflix etc)
 * https://github.com/yurishkuro/microsim
