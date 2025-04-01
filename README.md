@@ -76,6 +76,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Observing ML models in production with EvidentlyAI
 
 ## Project Ideas
-* Modelling (which services? which APIs?)
-* Simple an comparative project REST/graphql/protobuf
-* Complete/advance social network example
+* Modelling Distributed Systems (which services? which APIs? Bounded contexts)
+* Simple comparative project REST/graphql/protobuf
+* Advance social network example
+* https://github.com/yurishkuro/microsim
