@@ -19,6 +19,17 @@ public class CompositeController {
         this.dateTimeIntegration = dateTimeIntegration;
     }
 
+    @GetMapping(value = "/testLatency")
+    public LocalDateTimeWithTimestamp testLatency(
+            @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
+            @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
+    ) throws InterruptedException {
+        Thread.sleep(delay);
+        LocalTime localTime = LocalTime.now();
+        LocalDate localDate = LocalDate.now();
+        return new LocalDateTimeWithTimestamp(localDate, localTime, LocalDateTime.now());
+    }
+
     @GetMapping(value = "/time")
     public Map<String, LocalTime> time(
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,

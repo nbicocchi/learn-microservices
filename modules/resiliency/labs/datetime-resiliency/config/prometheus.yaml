@@ -3,4 +3,4 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 1s
     static_configs:
-      - targets: ['datetime-composite:8080']
+      - targets: ['datetime-composite:8080', 'date:8080', 'time:8080']

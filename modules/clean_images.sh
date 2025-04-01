@@ -20,6 +20,11 @@ process_module() {
   cd "$1"
 
   for fname in images/*; do
+    # drawio image
+    if check_extension "drawio" "$fname"; then
+      continue
+    fi
+
     # useless image
     slides=$(find_slides_using_it "$fname")
     if [ -z "$slides" ]; then

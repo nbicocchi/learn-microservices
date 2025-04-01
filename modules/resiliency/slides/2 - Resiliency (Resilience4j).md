@@ -144,7 +144,7 @@ resilience4j.circuitbreaker:
     default:
       allowHealthIndicatorToFail: false
       slidingWindowType: COUNT_BASED
-      slidingWindowSize: 5
+      slidingWindowSize: 13
       failureRateThreshold: 50
       waitDurationInOpenState: 10000
       permittedNumberOfCallsInHalfOpenState: 3
@@ -196,7 +196,7 @@ curl -X GET 'http://127.0.0.1:8080/time?faultPercent=0'
 As you can see, none of the last 13 calls is failed.
 
 ```bash
-curl -sS 'http://localhost:8080/actuator/circuitbreakers' | jq
+curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
 ```
 
 ```json
@@ -224,6 +224,10 @@ After 1 call failed (with 3 retries):
 curl -X GET 'http://127.0.0.1:8080/time?faultPercent=100'
 ```
 
+```bash
+curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
+```
+
 ```json
 {
   "circuitBreakers": {
@@ -249,6 +253,10 @@ After 2 calls failed (with 3 retries):
 curl -X GET 'http://127.0.0.1:8080/time?faultPercent=100'
 ```
 
+```bash
+curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
+```
+
 ```json
 {
   "circuitBreakers": {
@@ -272,6 +280,10 @@ After 3 calls failed (with 3 retries). This one is fast because the circuit brea
 
 ```bash
 curl -X GET 'http://127.0.0.1:8080/time?faultPercent=100'
+```
+
+```bash
+curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
 ```
 
 ```json
@@ -316,6 +328,11 @@ After 10 seconds (see configuration), the circuit breaker automatically transiti
 
 
 ### Bulkhead
+
+The current state of bulkheads can be monitored at:
+* [/actuator/bulkheads](http://localhost:8080/actuator/bulkheads)
+* [/actuator/bulkheadevents](http://localhost:8080/actuator/bulkheadevents)
+
 
 Resilience4j's Bulkhead statically partitions the application into different thread pools, one for each remote service.
 We will use the following configuration parameters:
@@ -389,13 +406,27 @@ The following command send all the requests in parallel so that the thread pool 
 curl --parallel --parallel-immediate --config urls-shared-pool.txt
 ```
 
+```bash
+curl -X GET 'http://127.0.0.1:8080/date' 
+```
+
 Instead, the following command calls the bulkhead-protected endpoint preventing the saturation of the thread pool. The endpoint /date immediately responds.
 
 ```bash
 curl --parallel --parallel-immediate --config urls-shared-pool.txt
 ```
 
+```bash
+curl -X GET 'http://127.0.0.1:8080/date' 
+```
+
 ### Time Limiter
+
+The current state of bulkheads can be monitored at:
+* [/actuator/timelimiters](http://localhost:8080/actuator/timelimiters)
+* [/actuator/timelimiterevents](http://localhost:8080/actuator/timelimiterevents)
+
+
 To help a circuit breaker handle slow or unresponsive services, a timeout mechanism can be helpful. Resilience4j’s timeout mechanism, called a TimeLimiter, can be configured using standard Spring Boot configuration files. We will use the following configuration parameter:
 
 ```yaml
@@ -409,6 +440,8 @@ resilience4j.timelimiter:
 ```
 
 * **timeoutDuration**: Specifies how long a TimeLimiter instance waits for a call to complete before it throws a timeout exception. We will set it to 3 seconds.
+
+After that, we just need to annotate the method that we want to protect with the `@TimeLimiter` annotation:
 
 ```java
 @TimeLimiter(name = "time")
@@ -433,9 +466,12 @@ To ensure that `@TimeLimiter` functions correctly, wrap your logic inside a `Com
 
 ```java
 @TimeLimiter(name = "myService")
-public CompletableFuture<String> callExternalService() {
+public CompletableFuture<LocalTime> callExternalService() {
     return CompletableFuture.supplyAsync(() -> 
-        restTemplate.getForObject("https://example.com", String.class)
+            restClient.get()
+            .uri(url)
+            .retrieve()
+            .body(LocalTime.class)
     );
 }
 ```
@@ -445,6 +481,11 @@ Read more: https://reflectoring.io/time-limiting-with-springboot-resilience4j/
 
 
 ### Rate Limiter
+
+The current state of bulkheads can be monitored at:
+* [/actuator/ratelimiters](http://localhost:8080/actuator/ratelimiters)
+* [/actuator/ratelimiterevents](http://localhost:8080/actuator/ratelimiterevents)
+
 datetime-service is a simple service that returns the current time and date. In Resilienc4j, the simple fixed window algorithm is implemented, so we will only have a few configuration options:
 
 ```yaml

@@ -7,23 +7,21 @@
 
 ### One Thread Per Request Design Pattern
 
-In this model, when a client sends a request to a server (e.g., via HTTP), the server creates or assigns a dedicated thread to handle that request. The thread is responsible for executing the necessary operations (e.g., database queries, computations) and preparing the response to send back to the client. These are often **I/O-bound operations** that can take some time to complete.
-
-During these I/O operations, the thread is **blocked**, meaning it cannot proceed with the next steps until the operation is finished. While blocked, the thread remains in a **waiting state**, simply consuming system resources without doing any actual work. [Spring Boot Starter Web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web) is the key starter dependency to enable this traditional paradigm.
+In this model, when a service (*Service A*) sends a request to another service (*Service B*), it assigns a dedicated thread to handle that request. The thread is mainly responsible for waiting the response. This thread remains in a **waiting state**, simply consuming resources without doing any actual work. [Spring Boot Starter Web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web) is the starter dependency to enable this behaviour.
 
 ![](images/one-thread-request-pattern.webp)
 
-This is problematic for the following reasons:
+When the number of parallel requests increases significantly, the following issues may arise:
 
 1. **Memory Consumption**: Even though the thread is waiting and not using CPU resources, it still occupies memory (1MB each approximately), which increases with the number of concurrent requests.
 
 2. **Thread Pool Saturation**: If many threads are simultaneously waiting for I/O to complete, the thread pool can become exhausted or saturated (see `server.tomcat.threads.max` property). When no free threads are available, the system may queue incoming requests, leading to increased response times, or even reject new requests altogether (**DoS**).
 
-3. **Resource Inefficiency**: Having a large number of threads that are mostly idle (waiting for I/O) leads to inefficient use of system resources. The system could be using the available CPU and memory more effectively to handle more requests or perform useful work, but instead, these resources are tied up by threads in a waiting state.
+3. **Resource Inefficiency**: Having a large number of threads that are mostly idle (waiting for I/O) leads to inefficient use of system resources. The system uses CPU resources to manage waiting threads instead of performing useful work.
 
 ### Reactive Programming as a Solution
 
-Instead of dedicating one thread per request, reactive applications handle requests via event-driven models. Operations that would typically block a thread (such as waiting for I/O) are handled asynchronously. When a response is ready (e.g., when data from a database becomes available), a callback mechanism resumes the computation. [Spring Boot Starter WebFlux](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux) is the key starter dependency to enable the reactive paradigm. Take a look at [Quarkus](https://quarkus.io/) as an example of a fully-reactive microservices framework.
+Instead of dedicating one thread per request, reactive applications handle requests via event-driven models. Operations that would typically block a thread (such as waiting for I/O) are handled asynchronously. When a response is ready (e.g., when data from a database becomes available), a callback mechanism resumes the computation. [Spring Boot Starter WebFlux](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux) is the key starter dependency to enable the reactive paradigm. Take a look at [Quarkus](https://quarkus.io/) as an example of a fully-reactive microservices framework. [Twisted](https://twisted.org/) is another example written in Python.
 
 ![](images/reactor-pattern.webp)
 
@@ -55,11 +53,11 @@ Techniques:
 However, detecting and avoiding service degradation is often difficult:
 * **Service degradation can start out as intermittent and then quickly build momentum**.
 * The caller has **no concept of a timeout** to keep the service call from hanging.
-* **Applications are often designed to deal with complete failures of remote resources**, not partial degradations. Often, as long as the service has not entirely failed, an application will continue to call a poorly behaving service and won’t fail fast. In this case, the calling service is at risk of crashing because of resource exhaustion.
-
-**Poorly performing remote services are not only difficult to detect but can trigger a cascading effect (callers might exhaust their thread pools!) that can ripple throughout an entire application ecosystem**. Without safeguards in place, a single, poorly performing service can quickly take down entire applications.
+* The caller has **no concept of a circuit breaker**. As long as the service has not entirely failed, an application will continue to call a poorly behaving service and won’t fail fast.
 
 ### A real-world story
+
+**Poorly performing remote services are not only difficult to detect but can trigger a cascading effect (callers might exhaust their thread pools!) that can ripple throughout an entire application ecosystem**. Without safeguards in place, a single, poorly performing service can quickly take down entire applications.
 
 ![](images/why-resiliency-matters.webp)
 
@@ -120,19 +118,9 @@ To monitor the rate of failures and determine when to open or close, circuit bre
 
 The **fixed window** method divides time into regular, non-overlapping intervals (windows) of fixed duration (e.g., every 30 seconds or 1 minute). It tracks the number of successful and failed requests within each interval separately (**slow detection, can miss errors at window boundaries**).
 
-Example:
-- Window size: 1 minute.
-- Failure threshold: 50%.
-- If 100 requests occur in a 1-minute window, and more than 50 requests fail, the circuit breaker opens. Once the 1-minute window ends, the counts reset.
-
 **Sliding Window**
 
 A **sliding window** is similar to a fixed window, but instead of using discrete, non-overlapping windows, the sliding window continuously updates over time, giving more real-time failure tracking. The window "slides" as new requests come in, maintaining a record of failures and successes over a defined duration (**fast detection, might produce false positives in systems prone to bursts**).
-
-Example:
-- Window size: 1 minute.
-- Failure threshold: 50%.
-- The system tracks the last 1 minute of requests, recalculating the failure rate every second. If more than 50% of requests fail within any 1-minute period, the circuit breaker opens.
 
 **Leaky Bucket**
 
@@ -174,13 +162,13 @@ When a request fails, the Retry pattern initiates a retry mechanism, which can b
 To characterize the latency profile of a service, [Vegeta HTTP load testing tool](https://github.com/tsenart/vegeta) can be used.
 
 ```bash
-echo 'GET http://127.0.0.1:8080/time?delay=50&faultPercent=2' | vegeta attack -duration=5s | vegeta plot --title "Latency Chart" > time_service_latency.html
+echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta plot --title "Latency Chart" > time_service_latency.html
 ```
 
 ![](images/vegeta-plot.png)
 
 ```bash
-echo 'GET http://127.0.0.1:8080/time?delay=50&faultPercent=2' | vegeta attack -duration=5s | vegeta report
+echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta report
 ```
 
 ```
@@ -199,7 +187,7 @@ Error Set:
 Temporal heatmaps are often used to represent latency distribution over time. They can be generated using both Vegeta and a charting library.
 
 ```bash
-echo 'GET http://127.0.0.1:8080/time?delay=50&faultPercent=2' | vegeta attack -duration=5s | vegeta report --every 1s --type hdrplot
+echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta report --every 1s --type hdrplot
 ```
 
 ![](images/latency-heatmap.webp)
