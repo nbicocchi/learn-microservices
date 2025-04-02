@@ -11,8 +11,8 @@ In this lab, we use a Java Agent providing zero-code instrumentation based on Op
 ```dockerfile
 FROM eclipse-temurin:21
 ARG JAR_FILE=target/*.jar
-COPY opentelemetry-javaagent.jar opentelemetry-javaagent.jar
 COPY ${JAR_FILE} application.jar
+COPY opentelemetry-javaagent.jar opentelemetry-javaagent.jar
 ENV JAVA_TOOL_OPTIONS="-javaagent:/opentelemetry-javaagent.jar"
 ENTRYPOINT ["java","-jar","/application.jar"]
 ```
@@ -22,28 +22,40 @@ ENTRYPOINT ["java","-jar","/application.jar"]
 ```yaml
   eureka:
     build: eureka-service
-    environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - SPRING_PROFILES_ACTIVE=docker
-    mem_limit: 512m
     ports:
       - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8761" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   datetime-composite:
     build: datetime-composite-service
-    environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - SPRING_PROFILES_ACTIVE=docker
-    mem_limit: 512m
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   datetime:
     build: datetime-service
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
       - SPRING_PROFILES_ACTIVE=docker
-    mem_limit: 512m
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 ```
 
 ## Open Telemetry Collector
@@ -60,7 +72,7 @@ ENTRYPOINT ["java","-jar","/application.jar"]
       - jaeger
 ```
 
-2. Configure the collector using the configuration file provided to the container with volumes.
+2. Configure the collector using the configuration file provided. Please note that with this setup metrics are actually discarded and their collection is delegated to Prometheus.
 
 ```yaml
 receivers:
@@ -119,64 +131,7 @@ service:
     metrics/spanmetrics:
       receivers: [spanmetrics]
       exporters: [prometheus]
-
 ```
-
-### Receivers
-- **otlp**: This section defines the receivers for the OpenTelemetry Protocol (OTLP).
-  - **grpc**: Configures the receiver to listen for incoming gRPC requests.
-    - **endpoint**: Set to "0.0.0.0:4317", allowing it to receive data on all network interfaces.
-  - **http**: Configures the receiver to listen for incoming HTTP requests.
-    - **endpoint**: Set to "0.0.0.0:4318", allowing it to receive data on all network interfaces.
-
-### Processors
-- **batch**: This processor batches telemetry data for efficiency before exporting it. No additional configuration is specified, so default settings will be used.
-
-### Connectors
-- **spanmetrics**: This connector generates metrics from spans collected by the receiver.
-
-### Exporters
-- **debug**: An exporter that outputs detailed logs for debugging purposes.
-  - **verbosity**: Set to "detailed" to provide extensive logging information.
-
-- **prometheus**: This exporter allows the Collector to expose metrics for Prometheus scraping.
-  - **endpoint**: Set to "0.0.0.0:8889", allowing Prometheus to scrape metrics from this endpoint.
-
-- **prometheusremotewrite** (commented out): This optional exporter can send metrics to a Prometheus remote write endpoint.
-  - **endpoint**: (If uncommented) Specifies the URL for the Prometheus remote write API.
-
-- **otlphttp**: This exporter sends data to an OTLP HTTP endpoint, specifically to Loki for log ingestion.
-  - **endpoint**: Set to "http://loki:3100/otlp", pointing to the Loki service.
-
-- **otlp/jaeger**: This exporter sends trace data to a Jaeger collector.
-  - **endpoint**: Set to "jaeger:4317", specifying the Jaeger service address.
-  - **tls**:
-    - **insecure**: Set to true, meaning TLS is disabled for this connection (not recommended for production use).
-
-### Service
-- **telemetry**: This section defines telemetry settings for metrics collection.
-  - **metrics**:
-    - **readers**: Configures how metrics will be collected.
-      - **pull**: Specifies a pull model for reading metrics.
-        - **exporter**: Defines the exporter for telemetry metrics.
-          - **prometheus**:
-            - **host**: Set to "0.0.0.0", allowing access from all network interfaces.
-            - **port**: Set to "8888", the port for Prometheus to scrape telemetry metrics.
-
-- **pipelines**: Defines the data processing pipelines.
-  - **logs**: Pipeline for processing logs.
-    - **receivers**: Specifies that logs are received via the OTLP receiver.
-    - **exporters**: Sends logs to the OTLP HTTP endpoint (Loki).
-
-  - **traces**: Pipeline for processing traces.
-    - **receivers**: Specifies that traces are received via the OTLP receiver.
-    - **exporters**: Sends traces to Jaeger and generates span metrics.
-
-  - **metrics/spanmetrics**: Pipeline for processing span metrics.
-    - **receivers**: Specifies that span metrics are received from the spanmetrics connector.
-    - **exporters**: Exports the span metrics to the Prometheus exporter, making them available for scraping.
-
-> Please note that with this setup metrics are actually discarded and their collection is delegated other services (Prometheus)
 
 ## Metrics backend
 
@@ -271,7 +226,7 @@ pattern_ingester:
 
 ## Traces backend
 
-1. Add the Jaeger backend to the service ecosystem
+1. Add the Jaeger backend to the service ecosystem. The default configuration is OK.
 
 ```yaml
   jaeger:
@@ -282,7 +237,6 @@ pattern_ingester:
       - "16686:16686"
 ```
 
-2. The default configuration is OK.
 
 
 
@@ -305,7 +259,7 @@ pattern_ingester:
       - "3000:3000"
 ```
 
-2. Configure its three data sources using the configuration file provided to the container with volumes.
+2. Configure its three data sources using the configuration file provided:
 
 ```yaml
 apiVersion: 1
@@ -345,24 +299,22 @@ mvn clean package -Dmaven.test.skip=true
 docker compose up --build --detach
 ```
 
-2. Install explore plugins in Grafana (execute the following command inside the running container)
+2. Install Loki plugin in Grafana (execute the following command inside the running container from Docker Desktop)
 
 ```bash
 $ grafana cli --pluginUrl=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip plugins install grafana-lokiexplore-app
-
-# This requires Tempo, do not work with Jaeger
-$ grafana cli --pluginUrl=https://storage.googleapis.com/integration-artifacts/grafana-exploretraces-app/grafana-exploretraces-app-latest.zip plugins install grafana-traces-app
 ```
 
-3. Connect to [localhost:3000](http://localhost:3000) to start exploring
+2. Connect to [localhost:3000](http://localhost:3000) to start exploring
 
-* In Explore -> Metrics you can see a graphical representation of all collected metrics
-* In Explore -> Logs you can see all collected logs
-* In Explore -> Select **Jaeger** as datasource, **Search** as Query type. Select a **service name** and an **operation name** to see the traces.
-* In Dashboards -> New -> Import, paste https://grafana.com/grafana/dashboards/19004-spring-boot-statistics/ and enjoy your dashboard.
-
-
-
-
+* Home -> Data sources -> Check that Jaeger, Loki, Prometheus are set
+* Home -> DrillDown -> Metrics
+* Home -> DrillDown -> Logs
+* Home -> Explore -> Select **Jaeger** as datasource, **Search** as Query type. Select a **service name** and an **operation name** to see the traces.
+* Dashboards -> New -> Import, paste:
+  * https://grafana.com/grafana/dashboards/19004-spring-boot-statistics/
+  * https://grafana.com/grafana/dashboards/21308-http/
+  * https://grafana.com/grafana/dashboards/22108-jvm-springboot3-dashboard-for-prometheus-operator/
+  * https://github.com/resilience4j/resilience4j/blob/master/grafana_dashboard.json
 
 ## Resources
