@@ -1,10 +1,9 @@
 # Observability
 
-When your systems are distributed, various things can go wrong. Even if you’ve written the perfect code, a node may fail, a connection may timeout, or participant servers may act arbitrarily. **The bottom line is that things will break**. And when they do, you want to be able to identify and fix the problem as soon as possible before it alters the entire system’s performance, or affects customers or your organization’s reputation. For this reason, we need observability to run today’s services and infrastructure.
+When your systems are distributed, **things will break**. And when they do, you want to be able to identify and fix the problem as soon as possible before it alters the entire system’s performance, or affects your organization’s reputation.
 
 People have varying knowledge of what observability means: 
 * For some engineers, it’s the old wine of [monitoring](https://iamondemand.com/blog/how-to-properly-monitor-your-k8s-clusters-and-pods/) in a pristine bottle.
-* For others, it’s an umbrella concept including analysis for distributed systems, visualization, and alerts management.
 * Honeycomb, in its [Guide to Achieving Observability](https://www.honeycomb.io/wp-content/uploads/2018/07/Honeycomb-Guide-Achieving-Observability-v1.pdf), defines observability as the ability to ask arbitrary questions about your production environment.
 
 Despite the variability in these definitions, **the overarching goal of observability is to achieve better visibility into systems:** 
