@@ -336,7 +336,7 @@ The **OpenTelemetry collector** is a versatile, open-source tool designed to col
 
 ![](images/architecture-grafana-agent.webp)
 
-The [Grafana ecosystem](https://grafana.com/) encompasses a variety of tools that work together to provide a comprehensive monitoring, observability, and visualization solution. Key components of this ecosystem include **Grafana**, **Tempo**, **Mimir**, and **Loki**. Each of these tools serves a specific purpose, enabling users to collect, analyze, and visualize metrics, logs, and traces from their applications and infrastructure. Here’s an in-depth look at each component and how they compare within the Grafana ecosystem.
+The [Grafana ecosystem](https://grafana.com/) encompasses a variety of tools that work together to provide a comprehensive monitoring, observability, and visualization solution. Key components of this ecosystem include **Grafana**, **Tempo**, **Mimir**, and **Loki**. 
 
 ![](images/grafana.webp)
 
@@ -377,10 +377,6 @@ The [Grafana ecosystem](https://grafana.com/) encompasses a variety of tools tha
 - **Increased Latency**: Collecting observability data, particularly with distributed tracing, can introduce latency into the system. This is especially true if synchronous tracing is used or if large amounts of data are logged at runtime.
 - **Resource Overhead**: Monitoring and collecting metrics, logs, and traces consumes CPU, memory, and I/O resources on the services being observed. If not managed properly, this can lead to degraded performance of the system or the need to provision additional resources.
 - **Sampling Impact**: To minimize performance overhead, many systems implement sampling (e.g., not tracing every request). However, this can lead to incomplete data, making certain edge cases or rare issues harder to diagnose.
-
-### Organizational Costs
-- **Skill Development and Training**: Implementing and using observability tools effectively requires expertise. Teams may need training to fully leverage these systems, especially for interpreting traces, creating effective dashboards, and understanding advanced queries. This can require both time and financial investment in personnel.
-- **Cross-Team Coordination**: In a microservices environment, observability spans multiple teams. It requires coordination between development, operations, and product teams to ensure observability data is correctly interpreted and actionable. The cost of facilitating this collaboration can be non-trivial, including the time needed for regular alignment, communication, and shared responsibilities.
 
 ### Data Management Costs
 - **Retention Policies**: Observability data can grow exponentially in a distributed system. Deciding on the right retention policy (e.g., which data to keep, for how long) requires careful balancing between the need for historical analysis and the cost of storing vast amounts of data.

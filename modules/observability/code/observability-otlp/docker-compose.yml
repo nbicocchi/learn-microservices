@@ -1,0 +1,88 @@
+services:
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: --config /etc/otel-collector-config.yaml
+    depends_on:
+      - jaeger
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus.yaml
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
+    ports:
+      - "9090:9090"
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/loki.yaml
+    volumes:
+      - ./config/loki.yaml:/etc/loki/loki.yaml
+    ports:
+      - "3100:3100"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+    ports:
+      - "16686:16686"
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
+  eureka:
+    build: eureka-service
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8761" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  datetime-composite:
+    build: datetime-composite-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  datetime:
+    build: datetime-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  grafana-data:

@@ -79,10 +79,8 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Modelling Distributed Systems (which services? which APIs? Bounded contexts)
 * Simple comparative project REST/graphql/protobuf
 * Advance social network example
-* Research how a large distributed architecture is organized (fabebook, uber, netflix etc)
+* Research how a large distributed architecture is organized (facebook, uber, netflix etc)
 * Make resiliency lab more engaging using observability platforms
 * Read a recent research paper on a relate topic a make a presentation
+* Scenario/performance analisys (istio/locust/k6/gatling/grafana)
 * https://github.com/yurishkuro/microsim
-* https://locust.io/
-* https://k6.io/
-* https://gatling.io/
