@@ -5,16 +5,14 @@ services:
     volumes:
       - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command: --config /etc/otel-collector-config.yaml
-    depends_on:
-      - jaeger
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.2.1
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus.yaml
     command:
       - --config.file=/etc/prometheus.yaml
-      - --web.enable-remote-write-receiver
+      - --web.enable-otlp-receiver
       - --enable-feature=exemplar-storage
       - --enable-feature=native-histograms
     ports:
@@ -25,15 +23,35 @@ services:
     command: -config.file=/etc/loki/loki.yaml
     volumes:
       - ./config/loki.yaml:/etc/loki/loki.yaml
-    ports:
-      - "3100:3100"
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
+  # Tempo runs as user 10001, and docker compose creates the volume as root.
+  # As such, we need to chown the volume in order for Tempo to start correctly.
+  init:
+    image: &tempoImage grafana/tempo:latest
+    user: root
+    entrypoint:
+      - "chown"
+      - "10001:10001"
+      - "/var/tempo"
+    volumes:
+      - ./tempo-data:/var/tempo
+
+  memcached:
+    image: memcached:latest
+    container_name: memcached
     environment:
-      - METRICS_STORAGE_TYPE=prometheus
-    ports:
-      - "16686:16686"
+      - MEMCACHED_MAX_MEMORY=64m  # Set the maximum memory usage
+      - MEMCACHED_THREADS=4       # Number of threads to use
+
+  tempo:
+    image: *tempoImage
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./config/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/var/tempo
+    depends_on:
+      - init
+      - memcached
 
   grafana:
     image: grafana/grafana:latest
@@ -53,6 +71,8 @@ services:
       - "8761:8761"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_METRIC_EXPORT_INTERVAL=1000
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8761" ]
@@ -66,6 +86,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_METRIC_EXPORT_INTERVAL=1000
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
@@ -77,6 +99,8 @@ services:
     build: datetime-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_METRIC_EXPORT_INTERVAL=1000
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
@@ -84,5 +108,23 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: jdbc_schema
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d jdbc_schema" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 volumes:
   grafana-data:
+  tempo-data:
+  pg-data:

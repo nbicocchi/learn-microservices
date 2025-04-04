@@ -40,7 +40,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 
 [M4 Communication](modules/communication)
 * Synchronous communications and their limitations (*Rest/GraphQL/Protobuf*)
-* Asynchronous messaging systems (*RabbitMQ*)
+* Asynchronous messaging systmettere qualcosa di caching ems (*RabbitMQ*)
 * *Spring Cloud Stream* and its abstraction over messaging systems
 
 [M5 Infrastructure](modules/infrastructure)
@@ -76,11 +76,12 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Observing ML models in production with EvidentlyAI
 
 ## Project Ideas
-* Modelling Distributed Systems (which services? which APIs? Bounded contexts)
-* Simple comparative project REST/graphql/protobuf
-* Advance social network example
-* Research how a large distributed architecture is organized (facebook, uber, netflix etc)
-* Make resiliency lab more engaging using observability platforms
-* Read a recent research paper on a relate topic a make a presentation
-* Scenario/performance analisys (istio/locust/k6/gatling/grafana)
-* https://github.com/yurishkuro/microsim
+- Studiare e documentare il problema della modellazione un sistema distribuito (definire microservizi, API, bounded contexts).
+- Confrontare REST, GraphQL e Protobuf implementando un servizio con tutte e tre le tecnologie e analizzandone le differenze.
+- Continuare a sviluppare progetto già presente di un social network.
+- Studiare e documentare l’architettura distribuita di piattaforme come Facebook, Uber o Netflix.
+- Creare un laboratorio interattivo per testare la resilienza di microservizi utilizzando strumenti di osservabilità.
+- Leggere un articolo di ricerca recente sulle architetture distribuite e presentarlo con un'analisi critica.
+- Eseguire test di performance su un sistema distribuito con strumenti come Istio, Locust, k6 o Gatling.
+- Utilizzare **[Microsim](https://github.com/yurishkuro/microsim)** per simulare il comportamento di un’architettura a microservizi in scenari di carico e guasto.
+- Esplorare progetti open-source tra quelli elencati in **[Awesome Distributed System Projects](https://github.com/roma-glushko/awesome-distributed-system-projects?tab=readme-ov-file)**.

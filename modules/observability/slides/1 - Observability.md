@@ -41,7 +41,7 @@ We categorize sources using a simple and widely used trichotomy: **compute**, **
 ## Signals
 The three pillars of observability—**metrics**, **logs**, and **traces**—play a vital role in providing insights into the system’s behavior and performance. 
 
-![](images/primary-signals.webp)
+![](images/observability-pillars.png)
 
 ## Metrics
 Metrics are numerical values that capture key performance indicators (KPIs) about your system over time. They are typically aggregated and provide an overview of system health and performance.
@@ -141,7 +141,7 @@ The **ELK stack** is a popular set of tools used for managing and analyzing larg
 - **Flexible Visualization**: Kibana’s visualization tools help users present data in various formats, enabling better decision-making based on insights derived from the data.
 - **Scalability**: The distributed nature of Elasticsearch allows the ELK stack to scale with the growth of data, making it suitable for small to large enterprises.
 
-![](images/logging-architecture.webp)
+![](images/elk-log.png)
 
 [Logstash](https://www.elastic.co/logstash) is a data pipeline that collects, transforms, and routes logs and events to destinations like Elasticsearch. It supports **multiple input sources** (e.g., files, Kafka), **filter plugins** for data processing (e.g., parsing, enrichment), and **output plugins** to forward processed data. 
 
@@ -354,7 +354,7 @@ java -javaagent:/path/to/agent.jar -jar your-application.jar
 
 ## OpenTelemetry Collector (Universal Telemetry Agent)
 
-![](images/otelcol-data-flow-overview.webp)
+![](images/otel-architecture.webp)
 
 The **OpenTelemetry collector** is a versatile, open-source tool designed to collect, process, and export telemetry data, including **logs**, **metrics**, and **traces**. 
 
@@ -368,9 +368,9 @@ The **OpenTelemetry collector** is a versatile, open-source tool designed to col
 
 ## OpenTelemetry Ecosystems
 
-### Grafana Ecosystem
+### Grafana
 
-![](images/architecture-grafana-agent.webp)
+![](images/grafana-cloud-otlp-architecture-via-otel-collector.png)
 
 The [Grafana ecosystem](https://grafana.com/) started as a data visualization tool and has evolved into a comprehensive monitoring solution when combined with other tools in the Grafana stack.
 
@@ -384,16 +384,19 @@ The [Grafana ecosystem](https://grafana.com/) started as a data visualization to
 
 **Loki** is a log aggregation system designed to collect, store, and query log data from various sources. Unlike traditional log management systems, Loki is optimized for ease of use and integrates tightly with Grafana.
 
-### Signoz Ecosystem
+### Signoz
 [SigNoz](https://signoz.io/) is an open-source observability platform designed for monitoring, tracing, and logging in cloud-native applications.
 
 * SigNoz is OpenTelemetry-native, built to support this open standard from day one. 
 * Grafana uses different backends for different signal types. SigNoz uses a single data store (ClickHouse), a columnar database known for fast ingestion and aggregation. Signoz is generally faster and more efficient for ingestion and queries ([here](https://signoz.io/blog/logs-performance-benchmark/?utm_source=github-readme&utm_medium=logs-benchmark) a detailed comparison).
 * SigNoz is generally easier to self-host compared to Grafana, which requires managing multiple backends and configurations.
 
-![](images/signoz-architecture.webp)
+### OpenObserve
+[OpenObserve](https://openobserve.ai/) is an open-source observability platform that provides a unified solution for logs, metrics, and traces, optimized for cost-efficiency and scalability.
 
-![](images/signoz.webp)
+* OpenObserve is designed for high ingestion performance and low resource usage, using a Rust-based engine and object storage (like S3 or MinIO) as its primary backend.
+* Unlike traditional stacks that require separate systems for each signal type, OpenObserve offers a unified and lightweight architecture that simplifies deployment and maintenance.
+* It supports OpenTelemetry and integrates seamlessly with cloud-native environments, offering a modern alternative to solutions like Grafana and ELK with a strong focus on ease of use and minimal operational overhead.
 
 ## Observability Costs
 
