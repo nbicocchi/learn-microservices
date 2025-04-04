@@ -57,8 +57,8 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 [M7 Observability](modules/observability)
 * What is observability and why it is relevant
 * Instrumentation and maintenance costs
-* Key observability stacks: *ELK*, *Grafana*, *Jaeger/Zipkin*
-* Zero-code instrumentation with *OpenTelemetry*
+* Key observability stacks: *Prometheus*, *ELK*, *Jaeger/Zipkin*, *Grafana*
+* *OpenTelemetry*
 
 [M8 Distributed transaction management](modules/data-management)
 * Issues of database transactions in distributed contexts
