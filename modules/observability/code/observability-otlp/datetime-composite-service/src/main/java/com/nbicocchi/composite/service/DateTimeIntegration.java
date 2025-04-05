@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
@@ -23,7 +24,6 @@ import java.util.Objects;
 @Log4j2
 @Component
 public class DateTimeIntegration {
-    private static final String DATETIME_SERVICE_URL = "http://DATETIME-SERVICE";
     RestClient restClient;
 
     public DateTimeIntegration(RestClient.Builder restClientBuilder) {
@@ -32,37 +32,30 @@ public class DateTimeIntegration {
 
     @Retry(name = "time")
     @CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
-    //@TimeLimiter(name = "time")
-    public LocalTime getTime(int delay, int faultPercent) {
-        URI url = UriComponentsBuilder.fromUriString(DATETIME_SERVICE_URL + "/time" + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
-        log.trace("Calling: {}", url);
-
+    public LocalTime getTime() {
         Map<String, LocalTime> map = restClient.get()
-                .uri(url)
+                .uri("http://DATETIME-SERVICE/time")
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
         return Objects.requireNonNull(map).get("time");
     }
 
-    public LocalDate getDate(int delay, int faultPercent) {
-        URI url = UriComponentsBuilder.fromUriString(DATETIME_SERVICE_URL + "/date" + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
-
-        log.trace("Calling: {}", url);
+    public LocalDate getDate() {
         Map<String, LocalDate> map = restClient.get()
-                .uri(url)
+                .uri("http://DATETIME-SERVICE/date")
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
         return Objects.requireNonNull(map).get("date");
     }
 
     @Bulkhead(name = "time")
-    public LocalTime getTimeWithBulkhead(int delay, int faultPercent) {
-        return getTime(delay, faultPercent);
+    public LocalTime getTimeWithBulkhead() {
+        return getTime();
     }
 
     @Bulkhead(name = "date")
-    public LocalDate getDateWithBulkhead(int delay, int faultPercent) {
-        return getDate(delay, faultPercent);
+    public LocalDate getDateWithBulkhead() {
+        return getDate();
     }
 
     public LocalTime getTimeFallbackValue(int delay, int faultPercent, CallNotPermittedException ex) {

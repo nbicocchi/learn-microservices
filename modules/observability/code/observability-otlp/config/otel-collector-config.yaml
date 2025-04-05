@@ -6,6 +6,17 @@ receivers:
       http:
         endpoint: "0.0.0.0:4318"
 
+  postgresql:
+    endpoint: postgres:5432
+    transport: tcp
+    username: user
+    password: secret
+    databases:
+      - jdbc_schema
+    collection_interval: 1s
+    tls:
+      insecure: true
+
 processors:
   batch:
 
@@ -18,7 +29,7 @@ exporters:
 service:
   pipelines:
     metrics:
-      receivers: [ otlp ]
+      receivers: [ otlp, postgresql ]
       exporters: [ otlphttp ]
 
     logs:
@@ -26,7 +37,7 @@ service:
       exporters: [ otlphttp ]
 
     traces:
-      receivers: [otlp]
+      receivers: [otlp ]
       exporters: [otlphttp]
 
 

@@ -102,6 +102,10 @@ services:
       - OTEL_METRIC_EXPORT_INTERVAL=1000
       - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    ports:
+      - "8080"
+    deploy:
+      replicas: 2
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s

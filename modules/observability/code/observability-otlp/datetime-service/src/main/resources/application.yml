@@ -1,8 +1,6 @@
 server.port: 9001
 spring.application.name: datetime-service
 
-app.default.zone: "Europe/Rome"
-
 eureka:
   client:
     serviceUrl:
