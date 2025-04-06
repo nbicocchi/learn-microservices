@@ -14,12 +14,12 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(RequestNotPermitted.class)
     @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
     public void handleRequestNotPermitted() {
-        log.info("handleRequestNotPermitted()");
+        log.warn("Exceeded request rate limit.");
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(HttpServerErrorException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void httpServerErrorException() {
-        log.info("httpServerErrorException()");
+        log.error("Internal server error.");
     }
 }

@@ -1,4 +1,4 @@
-# Microservices resiliency
+# Resiliency (Resilience4j)
 
 ## Resilience4j
 **Resilience4j is a lightweight fault tolerance library designed for functional programming. It provides decorators to enhance any functional interface, with Circuit Breaker, Rate Limiter, Retry or Bulkhead patterns.** The advantage in using it is that you have the choice to select the decorators you need and nothing else.
