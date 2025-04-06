@@ -17,7 +17,7 @@ public class DBIntegration {
         this.dateInfosRepository = dateInfosRepository;
     }
 
-    @Cacheable("infos")
+    @Cacheable(cacheNames = "infos")
     public String getInfosWithCache(int month, int day) {
         Optional<DateInfos> infos = dateInfosRepository.findDateInfosByMonthAndDay(month, day);
         return infos.map(DateInfos::getInfo).orElse("n/a");

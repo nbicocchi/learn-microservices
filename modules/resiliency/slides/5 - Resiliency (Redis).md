@@ -115,7 +115,7 @@ public class RedisCacheConfig {
 
 Now let's examine the above class in detail:
 
-* `@EnableCaching`: This annotation is used to enable caching support. It triggers a post-processor that inspects every Spring Bean for the presence of caching annotations on public methods.
+* `@EnableCaching`: This annotation is used to enable caching support. 
 * The configuration of Redis Cache created by RedisCacheManager is defined with `RedisCacheConfiguration`. This specifies the default configuration for all caches, including default TTL, that is key expiration time, and serialization settings for converting to and from the binary storage format. It also disables caching of null values.
 * `@Value`: This annotation is used to inject values specified in application.yml file. In this example, if entryTTL not defined in application.yml, 60 is assigned by default. This variable represents the time-to-live (TTL) value for the cache. **TTL defines on how long the cached data will be considered valid before it expires and is removed from the cache**.
 
@@ -135,6 +135,40 @@ The cache abstraction allows not just population of a cache store but also evict
 ```
 @CacheEvict(cacheNames = "products", key = "#productId")
 public void deleteProduct(int productId) {...}
+```
+
+## Testing
+
+Query datetime-composite service 2 times with the following request:
+
+```bash
+curl -X GET 'http://127.0.0.1:8080/datetimeInfo' 
+```
+
+The log show first the creation of a new cache entry, and the subsequent match.
+
+```
+datetime-composite-1  | 2025-04-06T19:35:07.887Z TRACE 1 --- [composite-service] [nio-8080-exec-4] o.s.cache.interceptor.CacheInterceptor   : Computed cache key 'SimpleKey [4, 6]' for operation Builder[public java.lang.String com.nbicocchi.composite.service.DBIntegration.getInfosWithCache(int,int)] caches=[infos] | key='' | keyGenerator='' | cacheManager='' | cacheResolver='' | condition='' | unless='' | sync='false'
+
+datetime-composite-1  | 2025-04-06T19:35:07.893Z TRACE 1 --- [composite-service] [nio-8080-exec-4] o.s.cache.interceptor.CacheInterceptor   : Cache entry for key 'SimpleKey [4, 6]' found in cache(s) [infos]
+```
+
+Alternatively ([4, 6] represent the 6th of April, the day in which this example has been run):
+
+```
+$ redis-cli
+
+127.0.0.1:6379> KEYS *
+1) "infos::SimpleKey [4, 6]"
+
+127.0.0.1:6379> TYPE "infos::SimpleKey [4, 6]"
+string
+
+127.0.0.1:6379> GET "infos::SimpleKey [4, 6]"
+"\"San Pietro da Verona\""
+
+127.0.0.1:6379> TTL "infos::SimpleKey [4, 6]"
+(integer) 3133
 ```
 
 
