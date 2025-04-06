@@ -80,8 +80,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 - Confrontare REST, GraphQL e Protobuf implementando un servizio con tutte e tre le tecnologie e analizzandone le differenze.
 - Continuare a sviluppare progetto già presente di un social network.
 - Studiare e documentare l’architettura distribuita di piattaforme come Facebook, Uber o Netflix.
-- Creare un laboratorio interattivo per testare la resilienza di microservizi utilizzando strumenti di osservabilità.
-- Leggere un articolo di ricerca recente sulle architetture distribuite e presentarlo con un'analisi critica.
+- Creare un laboratorio interattivo per testare la resilienza di microservizi utilizzando strumenti di osservabilità (testare anche signoz e openobserve).
 - Eseguire test di performance su un sistema distribuito con strumenti come Istio, Locust, k6 o Gatling.
 - Utilizzare **[Microsim](https://github.com/yurishkuro/microsim)** per simulare il comportamento di un’architettura a microservizi in scenari di carico e guasto.
 - Esplorare progetti open-source tra quelli elencati in **[Awesome Distributed System Projects](https://github.com/roma-glushko/awesome-distributed-system-projects?tab=readme-ov-file)**.
