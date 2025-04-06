@@ -165,7 +165,7 @@ To characterize the latency profile of a service, [Vegeta HTTP load testing tool
 echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta plot --title "Latency Chart" > time_service_latency.html
 ```
 
-![](images/vegeta-plot.png)
+![](images/vegeta-plot.webp)
 
 ```bash
 echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta report

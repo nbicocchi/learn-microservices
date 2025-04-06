@@ -41,7 +41,7 @@ We categorize sources using a simple and widely used trichotomy: **compute**, **
 ## Signals
 The three pillars of observability—**metrics**, **logs**, and **traces**—play a vital role in providing insights into the system’s behavior and performance. 
 
-![](images/observability-pillars.png)
+![](images/observability-pillars.webp)
 
 ## Metrics
 Metrics are numerical values that capture key performance indicators (KPIs) about your system over time. They are typically aggregated and provide an overview of system health and performance.
@@ -141,7 +141,7 @@ The **ELK stack** is a popular set of tools used for managing and analyzing larg
 - **Flexible Visualization**: Kibana’s visualization tools help users present data in various formats, enabling better decision-making based on insights derived from the data.
 - **Scalability**: The distributed nature of Elasticsearch allows the ELK stack to scale with the growth of data, making it suitable for small to large enterprises.
 
-![](images/elk-log.png)
+![](images/elk-log.webp)
 
 [Logstash](https://www.elastic.co/logstash) is a data pipeline that collects, transforms, and routes logs and events to destinations like Elasticsearch. It supports **multiple input sources** (e.g., files, Kafka), **filter plugins** for data processing (e.g., parsing, enrichment), and **output plugins** to forward processed data. 
 
@@ -159,9 +159,9 @@ Traces track the path of a request as it moves through various services in a dis
 - **Span and Trace IDs**: Traces are composed of spans, which represent a single operation within a service. Each span contains a unique ID, and all spans related to a single request share the same trace ID.
 - **End-to-End Latency**: Traces provide visibility into the time taken by each service involved in processing a request.
 
-![](images/trace-ok.png)
+![](images/trace-ok.webp)
 
-![](images/trace-retry.png)
+![](images/trace-retry.webp)
 
 **Use Cases**:
   - **Performance Optimization**: Traces help identify bottlenecks by showing how long each service takes to process a request.
@@ -173,7 +173,7 @@ Traces track the path of a request as it moves through various services in a dis
 
 [Jaeger](https://www.jaegertracing.io/) and [Zipkin](https://zipkin.io/) are an open-source end-to-end distributed tracing system designed for monitoring and troubleshooting the performance of microservices-based architectures.
 
-![](images/jaeger-architecture.png)
+![](images/jaeger-architecture.webp)
 
 - **Distributed Context Propagation**: Jaeger tracks requests as they propagate through multiple services, providing visibility into the interactions between them.
 - **Latency Analysis**: Users can analyze the timing of requests, helping to identify performance bottlenecks and optimize service interactions.
@@ -370,7 +370,7 @@ The **OpenTelemetry collector** is a versatile, open-source tool designed to col
 
 ### Grafana
 
-![](images/grafana-cloud-otlp-architecture-via-otel-collector.png)
+![](images/grafana-cloud-otlp-architecture-via-otel-collector.webp)
 
 The [Grafana ecosystem](https://grafana.com/) started as a data visualization tool and has evolved into a comprehensive monitoring solution when combined with other tools in the Grafana stack.
 

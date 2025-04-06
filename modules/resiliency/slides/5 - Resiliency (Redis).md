@@ -17,7 +17,7 @@ At its essence, **the cache abstraction applies caching to Java methods, effecti
 
 With this approach, expensive methods (whether CPU-intensive or IO-intensive) can be invoked only the first time for a given set of parameters and the result reused without having to actually invoke the method again.
 
-![](images/cache-spring-boot-redis.avif)
+![](images/cache-spring-boot-redis.webp)
 
 **The caching logic is applied transparently without any interference to the invoker**. In fact, the method's invoker does not need to be aware of or explicitly handle caching mechanisms. Instead, the caching abstraction handles these operations behind the scenes, improving performance and reducing unnecessary computational load without requiring additional effort from the developer.
 

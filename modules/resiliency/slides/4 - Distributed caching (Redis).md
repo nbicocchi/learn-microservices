@@ -53,7 +53,7 @@ Each persistence method has its advantages depending on whether the priority is 
 ## Data Structures in Redis
 The data is organized using **key-value pairs**, where keys are unique identifiers, and values can be of different types as we will see later. Data in Redis is accessed by keys, making it a highly efficient and simple data store.
 
-![](../../../modules_extra/caching/slides/images/key-value.avif)
+![](../../../modules_extra/caching/slides/images/key-value.webp)
 
 ## Redis single-node deployments
 
@@ -302,13 +302,13 @@ Partitioning involves dividing your dataset into smaller subsets, known as **sha
 
 In range-based partitioning, you define ranges of keys based on some criteria (e.g., key prefixes or key values), and each range is assigned to a specific Redis node. This approach is useful when you can predict the distribution of keys across your dataset.
 
-![](./images/range-based.avif)
+![](./images/range-based.webp)
 
 **Hash-Based Partitioning**
 
 Hash-based partitioning involves applying a hash function to each key to determine which Redis node will store it. This method provides an even distribution of keys across nodes but may require redistributing data when nodes are added or removed.
 
-![](./images/hash.avif)
+![](./images/hash.webp)
 
 **Consistent Hashing**
 
@@ -316,7 +316,7 @@ Consistent hashing is a popular partitioning method in distributed systems. It m
 
 In practice, consistent hashing often uses **virtual nodes** (also called replicas). Each physical node in the cluster is represented by multiple points on the hash ring. This improves load distribution, reduces the chances of hotspot formation, and provides better fault tolerance.
 
-![](./images/consistent-hashing.avif)
+![](./images/consistent-hashing.webp)
 
 
 ## Resources
