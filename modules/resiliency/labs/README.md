@@ -8,6 +8,7 @@
 
 2. Develop a **datetime-composite-service** that aggregates the current date and time by querying multiple instances of **datetime-service**.
    - `GET /datetime` → Returns the current date and time.
+   - `GET /datetimeWithInfo` → Returns the current date, time, and additional infos (related to the date) queried from a PostgreSQL database.
 
 3. Implement resilience mechanisms to enhance system reliability:
    - Utilize Eureka service discovery and client-side load balancing to identify and route requests to healthy instances of **datetime-service**.
@@ -16,7 +17,7 @@
    - Enforce a rate limit of 100 synchronous requests per minute to **datetime-service**.
    - Configure **datetime-service** with two distinct thread pools, one for each endpoint.
 
-4. Validate the effectiveness of the implemented resilience strategies using HTTP testing tools such as `curl` or `vegeta`.
+5. Validate the effectiveness of the implemented resilience strategies using HTTP testing tools such as `curl` or `vegeta`.
 
 
 # Questions
@@ -28,5 +29,6 @@
 6. Describe the most used server-side resiliency patterns.
 7. Describe pros and cons of *fixed-window*, *sliding-window*, *leaky bucket* policies for circuit breaker implementations.
 8. What is a fallback mechanism and how does it relate with the circuit breaker pattern?
-9. What role do retries play in improving the resiliency of microservices? Describe best practices for setting retry configuration.
-10. What role do timeouts play in improving the resiliency of microservices? Describe best practices for setting timeout values.
+9. What is Redis persistence, and how does it ensure data durability? Describe the differences between RDB, AOF, and hybrid persistence.
+10. Explain how Redis multi-node deployments work. What are the benefits and limitations of using replicas in a Redis setup?
+11. Discuss the key caching patterns, and the role of Redis as a caching solution. 
