@@ -302,13 +302,13 @@ Partitioning involves dividing your dataset into smaller subsets, known as **sha
 
 In range-based partitioning, you define ranges of keys based on some criteria (e.g., key prefixes or key values), and each range is assigned to a specific Redis node. This approach is useful when you can predict the distribution of keys across your dataset.
 
-![](./images/range-based.webp)
+![](./images/range-based-partitioning.webp)
 
 **Hash-Based Partitioning**
 
 Hash-based partitioning involves applying a hash function to each key to determine which Redis node will store it. This method provides an even distribution of keys across nodes but may require redistributing data when nodes are added or removed.
 
-![](./images/hash.webp)
+![](./images/hash-based-partitioning.webp)
 
 **Consistent Hashing**
 
@@ -317,6 +317,8 @@ Consistent hashing is a popular partitioning method in distributed systems. It m
 In practice, consistent hashing often uses **virtual nodes** (also called replicas). Each physical node in the cluster is represented by multiple points on the hash ring. This improves load distribution, reduces the chances of hotspot formation, and provides better fault tolerance.
 
 ![](./images/consistent-hashing.webp)
+
+![](./images/consistent-hashing-partitioning.webp)
 
 
 ## Resources
