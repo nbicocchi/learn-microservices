@@ -17,12 +17,22 @@ services:
       - --enable-feature=native-histograms
     ports:
       - "9090:9090"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:9090" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   loki:
     image: grafana/loki:latest
     command: -config.file=/etc/loki/loki.yaml
     volumes:
       - ./config/loki.yaml:/etc/loki/loki.yaml
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:3100/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
@@ -52,6 +62,11 @@ services:
     depends_on:
       - init
       - memcached
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:3200/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   grafana:
     image: grafana/grafana:latest
@@ -64,6 +79,11 @@ services:
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:3000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   eureka:
     build: eureka-service

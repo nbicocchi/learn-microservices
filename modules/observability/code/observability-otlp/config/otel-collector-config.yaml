@@ -6,21 +6,6 @@ receivers:
       http:
         endpoint: "0.0.0.0:4318"
 
-  postgresql:
-    endpoint: postgres:5432
-    transport: tcp
-    username: user
-    password: secret
-    databases:
-      - jdbc_schema
-    collection_interval: 1s
-    tls:
-      insecure: true
-
-  redis:
-    endpoint: "redis:6379"
-    collection_interval: 1s
-
 processors:
   batch:
 
@@ -33,7 +18,7 @@ exporters:
 service:
   pipelines:
     metrics:
-      receivers: [ otlp, postgresql, redis ]
+      receivers: [ otlp ]
       exporters: [ otlphttp ]
 
     logs:
