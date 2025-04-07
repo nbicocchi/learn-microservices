@@ -10,8 +10,28 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 
 ## Cache-Aside (Lazy Loading)
 
-![](https://codeahoy.com/img/cache-aside.png)
+```mermaid
+sequenceDiagram
+    participant A as Application
+    participant C as Cache
+    participant D as Database
 
+    %% READ FLOW
+    A->>C: Read(key)
+    alt Cache Hit
+        C-->>A: Value
+    else Cache Miss
+        A->>D: Read(key)
+        D-->>A: Value
+        A->>C: Write(key, value)
+        A-->>A: Use value
+    end
+
+    %% WRITE FLOW
+    A->>D: Write(key, value)
+    A->>C: Invalidate/Delete(key)
+    A-->>A: Done
+```
 - Read Flow:  
   → Application checks the cache.  
   → On cache miss: application reads from the database, stores the result in cache, and returns it.
@@ -25,7 +45,26 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 
 ## Read-Through Cache
 
-![](https://codeahoy.com/img/read-through.png)
+```mermaid
+sequenceDiagram
+  participant A as Application
+  participant C as Cache
+  participant D as Database
+
+%% READ FLOW
+  A->>C: Read(key)
+  alt Cache Hit
+    C-->>A: Value
+  else Cache Miss
+    C->>D: Read(key)
+    D-->>C: Value
+    C-->>A: Value
+    C->>C: Optionally store value (TTL / Eviction)
+  end
+
+%% WRITE FLOW
+  A->>D: Write(key, value)
+```
 
 - Read Flow:  
   → Application queries the cache.  
@@ -39,7 +78,28 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 
 ## Write-Through Cache
 
-![](https://codeahoy.com/img/write-through.png)
+```mermaid
+sequenceDiagram
+  participant A as Application
+  participant C as Cache
+  participant D as Database
+
+%% READ FLOW
+  A->>C: Read(key)
+  alt Cache Hit
+    C-->>A: Value
+  else Cache Miss
+    C->>D: Read(key)
+    D-->>C: Value
+    C-->>A: Value
+  end
+
+%% WRITE FLOW
+  A->>C: Write(key, value)
+  C->>D: Write(key, value)
+  A-->>A: Done
+
+```
 
 - Read Flow:  
   → Application queries the cache.  
@@ -54,7 +114,28 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 
 ## Write-Back (Write-Behind) Cache
 
-![](https://codeahoy.com/img/write-back.png)
+```mermaid
+sequenceDiagram
+    participant A as Application
+    participant C as Cache
+    participant D as Database
+
+    %% READ FLOW
+    A->>C: Read(key)
+    alt Cache Hit
+        C-->>A: Value
+    else Cache Miss
+        C->>D: Read(key)
+        D-->>C: Value
+        C-->>A: Value
+    end
+
+    %% WRITE FLOW
+    A->>C: Write(key, value)
+    Note right of C: Cache updates in-memory value<br>DB update is async / delayed
+    C-->>D: (Eventually) Write(key, value)
+    A-->>A: Done
+```
 
 - Read Flow:  
   → Usually like read-through.
@@ -68,6 +149,28 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 
 ## Write-Around Cache
 
+```mermaid
+sequenceDiagram
+    participant A as Application
+    participant C as Cache
+    participant D as Database
+
+    %% READ FLOW
+    A->>C: Read(key)
+    alt Cache Hit
+        C-->>A: Value
+    else Cache Miss
+        A->>D: Read(key)
+        D-->>A: Value
+        Note right of C: Cache is update only after multiple requests
+        A->>C: Update Cache(key, value)
+    end
+
+    %% WRITE FLOW
+    A->>D: Write(key, value)
+    A-->>A: Done
+```
+
 - Read Flow:  
   → Application checks the cache.  
   → On miss: reads directly from DB, but does *not* store result in cache. Only subsequent read requests for the same data trigger caching.
@@ -77,5 +180,21 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 > Avoids polluting the cache with rarely-read data. But frequently-read data may cause repeated cache misses.
 
 > When data is rarely read after being written or for write-heavy workloads where caching writes is not worth it.
+
+## Cache invalidation
+
+Cache invalidation is the process of ensuring that cached data remains accurate by removing outdated or stale information. It is challenging due to the tension between **performance** and **consistency**: maintaining fast data retrieval (a.k.a. large cache, few invalidations) while ensuring the data is up-to-date (a.k.a. smaller cache, frequent invalidations).
+
+In distributed systems, the difficulty grows due to their **complexity**—multiple nodes, varying data states, and potential network failures make coordinating cache invalidation difficult. Ensuring data consistency across all nodes while optimizing for performance is a fine balance.
+
+Key strategies:
+
+* **Time-based**: Cache entries expire after a set period. This is the simplest method, but it may lead to serving stale data if expiration times aren’t properly tuned.
+
+* **Event-based**: Cache entries are invalidated when a specific event or change happens in the data source, ensuring consistency. However, it's more complex to implement and manage events.
+
+* **Size-based**: When the cache exceeds its memory limit, entries are evicted. While useful for memory efficiency, this method may remove data that is still relevant.
+
+* **Version-based**: Data is tagged with versions or timestamps, and the cache is invalidated when a new version is available. It balances freshness and performance, but can become complicated with frequent data updates.
 
 ## Resources
