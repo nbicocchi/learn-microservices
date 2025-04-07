@@ -24,7 +24,6 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 
 ## Modules
 [M1 Software architectures](modules/software-architectures)
-
 * Monolithic and distributed architectural styles
 * The transition towards microservices architectures
 
@@ -34,8 +33,8 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Packaging a project with Maven
 
 [M3 Containerization and orchestration](modules/containerization)
-* Containerization vs virtualization
-* Building *docker* images (single-layer, multi-layer, Buildpacks, Jib)
+* Introduction to containerization
+* Building *docker* images (single-layer, multi-layer)
 * Container orchestration with *docker compose*
 
 [M4 Communication](modules/communication)
@@ -49,19 +48,16 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Centralized configuration
 
 [M6 Resiliency](modules/resiliency)
-* What is resiliency and why it is relevant
-* Client-side resiliency patterns
-* Server-side resiliency patterns
+* Client-side patterns
+* Server-side patterns
 * *Resilience4j* and its integration with Spring Boot
 
 [M7 Observability](modules/observability)
-* What is observability and why it is relevant
 * Instrumentation and maintenance costs
 * Key observability stacks: *Prometheus*, *ELK*, *Jaeger/Zipkin*, *Grafana*
 * *OpenTelemetry*
 
 [M8 Distributed transaction management](modules/data-management)
-* Issues of database transactions in distributed contexts
 * The SAGA pattern
 * The CQRS pattern
 * The *Conductor* orchestration framework
@@ -84,4 +80,4 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 - Eseguire test di performance su un sistema distribuito con strumenti come Istio, Locust, k6 o Gatling.
 - Utilizzare **[Microsim](https://github.com/yurishkuro/microsim)** per simulare il comportamento di un’architettura a microservizi in scenari di carico e guasto.
 - Esplorare progetti open-source tra quelli elencati in **[Awesome Distributed System Projects](https://github.com/roma-glushko/awesome-distributed-system-projects?tab=readme-ov-file)**.
-- Porting current examples in Python
+- Porting degli esempi attuali in Python
