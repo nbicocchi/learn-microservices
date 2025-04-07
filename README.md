@@ -39,7 +39,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 
 [M4 Communication](modules/communication)
 * Synchronous communications and their limitations (*Rest/GraphQL/Protobuf*)
-* Asynchronous messaging systmettere qualcosa di caching ems (*RabbitMQ*)
+* Asynchronous messaging systems (*RabbitMQ*)
 * *Spring Cloud Stream* and its abstraction over messaging systems
 
 [M5 Infrastructure](modules/infrastructure)
