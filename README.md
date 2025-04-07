@@ -84,3 +84,4 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 - Eseguire test di performance su un sistema distribuito con strumenti come Istio, Locust, k6 o Gatling.
 - Utilizzare **[Microsim](https://github.com/yurishkuro/microsim)** per simulare il comportamento di un’architettura a microservizi in scenari di carico e guasto.
 - Esplorare progetti open-source tra quelli elencati in **[Awesome Distributed System Projects](https://github.com/roma-glushko/awesome-distributed-system-projects?tab=readme-ov-file)**.
+- Porting current examples in Python
