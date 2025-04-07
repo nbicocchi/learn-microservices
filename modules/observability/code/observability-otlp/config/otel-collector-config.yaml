@@ -17,6 +17,10 @@ receivers:
     tls:
       insecure: true
 
+  redis:
+    endpoint: "redis:6379"
+    collection_interval: 1s
+
 processors:
   batch:
 
@@ -29,7 +33,7 @@ exporters:
 service:
   pipelines:
     metrics:
-      receivers: [ otlp, postgresql ]
+      receivers: [ otlp, postgresql, redis ]
       exporters: [ otlphttp ]
 
     logs:

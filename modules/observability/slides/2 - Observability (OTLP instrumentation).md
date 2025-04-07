@@ -225,12 +225,12 @@ mvn clean package -Dmaven.test.skip=true
 docker compose up --build --detach
 ```
 
-2. Install DrillDown plugins in Grafana (execute the following commands inside the running container from Docker Desktop)
+2. Install plugins in Grafana (execute the following commands inside the running container from Docker Desktop)
 
 ```bash
-$ grafana cli --pluginUrl=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip plugins install grafana-lokiexplore-app
-
-$ grafana cli --pluginUrl=https://storage.googleapis.com/integration-artifacts/grafana-exploretraces-app/grafana-exploretraces-app-latest.zip plugins install grafana-traces-app
+$ grafana-cli plugins install grafana-lokiexplore-app
+$ grafana-cli plugins install grafana-exploretraces-app
+$ grafana-cli plugins install redis-datasource
 ```
 
 2. Connect to [localhost:3000](http://localhost:3000) to start exploring
@@ -244,5 +244,6 @@ $ grafana cli --pluginUrl=https://storage.googleapis.com/integration-artifacts/g
   * https://grafana.com/grafana/dashboards/21308-http/
   * https://grafana.com/grafana/dashboards/22108-jvm-springboot3-dashboard-for-prometheus-operator/
   * https://github.com/resilience4j/resilience4j/blob/master/grafana_dashboard.json
+  * https://grafana.com/grafana/dashboards/12776-redis/
 
 ## Resources
