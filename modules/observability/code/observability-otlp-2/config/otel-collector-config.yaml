@@ -1,0 +1,32 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
+
+processors:
+  batch:
+
+exporters:
+  otlphttp:
+    logs_endpoint: http://loki:3100/otlp/v1/logs
+    metrics_endpoint: http://prometheus:9090/api/v1/otlp/v1/metrics
+    traces_endpoint: http://tempo:4318/v1/traces
+
+service:
+  pipelines:
+    metrics:
+      receivers: [ otlp ]
+      exporters: [ otlphttp ]
+
+    logs:
+      receivers: [ otlp ]
+      exporters: [ otlphttp ]
+
+    traces:
+      receivers: [otlp ]
+      exporters: [otlphttp]
+
+

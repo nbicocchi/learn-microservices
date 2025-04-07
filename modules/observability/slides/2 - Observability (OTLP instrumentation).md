@@ -228,9 +228,9 @@ docker compose up --build --detach
 2. Install plugins in Grafana (execute the following commands inside the running container from Docker Desktop)
 
 ```bash
-$ grafana-cli plugins install grafana-lokiexplore-app
-$ grafana-cli plugins install grafana-exploretraces-app
-$ grafana-cli plugins install redis-datasource
+$ grafana cli plugins install grafana-lokiexplore-app
+$ grafana cli plugins install grafana-exploretraces-app
+$ grafana cli plugins install redis-datasource
 ```
 
 2. Connect to [localhost:3000](http://localhost:3000) to start exploring
