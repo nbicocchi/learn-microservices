@@ -6,9 +6,9 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 * **Caching improves resiliency because services can continue to serve requests even if their backend systems are temporarily unavailable**.
 * **Caching improves scalability by offloading the workload from backend systems.**
 
+## Cache patterns
 
-
-## Cache-Aside (Lazy Loading)
+### Cache-Aside Pattern
 
 ```mermaid
 sequenceDiagram
@@ -43,7 +43,7 @@ sequenceDiagram
 
 > When the application wants full control over cache population. Good for read-heavy workloads with occasional writes.
 
-## Read-Through Cache
+### Read-Through Pattern
 
 ```mermaid
 sequenceDiagram
@@ -76,7 +76,7 @@ sequenceDiagram
 
 > When you want to simplify read logic and avoid code duplication for cache handling.
 
-## Write-Through Cache
+### Write-Through Pattern
 
 ```mermaid
 sequenceDiagram
@@ -112,7 +112,7 @@ sequenceDiagram
 
 > When reads and writes happen together often, and consistency is critical.
 
-## Write-Back (Write-Behind) Cache
+### Write-Behind Pattern
 
 ```mermaid
 sequenceDiagram
@@ -147,7 +147,7 @@ sequenceDiagram
 
 > When write performance is more important than immediate consistency (high-throughput systems). Risk of data loss if cache fails before persisting.
 
-## Write-Around Cache
+### Write-Around Pattern
 
 ```mermaid
 sequenceDiagram
