@@ -29,7 +29,7 @@
 - Modify the `docker-compose.yml` file (Lab 2) to run the PostgreSQL NOT mapped on the host network.
 - Start the containers and use `docker stats` to monitor their resource usage (and verify that the limits are applied).
 
-# Questions
+## Questions
 1. What are the main differences between bare-metal, virtual machines, and container-based deployments? Explain the concept of deployment density.
 2. What is a Docker registry, and how does it facilitate the distribution and management of container images?
 3. Describe the life cycle of a container from creation to termination.

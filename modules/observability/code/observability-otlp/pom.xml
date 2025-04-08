@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>datetime-composite-service</module>
-        <module>datetime-service</module>
         <module>eureka-service</module>
+        <module>gateway-service</module>
+        <module>math-service</module>
     </modules>
 </project>

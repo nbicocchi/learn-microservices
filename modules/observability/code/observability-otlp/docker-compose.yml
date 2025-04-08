@@ -28,11 +28,6 @@ services:
     command: -config.file=/etc/loki/loki.yaml
     volumes:
       - ./config/loki.yaml:/etc/loki/loki.yaml
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --spider http://localhost:3100/ready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
@@ -54,12 +49,6 @@ services:
       - tempo-data:/var/tempo
     depends_on:
       - init
-      - memcached
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --spider http://localhost:3200/ready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   grafana:
     image: grafana/grafana:latest
@@ -93,8 +82,8 @@ services:
       timeout: 5s
       retries: 5
 
-  datetime-composite:
-    build: datetime-composite-service
+  gateway:
+    build: gateway-service
     ports:
       - "8080:8080"
     environment:
@@ -107,9 +96,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
 
-  datetime:
-    build: datetime-service
+  math:
+    build: math-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - OTEL_METRIC_EXPORT_INTERVAL=1000
@@ -124,22 +116,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: jdbc_schema
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U user -d jdbc_schema" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
 
   redis:
     image: redis:latest

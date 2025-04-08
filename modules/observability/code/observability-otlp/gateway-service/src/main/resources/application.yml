@@ -1,0 +1,82 @@
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 4
+
+spring.application.name: datetime-composite-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+cache:
+  config:
+    entryTTL: 60
+
+logging:
+  level:
+    org.springframework.cache: TRACE
+
+resilience4j.bulkhead:
+  instance:
+    default:
+      maxConcurrentCalls: 2
+
+resilience4j.timelimiter:
+  instance:
+    default:
+      timeoutDuration: 3s
+
+resilience4j.retry:
+  instance:
+    default:
+      maxAttempts: 3
+      waitDuration: 500
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      enableRandomizedWait: true
+      randomizedWaitFactor: 0.5
+      retryExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+
+resilience4j.circuitbreaker:
+  instance:
+    default:
+      allowHealthIndicatorToFail: false
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 50
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
+      permittedNumberOfCallsInHalfOpenState: 10
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      record-exceptions:
+        - org.springframework.web.client.HttpServerErrorException
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka/
+
+spring:
+  data:
+    redis:
+      host: redis
