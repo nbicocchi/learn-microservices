@@ -10,6 +10,10 @@ By caching data, microservices can reduce the need for repeated, expensive opera
 
 ### Cache-Aside Pattern
 
+> Very flexible and widely used. Suitable when reads are much more frequent than writes.
+
+> When the application wants full control over cache population. Good for read-heavy workloads with occasional writes.
+
 ```mermaid
 sequenceDiagram
     participant A as Application
@@ -39,11 +43,13 @@ sequenceDiagram
   → Application writes directly to the database.  
   → Optionally, it also updates or invalidates the cache (TTL).
 
-> Very flexible and widely used. Suitable when reads are much more frequent than writes.
-
-> When the application wants full control over cache population. Good for read-heavy workloads with occasional writes.
-
+  
 ### Read-Through Pattern
+
+> Easier for developers because the cache handles loading logic. Requires the cache system to know how to fetch from DB. Cache, if not invalidated, becomes a "shadow database" that might never update.
+
+> When you want to simplify read logic and avoid code duplication for cache handling.
+
 
 ```mermaid
 sequenceDiagram
@@ -72,11 +78,13 @@ sequenceDiagram
 - Write Flow:  
   → Application writes directly to the database. Cache is not updated automatically.
 
-> Easier for developers because the cache handles loading logic. Requires the cache system to know how to fetch from DB. Cache, if not invalidated, becomes a "shadow database" that might never update.
-
-> When you want to simplify read logic and avoid code duplication for cache handling.
 
 ### Write-Through Pattern
+
+> Ensures cache and database are always consistent. But writes can be slower due to double-write.
+
+> When reads and writes happen together often, and consistency is critical.
+
 
 ```mermaid
 sequenceDiagram
@@ -108,11 +116,13 @@ sequenceDiagram
   → Application writes data to the cache.  
   → The cache synchronously writes it to the database.
 
-> Ensures cache and database are always consistent. But writes can be slower due to double-write.
-
-> When reads and writes happen together often, and consistency is critical.
 
 ### Write-Behind Pattern
+
+> Very fast writes from the application's perspective, but introduces risk of data loss if cache fails before writing to DB.
+
+> When write performance is more important than immediate consistency (high-throughput systems). Risk of data loss if cache fails before persisting.
+
 
 ```mermaid
 sequenceDiagram
@@ -143,11 +153,13 @@ sequenceDiagram
   → Application writes data to the cache.  
   → Cache writes asynchronously to the database (with a delay or batching).
 
-> Very fast writes from the application's perspective, but introduces risk of data loss if cache fails before writing to DB.
-
-> When write performance is more important than immediate consistency (high-throughput systems). Risk of data loss if cache fails before persisting.
 
 ### Write-Around Pattern
+
+> Avoids polluting the cache with rarely-read data. But frequently-read data may cause repeated cache misses.
+
+> When data is rarely read after being written or for write-heavy workloads where caching writes is not worth it.
+
 
 ```mermaid
 sequenceDiagram
@@ -177,13 +189,10 @@ sequenceDiagram
 - Write Flow:  
   → Application writes only to the database.
 
-> Avoids polluting the cache with rarely-read data. But frequently-read data may cause repeated cache misses.
-
-> When data is rarely read after being written or for write-heavy workloads where caching writes is not worth it.
 
 ## Cache invalidation
 
-Cache invalidation is the process of ensuring that cached data remains accurate by removing outdated or stale information. It is challenging due to the tension between **performance** and **consistency**: maintaining fast data retrieval (a.k.a. large cache, few invalidations) while ensuring the data is up-to-date (a.k.a. smaller cache, frequent invalidations).
+Cache invalidation is the process of ensuring that cached data remains accurate by removing outdated or stale information. It is regarded as a [hard problem](https://martinfowler.com/bliki/TwoHardThings.html) due to the tension between **performance** and **consistency**: maintaining fast data retrieval (a.k.a. large cache, few invalidations) while ensuring the data is up-to-date (a.k.a. smaller cache, frequent invalidations).
 
 In distributed systems, the difficulty grows due to their **complexity**—multiple nodes, varying data states, and potential network failures make coordinating cache invalidation difficult. Ensuring data consistency across all nodes while optimizing for performance is a fine balance.
 

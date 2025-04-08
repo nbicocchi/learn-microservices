@@ -102,6 +102,12 @@ If we were to replace `nodeid` with `user_id`, the number of unique label combin
 - **Service Discovery**: Automatically detects and scrapes targets using mechanisms like Kubernetes, Eureka, static configs (easy replica management).
 - **Scraping Metrics**: Collects data from targets (applications, services, systems) via HTTP at set intervals.
 - **Query Language**: Provides **PromQL** for querying and analyzing time-series data.
+
+```
+http_server_request_duration_seconds_sum
+rate(http_server_request_duration_seconds_sum[1m])
+``` 
+       
 - **Alerting**: Supports rule-based alerts, sending notifications.
 
 ![](images/prometheus-architecture.webp)
@@ -200,7 +206,7 @@ Instrumentation in microservices refers to the process of collecting metrics, lo
 
 To calculate the B2I ratio, determine the number of lines of code (LOC) before adding an instrumentation (adding code for emitting signals for a signal type), and then determine the LOC after the instrumentation. The B2I ratio is then:
 
-> B2I = LOC_AFTER_INSTRUMENTATION / LOC_BEFORE_INSTRUMENTATION
+B2I = LOC_AFTER_INSTR / LOC_BEFORE_INSTR
 
 In an ideal world, the B2I ratio would be 1, representing zero instrumentation costs in the code. However, in reality, the more LOC you dedicate to instrumentation, the higher the B2I ratio is. For example, if your code has 3800 LOC and you added 400 LOC for instrumentation (say, to emit logs and metrics), then you’d end up with a B2I ratio of 1.105, from (3800 + 400) / 3800.
 

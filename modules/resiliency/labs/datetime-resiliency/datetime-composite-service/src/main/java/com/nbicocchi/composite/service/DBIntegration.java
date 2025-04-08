@@ -19,6 +19,14 @@ public class DBIntegration {
 
     @Cacheable(cacheNames = "infos")
     public String getInfosWithCache(int month, int day) {
+
+        // waste some time to simulate a slow call
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // nothing to do
+        }
+
         Optional<DateInfos> infos = dateInfosRepository.findDateInfosByMonthAndDay(month, day);
         return infos.map(DateInfos::getInfo).orElse("n/a");
     }

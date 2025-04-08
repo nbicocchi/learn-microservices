@@ -19,9 +19,11 @@ flowchart TD
 
 2. Develop a **datetime-composite-service** that aggregates the current date and time by querying multiple instances of **datetime-service**.
    - `GET /datetime` → Returns the current date and time.
-   - `GET /datetimeWithInfo` → Returns the current date, time, and additional infos (related to the date) queried from a PostgreSQL database.
 
-3. Implement resilience mechanisms to enhance system reliability:
+3. Integrate **datetime-composite-service** with PostgreSQL for fetching additional data associated with each date. PostgreSQL has to be "protected" with a Redis cache. 
+- `GET /datetimeWithInfo` → Returns the current date, time, and additional infos (related to the date) queried from a PostgreSQL database.
+
+4. Implement resilience mechanisms to enhance system reliability:
    - Utilize Eureka service discovery and client-side load balancing to identify and route requests to healthy instances of **datetime-service**.
    - Retry synchronous requests to **datetime-service** up to three times before marking them as failed.
    - Integrate a circuit breaker within **datetime-composite-service** to trigger a fail-fast fallback mechanism when 50% of requests fail.

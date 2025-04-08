@@ -27,7 +27,7 @@ Since Redis is single-thread, **each individual operation is atomic** and theref
 **No Persistence**
 
 Redis operates purely in-memory with no persistence mechanism. This means all data is lost when Redis is restarted, and no disk I/O is involved. It’s ideal for use cases like caching, where the data is temporary and can be regenerated if needed. This setup is suitable for scenarios where high performance is essential and data loss is tolerable.
-- **Pros**: Fastest performance, minimal memory overhead.
+- **Pros**: Fastest performance.
 - **Cons**: Data is lost upon restart, no durability.
 
 **RDB (Redis Database)**
@@ -48,7 +48,7 @@ This method combines RDB snapshots and AOF logging to provide a balance of perfo
 - **Pros**: Combines the advantages of RDB and AOF (fast recovery and high durability).
 - **Cons**: Increased disk space usage, potentially slower performance due to dual persistence operations.
 
-Each persistence method has its advantages depending on whether the priority is performance, durability, or fast recovery. The best choice will depend on your application's needs.
+Each persistence method has its advantages depending on whether the priority is performance, durability, or fast recovery.
 
 ## Data Structures in Redis
 The data is organized using **key-value pairs**, where keys are unique identifiers, and values can be of different types as we will see later. Data in Redis is accessed by keys, making it a highly efficient and simple data store.
@@ -57,7 +57,11 @@ The data is organized using **key-value pairs**, where keys are unique identifie
 
 ## Redis single-node deployments
 
-To interact directly with the Redis server, we can use Docker compose:
+To interact directly with the Redis server, we can use Docker:
+
+```bash
+docker run --detach --name redis -p 6379:6379 redis:latest
+```
 
 ```yaml
 services:
@@ -72,7 +76,7 @@ services:
       retries: 60
 ```
 
-Afterward, we can install a Redis client, connect like this:
+We can then install a Redis client, connect:
 
 ```bash
 redis-cli -h redis -p 6379
@@ -166,6 +170,16 @@ PONG
     RPOP bikes:repairs
     > "bike:1"
     ```
+  
+* ***LRANGE***: Gets elements from a list.
+
+    ```
+    LRANGE <key> <start> <stop>
+
+    Example:
+    LRANGE bikes:repairs 0 -1
+    ```
+
 
 ### SETS operations
 
@@ -175,7 +189,7 @@ PONG
     SADD <set_name> <element> [<element> ...]
 
     Example:
-    sadd SocialMedia Facebook Twitter WhatsApp
+    SADD SocialMedia Facebook Twitter WhatsApp
     ```
 
 * ***SMEMBERS***: Shows all the elements, present in that set.
@@ -261,7 +275,9 @@ In addition to being used on a single machine, Redis is also well-suited for **d
 * **Scalability (TPS)**: One machine has limited resource in terms of CPU, so it can support a limited number of “transaction per seconds” (TPS). If your reads/writes go beyond that limit, your machine/pipeline can fail.
 * **Availability**: When you are running everything on single machine, if that machine crashes, you will loose your Redis database.
 
-### Replication
+### Redis Replication
+
+> Ideal for scenarios where you need to scale read operations. The primary handles writes, and replicas handle reads. It's useful when data consistency isn't a concern, and failover is not automated.
 
 ![](https://miro.medium.com/v2/resize:fit:1122/1*DphpQeKEVIQVCgxU2_vI_g.png)
 
@@ -270,7 +286,19 @@ In addition to being used on a single machine, Redis is also well-suited for **d
 - **Failure Handling**: If the master node fails, all write operations will fail, and only read requests can be served by the replica nodes. However, these replica nodes will serve outdated data, as the latest writes will not be replicated during the failure. Therefore, the system's availability does not improve in case of a master node failure.
 - **Read Performance**: What improves with replication is the read capacity of the database. For example, if a single machine could handle 1,000 reads per second, with 4 nodes (1 master and 3 replicas), the system can now handle approximately 4,000 reads per second.
 
-### Cluster
+### Redis Sentinel
+
+> Best for high availability in a Redis deployment. It automatically handles failover, monitoring, and notification. Use when you need automatic recovery in case of node failures.
+
+![](https://miro.medium.com/v2/resize:fit:1200/1*ejl4ZXCUXd57rncaGRufpg.png)
+
+**Monitoring**: Redis Sentinel continuously monitors the health of Redis instances (masters and replicas) to ensure they are operating correctly.  
+**Failover**: In case of a master failure, Redis Sentinel automatically promotes a replica to master, minimizing downtime.  
+**High Availability**: It ensures Redis is highly available by providing automatic failover and notification of failures, maintaining consistent data access even when nodes go down.
+
+### Redis Cluster
+
+> Suitable for horizontal scaling with sharding. It distributes data across multiple nodes, making it ideal for large datasets that exceed the memory capacity of a single instance while ensuring high availability and partition tolerance.
 
 ![](https://miro.medium.com/v2/resize:fit:1400/1*iOMCYDrYkXUNNuK-LlrDcA.png)
 
@@ -279,28 +307,14 @@ In addition to being used on a single machine, Redis is also well-suited for **d
 - **High Availability**: If a master node fails, one of its replica nodes is automatically promoted to master. This ensures continued operation and improves the availability of the database, even in the event of node failures.
 
 
-### Sentinels
 
-We saw in the cluster mode, that high availability is achieved when during master node failures, one of the replica node is promoted as master. But this high-availability is achieved because we have multiple masters which are configured to talk among themselves.
-
-However, maintaining multiple masters has its challenges too. Although going in details about them is out of scope for this discussion, but one challenge is — multi-key operation. Say, you perform a multi-key operation (like fetch two keys, update 2 keys, etc in single command), both keys should be in the same master; if not, the command will fail.
-
-In cases where you don’t really need multiple masters (because your dataset is not large enough that it has to be distributed among multiple machines, or your write requests are small enough to be handled by one machine) but you do need a highly-available system ?
-
-![](https://miro.medium.com/v2/resize:fit:1200/1*ejl4ZXCUXd57rncaGRufpg.png)
-
-In a typical Redis Sentinel deployment, you have a regular Redis setup with one master and multiple replicas. Alongside this, the Sentinel service runs on separate machines, continuously monitoring the master node and communicating with each other.
-
-If a Sentinel node detects that the master node is unreachable, it initiates the failover process by consulting with other Sentinel nodes to confirm the issue. This typically requires a majority vote to confirm that the master node is indeed down.
-
-Once the majority agrees, one of the Sentinel nodes is designated as the leader and proceeds with the failover process. During this process, the leader Sentinel promotes one of the replica nodes to become the new master and instructs the remaining replicas to begin syncing with the new master.
 
 ## Partitioning
 Partitioning involves dividing your dataset into smaller subsets, known as **shards**, and distributing these shards across multiple Redis nodes. Each shard contains a portion of the keys and data. The partitioning strategy often depends on the use case and the key distribution of your data. Some **common partitioning strategies** include:
 
 **Range-Based Partitioning**
 
-In range-based partitioning, you define ranges of keys based on some criteria (e.g., key prefixes or key values), and each range is assigned to a specific Redis node. This approach is useful when you can predict the distribution of keys across your dataset.
+In range-based partitioning, you define ranges of keys based on some criteria (e.g., key prefixes or key values), and each range is assigned to a specific Redis node. This approach is **useful when you can predict the distribution of keys across your dataset**.
 
 ![](./images/range-based-partitioning.webp)
 

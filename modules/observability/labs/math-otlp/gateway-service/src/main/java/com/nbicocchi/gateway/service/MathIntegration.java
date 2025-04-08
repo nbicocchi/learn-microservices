@@ -22,7 +22,7 @@ public class MathIntegration {
         restClient = restClientBuilder.build();
     }
 
-    @Cacheable(cacheNames = "divisors")
+    //@Cacheable(cacheNames = "divisors")
     @Retry(name = "default")
     @CircuitBreaker(name = "default", fallbackMethod = "fallback")
     public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
