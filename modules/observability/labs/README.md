@@ -8,26 +8,24 @@ flowchart TD
     Eureka
     Gateway --> Math1[Math-Service-1]
     Gateway --> Math2[Math-Service-2]
-    Gateway --> Math3[Math-Service-3]
     Math1 --> Gateway
     Math2 --> Gateway
-    Math3 --> Gateway
     Gateway --> Client
+    Gateway --> Redis[Redis-Service]
+    Redis --> Gateway
 
-    subgraph Observability
+    subgraph Observability_Backend
         Prometheus
         Loki
         Tempo
-        Grafana
     end
 
-    Eureka --> Observability
-    Gateway --> Observability
-    Math1 --> Observability
-    Math2 --> Observability
-    Math3 --> Observability
+    Eureka --> Observability_Backend
+    Gateway --> Observability_Backend
+    Math1 --> Observability_Backend
+    Math2 --> Observability_Backend
 
-    Observability --> Grafana
+    Observability_Backend --> Grafana
 ```
 
 1. Implement a `math-service` exposing an API to compute the prime divisors of a given number.
@@ -40,9 +38,10 @@ flowchart TD
     - Use Eureka for service discovery and client-side load balancing to distribute requests across available `math-service` instances.
     - Configure retry logic within `gateway-service` to attempt failed requests to `math-service` up to 3 times before propagating the error.
     - Implement a circuit breaker in `gateway-service` that opens when 50% of recent requests to `math-service` fail, triggering a fail-fast fallback response.
-    - Integrate Redis in `gateway-service` using the *cache-aside* pattern to cache successful responses from `math-service` and reduce load on backend services.
+   
+4. Integrate Redis in `gateway-service` using the *cache-aside* pattern to cache successful responses from `math-service` and reduce load on backend services.
 
-4. Enable distributed observability through automatic (zero-code) OpenTelemetry instrumentation of `eureka-service`, `gateway-service`, and `math-service`. Configure a monitoring stack based on:
+5. Enable distributed observability through automatic (zero-code) OpenTelemetry instrumentation of `eureka-service`, `gateway-service`, and `math-service`. Configure a monitoring stack based on:
     - Prometheus (metrics)
     - Loki (logs)
     - Tempo (traces)
