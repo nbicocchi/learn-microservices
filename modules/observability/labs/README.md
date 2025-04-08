@@ -1,12 +1,11 @@
 # Labs
 
-## Lab 1
+## Lab 1: Observability
 
 ```mermaid
 flowchart TD
     Client --> Gateway[Gateway-Service]
-    Gateway --> Eureka[Eureka-Service]
-    Eureka --> Gateway
+    Eureka
     Gateway --> Math1[Math-Service-1]
     Gateway --> Math2[Math-Service-2]
     Gateway --> Math3[Math-Service-3]

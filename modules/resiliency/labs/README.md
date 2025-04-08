@@ -2,6 +2,17 @@
 
 ## Lab 1: Implementing Resiliency Patterns
 
+```mermaid
+flowchart TD
+   Client --> Composite[Datetime-Composite-Service]
+   Eureka
+
+   Composite --> P[PostgreSQL]
+   Composite --> DT1[Datetime-Service-1]
+   Composite --> DT2[Datetime-Service-2]
+   Composite --> DT3[Datetime-Service-3]
+```
+
 1. Develop a **datetime-service** that provides the current date and time based on the system clock.
    - `GET /date` → Returns the current date.
    - `GET /time` → Returns the current time.
