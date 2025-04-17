@@ -271,13 +271,13 @@ EXEC
 
 In addition to being used on a single machine, Redis is also well-suited for **distributed environments**. 
 
-* **Scalability (Data size)**: When you have only one machine, it means your data should fit in that single machine.
+* **Scalability (Data size)**: One machine has limited resource in terms of memory, thus all data should fit in that single machine.
 * **Scalability (TPS)**: One machine has limited resource in terms of CPU, so it can support a limited number of “transaction per seconds” (TPS). If your reads/writes go beyond that limit, your machine/pipeline can fail.
 * **Availability**: When you are running everything on single machine, if that machine crashes, you will loose your Redis database.
 
 ### Redis Replication
 
-> Ideal for scenarios where you need to scale read operations. The primary handles writes, and replicas handle reads. It's useful when data consistency isn't a concern, and failover is not automated.
+> Ideal for scenarios where you need to scale read operations. The master handles writes, and replicas handle reads. It's useful when data consistency isn't a concern, and failover is not automated.
 
 ![](https://miro.medium.com/v2/resize:fit:1122/1*DphpQeKEVIQVCgxU2_vI_g.png)
 
