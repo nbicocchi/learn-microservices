@@ -35,8 +35,8 @@ ENTRYPOINT ["java","-jar","/application.jar"]
       timeout: 5s
       retries: 5
 
-  datetime-composite:
-    build: datetime-composite-service
+  gateway:
+    build: gateway-service
     ports:
       - "8080:8080"
     environment:
@@ -49,19 +49,29 @@ ENTRYPOINT ["java","-jar","/application.jar"]
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
 
-  datetime:
-    build: datetime-service
+  math:
+    build: math-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - OTEL_METRIC_EXPORT_INTERVAL=1000
       - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    ports:
+      - "8080"
+    deploy:
+      replicas: 2
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
 ```
 
 ## Open Telemetry Collector
@@ -74,8 +84,6 @@ ENTRYPOINT ["java","-jar","/application.jar"]
     volumes:
       - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command: --config /etc/otel-collector-config.yaml
-    depends_on:
-      - jaeger
 ```
 
 2. Configure the collector using the configuration file provided. Please note that with this setup metrics are actually discarded and their collection is delegated to Prometheus.
@@ -109,8 +117,8 @@ service:
       exporters: [ otlphttp ]
 
     traces:
-      receivers: [otlp]
-      exporters: [otlphttp]
+      receivers: [ otlp ]
+      exporters: [ otlphttp ]
 ```
 
 ## Grafana backends
@@ -129,13 +137,18 @@ service:
       - --enable-feature=native-histograms
     ports:
       - "9090:9090"
-        
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:9090" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   loki:
     image: grafana/loki:latest
-    command: [ "-config.file=/etc/loki/loki.yaml" ]
+    command: -config.file=/etc/loki/loki.yaml
     volumes:
       - ./config/loki.yaml:/etc/loki/loki.yaml
-  
+
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
   init:
@@ -148,13 +161,6 @@ service:
     volumes:
       - ./tempo-data:/var/tempo
 
-  memcached:
-    image: memcached:latest
-    container_name: memcached
-    environment:
-      - MEMCACHED_MAX_MEMORY=64m  # Set the maximum memory usage
-      - MEMCACHED_THREADS=4       # Number of threads to use
-
   tempo:
     image: *tempoImage
     command: [ "-config.file=/etc/tempo.yaml" ]
@@ -163,7 +169,6 @@ service:
       - tempo-data:/var/tempo
     depends_on:
       - init
-      - memcached
 ```
 
 ## Grafana frontend
@@ -183,6 +188,11 @@ service:
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:3000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 ```
 
 2. Configure its three data sources using the configuration file provided:
@@ -239,11 +249,5 @@ $ grafana cli plugins install redis-datasource
 * Home -> DrillDown -> Metrics
 * Home -> DrillDown -> Logs
 * Home -> DrillDown -> Traces
-* Dashboards -> New -> Import, paste:
-  * https://grafana.com/grafana/dashboards/19004-spring-boot-statistics/
-  * https://grafana.com/grafana/dashboards/21308-http/
-  * https://grafana.com/grafana/dashboards/22108-jvm-springboot3-dashboard-for-prometheus-operator/
-  * https://github.com/resilience4j/resilience4j/blob/master/grafana_dashboard.json
-  * https://grafana.com/grafana/dashboards/12776-redis/
 
 ## Resources
