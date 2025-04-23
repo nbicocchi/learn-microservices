@@ -16,37 +16,45 @@ services:
 
   order:
     build: order-service
-    mem_limit: 512m
     ports:
       - "9000:9000"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    #depends_on:
-    #  conductor:
-    #    condition: service_healthy
+      - CONDUCTOR_SECURITY_CLIENT_KEY_ID=${CONDUCTOR_SECURITY_CLIENT_KEY_ID}
+      - CONDUCTOR_SECURITY_CLIENT_SECRET=${CONDUCTOR_SECURITY_CLIENT_SECRET}
+      - CONDUCTOR_SERVER_URL=${CONDUCTOR_SERVER_URL}
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9000/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   payment:
     build: payment-service
-    mem_limit: 512m
     ports:
       - "9001:9001"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    #depends_on:
-    #  conductor:
-    #    condition: service_healthy
+      - CONDUCTOR_SECURITY_CLIENT_KEY_ID=${CONDUCTOR_SECURITY_CLIENT_KEY_ID}
+      - CONDUCTOR_SECURITY_CLIENT_SECRET=${CONDUCTOR_SECURITY_CLIENT_SECRET}
+      - CONDUCTOR_SERVER_URL=${CONDUCTOR_SERVER_URL}
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9001/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   inventory:
     build: inventory-service
-    mem_limit: 512m
     ports:
       - "9002:9002"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    #depends_on:
-    #  conductor:
-    #    condition: service_healthy
-
-#volumes:
-#  redis:
-#  postgres:
+      - CONDUCTOR_SECURITY_CLIENT_KEY_ID=${CONDUCTOR_SECURITY_CLIENT_KEY_ID}
+      - CONDUCTOR_SECURITY_CLIENT_SECRET=${CONDUCTOR_SECURITY_CLIENT_SECRET}
+      - CONDUCTOR_SERVER_URL=${CONDUCTOR_SERVER_URL}
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9002/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5

@@ -18,9 +18,7 @@ import java.util.Optional;
 @Slf4j
 public class InventoryWorkers {
     private final InventoryRepository inventoryRepository;
-    /**
-     * Note: Using this setting, up to 5 tasks will run in parallel, with tasks being polled every 200ms
-     */
+
     @WorkerTask(value = "inventory-check", threadCount = 1, pollingInterval = 200)
     public TaskResult inventoryCheck(Order order) {
         List<String> productIds = Arrays.stream(order.getProductIds().split(",")).toList();
@@ -31,15 +29,16 @@ public class InventoryWorkers {
                 // product found
                 Inventory inventory = inventoryOptional.get();
                 if (inventory.getQuantity() > 0) {
+                    // product found, inventory ok
                     inventory.setQuantity(inventory.getQuantity() - 1);
                     inventoryRepository.save(inventory);
                 } else {
-                    // inventory empty
+                    // product found, inventory empty
                     log.info("Verifying inventory (not valid)");
                     return new TaskResult(TaskResult.Result.FAIL, "Inventory empty");
                 }
             } else {
-                // missing product
+                // product not found!
                 log.info("Verifying inventory (not valid)");
                 return new TaskResult(TaskResult.Result.FAIL, "Missing product");
             }

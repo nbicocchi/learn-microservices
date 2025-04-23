@@ -1,4 +1,5 @@
 server.port: 9000
+
 spring:
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;NON_KEYWORDS=order
@@ -17,16 +18,6 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
-
-# Obtain key and secret by logging into https://play.orkes.io/
-# and navigating to applications menu, create an application and generate key/secret
-conductor:
-  security:
-    client:
-      key-id: 06d588a5-99e8-11ef-9ac5-ce590b39fb93
-      secret: JYFcKKnigsorXJnqwmpbCIsxQN7GvosScUOGum7KE2auHmJ8
-  server:
-    url: https://play.orkes.io/api
 
 ---
 spring.config.activate.on-profile: docker

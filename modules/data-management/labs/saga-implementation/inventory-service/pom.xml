@@ -48,7 +48,7 @@
         <dependency>
             <groupId>io.orkes.conductor</groupId>
             <artifactId>orkes-conductor-client-spring</artifactId>
-            <version>4.0.1</version>
+            <version>4.0.8</version>
         </dependency>
     </dependencies>
 

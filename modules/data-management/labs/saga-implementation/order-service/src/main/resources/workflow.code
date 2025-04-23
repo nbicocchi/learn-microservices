@@ -1,0 +1,317 @@
+{
+  "createTime": 1732573598138,
+  "updateTime": 1745427558056,
+  "name": "order-saga",
+  "description": "This SAGA places an order",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "persist-pending-order",
+      "taskReferenceName": "persist-pending-order_ref",
+      "inputParameters": {
+        "orderId": "${workflow.input.orderId}",
+        "productIds": "${workflow.input.productIds}",
+        "customerId": "${workflow.input.customerId}",
+        "creditCardNumber": "${workflow.input.creditCardNumber}",
+        "status": "${workflow.input.status}"
+      },
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "switch-pending-order",
+      "taskReferenceName": "switch-pending-order_ref",
+      "inputParameters": {
+        "result": "${persist-pending-order_ref.output.result}"
+      },
+      "type": "SWITCH",
+      "decisionCases": {
+        "FAIL": [
+          {
+            "name": "delete-pending-order",
+            "taskReferenceName": "delete-pending-order_1_ref",
+            "inputParameters": {
+              "orderId": "${workflow.input.orderId}",
+              "productIds": "${workflow.input.productIds}",
+              "customerId": "${workflow.input.customerId}",
+              "creditCardNumber": "${workflow.input.creditCardNumber}",
+              "status": "${workflow.input.status}"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          },
+          {
+            "name": "terminate",
+            "taskReferenceName": "terminate_ref",
+            "inputParameters": {
+              "terminationStatus": "COMPLETED"
+            },
+            "type": "TERMINATE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          }
+        ]
+      },
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "evaluatorType": "value-param",
+      "expression": "result",
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "payment-check",
+      "taskReferenceName": "payment-check_ref",
+      "inputParameters": {
+        "orderId": "${workflow.input.orderId}",
+        "productIds": "${workflow.input.productIds}",
+        "customerId": "${workflow.input.customerId}",
+        "creditCardNumber": "${workflow.input.creditCardNumber}",
+        "status": "${workflow.input.status}"
+      },
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "switch-payment",
+      "taskReferenceName": "switch-payment_ref",
+      "inputParameters": {
+        "result": "${payment-check_ref.output.result}"
+      },
+      "type": "SWITCH",
+      "decisionCases": {
+        "FAIL": [
+          {
+            "name": "delete-pending-order",
+            "taskReferenceName": "delete-pending-order_ref",
+            "inputParameters": {
+              "orderId": "${workflow.input.orderId}",
+              "productIds": "${workflow.input.productIds}",
+              "customerId": "${workflow.input.customerId}",
+              "creditCardNumber": "${workflow.input.creditCardNumber}",
+              "status": "${workflow.input.status}"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          },
+          {
+            "name": "terminate_1",
+            "taskReferenceName": "terminate_ref_1",
+            "inputParameters": {
+              "terminationStatus": "COMPLETED"
+            },
+            "type": "TERMINATE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          }
+        ]
+      },
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "evaluatorType": "value-param",
+      "expression": "result",
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "inventory-check",
+      "taskReferenceName": "inventory-check_ref",
+      "inputParameters": {
+        "orderId": "${workflow.input.orderId}",
+        "productIds": "${workflow.input.productIds}",
+        "customerId": "${workflow.input.customerId}",
+        "creditCardNumber": "${workflow.input.creditCardNumber}",
+        "status": "${workflow.input.status}"
+      },
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "switch-inventory",
+      "taskReferenceName": "switch-inventory_ref",
+      "inputParameters": {
+        "result": "${inventory-check_ref.output.result}"
+      },
+      "type": "SWITCH",
+      "decisionCases": {
+        "FAIL": [
+          {
+            "name": "delete-pending-order",
+            "taskReferenceName": "delete-pending-order_3_ref",
+            "inputParameters": {
+              "orderId": "${workflow.input.orderId}",
+              "productIds": "${workflow.input.productIds}",
+              "customerId": "${workflow.input.customerId}",
+              "creditCardNumber": "${workflow.input.creditCardNumber}",
+              "status": "${workflow.input.status}"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          },
+          {
+            "name": "terminate_2",
+            "taskReferenceName": "terminate_ref_2",
+            "inputParameters": {
+              "terminationStatus": "COMPLETED"
+            },
+            "type": "TERMINATE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "onStateChange": {},
+            "permissive": false
+          }
+        ]
+      },
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "evaluatorType": "value-param",
+      "expression": "result",
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "confirm-pending-order",
+      "taskReferenceName": "confirm-pending-order_ref",
+      "inputParameters": {
+        "orderId": "${workflow.input.orderId}",
+        "productIds": "${workflow.input.productIds}",
+        "customerId": "${workflow.input.customerId}",
+        "creditCardNumber": "${workflow.input.creditCardNumber}",
+        "status": "${workflow.input.status}"
+      },
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    }
+  ],
+  "inputParameters": [
+    "orderId",
+    "productIds",
+    "customerId",
+    "creditCardNumber",
+    "status"
+  ],
+  "outputParameters": {},
+  "failureWorkflow": "",
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "nbicocchi@unimore.it",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {},
+  "inputTemplate": {},
+  "enforceSchema": true
+}

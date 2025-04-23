@@ -21,20 +21,21 @@ public class OrderWorkers {
         log.info("persisting {}...", order);
         Optional<Order> existingOrder = orderRepository.findByOrderId(order.getOrderId());
         if (existingOrder.isPresent()) {
-            log.info("persisting Order(not valid)");
             return new TaskResult(TaskResult.Result.FAIL, "Duplicate order");
         }
-        log.info("persisting Order(valid)");
         orderRepository.save(order);
         return new TaskResult(TaskResult.Result.PASS, "");
     }
 
     @WorkerTask(value = "delete-pending-order", threadCount = 1, pollingInterval = 200)
     public TaskResult deletePendingOrder(Order order) {
-        log.info("deleting {}...", order);
-        log.info("deleting Order(SAGA aborted)");
+        log.info("rejecting {}...", order);
         Optional<Order> existingOrder = orderRepository.findByOrderId(order.getOrderId());
-        existingOrder.ifPresent(orderRepository::delete);
+        if (existingOrder.isPresent()) {
+            Order existing = existingOrder.get();
+            existing.setStatus(Order.OrderStatus.REJECTED);
+            orderRepository.save(existing);
+        }
         return new TaskResult(TaskResult.Result.PASS, "");
     }
 
