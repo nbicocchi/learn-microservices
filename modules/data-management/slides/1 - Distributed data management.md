@@ -281,6 +281,12 @@ To pattern suggests to **separate read and write concerns at the architectural l
 - **CQRS with CP**: Used in systems that require **immediate consistency**, ensuring that read and write operations are strictly synchronized (when sync after write is not available, reads fail).
 - **CQRS with AP**: Common in **scalable, distributed systems** where reads are fast and based on an **eventually consistent** model (when sync after write is not available, reads might be inconsistent).
 
+## Key issues
+
+* **Increased complexity:** implementing CQRS can introduce additional complexity to your system. You need to manage the flow of data between command and query models, potentially duplicating data for different models.
+* **Eventual consistency:** CQRS can lead to eventual consistency issues, where query models may not reflect the most recent changes made by commands immediately. Dealing with this inconsistency requires careful handling and synchronization.
+* **Data duplication:** CQRS often involves duplicating data between command and query models, leading to increased storage requirements and complexity in keeping data synchronized.
+
 ## References
 * [Orkes Conductor](https://www.orkes.io/what-is-conductor)
 * [Eclipse MicroProfile LRA](https://github.com/eclipse/microprofile-lra)

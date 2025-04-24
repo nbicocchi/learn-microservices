@@ -1,4 +1,4 @@
-package com.nbicocchi.math.handler;
+package com.nbicocchi.order.events;
 
 import com.nbicocchi.math.model.Event;
 import com.nbicocchi.math.model.ProxyRequest;
@@ -28,17 +28,7 @@ public class EventReceiver {
     @Bean
     public Consumer<Event<String, ProxyRequest>> primeProcessor() {
         return event -> {
-            log.info("[RECV] -> {}", event);
-            List<Long> primes = primeService.computePrimes(
-                    event.getData().lowerBound(),
-                    event.getData().upperBound());
 
-            Event<String, Iterable<Long>> newEvent = new Event<>(
-                    UUID.randomUUID().toString(),
-                    primes
-            );
-            sendMessage("primeProcessor-out-0", newEvent);
-            log.info("[SENT] -> {}", newEvent);
         };
     }
 

@@ -297,11 +297,7 @@ The following request allows us to delete an order with a specific ID.
 curl --location --request DELETE 'http://localhost:9000/order/<orderID>'
 ```
 
-## Main issues
 
-* **Increased complexity:** implementing CQRS can introduce additional complexity to your system. You need to manage the flow of data between command and query models, potentially duplicating data for different models.
-* **Eventual consistency:** CQRS can lead to eventual consistency issues, where query models may not reflect the most recent changes made by commands immediately. Dealing with this inconsistency requires careful handling and synchronization.
-* **Data duplication:** CQRS often involves duplicating data between command and query models, leading to increased storage requirements and complexity in keeping data synchronized.
 
 ## Resources
 * https://www.geeksforgeeks.org/cqrs-design-pattern-in-microservices/#challenges-of-cqrs-design-pattern-in-microservices
