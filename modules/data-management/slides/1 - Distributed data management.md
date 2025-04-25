@@ -236,6 +236,107 @@ In the Saga Choreography pattern, each microservice that is part of the transact
 The Choreography pattern is effective for scenarios with fewer participants, as it eliminates the need for a central orchestrator, leading to a more decentralized approach. However, this requires frequent communication, often asynchronous through a **message broker**. While it offers flexibility, the implementation becomes more **complex**, as each participant must manage its own interactions and state transitions.
 
 
+### Choreography-based coordination
+
+Example 1: Customer Support Triage with LLM and Notifications
+
+- A **SupportTicketService** receives a ticket and emits `TicketCreated`.
+- An **LLMAnalyzerService** listens and classifies the issue (e.g., billing, technical), emits `TicketClassified`.
+- A **NotificationService** listens to send an email/slack alert to the appropriate team.
+
+```mermaid
+flowchart TD
+  SupportTicketService -->|TicketCreated| LLMAnalyzerService
+  LLMAnalyzerService -->|TicketClassified| NotificationService
+```
+
+Example 2: Media Upload and Processing
+
+- A **MediaUploadService** emits `MediaUploaded`.
+- **ThumbnailService**, **AIImageTaggerService**, and **CDNUploaderService** all react in parallel:
+  - generate preview
+  - auto-tag images with AI
+  - push to CDN
+
+```mermaid
+flowchart TD
+  MediaUploadService -->|MediaUploaded| ThumbnailService
+  MediaUploadService -->|MediaUploaded| AIImageTaggerService
+  MediaUploadService -->|MediaUploaded| CDNUploaderService
+```
+
+Example 3: Document Approval via Email Workflow
+
+- A **DocumentSubmissionService** emits `DocumentSubmitted`.
+- A **PDFGeneratorService** creates a PDF version and emits `DocumentReady`.
+- An **EmailService** sends the document to a reviewer.
+- A **WebhookService** receives the approval or rejection response via email click.
+
+```mermaid
+flowchart TD
+  DocumentSubmissionService -->|DocumentSubmitted| PDFGeneratorService
+  PDFGeneratorService -->|DocumentReady| EmailService
+  EmailService -->|Reviewer Clicks| WebhookService
+```
+
+### Orchestration-based coordination
+
+Example 1: Order Fulfillment with an Orchestrator
+
+- A **CustomerOrderService** emits `OrderPlaced`.
+- An **OrderOrchestrator** listens to this event, then triggers:
+  - **PaymentProcessingService** to process the payment.
+  - **InventoryService** to reserve items.
+  - **ShippingService** to arrange delivery.
+- Once all services finish, the orchestrator emits `OrderFulfilled`.
+
+```mermaid
+flowchart TD
+  CustomerOrderService -->|OrderPlaced| OrderOrchestrator
+  OrderOrchestrator -->|PaymentProcessed| PaymentProcessingService
+  OrderOrchestrator -->|StockReserved| InventoryService
+  OrderOrchestrator -->|ShipmentArranged| ShippingService
+  OrderOrchestrator -->|OrderFulfilled| NotificationService
+```
+
+Example 2: User Onboarding Process with an Orchestrator
+
+- A **UserRegistrationService** emits `UserRegistered`.
+- An **OnboardingOrchestrator** listens and triggers:
+  - **ProfileCreationService** to create a user profile.
+  - **WelcomeEmailService** to send a welcome email.
+  - **AuditService** to log the process.
+- Once all tasks are completed, the orchestrator emits `OnboardingComplete`.
+
+```mermaid
+flowchart TD
+  UserRegistrationService -->|UserRegistered| OnboardingOrchestrator
+  OnboardingOrchestrator -->|ProfileCreated| ProfileCreationService
+  OnboardingOrchestrator -->|WelcomeEmailSent| WelcomeEmailService
+  OnboardingOrchestrator -->|AuditLogged| AuditService
+  OnboardingOrchestrator -->|OnboardingComplete| NotificationService
+```
+
+Example 3: Video Processing with an Orchestrator
+
+- A **VideoUploadService** emits `VideoUploaded`.
+- A **VideoProcessingOrchestrator** listens to this event and triggers:
+  - **TranscodingService** to transcode the video.
+  - **ThumbnailGenerationService** to create thumbnails.
+  - **MetadataExtractionService** to analyze video metadata.
+- Once all tasks are done, the orchestrator emits `VideoProcessed`.
+
+```mermaid
+flowchart TD
+  VideoUploadService -->|VideoUploaded| VideoProcessingOrchestrator
+  VideoProcessingOrchestrator -->|VideoTranscoded| TranscodingService
+  VideoProcessingOrchestrator -->|ThumbnailsGenerated| ThumbnailGenerationService
+  VideoProcessingOrchestrator -->|MetadataExtracted| MetadataExtractionService
+  VideoProcessingOrchestrator -->|VideoProcessed| NotificationService
+```
+
+
+
 ## The CQRS Pattern
 
 ### Motivation
@@ -271,21 +372,24 @@ These queries often involve aggregations and complex joins across multiple table
 ![](images/cqrs-pattern.webp)
 
 To pattern suggests to **separate read and write concerns at the architectural level** and use dedicated microservices for **READ** and **WRITE** operations.
+
+**Benefits:**
+
 - **Independent Scaling**: Read and write services can be scaled separately based on demand. For example, in a flight-booking application, the read service can be scaled out to handle heavy traffic, while the write service remains relatively smaller.
 - **Performance Optimization**: Each service can use different data storage strategies — denormalized views, caching, or read replicas for fast queries, while the write service ensures data integrity.
 - **Fault Isolation**: A failure in the write service (e.g., a database insert issue) does not impact read operations, improving system availability.
+
+**Challenges:**
+
+* **Increased complexity:** implementing CQRS can introduce additional complexity to your system. You need to manage the flow of data between command and query models, potentially duplicating data for different models.
+* **Eventual consistency:** CQRS can lead to eventual consistency issues, where query models may not reflect the most recent changes made by commands immediately. Dealing with this inconsistency requires careful handling and synchronization.
+* **Data duplication:** CQRS often involves duplicating data between command and query models, leading to increased storage requirements and complexity in keeping data synchronized.
 
 ### CQRS pattern and CAP theorem
 **CQRS is inherently neither AP nor CP**, but its implementation can lean toward **AP** or **CP** depending on the consistency model used:
 
 - **CQRS with CP**: Used in systems that require **immediate consistency**, ensuring that read and write operations are strictly synchronized (when sync after write is not available, reads fail).
 - **CQRS with AP**: Common in **scalable, distributed systems** where reads are fast and based on an **eventually consistent** model (when sync after write is not available, reads might be inconsistent).
-
-## Key issues
-
-* **Increased complexity:** implementing CQRS can introduce additional complexity to your system. You need to manage the flow of data between command and query models, potentially duplicating data for different models.
-* **Eventual consistency:** CQRS can lead to eventual consistency issues, where query models may not reflect the most recent changes made by commands immediately. Dealing with this inconsistency requires careful handling and synchronization.
-* **Data duplication:** CQRS often involves duplicating data between command and query models, leading to increased storage requirements and complexity in keeping data synchronized.
 
 ## References
 * [Orkes Conductor](https://www.orkes.io/what-is-conductor)
