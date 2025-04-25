@@ -1,25 +1,6 @@
 # Labs
 
-## Lab 1: Orchestrated Saga
-
-```mermaid
-flowchart TD
-    Order_Pending --> persist-pending-order
-    persist-pending-order --> payment-check
-    payment-check -->|Fail| delete-pending-order
-    payment-check --> inventory-check
-    inventory-check -->|Fail| delete-pending-order
-    delete-pending-order -->|Success| Order_Rejected
-    inventory-check --> confirm-pending-order
-    confirm-pending-order -->|Success| Order_Approved
-
-    classDef roundedBox fill:#f9f,stroke:#333,stroke-width:2px,rx:25,ry:25;
-    classDef rectBox fill:#ccf,stroke:#333,stroke-width:2px;
-
-    class persist-pending-order,payment-check,inventory-check,confirm-pending-order,delete-pending-order roundedBox;
-    class OrderService rectBox;
-
-```
+## Lab 1: Orchestration-based Saga
 
 In this exercise, three services collaborate to implement a **Saga Pattern** using Orkes Conductor. The services are:
 
@@ -27,17 +8,59 @@ In this exercise, three services collaborate to implement a **Saga Pattern** usi
 2. **Payment Service**: Validates and processes the customer’s payment.
 3. **Inventory Service**: Checks product availability and reserves the items in the warehouse.
 
-### Updated Workflow Design
+```mermaid
+flowchart TD
+  Client -->|POST /order| OrderService
+  OrderService -->|Start Workflow| OrkesConductor
+  OrkesConductor -->|Confirm Order| OrderService
+  OrkesConductor -->|Reject Order| OrderService
+  OrkesConductor -->|Check Payment| PaymentService
+  PaymentService -->|Payment Success| OrkesConductor
+  PaymentService -->|Payment Failed| OrkesConductor
+  OrkesConductor -->|Check Inventory| InventoryService
+  InventoryService -->|Inventory Success| OrkesConductor
+  InventoryService -->|Inventory Failed| OrkesConductor
+  
+```
 
-1. **persist-pending-order** (Order Service): Saves the order with status `PENDING` in the database.
-2. **payment-check** (Payment Service): Validates and charges the customer’s card and persist the result of the payment.
-3. **inventory-check** (Inventory Service): Reserves products.
-4. **confirm-pending-order** (Order Service): Changes the order status to `APPROVED`.
-5. **delete-pending-order** (Order Service): Changes the order status to `REJECTED` if both `payment-check` and `inventory-check` fail.
+## Lab 2: Choreography-based Saga
 
-Compensating tasks:
-- If `payment-check` fails: run `delete-pending-orde`.
-- If `inventory-check` fails: run `delete-pending-orde`.
+In this exercise, three services collaborate to implement a **Saga Pattern** using asynchronous messaging. The services are:
+
+1. **Order Service**: Accepts a POST request to create an order (`POST /order`), and starts the workflow.
+2. **Payment Service**: Validates and processes the customer’s payment.
+3. **Inventory Service**: Checks product availability and reserves the items in the warehouse.
+
+```mermaid
+flowchart TD
+  Client -->|POST /order| OrderService
+  OrderService -->|order.created| PaymentService
+  PaymentService -->|payment.ok| InventoryService
+  PaymentService -->|payment.failed| OrderService
+  InventoryService -->|inventory.ok| OrderService
+  InventoryService -->|inventory.failed| OrderService
+```
+
+## Lab 3: CQRS
+
+In this exercise, three services collaborate to implement a **Saga Pattern** using asynchronous messaging. The services are:
+
+1. **Order Service**: Accepts a POST request to create an order (`POST /order`), and starts the workflow.
+2. **Payment Service**: Validates and processes the customer’s payment.
+3. **Inventory Service**: Checks product availability and reserves the items in the warehouse.
+
+```mermaid
+flowchart TD
+  Client -->|POST /order| OrderService-Write
+  OrderService-Write -->|order.created| PaymentService
+  OrderService-Write -->|order.confirmed| OrderService-Read
+  PaymentService -->|payment.ok| InventoryService
+  PaymentService -->|payment.failed| OrderService-Write
+  InventoryService -->|inventory.ok| OrderService-Write
+  InventoryService -->|inventory.failed| OrderService-Write
+```
+
+
 
 # Questions
 1. What challenges arise in maintaining data consistency when using the one database per service pattern in microservices?
