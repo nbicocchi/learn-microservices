@@ -233,7 +233,7 @@ In the Saga Choreography pattern, each microservice that is part of the transact
 
 ![saga orchestration](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/saga-orchestration.png)
 
-The Choreography pattern is effective for scenarios with fewer participants, as it eliminates the need for a central orchestrator, leading to a more decentralized approach. However, this requires frequent communication, often asynchronous through a **message broker**. While it offers flexibility, the implementation becomes more **complex**, as each participant must manage its own interactions and state transitions.
+The Choreography pattern eliminates the need for a central orchestrator (single point of failure), enabling a faster (asynchronous) and loosely coupled approach (services are completely independent as they don't call each other or an orchestrator). However, as the number of participants increases, the implementation becomes more **complex**, as each participant must manage its own interactions and state transitions.
 
 
 ### Choreography-based coordination
@@ -392,6 +392,6 @@ To pattern suggests to **separate read and write concerns at the architectural l
 - **CQRS with AP**: Common in **scalable, distributed systems** where reads are fast and based on an **eventually consistent** model (when sync after write is not available, reads might be inconsistent).
 
 ## References
-* [Orkes Conductor](https://www.orkes.io/what-is-conductor)
-* [Eclipse MicroProfile LRA](https://github.com/eclipse/microprofile-lra)
-* [Eventuate Tram Saga](https://eventuate.io/docs/manual/eventuate-tram/latest/getting-started-eventuate-tram-sagas.html)
+* https://www.orkes.io/what-is-conductor
+* https://www.baeldung.com/cqrs-event-sourcing-java
+* https://www.baeldung.com/orkes-conductor-saga-pattern-spring-boot
