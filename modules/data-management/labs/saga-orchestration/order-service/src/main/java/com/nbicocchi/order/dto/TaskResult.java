@@ -1,4 +1,4 @@
-package com.nbicocchi.order.pojos;
+package com.nbicocchi.order.dto;
 
 public record TaskResult(Result result, String reason) {
 

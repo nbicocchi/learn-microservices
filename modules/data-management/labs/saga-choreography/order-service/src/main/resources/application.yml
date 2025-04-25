@@ -1,5 +1,10 @@
 server.port: 9000
 
+management:
+  health:
+    rabbit:
+      enabled: false
+
 spring.cloud.stream:
   function:
     definition: sagaProcessor
@@ -19,7 +24,8 @@ spring.cloud.stream:
           routingKeyExpression: headers['routingKey']
       sagaProcessor-in-0:
         consumer:
-          binding-routing-key: payment.#,inventory.#
+          bindingRoutingKey: payment.#,inventory.#
+          bindingRoutingKeyDelimiter: ","
   binders:
     local_rabbit:
       type: rabbit

@@ -2,13 +2,12 @@ services:
   lavinmq:
     image: cloudamqp/lavinmq:latest
     ports:
-      - 5672:5672
       - 15672:15672
     healthcheck:
       test: [ "CMD", "lavinmqctl", "status" ]
-      interval: 5s
-      timeout: 2s
-      retries: 60
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   order:
     build: order-service
@@ -21,6 +20,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy
 
   payment:
     build: payment-service
@@ -33,6 +35,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy
 
   inventory:
     build: inventory-service
@@ -45,3 +50,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy

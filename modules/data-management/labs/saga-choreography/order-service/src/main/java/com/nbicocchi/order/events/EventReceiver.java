@@ -22,7 +22,7 @@ public class EventReceiver {
             switch (event.getKey()) {
                 case "payment.invalid" -> managePaymentInvalid(event.getData());
                 case "inventory.invalid" -> manageInventoryInvalid(event.getData());
-                case "inventory.valid" -> manageInventoryInvalid(event.getData());
+                case "inventory.valid" -> manageInventoryValid(event.getData());
             }
         };
     }

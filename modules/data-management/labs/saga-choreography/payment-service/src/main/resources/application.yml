@@ -1,5 +1,10 @@
 server.port: 9001
 
+management:
+  health:
+    rabbit:
+      enabled: false
+
 spring.cloud.stream:
   function:
     definition: sagaProcessor

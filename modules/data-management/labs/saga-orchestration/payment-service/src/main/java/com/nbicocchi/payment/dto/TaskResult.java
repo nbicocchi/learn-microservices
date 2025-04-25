@@ -1,4 +1,4 @@
-package com.nbicocchi.inventory.pojos;
+package com.nbicocchi.payment.dto;
 
 public record TaskResult(Result result, String reason) {
 

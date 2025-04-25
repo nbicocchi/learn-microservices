@@ -1,11 +1,30 @@
 server.port: 9002
 
+management:
+  health:
+    rabbit:
+      enabled: false
+
 spring.cloud.stream:
+  function:
+    definition: sagaProcessor
   bindings:
-    message-out-0:
-      binder: local_rabbit
+    sagaProcessor-in-0:
+      destination: app.events
       contentType: application/json
-      destination: queue.messages
+      binder: local_rabbit
+    sagaProcessor-out-0:
+      destination: app.events
+      contentType: application/json
+      binder: local_rabbit
+  rabbit:
+    bindings:
+      sagaProcessor-out-0:
+        producer:
+          routingKeyExpression: headers['routingKey']
+      sagaProcessor-in-0:
+        consumer:
+          binding-routing-key: payment.#
   binders:
     local_rabbit:
       type: rabbit

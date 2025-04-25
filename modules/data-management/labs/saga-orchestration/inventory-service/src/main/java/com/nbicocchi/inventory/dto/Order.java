@@ -1,4 +1,4 @@
-package com.nbicocchi.inventory.pojos;
+package com.nbicocchi.inventory.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

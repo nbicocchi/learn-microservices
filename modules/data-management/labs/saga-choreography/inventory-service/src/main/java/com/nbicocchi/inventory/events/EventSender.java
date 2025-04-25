@@ -1,4 +1,4 @@
-package com.nbicocchi.payment.events;
+package com.nbicocchi.inventory.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;

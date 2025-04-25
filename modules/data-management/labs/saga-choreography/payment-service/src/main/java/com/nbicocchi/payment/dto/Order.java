@@ -1,4 +1,4 @@
-package com.nbicocchi.payment.pojos;
+package com.nbicocchi.payment.dto;
 
 import lombok.*;
 

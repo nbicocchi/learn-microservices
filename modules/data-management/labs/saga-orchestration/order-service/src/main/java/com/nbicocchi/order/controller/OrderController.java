@@ -1,7 +1,7 @@
 package com.nbicocchi.order.controller;
 
 import com.nbicocchi.order.persistence.model.Order;
-import com.nbicocchi.order.service.OrderSagaWorkflow;
+import com.nbicocchi.order.workers.OrderWorkers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 @RestController
 public class OrderController {
-    private final OrderSagaWorkflow workflowService;
+    private final OrderWorkers orderWorkers;
 
     /**
      * curl -X POST http://localhost:9000/order \
@@ -32,6 +32,6 @@ public class OrderController {
     @PostMapping(value = "/order", produces = "application/json")
     public ResponseEntity<Map<String, Object>> triggerOrderFlow(@RequestBody Order order) {
         log.info("Starting order flow for: {}", order);
-        return ResponseEntity.ok(workflowService.startOrderFlow(order));
+        return ResponseEntity.ok(orderWorkers.startOrderFlow(order));
     }
 }
