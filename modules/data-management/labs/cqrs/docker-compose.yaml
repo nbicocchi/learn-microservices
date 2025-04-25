@@ -1,0 +1,70 @@
+services:
+  lavinmq:
+    image: cloudamqp/lavinmq:latest
+    ports:
+      - 15672:15672
+    healthcheck:
+      test: [ "CMD", "lavinmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  order:
+    build: order-service
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9000/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  order-read:
+    build: order-read-service
+    ports:
+      - "9003:9003"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9003/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  payment:
+    build: payment-service
+    ports:
+      - "9001:9001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9001/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  inventory:
+    build: inventory-service
+    ports:
+      - "9002:9002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9002/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy
