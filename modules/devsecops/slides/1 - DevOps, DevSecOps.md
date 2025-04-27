@@ -68,7 +68,7 @@ However, it neglects the operational aspects of software production leading to f
    This phase involves planning and developing the software. Development is broken into smaller tasks, following Agile methodologies that focus on “just-in-time” requirements. It includes defining user stories and refining the product backlog.
 
 2. **Continuous Integration**  
-   In this phase, developers write code and push changes to the source code management system. All code changes are merged frequently and validated through automated builds, tests, and security checks. This helps the team identify issues early in the development process.
+   In this phase, developers write code and push changes to the source code management system. All code changes are merged frequently and validated through automated builds, tests, and security checks. This helps the team identify issues early in the development process. **Continuous Delivery** refers to the continuous creation of an updated software artifact (e.g., mvn package/docker build).
 
 3. **Continuous Testing**  
    This phase involves writing and running automated test cases using various tools such as Selenium, JUnit, and TestNG. Automated tests help ensure that the software is functioning correctly and meets quality standards.
@@ -84,6 +84,107 @@ However, it neglects the operational aspects of software production leading to f
 
 7. **Continuous Operations**  
    This phase ensures that systems are available 24/7. It focuses on building highly available and scalable infrastructure through automation to minimize downtime and ensure reliability.
+
+### Real-world example
+
+1. **Terraform** provisions infrastructure:
+   - Terraform is used to **create cloud resources**, such as virtual machines (VMs), storage, networks, and managed Kubernetes clusters (like EKS, GKE, or AKS).
+
+   ```hcl
+   resource "aws_instance" "example" {
+     ami           = "ami-12345678"
+     instance_type = "t2.micro"
+   }
+   ```
+
+2. **Puppet** configures the servers:
+   - Once the infrastructure is provisioned, **Puppet** installs software packages, configures security settings, and ensures servers are properly configured.
+   - Example: Puppet installs Docker and Kubernetes components on the provisioned VMs.
+
+   ```puppet
+   package { 'docker':
+     ensure => installed,
+   }
+
+   service { 'docker':
+     ensure => running,
+     enable => true,
+   }
+   ```
+
+3. **Maven** builds and manages Java projects:
+   - Developers write Java code and commit it to the Git repository.
+   - **Maven** is used to handle tasks like compiling the code, running tests, and packaging it into a `.jar` or `.war` file.
+
+   ```bash
+   mvn clean install
+   ```
+
+4. **Jenkins** / **GitLab CI/CD** automates build, test, and deploy cycles:
+   - **Jenkins** is set up to automate the Maven build and test process.
+   - On every code push, Jenkins triggers the Maven build to run tests and create a deployable artifact.
+   - Jenkins also deploys the artifact to the appropriate environment (like staging or production).
+
+   ```groovy
+   pipeline {
+     agent any
+     stages {
+       stage('Build') {
+         steps {
+           sh 'mvn clean install'
+         }
+       }
+       stage('Deploy') {
+         steps {
+           // Deploy the artifact to Docker or Kubernetes
+           sh 'kubectl apply -f deployment.yaml'
+         }
+       }
+     }
+   }
+   ```
+
+5. **Docker** packages the app into containers:
+   - After the build, the artifact (e.g., `.jar` file) is packaged into a **Docker container** using a `Dockerfile`.
+
+   ```dockerfile
+   FROM openjdk:11-jdk
+   COPY target/myapp.jar /app/myapp.jar
+   ENTRYPOINT ["java", "-jar", "/app/myapp.jar"]
+   ```
+
+6. **Kubernetes** orchestrates and scales containers:
+   - The Docker containers are deployed into a **Kubernetes cluster**.
+   - Kubernetes manages scaling, networking, and fault tolerance for the app containers, ensuring high availability.
+
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: myapp-deployment
+   spec:
+     replicas: 3
+     selector:
+       matchLabels:
+         app: myapp
+     template:
+       metadata:
+         labels:
+           app: myapp
+       spec:
+         containers:
+           - name: myapp-container
+             image: myapp:latest
+             ports:
+               - containerPort: 8080
+   ```
+
+7. **OpenTelemetry** monitors the systems:
+   - **OpenTelemetry** is integrated into the Kubernetes cluster to collect application performance metrics, traces, and logs from your containers and Kubernetes services.
+
+8. **Grafana** visualizes metrics and traces:
+   - The data collected by **OpenTelemetry** is sent to a backend storage (like **Prometheus**).
+   - **Grafana** is used to visualize this data by creating dashboards to monitor system health, performance, and business metrics.
 
 ### Key Performance Indicators (KPIs)
 
@@ -114,24 +215,31 @@ However, it neglects the operational aspects of software production leading to f
 - **Mean Time Between Failures (MTBF)**: The average time between successive system failures. A high MTBF suggests system stability, while low MTBF calls for improvements in reliability and fault tolerance.
 
 ### The DORA metrics
-The DORA metrics were developed by the DevOps Research and Assessment (DORA) organization, which spent years studying engineering teams and their DevOps processes. 
+The DORA metrics were developed by the DevOps Research and Assessment (DORA) organization, which spent years studying engineering teams and their DevOps processes. They also deliver an interesting [annual report](../../../books/dora-report-2024.pdf).
 
-These metrics are valuable because they correlate with business outcomes and employee satisfaction, offering industry standards for benchmarking. Only four key metrics are needed to differentiate elite engineering teams from mediocre ones.
+![](images/dora-metrics.png)
 
-![](images/dora.png)
+These metrics are valuable because:
+* they correlate with business outcomes and employee satisfaction, offering industry standards for benchmarking. 
+* push teams to focus on continuous improvement.
+* only four key metrics are needed to differentiate elite engineering teams from mediocre ones.
+
+![](images/dora-categories.png)
 
 ## The DevSecOps model
 
-Application security has been addressed after development is completed, and by a separate team of people, separate from both the development team and the operations team.
-This approach **slowed down** the development process and the reaction time.
 
-Also, **security tools themselves have historically been isolated**. Each application security test looked only at that application, and often only at the source code of that application. This made it hard for anyone to have an organization-wide view of security issues, or to understand any of the software risks in the context of the production environment.
+## Motivation
 
-Incorporating application security into a unified DevSecOps process, from the initial design phase through to implementation, allows organizations to seamlessly integrate the three core pillars of software creation and delivery: development, security, and operations. This alignment ensures that **security is treated as a continuous priority rather than an afterthought**, fostering a more efficient, collaborative, and secure approach to building and maintaining applications.
+**Application security has traditionally been handled after development is completed**, often by a team separate from both the development and operations teams. This approach slowed down development and delayed response times to security issues.
+
+Furthermore, **security tools have typically operated in isolation**, with each application security test focusing only on a single application, often just examining its source code. This made it difficult to gain an **organization-wide view of security concerns** or to assess software risks in the context of the production environment.
 
 ### Definition
 
-**DevSecOps** primary goal is to embed security practices into the continuous integration and continuous delivery (CI/CD) pipeline across both **pre-production** (development, testing, staging) and **production** (operations) environments. 
+By integrating application security into a unified DevSecOps process—from the initial design phase to implementation—organizations can align development, security, and operations. **This approach ensures that security is continuously prioritized throughout the software lifecycle**, resulting in a more efficient, collaborative, and secure process for building and maintaining applications.
+
+The primary goal of **DevSecOps** is to embed security practices into the continuous integration and continuous delivery (CI/CD) pipeline across both **pre-production** (development, testing, staging) and **production** (operations) environments.
 
 By adopting DevSecOps, teams can **release higher-quality software more quickly** and **detect and respond to software vulnerabilities** in production with greater efficiency.
 
@@ -139,31 +247,29 @@ By adopting DevSecOps, teams can **release higher-quality software more quickly*
 
 ### Challenges
 
-One of the primary challenges in implementing DevSecOps is addressing the people and culture aspect. It often **requires retraining DevOps teams to understand security best practices** and effectively use new security tools. This cultural shift is crucial for embedding security into the development process from the start.
+One of the primary challenges in implementing DevSecOps is addressing the people and culture aspect. It often **requires retraining DevOps teams to understand security best practices** and effectively use new security tools. This cultural shift is essential for embedding security into the development process from the outset.
 
-Another key challenge is **selecting the right security tools and integrating them seamlessly into your DevOps workflow***. The more automated and well-integrated your DevSecOps tooling is within the CI/CD pipeline, the less training and cultural adjustment will be needed. This seamless integration enables security measures to be applied continuously and without friction. However, **simply automating and continuing to use traditional security tools may not be the best approach**. A thoughtful evaluation of new tools and practices can help build a more effective and adaptive security strategy within your DevOps processes.
+Another key challenge is **selecting the right security tools and integrating them seamlessly into your DevOps workflow**. The more automated and well-integrated your DevSecOps tooling is within the CI/CD pipeline, the less training and cultural adjustment will be needed. This seamless integration ensures that security measures are applied continuously and without friction. 
 
 ### Key Performance Indicators (KPIs)
 
-**Number of Security Vulnerabilities** Tracks the number of vulnerabilities identified in the application or infrastructure. This helps assess the effectiveness of proactive security measures like automated scanning.
+1. **Mean Time to Detect (MTTD) and Mean Time to Remediate (MTTR)**
+   - **MTTD**: This metric measures the average time taken to detect security incidents or vulnerabilities. It indicates the effectiveness of security monitoring, detection systems, and incident response processes in identifying potential threats.
+   - **MTTR**: This metric measures the average time required to remediate or mitigate security incidents or vulnerabilities after they are detected. It reflects the efficiency of incident response, patch management, and vulnerability resolution processes.
 
-**Security Test Coverage** Measures the percentage of code or systems covered by security testing (e.g., static analysis, dynamic analysis, penetration testing). Higher coverage reduces the likelihood of undetected vulnerabilities.
+2. **Number of Security Vulnerabilities**  
+   This metric quantifies the total number of vulnerabilities identified during the development cycle. It helps track trends in the identification, remediation, and resolution of security flaws, ensuring that they are addressed promptly before deployment.
 
-**Patch Deployment Time** The average time it takes to deploy a security patch across the system. Quicker deployment times improve an organization's ability to respond to discovered vulnerabilities.
+3. **Code Review Findings**  
+   This metric tracks the number and severity of security issues discovered during code reviews. It reflects the effectiveness of secure coding practices, the use of code analysis tools, and developer awareness in identifying and addressing code-level vulnerabilities.
 
-**Percentage of Automated Security Scans** Tracks the percentage of security scans that are automated within the CI/CD pipeline. Higher automation typically leads to faster and more frequent identification of security issues.
+4. **Deployment Frequency**  
+   This metric measures how frequently software deployments are made to production. It indicates how seamlessly security practices are integrated into the deployment pipeline and highlights the ability to deliver secure software at a fast pace while maintaining quality.
 
-**False Positive Rate** Measures the percentage of identified vulnerabilities that turn out to be non-issues. A lower false positive rate indicates the accuracy of security tools and improves overall efficiency.
-
-**Percentage of Security Issues Fixed in the Current Sprint** This KPI tracks how many security issues are resolved within the same sprint or development cycle they are identified in, promoting a proactive security approach.
-
-**Security Incidents per Deployment** Measures the number of security incidents (breaches, vulnerabilities) detected per deployment. A lower number suggests better security practices and controls in place.
-
-**Code Review and Vulnerability Fix Time** Measures the time it takes for security vulnerabilities to be addressed during code reviews. A shorter fix time indicates a more agile security response.
-
-**Security-Related Downtime** Measures the downtime caused by security incidents, such as breaches or vulnerabilities being exploited. Reducing downtime helps maintain business continuity.
-
-**Security Automation Adoption Rate** The percentage of security tasks automated within the DevSecOps pipeline. Higher adoption rates often correlate with more efficient and consistent security practices.
+5. **Security Test Coverage**  
+   This metric evaluates the extent to which security testing is performed during the development lifecycle. It assesses the thoroughness of security assessments, including penetration testing, vulnerability scanning, and static/dynamic analysis, ensuring that security issues are detected early in the process.
 
 ## Resources
 - [DevOps at Netflix](https://www.youtube.com/watch?v=m-gkDpmdTqI)
+- [DORA Metrics: We've Been Using Them Wrong](https://www.youtube.com/watch?v=H3nlvHQHb5E)
+- [Terraform in 100 seconds](https://www.youtube.com/watch?v=tomUWcQ0P3k)
