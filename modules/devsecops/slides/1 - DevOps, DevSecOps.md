@@ -229,7 +229,7 @@ These metrics are valuable because:
 ## The DevSecOps model
 
 
-## Motivation
+### Motivation
 
 **Application security has traditionally been handled after development is completed**, often by a team separate from both the development and operations teams. This approach slowed down development and delayed response times to security issues.
 
