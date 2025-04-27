@@ -1,8 +1,14 @@
 # DevOps, DevSecOps (GitHub Actions, GitGuardian, SemGrep, Trivy, Google Cloud VM)
 
-## Introduction to GitHub Actions
+## GitHub Actions vs Jenkins
 
-GitHub Actions is a workflow automation tool integrated into GitHub repositories. It allows developers to define custom workflows for automating tasks such as building, testing, and deploying applications. GitHub Actions supports **Continuous Integration (CI)** and **Continuous Deployment (CD)** processes, enabling teams to ensure code quality and deliver software quickly.
+GitHub Actions provides the same basic functionalities as Jenkins but is more integrated into GitHub’s platform requiring no installation or maintenance. Jenkins is a standalone, highly customizable tool that requires setup, maintenance, and can integrate with a wider range of third-party tools.
+
+They both provide:
+
+1. **Automation**: Like Jenkins, GitHub Actions automates tasks such as building, testing, and deploying software applications.
+2. **CI/CD Pipelines**: Both GitHub Actions and Jenkins allow you to define pipelines that handle various stages of the software development lifecycle, such as compiling code, running tests, and deploying artifacts.
+3. **Integration with Code Repositories**: Both integrate closely with version control systems. GitHub Actions is tightly integrated with GitHub repositories, while Jenkins can integrate with GitHub or other SCM systems.
 
 ### Key Concepts of GitHub Actions
 
