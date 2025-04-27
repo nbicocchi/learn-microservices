@@ -1,73 +1,17 @@
 # DevOps, DevSecOps
 
-## Introduction
-
-After completing the development of our microservice, the next step is to make it available to other microservices in a production environment. To achieve this, we need to push the container image to a **Container Registry**, which stores all versions of our container image.
-
-To **build** and **publish** a new version of our container image, we first need to **log in** to the container registry:
-
-```bash
-docker login registry.gitlab.com -u myusername --password-stdin
-```
-
-Next, we **build** the image with the **latest** tag:
-
-```bash
-docker build -t registry.gitlab.com/michelemosca/cloudedgecomputing:latest .
-```
-
-Then, we **push** the image to the container registry:
-
-```bash
-docker push registry.gitlab.com/michelemosca/cloudedgecomputing --all-tags
-```
-
-Once the new version of the container image is uploaded to the registry, other microservices can use it by specifying the image in their **docker-compose** configuration file:
-
-```yml
-web:
-    image: registry.gitlab.com/michelemosca/cloudedgecomputing:latest
-    stop_signal: SIGINT
-    environment:
-      - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
-    ports:
-      - '80:5000'
-    depends_on:
-      postgres:
-        condition: service_healthy
-```
-
-To ensure Docker pulls the latest version of the container image, use the following command:
-
-```bash
-docker compose pull
-```
-
-Finally, **restart** the microservice to apply the latest image:
-
-```bash
-docker compose up -d --build --no-deps web
-```
-
-These steps need to be repeated **each time** we develop a new feature for the microservice.
-
-To streamline and automate these tasks, we can adopt **DevOps** practices.
-
-
 ## Brief history of software production models
 The software production lifecycle consists of three essential stages, each playing a critical role in delivering a high-quality product that meets client expectations and performs reliably in a live environment:
 
 1. **Requirements Gathering**
-    - Collaborate with the client to understand their needs, goals, and expectations.
     - Define the scope, functionality, and specifications of the software.
     - Document requirements to guide the development process.
 
 2. **Development and Testing**
-    - Design and implement the software according to the specified requirements.
+    - Design and implement the software according to the requirements.
     - Perform testing to identify and resolve defects.
 
 3. **Operations and Infrastructure**
-    - Deploy the software to a production environment.
     - Set up and manage the infrastructure required for the application.
     - Monitor, maintain, and update the system to ensure performance, security, and reliability.
 
@@ -75,7 +19,15 @@ The software production lifecycle consists of three essential stages, each playi
 
 ![](images/waterfall-model.webp)
 
-The waterfall model creates friction between (1) requirements gathering and (2) development due to its linear and rigid structure, where each phase must be completed before moving to the next. In this model, requirements are gathered and documented comprehensively at the start of the project, often without the flexibility to adapt to changes later. This approach assumes that clients can fully articulate their needs upfront, which is rarely the case in complex or evolving projects. As development begins, gaps, ambiguities, or misunderstandings in the requirements often become apparent. 
+The waterfall model creates friction between (1) requirements gathering and (2) development due to its linear and rigid structure, where each phase must be completed before moving to the next. In this model, requirements are gathered and documented comprehensively at the start of the project, often without the flexibility to adapt to changes later. This approach assumes that clients can fully articulate their needs upfront, which is rarely the case. 
+
+As development progresses, teams frequently discover **gaps, ambiguities, or misunderstandings** in the initial requirements, leading to delays, costly changes, or project misalignment.
+
+- **Rigid Change Management**: Adapting to new requirements is difficult and costly.
+- **Late Discovery of Issues**: Problems in requirements often surface deep into development.
+- **Misalignment with Client Expectations**: What is delivered may no longer match what the client actually needs.
+- **Long Feedback Loops**: Clients only see the final product, limiting opportunities for early correction.
+
 
 ### The Agile model
 
@@ -84,96 +36,91 @@ The waterfall model creates friction between (1) requirements gathering and (2) 
 The Agile model eases the friction between (1) requirements gathering and (2) development by adopting an iterative and flexible approach to software production. Instead of trying to define all requirements upfront, Agile promotes collaboration and continuous feedback throughout the development lifecycle. Requirements are gathered incrementally and revisited during each iteration, allowing for adjustments based on client feedback, changing needs, or new insights. 
 
 However, it neglects the operational aspects of software production leading to friction between (2) development and (3) operations:
-* Limited Integration with Operations
-* Deployment as an Afterthought
-* Operational Silos
-* Insufficient Monitoring and Feedback
 
-### The DevOps model
+- **Limited Integration with Operations**: Dev teams might build features without thinking about how they’ll be deployed, scaled, or maintained.
+- **Deployment as an Afterthought**: Shipping to production happens late in the cycle and often causes problems.
+- **Operational Silos**: Developers and operations work separately with little collaboration.
+- **Insufficient Monitoring and Feedback**: Once the software is live, there's weak feedback from production issues back into the development cycle.
+
+## The DevOps model
+
+**What they say it is:**
+- DevOps is a set of practices, tools, and a cultural philosophy that automates and integrates the processes between software development and IT teams, emphasizing team empowerment, cross-team communication, and technology automation. (Atlassian)
+- DevOps is a collaborative and multidisciplinary organizational effort to automate the continuous delivery of new software updates while ensuring their correctness and reliability. ([Leite et al., 2020](https://arxiv.org/abs/1909.05409))
+
+**What it is:**
+- **Teams integrate into a single unit**, where engineers participate throughout the entire application lifecycle, from development to production (*you build it, you run it*).
+- Teams use **automation** to accelerate traditionally slow, manual processes. DevOps tools and technologies enable faster, more reliable deployment and continuous evolution of applications
+
+**What implies for Developers:**
+- **Increased Automation**: Automation allows fewer people to manage more code and handle increased complexity, but this can create a more stressful environment as the responsibility scales.
+- **Ownership and Accountability**: When something breaks, developers are called to fix it. This encourages developers to write better, more robust code, increase test coverage, and enhance observability, ensuring smoother and more reliable operations.
 
 ![](images/devops-devops.webp)
 
-In the DevOps model, **development** and **operations** teams no longer work in isolation. Instead, they often integrate into a single unit, where engineers participate throughout the application lifecycle — from **development** and **testing** to **deployment** and **production** — and gain a versatile skill set that spans multiple functions. Teams use **automation** to accelerate traditionally slow, manual processes. DevOps tools and technologies enable faster, more **reliable** deployment and evolution of applications. These tools also empower teams to handle tasks that once required support from other departments, such as **code deployment** or **infrastructure provisioning**, boosting overall **efficiency**.
-
-The DevOps model is articulated along the following 7 phases:
-
-**1. Plan** The business value and requirements are defined. Teams establish the project goals and identify the necessary elements for the upcoming release. **Tools**: Jira
-
-**2. Code** The coding phase involves designing and developing the software and tools where developers create and update the source code. **Tools**: GitHub, GitLab, Bitbucket
-
-**3. Build** Software builds and versions are managed and automatic tools are used to compile and package the code for the next release sent to production. **Tools**: Docker, Ansible, Puppet, Chef, Gradle, Maven, JFrog Artifactory
-
-**4. Test** This phase involves testing to ensure the software is bug-free and ready for production. Tests can be automated or manual. **Tools**: JUnit, Codeception, Selenium, Vagrant, TestNG
-
-**5. Deploy** In the deployment phase, the software is distributed to production environments. DevOps tools automate the deployment process to ensure repeatability and reliability. **Tools**: Puppet, Chef, Ansible, Jenkins, Kubernetes, OpenShift, OpenStack, Docker
-
-**6. Operate**  In the operating phase, teams test the project in a production environment, and end users utilise the product. This phase informs future development cycles and manages the configuration of the production environment and the implementation of any runtime requirements.. **Tools**: Ansible, Puppet, PowerShell, Chef, Salt, Otter
-
-**7. Monitor** In the monitoring phase, the software’s performance is analyzed to identify any issues and ensure system stability. **Tools**: New Relic, Datadog, Grafana, Wireshark, Splunk, Nagios, Slack
-
-
-## DevOps
-
-
-### Definition
-
-**Industry Perspectives:**
-- DevOps is the combination of cultural philosophies, practices, and tools that increases an organization’s ability to deliver applications and services at high velocity. (AWS)
-- DevOps is a set of practices, tools, and a cultural philosophy that automates and integrates the processes between software development and IT teams, emphasizing team empowerment, cross-team communication, and technology automation. (Atlassian)
-- DevOps is a combination of software developers (Dev) and operations (Ops). It is defined as a software engineering methodology that aims to integrate the work of software development and operations teams by facilitating a culture of collaboration and shared responsibility. (GitLab)
-
-**Academic Perspectives:**
-- DevOps is a collaborative and multidisciplinary organizational effort to automate the continuous delivery of new software updates while guaranteeing their correctness and reliability. ([Leite et al, 2020](https://arxiv.org/abs/1909.05409))
-- It represents an organizational shift in which cross-functional teams work on continuous operational feature deliveries, rather than siloed groups performing functions separately. ([Ebert et al, 2016](https://arxiv.org/abs/1910.07223))
-- DevOps is a development methodology aimed at bridging the gap between Development (Dev) and Operations (Ops), emphasizing communication and collaboration, continuous integration, quality assurance, and automated deployment through a set of development practices. ([Jabbari et al, 2016](https://www.researchgate.net/publication/308857081_What_is_DevOps_A_Systematic_Mapping_Study_on_Definitions_and_Practices))
-
-
 ### The 7 C's
 
-![](images/7C-devops.webp)
+![](images/devops-revolution.avif)
 
-**Continuous Integration** -- Continuous integration is a software development practice where developers regularly merge their code changes into a central repository, after which automated builds and tests are run. Continuous integration most often refers to the build or integration stage of the software release process. In the past, developers on a team might work in isolation for an extended period of time and only merge their changes to the master branch once their work was completed. This made merging code changes difficult and time-consuming, and also resulted in bugs accumulating for a long time without correction (read [Integration Hell — What are the modern day solutions?](https://apimicro.medium.com/integration-hell-what-are-the-modern-day-solutions-49d8140122b8#:~:text=Integration%20hell%20is%20a%20common,%2C%20data%20inconsistencies%2C%20and%20errors.)).
+![](images/devops-tools.avif)
 
-**Continuous Delivery** -- Continuous delivery is a software development practice where code changes are automatically prepared for a release to production. It expands upon continuous integration by deploying all code changes to a testing environment and/or a production environment after the build stage. Continuous delivery lets developers automate testing beyond just unit tests so they can verify application updates across multiple dimensions before deploying to customers. These tests may include UI testing, load testing, integration testing, API reliability testing, etc. The final decision to deploy to a live production environment is triggered by the developer.
+1. **Continuous Planning**  
+   This phase involves planning and developing the software. Development is broken into smaller tasks, following Agile methodologies that focus on “just-in-time” requirements. It includes defining user stories and refining the product backlog.
 
-**Continuous Deployment** -- A step further than continuous delivery, continuous deployment automates the entire deployment pipeline, pushing every code change to production once it passes automated tests. This approach ensures rapid delivery of updates without manual intervention.
+2. **Continuous Integration**  
+   In this phase, developers write code and push changes to the source code management system. All code changes are merged frequently and validated through automated builds, tests, and security checks. This helps the team identify issues early in the development process.
 
-**Continuous Testing** -- Testing is automated and performed throughout the development lifecycle to maintain code quality. This practice helps identify and resolve issues quickly, ensuring reliability in each deployment.
+3. **Continuous Testing**  
+   This phase involves writing and running automated test cases using various tools such as Selenium, JUnit, and TestNG. Automated tests help ensure that the software is functioning correctly and meets quality standards.
 
-**Continuous Monitoring** -- Real-time monitoring of applications and infrastructure ensures that performance, security, and availability meet expectations. Insights from monitoring guide improvements and facilitate rapid response to issues.
+4. **Continuous Deployment**  
+   In this phase, application code is automatically deployed to production environments, facilitating seamless delivery. This ensures that new features and fixes are rapidly available to users.
 
-**Continuous Feedback** -- Feedback loops from users, stakeholders, and systems are integral to refining processes and products. This ongoing evaluation enables teams to adapt and evolve based on actionable insights.
+5. **Continuous Monitoring**  
+   This phase ensures that systems and applications are continuously monitored to detect any bottlenecks, performance issues, or downtime. Alerts can be set to notify stakeholders, allowing for timely action to resolve any issues.
 
-**Continuous Collaboration** -- Collaboration between development, operations, and other stakeholders fosters a culture of shared responsibility. This includes open communication, knowledge sharing, and collective problem-solving to achieve common goals.
+6. **Continuous Feedback**  
+   This crucial phase involves gathering feedback from all stakeholders, including developers, testers, product owners, and end users. This feedback helps the team identify what went well and what can be improved, driving continuous improvement in the development process.
 
+7. **Continuous Operations**  
+   This phase ensures that systems are available 24/7. It focuses on building highly available and scalable infrastructure through automation to minimize downtime and ensure reliability.
 
 ### Key Performance Indicators (KPIs)
 
-DevOps metrics are critical data points that provide insight into the performance of a DevOps pipeline and help identify bottlenecks. These metrics enable teams to monitor their progress toward key goals, such as faster release cycles and improved application performance.
+**Deployment Frequency**: Measures how often updates are released to production. High-performing teams deploy multiple times a day, requiring a highly automated pipeline with thorough testing and minimal manual intervention.
 
-**Lead time** refers to the total time it takes to deliver a product or feature from the moment a request is made until it is fully implemented and available to users. It encompasses the entire workflow, including requirements gathering, development, testing, and deployment. Lead time is a high-level metric that reflects the overall efficiency of an organization’s development and delivery process.
+**Change Failure Rate**: Tracks the percentage of deployments that need immediate fixes or rollbacks. High-performing teams aim for a failure rate between 0% and 15%, achieved through test automation and early defect detection.
 
-**Cycle time** measures the time it takes to complete a specific part of the workflow, typically from the start of development on a feature or task to its completion. It begins when a developer starts working on a task and ends when that task is considered "done," often including internal reviews and testing but not necessarily deployment. Cycle time is a key metric for understanding team productivity and process bottlenecks.
-
-**Lead time for changes** is a more specific metric within DevOps. It measures the time between a developer's code commit and the moment the code is deployed and ready for production. This metric focuses on the efficiency of the development pipeline, excluding earlier stages like requirements gathering. Short lead times for changes indicate a streamlined workflow, with quick feedback loops and minimal delays in testing and deployment.
+---
 
 ![](images/devops-lead-time.webp)
 
-**Change Failure Rate** The change failure rate tracks the percentage of deployments that require immediate fixes or rollbacks after reaching production. High-performing teams aim to keep this rate between 0% and 15%. Implementing practices like test automation and trunk-based development reduces failure rates by enabling earlier detection and resolution of defects.
+**Lead Time**: The total time from request to full deployment of a product or feature, encompassing the entire development and delivery workflow. A key indicator of organizational efficiency.
 
-**Deployment Frequency** Deployment frequency measures how often updates are released to production. High-performing teams deploy multiple times daily, while low-performing teams might deploy weekly or monthly. Achieving frequent deployments requires a highly automated pipeline that includes thorough testing, streamlined feedback loops, and minimal manual intervention.
+**Cycle Time**: The time it takes to complete a specific part of the workflow, from development start to task completion, often including reviews and testing but not deployment. This metric highlights team productivity and potential bottlenecks.
 
-**Mean Time to Failure** represents the average time a system, service, or application runs before experiencing a failure. In a DevOps context, MTTF is commonly used to assess the reliability of non-repairable components, such as containers or ephemeral cloud resources. A high MTTF indicates robust system design and well-maintained infrastructure, reducing unexpected downtime.
+**Lead Time for Changes**: Measures the time from a code commit to deployment in production. Short lead times indicate efficient workflows with quick feedback loops and minimal delays.
 
-**Mean Time to Detect** measures the average time it takes to identify a failure, performance degradation, or security issue. This metric is vital for evaluating the effectiveness of monitoring tools and alerting systems in a DevOps pipeline. Low MTTD ensures quicker responses, minimizing the impact of issues on users and the business.
-
-**Mean Time to Recovery** calculates the average time needed to restore a service or application to normal functioning after a failure. In DevOps, MTTR reflects the efficiency of incident response processes, including diagnosing issues, deploying fixes, or rolling back changes. A low MTTR is a hallmark of high-performing DevOps teams, enabled by practices like continuous monitoring, automated pipelines, and predefined recovery strategies.
-
-**Mean Time Between Failures** measures the average time between successive failures in a system. It combines the concepts of reliability (time the system operates without failure) and maintainability (how quickly it can be restored). In DevOps, MTBF is used to evaluate the stability of applications and infrastructure, guiding improvements in system design, redundancy, and fault tolerance.
+---
 
 ![](images/devops-MTTR.webp)
 
-## DevSecOps
+- **Mean Time to Failure (MTTF)**: The average time a system or service operates before failing. A high MTTF indicates robust system design and low unexpected downtime.
+
+- **Mean Time to Detect (MTTD)**: The average time to identify a failure, performance issue, or security problem. Low MTTD ensures quick response to minimize impact on users and business.
+
+- **Mean Time to Recovery (MTTR)**: The average time needed to restore a service after a failure. A low MTTR reflects efficient incident response, with practices like continuous monitoring and automated recovery.
+
+- **Mean Time Between Failures (MTBF)**: The average time between successive system failures. A high MTBF suggests system stability, while low MTBF calls for improvements in reliability and fault tolerance.
+
+### The DORA metrics
+The DORA metrics were developed by the DevOps Research and Assessment (DORA) organization, which spent years studying engineering teams and their DevOps processes. 
+
+These metrics are valuable because they correlate with business outcomes and employee satisfaction, offering industry standards for benchmarking. Only four key metrics are needed to differentiate elite engineering teams from mediocre ones.
+
+![](images/dora.png)
+
+## The DevSecOps model
 
 Application security has been addressed after development is completed, and by a separate team of people, separate from both the development team and the operations team.
 This approach **slowed down** the development process and the reaction time.

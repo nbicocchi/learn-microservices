@@ -10,7 +10,7 @@ In this exercise, three services collaborate to implement a **Saga Pattern** usi
 
 ```mermaid
 flowchart TD
-  Client -->|POST /order| OrderService
+  ClientWrite -->|POST /order| OrderService
   OrderService -->|Start Workflow| OrkesConductor
   OrkesConductor -->|Confirm Order| OrderService
   OrkesConductor -->|Reject Order| OrderService
@@ -51,7 +51,8 @@ In this exercise, three services collaborate to implement a **Saga Pattern** usi
 
 ```mermaid
 flowchart TD
-  Client -->|POST /order| OrderService-Write
+  Client-Write -->|POST /order| OrderService-Write
+  Client-Read -->|GET /order| OrderService-Read
   OrderService-Write -->|order.created| PaymentService
   OrderService-Write -->|order.confirmed| OrderService-Read
   PaymentService -->|payment.ok| InventoryService
