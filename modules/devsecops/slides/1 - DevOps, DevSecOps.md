@@ -85,7 +85,7 @@ However, it neglects the operational aspects of software production leading to f
 7. **Continuous Operations**  
    This phase ensures that systems are available 24/7. It focuses on building highly available and scalable infrastructure through automation to minimize downtime and ensure reliability.
 
-### Real-world example
+### Real-world pipeline
 
 1. **Terraform** provisions infrastructure:
    - Terraform is used to **create cloud resources**, such as virtual machines (VMs), storage, networks, and managed Kubernetes clusters (like EKS, GKE, or AKS).
@@ -186,6 +186,16 @@ However, it neglects the operational aspects of software production leading to f
    - The data collected by **OpenTelemetry** is sent to a backend storage (like **Prometheus**).
    - **Grafana** is used to visualize this data by creating dashboards to monitor system health, performance, and business metrics.
 
+### Infrastructure as Code (IaC)
+
+Infrastructure as Code (IaC) is the practice of managing and provisioning computing infrastructure through machine-readable definition files, rather than through manual processes. This approach automates the setup and configuration of environments, ensuring consistency, reducing human error, and speeding up deployment cycles. 
+
+- **Terraform**: Cloud provisioning tool that uses declarative configuration (HCL) to manage infrastructure across multiple cloud providers.
+- **Puppet**: Configuration management tool using a declarative language to enforce desired system states, supports agent-based and agentless models.
+- **Chef**: Configuration management tool using a Ruby-based DSL, defines infrastructure as "recipes" and "cookbooks," highly flexible for complex environments.
+- **Ansible**: Configuration management and orchestration tool, agentless, uses YAML for simple automation.
+- **Helm**: Package manager for Kubernetes, simplifies deployment and management of applications on Kubernetes clusters using YAML-based charts.
+
 ### Key Performance Indicators (KPIs)
 
 **Deployment Frequency**: Measures how often updates are released to production. High-performing teams deploy multiple times a day, requiring a highly automated pipeline with thorough testing and minimal manual intervention.
@@ -225,6 +235,20 @@ These metrics are valuable because:
 * only four key metrics are needed to differentiate elite engineering teams from mediocre ones.
 
 ![](images/dora-categories.webp)
+
+How to improve DORA metrics within an organization?
+
+1. **Reduction of the Codebase**  
+   Reducing the size and complexity of the codebase, such as by adopting microservices, makes the system easier to maintain and scale. Smaller, independently deployable services are less prone to failures, which improves **Change Failure Rate** and **Time to Restore Service**. Additionally, this allows for faster and more frequent deployments, boosting **Deployment Frequency**.
+
+2. **Smaller Pull Requests**  
+   Encourage developers to make smaller, more frequent pull requests rather than large, infrequent ones. Smaller pull requests are easier to review, merge, and test, reducing the risk of issues and speeding up the overall development process, which directly impacts **Lead Time for Changes**.
+
+3. **Automate CI/CD Pipelines**  
+   Automating your continuous integration (CI) and continuous delivery (CD) pipelines is essential for improving both **Deployment Frequency** and **Lead Time for Changes**. This reduces manual errors, accelerates testing and deployment processes, and ensures fast, consistent releases.
+
+4. **Implement Blue/Green or Canary Deployments**  
+   These deployment strategies reduce the impact of failed releases by gradually introducing changes to a small subset of users before scaling. This minimizes risk and downtime, improving both **Change Failure Rate** and **Time to Restore Service**.
 
 ## The DevSecOps model
 
@@ -272,4 +296,3 @@ Another key challenge is **selecting the right security tools and integrating th
 ## Resources
 - [DevOps at Netflix](https://www.youtube.com/watch?v=m-gkDpmdTqI)
 - [DORA Metrics: We've Been Using Them Wrong](https://www.youtube.com/watch?v=H3nlvHQHb5E)
-- [Terraform in 100 seconds](https://www.youtube.com/watch?v=tomUWcQ0P3k)
