@@ -60,9 +60,9 @@ However, it neglects the operational aspects of software production leading to f
 
 ### The 7 C's
 
-![](images/devops-revolution.avif)
+![](images/devops-revolution.webp)
 
-![](images/devops-tools.avif)
+![](images/devops-tools.webp)
 
 1. **Continuous Planning**  
    This phase involves planning and developing the software. Development is broken into smaller tasks, following Agile methodologies that focus on “just-in-time” requirements. It includes defining user stories and refining the product backlog.
@@ -217,14 +217,14 @@ However, it neglects the operational aspects of software production leading to f
 ### The DORA metrics
 The DORA metrics were developed by the DevOps Research and Assessment (DORA) organization, which spent years studying engineering teams and their DevOps processes. They also deliver an interesting [annual report](../../../books/dora-report-2024.pdf).
 
-![](images/dora-metrics.png)
+![](images/dora-metrics.webp)
 
 These metrics are valuable because:
 * they correlate with business outcomes and employee satisfaction, offering industry standards for benchmarking. 
 * push teams to focus on continuous improvement.
 * only four key metrics are needed to differentiate elite engineering teams from mediocre ones.
 
-![](images/dora-categories.png)
+![](images/dora-categories.webp)
 
 ## The DevSecOps model
 
