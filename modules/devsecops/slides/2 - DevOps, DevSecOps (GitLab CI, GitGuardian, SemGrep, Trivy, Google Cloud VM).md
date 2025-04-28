@@ -130,6 +130,8 @@ The following configuration file defines a CI/CD pipeline for a Java project. It
 
 ### Define Workflow Metadata
 
+Create a file under the repository path *repo_root/.github/workflows/workflow.yml*. Each file in this directory defines a separate workflow, and workflows are triggered and executed independently in parallel when their respective events occur.
+
 Start with the workflow's name and triggers:
 
 ```yaml
@@ -153,9 +155,6 @@ Jobs define the tasks to execute. Each job runs independently unless dependencie
 1. **Lint Scan**: Checks code quality using Super-Linter.
 2. **Build Artifact**: Builds a Java artifact using Maven.
 3. **Build and Push Docker Image**: Builds and pushes a Docker image.
-4. **GitGuardian Scan**: Scans for exposed secrets.
-5. **Semgrep Scan**: Performs static security analysis.
-
 
 ### Define the `lint-scan` Job
 
@@ -167,24 +166,26 @@ Jobs define the tasks to execute. Each job runs independently unless dependencie
 - **Easy Setup**: With just a few lines in your GitHub Actions workflow file, you can set up Super Linter and start linting your code.
 
 ```yaml
-lint-scan:
-  runs-on: ubuntu-latest
-  permissions:
-    contents: read
-    packages: read
-    statuses: write
+  # Lint Scan Job
+  lint-scan:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    permissions:
+      contents: read # Required to access repository contents
+      packages: read # Required to read packages
+      statuses: write # Allow reporting GitHub status checks
 
-    - name: Run Super-Linter
-      uses: super-linter/super-linter@v7.2.0
-      env:
-        VALIDATE_JAVA: true
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch full history for accurate file change tracking
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v7.3.0
+        env:
+          VALIDATE_JAVA: true # Enables checks for Java and disables all others
+          GITHUB_TOKEN: ${{ secrets.TOKEN }} # Authentication token
 ```
 
 - **`runs-on`**: Specifies the virtual environment (e.g., Ubuntu).
@@ -196,31 +197,36 @@ lint-scan:
 ### Add the `build-artifact` Job
 
 ```yaml
-build-artifact:
-  runs-on: ubuntu-latest
+  # Build Artifact Job
+  build-artifact:
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    strategy:
+      matrix:
+        java-version: [21, 22] # Test against Java 21, 22
 
-    - name: Setup Java Environment
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Build with Maven
-      run: mvn --batch-mode --update-snapshots verify
+      - name: Setup Java Environment
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }} # Use the version from the matrix
+          distribution: 'temurin'
+          cache: maven # Enable Maven dependency caching
 
-    - name: Copy Build Artifact
-      run: mkdir staging && cp target/*.jar staging
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
 
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: jar-artifact
-        path: staging
+      - name: Copy Build Artifact
+        run: mkdir staging && cp target/*.jar staging
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-artifact-java-${{ matrix.java-version }} # Make the artifact name include the Java version
+          path: staging
 ```
 
 This job builds the project and saves the JAR artifact.
@@ -229,31 +235,32 @@ This job builds the project and saves the JAR artifact.
 ### Add the `build-push-container-image` Job
 
 ```yaml
-build-push-container-image:
-  runs-on: ubuntu-latest
-  needs: build-artifact
+  # Build and Push Docker Image Job
+  build-push-container-image:
+    runs-on: ubuntu-latest
+    needs: build-artifact # Depend on the artifact build job
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Download Build Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: jar-artifact
-        path: target/
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jar-artifact-java-21
+          path: target/
 
-    - name: Build Docker Image
-      run: docker build -t nbicocchi/product-service-ci-cd:latest .
+      - name: Build Docker Image
+        run: docker build -t nbicocchi/product-service-ci-cd:latest .
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} # Docker Hub username
+          password: ${{ secrets.DOCKER_PASSWORD }} # Docker Hub password
 
-    - name: Push Docker Image to Docker Hub
-      run: docker push nbicocchi/product-service-ci-cd:latest
+      - name: Push Docker Image to Docker Hub
+        run: docker push nbicocchi/product-service-ci-cd:latest
 ```
 
 This job builds a Docker image, scans it for vulnerabilities using Trivy, and pushes it to Docker Hub.
@@ -273,19 +280,23 @@ This job builds a Docker image, scans it for vulnerabilities using Trivy, and pu
 - **Integrations**: Easily integrates with GitHub, GitLab, and other version control systems, as well as CI/CD pipelines, to provide automated secret detection.
 
 ```yaml
-gitguardian-scan:
-  runs-on: ubuntu-latest
+  # GitGuardian Secrets Scan Job
+  gitguardian-scan:
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Run GitGuardian Secret Scan
-      uses: GitGuardian/ggshield/actions/secret@v1.34.0
-      env:
-        GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+      - name: GitGuardian Scan
+        uses: GitGuardian/ggshield-action@v1
+        env:
+          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 ```
 
 * Create a service account from the API section of your GitGuardian workspace (or a [personal access token](https://dashboard.gitguardian.com/api/personal-access-tokens) if you are on the Free plan).
@@ -333,42 +344,42 @@ semgrep-scan:
 - **Versatile Output Formats**: Supports detailed reports in table, JSON, or other formats for integration with CI/CD pipelines.
 
 ```yaml
-  # Build and Push Docker Image Job
-  build-push-container-image:
-    runs-on: ubuntu-latest
-    needs: build-artifact # Depend on the artifact build job
+# Build and Push Docker Image Job
+build-push-container-image:
+  runs-on: ubuntu-latest
+  needs: build-artifact # Depend on the artifact build job
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jar-artifact
-          path: target/
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: jar-artifact-java-21
+        path: target/
 
-      - name: Build Docker Image
-        run: docker build -t nbicocchi/product-service-ci-cd:latest .
+    - name: Build Docker Image
+      run: docker build -t nbicocchi/product-service-ci-cd:latest .
 
-      - name: Run Trivy Vulnerability Scan
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: 'docker.io/nbicocchi/product-service-ci-cd:latest'
-          format: 'table'
-          exit-code: '1' # Fail the job if critical issues are found
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+    - name: Run Trivy Vulnerability Scan
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: 'docker.io/nbicocchi/product-service-ci-cd:latest'
+        format: 'table'
+        exit-code: '1' # Fail the job if critical issues are found
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }} # Docker Hub username
-          password: ${{ secrets.DOCKER_PASSWORD }} # Docker Hub password
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }} # Docker Hub username
+        password: ${{ secrets.DOCKER_PASSWORD }} # Docker Hub password
 
-      - name: Push Docker Image to Docker Hub
-        run: docker push nbicocchi/product-service-ci-cd:latest
+    - name: Push Docker Image to Docker Hub
+      run: docker push nbicocchi/product-service-ci-cd:latest
 ```
 
 ## Resources
