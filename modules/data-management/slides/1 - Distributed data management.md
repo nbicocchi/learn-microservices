@@ -5,11 +5,14 @@ While distributed applications provides numerous benefits, they have several lim
 
 ## Database per Service Pattern
 
-One of the benefits of the *database per Service Pattern* (typical in microservice architectures) is the ability to choose the most suitable technology for each service. For example, we can use a relational database for Service A while opting for a NoSQL database for Service B.
+The *Database per Service* pattern is a key principle in microservices architecture that promotes loose coupling and independent scalability by assigning each microservice its own dedicated database.
+
+In this pattern, each microservice manages its own private data store, which is not shared with other services. 
 
 This approach provides several advantages:
-1) Each service can manage its domain data independently, using a data store that best fits its schema and data types.
-2) Services can scale their data stores independently and remain insulated from failures in other services.
+* Services can use the most suitable database technology (SQL, NoSQL, time-series, etc.) for their specific needs. 
+* Services can manage its domain data independently, using a data store that best fits its schema and data types. 
+* Services can scale their data stores independently and remain insulated from failures in other services.
 
 **However, when a transaction spans multiple databases, maintaining *ACID* properties becomes a challenge**. 
 
