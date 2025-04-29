@@ -112,17 +112,8 @@ However, it neglects the operational aspects of software production leading to f
    }
    ```
 
-3. **Maven** builds and manages Java projects:
-   - Developers write Java code and commit it to the Git repository.
-   - **Maven** is used to handle tasks like compiling the code, running tests, and packaging it into a `.jar` or `.war` file.
-
-   ```bash
-   mvn clean install
-   ```
-
-4. **Jenkins** / **GitLab CI/CD** automates build, test, and deploy cycles:
-   - **Jenkins** is set up to automate the Maven build and test process.
-   - On every code push, Jenkins triggers the Maven build to run tests and create a deployable artifact.
+3. **Jenkins** / **GitLab CI/CD** automates build, test, and deploy cycles:
+   - On every code pus[books](../../../books)h, Jenkins triggers the Maven build to run tests and create a deployable artifact.
    - Jenkins also deploys the artifact to the appropriate environment (like staging or production).
 
    ```groovy
@@ -137,23 +128,24 @@ However, it neglects the operational aspects of software production leading to f
        stage('Deploy') {
          steps {
            // Deploy the artifact to Docker or Kubernetes
-           sh 'kubectl apply -f deployment.yaml'
+           sh 'kubectl apply -f production.yaml'
          }
        }
      }
    }
    ```
 
-5. **Docker** packages the app into containers:
+4. **Docker** packages the app into containers:
    - After the build, the artifact (e.g., `.jar` file) is packaged into a **Docker container** using a `Dockerfile`.
 
    ```dockerfile
-   FROM openjdk:11-jdk
-   COPY target/myapp.jar /app/myapp.jar
-   ENTRYPOINT ["java", "-jar", "/app/myapp.jar"]
+   FROM eclipse-temurin:21
+   ARG JAR_FILE=target/*.jar
+   COPY ${JAR_FILE} application.jar
+   ENTRYPOINT ["java","-jar","/application.jar"]
    ```
 
-6. **Kubernetes** orchestrates and scales containers:
+5. **Kubernetes** orchestrates and scales containers:
    - The Docker containers are deployed into a **Kubernetes cluster**.
    - Kubernetes manages scaling, networking, and fault tolerance for the app containers, ensuring high availability.
 
@@ -179,10 +171,10 @@ However, it neglects the operational aspects of software production leading to f
                - containerPort: 8080
    ```
 
-7. **OpenTelemetry** monitors the systems:
+6. **OpenTelemetry** monitors the systems:
    - **OpenTelemetry** is integrated into the Kubernetes cluster to collect application performance metrics, traces, and logs from your containers and Kubernetes services.
 
-8. **Grafana** visualizes metrics and traces:
+7. **Grafana** visualizes metrics and traces:
    - The data collected by **OpenTelemetry** is sent to a backend storage (like **Prometheus**).
    - **Grafana** is used to visualize this data by creating dashboards to monitor system health, performance, and business metrics.
 
