@@ -18,7 +18,7 @@ public class MathController {
     @GetMapping("/divisors")
     public DivisorsWithLatency getPrimeDivisors(
             @RequestParam Long n,
-            @RequestParam(defaultValue = "1000") Long times,
+            @RequestParam(defaultValue = "1") Long times,
             @RequestParam(defaultValue = "0") Long faults) {
         log.trace("getPrimeDivisors({}-{})", n, times);
 
