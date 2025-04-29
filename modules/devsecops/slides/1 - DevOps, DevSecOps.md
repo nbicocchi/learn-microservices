@@ -261,10 +261,7 @@ How to improve DORA metrics within an organization?
 
 ![](images/deployment-canary.webp)
 
-
-
 ## The DevSecOps model
-
 
 ### Motivation
 
