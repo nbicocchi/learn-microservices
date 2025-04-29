@@ -5,22 +5,26 @@ While distributed applications provides numerous benefits, they have several lim
 
 ## Database per Service Pattern
 
-One of the benefits of a microservice architecture is the ability to choose the most suitable technology stack for each service. For example, we can use a relational database for Service A while opting for a NoSQL database for Service B.
+One of the benefits of the *database per Service Pattern* (typical in microservice architectures) is the ability to choose the most suitable technology for each service. For example, we can use a relational database for Service A while opting for a NoSQL database for Service B.
 
 This approach provides several advantages:
 1) Each service can manage its domain data independently, using a data store that best fits its schema and data types.
 2) Services can scale their data stores independently and remain insulated from failures in other services.
 
-However, when a transaction spans multiple databases, maintaining **ACID** properties becomes a challenge. 
+**However, when a transaction spans multiple databases, maintaining *ACID* properties becomes a challenge**. 
+
+![distributed transaction](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/distributed-transaction.png)
 
 To address this, the **SAGA pattern** offers an alternative by breaking a transaction into a sequence of smaller, reversible steps. Each step represents a local transaction within a single service, and in case of failure, compensating actions ensure consistency.
 
-Additionally, the **CQRS (Command Query Responsibility Segregation) pattern** can help manage complex data consistency requirements by separating write operations (commands) from read operations (queries), allowing for optimized data storage and retrieval strategies.
-
+Additionally, the **CQRS (Command Query Responsibility Segregation) pattern** can help manage complex data consistency requirements by separating write operations (commands) from read operations (queries), allowing for optimized data storage and retrieval strategies. This separation also enhances scalability and performance, as each side can be independently tuned, scaled, or implemented using different technologies to meet specific throughput and latency requirements.
 
 ## CAP Theorem
 In 2000, Eric Brewer introduced the idea that there is a fundamental trade-off between
-consistency, availability, and partition tolerance in distributed systems. More specifically, the [CAP theorem](https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer2.pdf) states that any distributed system or data store can simultaneously provide only two of three guarantees: consistency, availability, and partition tolerance (CAP).
+consistency, availability, and partition tolerance in distributed systems. More specifically, the [CAP theorem](https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer2.pdf) states that **any distributed system can simultaneously provide only two of three guarantees**: 
+* Consistency
+* Availability
+* Partition tolerance
 
 Let's consider a very simple distributed system. Our system is composed of two servers, G1 and G2. Both of these servers are keeping track of the same variable, v, whose value is initially v0. G1 and G2 can communicate with each other and can also communicate with external clients.
 
@@ -41,17 +45,7 @@ And here is what a read looks like.
 
 In a consistent system, once a client writes a value to any server and gets a response, it expects to get that value (or a fresher value) back from any server it reads from.
 
-Here is an example of an **inconsistent** system.
-
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap7.svg) 
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap8.svg) 
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap9.svg)
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap10.svg) 
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap11.svg)
-
-Our client writes v1 to G1 and G1 acknowledges, but when it reads from G2, it gets stale data: v0.
-
-On the other hand, here is an example of a **consistent** system.
+Here is an example of a **consistent** system.
 
 ![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap12.svg) 
 ![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap13.svg) 
@@ -101,41 +95,28 @@ We assumed a consistent, available, partition tolerant system existed, but we ju
 
 **Key Insight**
 
-In a distributed system, network partitions are inevitable. Under normal conditions (i.e., no network failures), systems strive to provide both **Consistency (C)** and **Availability (A)**. However, when a partition occurs, a trade-off must be made:
+In a distributed system, network partitions are inevitable. Under normal conditions (i.e., no network failures), systems strive to provide both **Consistency** and **Availability**. However, when a partition occurs, a trade-off must be made:
 
-1. **CA systems** maintain both **consistency** and **availability** in the absence of network partitions. When a partition occurs, they must choose to behave as either **AP** or **CP**.
+1. **AP systems** prioritize **availability** by continuing to accept reads and writes during a partition, potentially at the cost of **consistency** (leading to **eventual consistency**).
 
-2. **AP systems** prioritize **availability** by continuing to accept reads and writes during a partition, potentially at the cost of **consistency** (leading to **eventual consistency**).
+2. **CP systems** prioritize **consistency** by rejecting some operations—typically writes—during a partition, ensuring that any served data remains consistent.
 
-3. **CP systems** prioritize **consistency** by rejecting some operations—typically writes—during a partition, ensuring that any served data remains consistent.
+3. **CA systems** maintain both **consistency** and **availability** in the absence of network partitions. When a partition occurs, they must choose to behave as either **AP** or **CP**.
 
 ![](images/cap-theorem.webp)
 
 ### CA Systems (Consistency and Availability)
 - **Definition**: CA systems ensure **Consistency** and **Availability** but do not provide **Partition Tolerance**. CA systems are ideal for environments where network reliability is high, and both consistency and availability are critical.
-- **Characteristics**:
-    - Every request (read or write) gets a consistent response, meaning that all nodes in the system have the same data at the same time.
-    - The system is available, meaning every request receives a response (even if it’s an error).
-    - However, these systems assume a reliable network with minimal or no network partitions. In case of a network partition, the system may fail to provide both consistency and availability.
 - **Examples**:
     - **Centralized, tightly coupled distributed systems** (e.g., MySQL, PostgreSQL) within stable network environments.
 
-
 ### CP Systems (Consistency and Partition Tolerance)
 - **Definition**: CP systems ensure **Consistency** and **Partition Tolerance** but do not guarantee **Availability** during network partitions. CP systems are suitable for applications where data accuracy and consistency are critical, even at the cost of availability during network issues.
-- **Characteristics**:
-    - They prioritize consistency, meaning all nodes have the same, up-to-date data.
-    - They tolerate network partitions, meaning the system can still function even if parts of it cannot communicate with others.
-    - If a network partition occurs, CP systems may sacrifice availability by blocking some requests to maintain consistency across nodes.
 - **Examples**:
     - **Zookeeper**, **Redis** (in specific configurations): Systems that prioritize strong consistency and may block requests if partitioned to ensure all nodes stay synchronized.
 
 ### AP Systems (Availability and Partition Tolerance)
 - **Definition**: AP systems ensure **Availability** and **Partition Tolerance** but do not guarantee **Consistency**. AP systems are suitable for applications that require high availability and can tolerate temporary inconsistencies.
-- **Characteristics**:
-    - The system remains available during network partitions, meaning it can continue to serve requests even if parts of the system are isolated.
-    - Partition tolerance ensures that the system can handle network failures without going offline.
-    - Since consistency is not guaranteed, AP systems may allow different parts of the system to return different data during partitions, resulting in eventual consistency once the partition is resolved.
 - **Examples**:
     - **Cassandra**, **DynamoDB**: NoSQL databases that prioritize availability and partition tolerance, offering eventual consistency.
 
@@ -183,31 +164,30 @@ As the name indicates, the two-phase commit protocol runs a distributed transact
 Although 2PC is useful to implement a distributed transaction, it has the following shortcomings:
 
 * The coordinator node can become the **single point of failure**.
-* All other services need to wait until the slowest service finishes its confirmation. So, the **overall performance of the transaction is bound by the slowest service**.
-* The two-phase commit protocol is slow by design due to the chattiness and dependency on the coordinator. So, it can lead to **scalability and performance issues**.
-* Two-phase commit protocol is **not supported in most NoSQL databases**. Therefore, in a microservice architecture where one or more services use NoSQL databases, we can't apply a two-phase commit. For instance, databases like MongoDB, Cassandra, and Amazon DynamoDB do not offer traditional two-phase commit across distributed services. 
+* All other services need to wait until the slowest service finishes its confirmation. So, the **overall performance of the transaction is bound by the slowest service** **(scalability and performance issues)**.
+* Two-phase commit protocol is **not supported in most NoSQL databases**. Therefore, in a microservice architecture where one or more services use NoSQL databases, we can't apply a two-phase commit. 
 
 ### Two-Phase Commit (2PC) and CAP Theorem
 
 **Two-Phase Commit (2PC) aligns with the CP model in the CAP theorem**, prioritizing **consistency** over **availability** during network partitions. The protocol requires synchronous coordination among all participants; if any participant or the coordinator becomes unreachable, the transaction cannot proceed and enters a blocked state. This behavior ensures consistency but reduces availability. 
 
-Because 2PC does not tolerate partitions well and cannot progress without full participation, it is poorly suited for environments where network partitions are frequent.
+Because 2PC does not tolerate partitions well, it is poorly suited for environments where network partitions are frequent.
 
 ## The SAGA Pattern
 
 The Saga pattern, [introduced in 1987 by Hector Garcia Molina & Kenneth Salem](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf), defines a saga as a sequence of transactions that can be interleaved with one another.
 
 * A local transaction is the unit of work performed by a Saga participant.
-* Every operation that is part of the Saga can be rolled back by a compensating transaction.
+* Every operation that is part of the Saga can be rolled back by a compensating transaction that must be *idempotent* (*retryable*).
 * The Saga pattern guarantees that either all operations complete successfully or the corresponding compensation transactions are run to undo the work previously completed.
-
-In the Saga pattern, a compensating transaction must be *idempotent* and *retryable*. These two principles ensure that we can manage transactions without any manual intervention.
 
 ![saga pattern](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/saga-pattern.png)
 
 ### Saga Pattern and CAP Theorem
 
-The Saga pattern aligns with **AP** in the CAP theorem, favoring Availability while accepting **eventual consistency**. The Saga pattern offers **eventual consistency** through compensating transactions, ensuring the system eventually reaches a valid state without requiring strong consistency. It enhances **availability** by being non-blocking—allowing operations to proceed even during failures—and supports **partition tolerance** by executing steps asynchronously without the need for global coordination, making it more resilient in distributed environments compared to protocols like 2PC.
+The Saga pattern aligns with **AP** in the CAP theorem, favoring Availability while accepting **eventual consistency**. The Saga pattern offers **eventual consistency** through compensating transactions, ensuring the system eventually reaches a valid state without requiring strong consistency. 
+
+It enhances **availability** by being non-blocking—allowing operations to proceed even during failures—and supports **partition tolerance** by executing steps asynchronously without the need for global coordination, making it more resilient in distributed environments compared to protocols like 2PC.
 
 It is ideal for systems where high availability and partition tolerance are priorities, and where eventual consistency is acceptable, such as e-commerce order processing, travel bookings, and other long-running workflows.
 
@@ -225,16 +205,15 @@ In the event of a failure, the microservice reports the failure to SEC, and it i
 
 ![saga coreography 2](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/saga-coreography-2.png)
 
-In this example, the Payment microservice reports a failure, and the SEC invokes the compensating transaction. If the call to the compensating transaction fails, it is the SEC's responsibility to retry it until it is successfully completed. Recall that in Saga, a compensating transaction must be *idempotent* and *retryable*.
+In this example, the Payment microservice reports a failure, and the SEC invokes the compensating transaction. If the call to the compensating transaction fails, it is the SEC's responsibility to retry it until it is successfully completed.
 
 ### Saga Choreography
 
-In the Saga Choreography pattern, each microservice that is part of the transaction publishes an event that is processed by the next microservice. In the Saga, choreography flow is successful if all the microservices complete their local transaction, and none of the microservices reported any failure.
+The Choreography pattern eliminates the need for a central orchestrator (single point of failure), enabling a faster (asynchronous) and loosely coupled approach (services are completely independent as they don't call an orchestrator). 
+
+However, as the number of participants increases, the implementation becomes more **complex**, as each participant must manage its own interactions and state transitions.
 
 ![saga orchestration](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/saga-orchestration.png)
-
-The Choreography pattern eliminates the need for a central orchestrator (single point of failure), enabling a faster (asynchronous) and loosely coupled approach (services are completely independent as they don't call each other or an orchestrator). However, as the number of participants increases, the implementation becomes more **complex**, as each participant must manage its own interactions and state transitions.
-
 
 ### Choreography-based coordination
 
@@ -343,27 +322,62 @@ flowchart TD
 
 In traditional application design, most systems interact with data using the **CRUD** model performing **C**reate, **R**ead, **U**pdate, and **D**elete operations. When designing these applications, we typically create **entity classes** and corresponding **repository classes** to handle database operations. In this approach, we use the **same model classes** for both read and write operations. Many applications work well with a straightforward CRUD model and don’t require additional complexity.
 
-* A data model optimized for write operations may perform poorly for reads, and vice versa.
-* This trade-off becomes a **critical concern in large-scale, high-throughput applications where performance is essential**.
+#### Challenge: Differing Read and Write Requirements
+Consider an application with the following **normalized tables**:
+
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ ORDER_ITEM : contains
+    PRODUCT ||--|{ ORDER_ITEM : referenced
+    CUSTOMER {
+        int id PK
+        string name
+        string email
+    }
+    ORDER {
+        int id PK
+        date order_date
+        int customer_id FK
+    }
+    ORDER_ITEM {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+    }
+    PRODUCT {
+        int id PK
+        string name
+        float price
+    }
+```
+
+Write operations, such as creating a new product, or order, are straightforward and involve inserting data directly into the relevant tables. 
+
+However, **read operations** often require more than just retrieving raw records (complex joins across multiple tables). For example:
+- Fetching **all orders placed by a specific customer**.
+- Calculating **state-wise sales**.
+- Computing **product-wise sales**.
+
+**The more we normalize our data, the easier it becomes to write, but at the cost of making reads more complex and potentially slower**.
+
+```mermaid
+erDiagram
+    MONTHLY_ORDERS {
+        int id PK
+        string customer_name
+        string customer_email
+        float total_price
+        int total_quantity
+    }
+```
 
 #### Challenge: Different traffic intensity between READ and WRITE operations
 
 In most applications, **READ operations far outnumber WRITE operations**. This is especially true for web-based applications, which are typically **read-heavy**.
 - **Social Media Platforms**: Users frequently check feeds, browse profiles, and search content — all of which are **read-heavy** operations.
 - **Booking Applications**: Only a small percentage of users book tickets (writes), whereas the majority repeatedly search, check availability, and compare prices (reads). This creates a large disparity between **read and write workloads**.
-
-#### Challenge: Differing Read and Write Requirements
-Consider an application with the following **normalized tables**:
-- `user`
-- `product`
-- `purchase_order`
-
-Write operations, such as creating a new user, product, or order, are straightforward and involve inserting data directly into the relevant tables. However, **read operations** often require more than just retrieving raw records. For example:
-- Fetching **all orders placed by a specific user**.
-- Calculating **state-wise sales**.
-- Computing **product-wise sales**.
-
-These queries often involve aggregations and complex joins across multiple tables, which can significantly impact **read performance**. **The more we normalize our data, the easier it becomes to write, but at the cost of making reads more complex and potentially slower**.
 
 ### CQRS (Command Query Responsibility Segregation)
 

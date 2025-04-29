@@ -18,15 +18,16 @@ public class OrderController {
     private final OrderWorkers orderWorkers;
 
     /**
-     * curl -X POST http://localhost:9000/order \
-     * -H "Content-Type: application/json" \
-     * -d '{
-     * "id": null,
-     * "orderId": "7fb91305-6799-4d40-a9fc-2bf9086d0100",
-     * "productIds": "PROD-A1,PROD-D4",
-     * "customerId": "C-001",
-     * "creditCardNumber": "7777-1234-5678-0000",
-     * "status": "PENDING"
+     curl -X POST http://localhost:9000/order \
+     -H "Content-Type: application/json" \
+     -d '{
+     "id": null,
+     "orderId": "7fb91305-6799-4d40-a9fc-2bf908655555",
+     "productIds": "PROD-A1,PROD-C3",
+     "customerId": "C-001",
+     "creditCardNumber": "7777-1234-5678-0000",
+     "status": "PENDING"
+     }'
      */
 
     @PostMapping(value = "/order", produces = "application/json")
