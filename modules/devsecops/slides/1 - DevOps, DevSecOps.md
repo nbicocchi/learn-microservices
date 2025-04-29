@@ -238,17 +238,38 @@ These metrics are valuable because:
 
 How to improve DORA metrics within an organization?
 
-1. **Reduction of the Codebase**  
-   Reducing the size and complexity of the codebase, such as by adopting microservices, makes the system easier to maintain and scale. Smaller, independently deployable services are less prone to failures, which improves **Change Failure Rate** and **Time to Restore Service**. Additionally, this allows for faster and more frequent deployments, boosting **Deployment Frequency**.
+1. **Monitor**  
+   ![](images/linearb-dashboard.png)
 
-2. **Smaller Pull Requests**  
-   Encourage developers to make smaller, more frequent pull requests rather than large, infrequent ones. Smaller pull requests are easier to review, merge, and test, reducing the risk of issues and speeding up the overall development process, which directly impacts **Lead Time for Changes**.
+   [LinearB Dashboard](https://linearb.io/blog/dora-metrics)
+
+1. **Reduction of Codebase Size**  
+   Reducing size/complexity of the codebase (e.g., microservices) improves **Change Failure Rate**, **Time to Restore Service**, and **Deployment Frequency**.
+
+2. **Reduction of PR Size**  
+   Smaller pull requests are easier to review, merge, and test, reducing the risk of issues and speeding up the overall development process, which directly impacts **Lead Time for Changes**.
 
 3. **Automate CI/CD Pipelines**  
-   Automating your continuous integration (CI) and continuous delivery (CD) pipelines is essential for improving both **Deployment Frequency** and **Lead Time for Changes**. This reduces manual errors, accelerates testing and deployment processes, and ensures fast, consistent releases.
+   Automating continuous integration/delivery pipelines reduces manual errors, accelerates testing and deployment processes improving both **Deployment Frequency** and **Lead Time for Changes**. 
 
-4. **Implement Blue/Green or Canary Deployments**  
-   These deployment strategies reduce the impact of failed releases by gradually introducing changes to a small subset of users before scaling. This minimizes risk and downtime, improving both **Change Failure Rate** and **Time to Restore Service**.
+4. **Implement Deployments Strategies**  
+   Deployment strategies reduce the impact of failed releases by gradually introducing changes to a small subset of users before improving both **Change Failure Rate** and **Time to Restore Service**.
+
+## Deployment Strategies
+
+**Blue-Green Deployment** uses two identical environments—one active (blue) and one idle (green). The new version is deployed to the idle environment and tested. Once verified, all traffic is instantly switched to it. This minimizes downtime and makes rollback simple by redirecting traffic back to the old environment if needed. It's ideal for major upgrades that require minimal disruption.
+
+![](images/deployment-blue-green.webp)
+
+**Rolling Deployment** gradually replaces old instances of the application with new ones across the infrastructure. All users are progressively exposed to the new version as the update spreads. This approach avoids full downtime, but rollbacks are more involved since already updated instances must be reverted individually. It works well in stable environments with low rollback risk.
+
+![](images/deployment-rolling.webp)
+
+**Canary Deployment** starts by releasing the new version to a small subset of users. If no issues are observed, the rollout continues to a larger user base. This minimizes risk by limiting initial exposure and allows quick rollback if needed. It's especially useful when introducing potentially disruptive changes or testing new features under real-world conditions.
+
+![](images/deployment-canary.webp)
+
+
 
 ## The DevSecOps model
 
