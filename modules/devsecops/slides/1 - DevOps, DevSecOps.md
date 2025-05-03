@@ -87,7 +87,7 @@ However, it neglects the operational aspects of software production leading to f
 
 ### Real-world pipeline
 
-1. **Terraform** provisions infrastructure:
+1. [Terraform](https://developer.hashicorp.com/terraform) for infrastructure provisioning:
    - Terraform is used to **create cloud resources**, such as virtual machines (VMs), storage, networks, and managed Kubernetes clusters (like EKS, GKE, or AKS).
 
    ```hcl
@@ -97,8 +97,8 @@ However, it neglects the operational aspects of software production leading to f
    }
    ```
 
-2. **Puppet** configures the servers:
-   - Once the infrastructure is provisioned, **Puppet** installs software packages, configures security settings, and ensures servers are properly configured.
+2. [Puppet](https://www.puppet.com/)/[Chef](https://www.chef.io/)/[Ansible](https://github.com/ansible/ansible) for configuration management:
+   - Once the infrastructure is provisioned, these tools install software packages, configures security settings, and ensures servers are properly configured.
    - Example: Puppet installs Docker and Kubernetes components on the provisioned VMs.
 
    ```puppet
@@ -112,81 +112,84 @@ However, it neglects the operational aspects of software production leading to f
    }
    ```
 
-3. **Jenkins** / **GitLab CI/CD** automates build, test, and deploy cycles:
-   - On every code pus[books](../../../books)h, Jenkins triggers the Maven build to run tests and create a deployable artifact.
-   - Jenkins also deploys the artifact to the appropriate environment (like staging or production).
+3. [Jenkins](https://www.jenkins.io/)/GitLab/GitHub automates build, test, and deploy cycles:
+   - On every code push, Jenkins automates build and deployment.
+   - Example: Jenkins build an artifact using Maven, make its Docker image, and also deploys it in a K8s environment.
 
-   ```groovy
-   pipeline {
-     agent any
-     stages {
-       stage('Build') {
-         steps {
-           sh 'mvn clean install'
-         }
-       }
-       stage('Deploy') {
-         steps {
-           // Deploy the artifact to Docker or Kubernetes
-           sh 'kubectl apply -f production.yaml'
-         }
-       }
-     }
+
+```groovy
+pipeline {
+   agent any
+
+   environment {
+      DOCKER_IMAGE = 'your-dockerhub-username/your-app'
+      DOCKER_TAG = "${env.BUILD_NUMBER}"
    }
-   ```
 
-4. **Docker** packages the app into containers:
-   - After the build, the artifact (e.g., `.jar` file) is packaged into a **Docker container** using a `Dockerfile`.
+   tools {
+      maven 'Maven 3' // adjust name to match your Jenkins Maven installation
+   }
 
-   ```dockerfile
-   FROM eclipse-temurin:21
-   ARG JAR_FILE=target/*.jar
-   COPY ${JAR_FILE} application.jar
-   ENTRYPOINT ["java","-jar","/application.jar"]
-   ```
+   stages {
+      stage('Checkout') {
+         steps {
+            git 'https://github.com/your-user/your-repo.git'
+         }
+      }
 
-5. **Kubernetes** orchestrates and scales containers:
-   - The Docker containers are deployed into a **Kubernetes cluster**.
-   - Kubernetes manages scaling, networking, and fault tolerance for the app containers, ensuring high availability.
+      stage('Build & Test') {
+         steps {
+            sh 'mvn clean install'
+         }
+      }
 
-   ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: myapp-deployment
-   spec:
-     replicas: 3
-     selector:
-       matchLabels:
-         app: myapp
-     template:
-       metadata:
-         labels:
-           app: myapp
-       spec:
-         containers:
-           - name: myapp-container
-             image: myapp:latest
-             ports:
-               - containerPort: 8080
-   ```
+      stage('Build Docker Image') {
+         steps {
+            script {
+               dockerImage = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+            }
+         }
+      }
 
-6. **OpenTelemetry** monitors the systems:
-   - **OpenTelemetry** is integrated into the Kubernetes cluster to collect application performance metrics, traces, and logs from your containers and Kubernetes services.
+      stage('Push Docker Image') {
+         steps {
+            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+               sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+               sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+               sh 'docker logout'
+            }
+         }
+      }
 
-7. **Grafana** visualizes metrics and traces:
-   - The data collected by **OpenTelemetry** is sent to a backend storage (like **Prometheus**).
-   - **Grafana** is used to visualize this data by creating dashboards to monitor system health, performance, and business metrics.
+      stage('Deploy to Kubernetes') {
+         steps {
+            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+               sh '''
+                        export KUBECONFIG=$KUBECONFIG
+                        kubectl set image deployment/your-deployment-name your-container-name=${DOCKER_IMAGE}:${DOCKER_TAG}
+                        kubectl rollout status deployment/your-deployment-name
+                    '''
+            }
+         }
+      }
+   }
+}
+```
+
+4. **OpenTelemetry** monitors the systems:
+   - **OpenTelemetry** is integrated into the Kubernetes cluster to collect application performance metrics, traces, and logs from containers and infrastructure services.
+
+5. **Grafana** visualizes metrics and traces:
+   - The data collected by **OpenTelemetry** is sent to one (or more) backend of choice.
+   - **Grafana** is used to visualize this data and create dashboards.
 
 ### Infrastructure as Code (IaC)
 
 Infrastructure as Code (IaC) is the practice of managing and provisioning computing infrastructure through machine-readable definition files, rather than through manual processes. This approach automates the setup and configuration of environments, ensuring consistency, reducing human error, and speeding up deployment cycles. 
 
-- **Terraform**: Cloud provisioning tool that uses declarative configuration (HCL) to manage infrastructure across multiple cloud providers.
-- **Puppet**: Configuration management tool using a declarative language to enforce desired system states, supports agent-based and agentless models.
-- **Chef**: Configuration management tool using a Ruby-based DSL, defines infrastructure as "recipes" and "cookbooks," highly flexible for complex environments.
-- **Ansible**: Configuration management and orchestration tool, agentless, uses YAML for simple automation.
-- **Helm**: Package manager for Kubernetes, simplifies deployment and management of applications on Kubernetes clusters using YAML-based charts.
+- **Terraform**: Cloud provisioning.
+- **Puppet/Chef/Ansible**: Configuration management.
+- **Helm**: Package manager for Kubernetes, simplifies deployment and management of applications on Kubernetes clusters.
 
 ### Key Performance Indicators (KPIs)
 

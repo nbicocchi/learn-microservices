@@ -124,7 +124,7 @@ In this case:
 - `job3` runs in parallel with `job2`.
 - `job4` runs only after both `job2` and `job3` finish.
 
-## Continuous Delivery DevOps Workflow
+## Continuous Delivery Workflow
 
 The following configuration file defines a CI/CD pipeline for a Java project. It includes steps for linting, security scanning, building, and deploying a Docker image. Here's how to assemble it step by step.
 
@@ -265,10 +265,7 @@ This job builds the project and saves the JAR artifact.
 
 This job builds a Docker image, scans it for vulnerabilities using Trivy, and pushes it to Docker Hub.
 
-## Continuous Deployment DevOps Workflow
-... Deploy on GCP...
-
-## DevSecOpc Workflow
+## Security Workflow
 
 ### GitGuardian: A Secret Detection Tool
 
@@ -381,6 +378,9 @@ build-push-container-image:
     - name: Push Docker Image to Docker Hub
       run: docker push nbicocchi/product-service-ci-cd:latest
 ```
+
+## Continuous Deployment Workflow
+
 
 ## Resources
 
