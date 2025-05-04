@@ -49,16 +49,18 @@ However, it neglects the operational aspects of software production leading to f
 - DevOps is a collaborative and multidisciplinary organizational effort to automate the continuous delivery of new software updates while ensuring their correctness and reliability. ([Leite et al., 2020](https://arxiv.org/abs/1909.05409))
 
 **What it is:**
-- **Teams integrate into a single unit**, where engineers participate throughout the entire application lifecycle, from development to production (*you build it, you run it*).
-- Teams use **automation** to accelerate traditionally slow, manual processes. DevOps tools and technologies enable faster, more reliable deployment and continuous evolution of applications
+- **Teams integrate into a single unit (*you build it, you run it*)**, where developers participate throughout the entire application lifecycle, from development to production.
+- Teams use **automation** to accelerate manual processes. DevOps tools and technologies enable faster, more reliable deployment.
+- Despite originally defined for monolithic architectures, DevOps practices are **highly beneficial in managing distributed systems**, which are inherently difficult to operate manually.
 
 **What implies for Developers:**
-- **Increased Automation**: Automation allows fewer people to manage more code and handle increased complexity, but this can create a more stressful environment as the responsibility scales.
-- **Ownership and Accountability**: When something breaks, developers are called to fix it. This encourages developers to write better, more robust code, increase test coverage, and enhance observability, ensuring smoother and more reliable operations.
+* **When something breaks, developers are called to fix it**. This encourages developers to write more robust code, increase test coverage, enhance observability etc.
+
+* Automation allows fewer people to manage more code and handle increased complexity, but this can create a more stressful environment as the **responsibility scales**.
 
 ![](images/devops-devops.webp)
 
-### The 7 C's
+**The 7 C's**
 
 ![](images/devops-revolution.webp)
 
@@ -85,111 +87,339 @@ However, it neglects the operational aspects of software production leading to f
 7. **Continuous Operations**  
    This phase ensures that systems are available 24/7. It focuses on building highly available and scalable infrastructure through automation to minimize downtime and ensure reliability.
 
-### Real-world pipeline
+## General concepts
 
-1. [Terraform](https://developer.hashicorp.com/terraform) for infrastructure provisioning:
-   - Terraform is used to **create cloud resources**, such as virtual machines (VMs), storage, networks, and managed Kubernetes clusters (like EKS, GKE, or AKS).
+### Domain Specific Language (DSL)
 
-   ```hcl
-   resource "aws_instance" "example" {
-     ami           = "ami-12345678"
-     instance_type = "t2.micro"
-   }
-   ```
+Domain-Specific Languages (DSLs) are widely used in CI/CD to simplify automation and pipeline management. These DSLs are designed to handle specific tasks in the CI/CD process, making it easier to define, manage, and maintain workflows.
 
-2. [Puppet](https://www.puppet.com/)/[Chef](https://www.chef.io/)/[Ansible](https://github.com/ansible/ansible) for configuration management:
-   - Once the infrastructure is provisioned, these tools install software packages, configures security settings, and ensures servers are properly configured.
-   - Example: Puppet installs Docker and Kubernetes components on the provisioned VMs.
-
-   ```puppet
-   package { 'docker':
-     ensure => installed,
-   }
-
-   service { 'docker':
-     ensure => running,
-     enable => true,
-   }
-   ```
-
-3. [Jenkins](https://www.jenkins.io/)/GitLab/GitHub automates build, test, and deploy cycles:
-   - On every code push, Jenkins automates build and deployment.
-   - Example: Jenkins build an artifact using Maven, make its Docker image, and also deploys it in a K8s environment.
-
-
-```groovy
-pipeline {
-   agent any
-
-   environment {
-      DOCKER_IMAGE = 'your-dockerhub-username/your-app'
-      DOCKER_TAG = "${env.BUILD_NUMBER}"
-   }
-
-   tools {
-      maven 'Maven 3' // adjust name to match your Jenkins Maven installation
-   }
-
-   stages {
-      stage('Checkout') {
-         steps {
-            git 'https://github.com/your-user/your-repo.git'
-         }
-      }
-
-      stage('Build & Test') {
-         steps {
-            sh 'mvn clean install'
-         }
-      }
-
-      stage('Build Docker Image') {
-         steps {
-            script {
-               dockerImage = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
-            }
-         }
-      }
-
-      stage('Push Docker Image') {
-         steps {
-            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-               sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-               sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
-               sh 'docker logout'
-            }
-         }
-      }
-
-      stage('Deploy to Kubernetes') {
-         steps {
-            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-               sh '''
-                        export KUBECONFIG=$KUBECONFIG
-                        kubectl set image deployment/your-deployment-name your-container-name=${DOCKER_IMAGE}:${DOCKER_TAG}
-                        kubectl rollout status deployment/your-deployment-name
-                    '''
-            }
-         }
-      }
-   }
-}
-```
-
-4. **OpenTelemetry** monitors the systems:
-   - **OpenTelemetry** is integrated into the Kubernetes cluster to collect application performance metrics, traces, and logs from containers and infrastructure services.
-
-5. **Grafana** visualizes metrics and traces:
-   - The data collected by **OpenTelemetry** is sent to one (or more) backend of choice.
-   - **Grafana** is used to visualize this data and create dashboards.
+| **Aspect**      | **Declarative DSL** | **Imperative DSL** |
+| --------------- | ---- | -------------- |
+| **Definition**  | Describes *what* needs to be done | Describes *how* tasks should be performed |
+| **Examples**    | YAML | Groovy, Bash   |
+| **Ease of Use** | Simple, easy to configure, more abstract | Greater control, flexible but more complex |
+| **Control**     | Limited control over execution flow | Full control over logic and task execution |
+| **Use Cases**   | Standardized workflows, repeatable tasks | Custom, complex tasks and workflows |
+| **Maintenance** | Easier to maintain, less code to write | Harder to maintain due to complexity |
 
 ### Infrastructure as Code (IaC)
 
-Infrastructure as Code (IaC) is the practice of managing and provisioning computing infrastructure through machine-readable definition files, rather than through manual processes. This approach automates the setup and configuration of environments, ensuring consistency, reducing human error, and speeding up deployment cycles. 
+**Infrastructure as Code (IaC)** is the practice of **managing and provisioning infrastructure through machine-readable definition files** — rather than through manual processes.
 
-- **Terraform**: Cloud provisioning.
-- **Puppet/Chef/Ansible**: Configuration management.
-- **Helm**: Package manager for Kubernetes, simplifies deployment and management of applications on Kubernetes clusters.
+* **Declarative or Imperative**: You can describe the *desired end state* (declarative) or the *steps to reach it* (imperative).
+* **Version-controlled**: Infrastructure code is stored in systems like Git for traceability, review, and rollback.
+* **Repeatable**: The same code can be used to create identical environments.
+* **Automated**: Tools execute code to provision, update, or destroy resources automatically.
+
+
+### Configuration as Code
+Configuration drift happens when a system’s actual state diverges from its intended configuration.
+
+**What causes configuration drift?**
+* Manual changes made directly on systems (e.g., via SSH)
+* Failed or partial deployments
+* Unmanaged updates or patches
+* Lack of version control in configuration files
+
+**Why is configuration drift a problem?**
+* Leads to **inconsistencies** across servers
+* Makes **debugging and troubleshooting** harder
+* Violates **security baselines**, audit requirements
+* Can lead to **[compliance](https://www.tripwire.com/solutions/compliance) drift**
+
+**How to detect configuration drift?**
+
+1. Manually monitor. This is incredibly time-consuming and therefore is not done on a regular basis, if at all.
+
+![](images/iac-manual.png)
+
+2. Scan for compliance. While not as tedious as the first level, this still requires a certain level of interaction to create administrative credentials for the tool to scan with, as well as someone to schedule or run the scans when required and remediate the results. This is typically done once a month or once a quarter to try to get ahead of the audit process.
+   
+![](images/iac-periodic.png)
+
+3. Monitor all systems in a near real-time manner. This would require that the systems are provisioned with a lightweight agent that can monitor/update the systems continuously.
+   
+![](images/iac-automatic.png)
+
+
+
+
+### GitOps
+
+**GitOps** is a DevOps methodology that uses **Git as the single source of truth** for defining and managing **infrastructure and application configurations**.
+
+With GitOps, all changes to your infrastructure or applications are made by **modifying Git repositories**, and then **automated systems** apply those changes to the runtime environment.
+
+Key Principles:
+
+* **Declarative Infrastructure**: Your system's desired state is described declaratively.
+* **Version-controlled**: Infrastructure code is stored in systems like Git for traceability, review, and rollback.
+* **Automated Delivery**: Agents or CI/CD pipelines detect changes in Git and automatically apply them.
+* **Continuous Reconciliation**: The actual state of the system is continuously compared to the desired state in Git, and drift is corrected.
+  * Chef InSpec
+  * Ansible lint
+  * DriftCTL (Terraform)
+
+## DevOps Pipelines Overview
+
+| **Stage**                       | **Purpose**                                    | **Tools**                             |
+| ------------------------------- | ---------------------------------------------- |---------------------------------------|
+| 1. Infrastructure Provisioning  | Define and create infrastructure as code (IaC) | Terraform                             |
+| 2. Configuration Management     | Install software and configure instances       | Ansible, Puppet, Chef                 |
+| 3. Build and Test Automation    | Compile code, run tests, and build artifacts   | Jenkins, GitHub Actions, Gitlab CI/CD |
+| 4. Deployment Automation        | Deploy apps to test/staging/prod environments  | Jenkins, Ansible, Helm, ArgoCD        |
+| 5. Monitoring and Observability | Track metrics, logs, and traces                | OpenTelemetry, Grafana, Prometheus    |
+
+### Infrastructure Provisioning
+
+* **What it does**: Provision cloud infrastructure (EC2, VPCs, load balancers, etc.) using declarative configuration (Infrastructure As Code).
+* **Use case**: You define resources in `.tf` files and apply them via `terraform apply`.
+
+[**Terraform**](https://www.terraform.io/)
+![](images/terraform.png)
+
+### Configuration Management
+
+* **What it does**: Tools based on textual configuration files (recipes, playbooks, etc.) which define automation tasks (installing software, configuring services, copying files, or restarting servers) to be executed on remote systems.
+* **Use case**: Install NGINX, set environment variables, deploy SSH keys.
+
+[**Chef**](https://www.chef.io/) (Master/Agent, Imperative, Ruby DSL, Hard to learn). Ohai is a system profiling tool used by Chef to collect detailed information about the node (i.e., the system or server) where the Chef client is running.
+![](images/chef.png)
+
+```text
+# Install Apache package
+package 'httpd' do
+  action :install
+end
+
+# Start and enable the Apache service
+service 'httpd' do
+  action [:enable, :start]
+end
+
+# Create a custom homepage
+file '/var/www/html/index.html' do
+  content '<h1>Welcome to My Web Server!</h1>'
+  mode '0644'
+  owner 'root'
+  group 'root'
+end
+
+```
+
+[**Puppet**](https://puppet.com/): (Master/Agent, Declarative, Ruby DSL, Hard to learn)
+![](images/puppet.png)
+
+```text
+# Install Apache package
+package { 'httpd':
+  ensure => installed,
+}
+
+# Enable and start the Apache service
+service { 'httpd':
+  ensure     => running,
+  enable     => true,
+  require    => Package['httpd'],
+}
+
+# Create a custom homepage
+file { '/var/www/html/index.html':
+  ensure  => file,
+  content => '<h1>Welcome to My Web Server!</h1>',
+  mode    => '0644',
+  owner   => 'root',
+  group   => 'root',
+  require => Package['httpd'],
+}
+```
+
+[**Ansible**](https://www.ansible.com/): (Agentless, Imperative, YAML DSL, Easy to learn)
+![](images/ansible.png)
+
+```text
+- name: Setup Apache on web servers
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Install Apache
+      package:
+        name: httpd
+        state: present
+
+    - name: Start and enable Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Create custom homepage
+      copy:
+        dest: /var/www/html/index.html
+        content: "<h1>Welcome to My Web Server!</h1>"
+        owner: root
+        group: root
+        mode: '0644'
+```
+
+---
+
+### Build and Test Automation
+
+* **What it does**: Automates build, test, package, deploy steps using pipelines.
+* **Use case**:
+   1. Triggered by a `git push`.
+   2. Pulls code, runs `mvn test`, builds a Docker image, pushes to a registry.
+
+[**Jenkins**](https://www.jenkins.io/): (Master/Agent, Imperative, Groovy DSL)
+![](images/jenkins-agent-architecture.webp)
+
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'yourdockerhubusername/springboot-app'
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/your-org/your-spring-boot-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh './mvnw clean package -DskipTests=false'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh './mvnw test'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
+                        dockerImage.push()
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up..."
+            sh 'docker image prune -f'
+        }
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed!"
+        }
+    }
+}
+```
+
+[**GitHub Actions**](https://github.com/features/actions): (Cloud-based ephemeral runners, YAML, Declarative/Imperative)
+
+![](images/)
+
+
+```yaml
+name: Build and Push Spring Boot App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_IMAGE: yourdockerhubusername/springboot-app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build with Maven
+        run: ./mvnw clean package -DskipTests=false
+
+      - name: Run tests
+        run: ./mvnw test
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:${{ github.run_number }}
+            ${{ env.DOCKER_IMAGE }}:latest
+
+      - name: Clean up Docker
+        run: docker system prune -af
+```
+
+---
+
+### Deployment Automation — **Jenkins + Ansible / Helm / ArgoCD**
+
+* After Jenkins builds the artifact, it can:
+
+   * Run an **Ansible playbook** to deploy to EC2.
+   * Deploy to **Kubernetes** using **Helm** charts.
+   * Trigger a **GitOps workflow** via **ArgoCD**.
+* **Goal**: Make deployment repeatable, fast, and reliable across environments (dev, test, prod).
+
+
+### Monitoring and Observability — **OpenTelemetry + Grafana**
+
+* **Tool: OpenTelemetry**
+
+   * **What it does**: Standardized collection of logs, metrics, and traces.
+   * **Use**: Instrument code and export data to backends (Prometheus, Jaeger, etc.).
+
+* **Tool: Grafana**
+
+   * **What it does**: Visualizes metrics and dashboards using data from Prometheus, Loki, etc.
+   * **Use**: Track CPU usage, request latency, memory, error rates.
 
 ### Key Performance Indicators (KPIs)
 
