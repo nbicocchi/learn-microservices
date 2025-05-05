@@ -33,14 +33,13 @@ As development progresses, teams frequently discover **gaps, ambiguities, or mis
 
 ![](images/agile-model.webp)
 
-The Agile model eases the friction between (1) requirements gathering and (2) development by adopting an iterative and flexible approach to software production. Instead of trying to define all requirements upfront, Agile promotes collaboration and continuous feedback throughout the development lifecycle. Requirements are gathered incrementally and revisited during each iteration, allowing for adjustments based on client feedback, changing needs, or new insights. 
+The Agile model ([Kanban](https://www.linkedin.com/pulse/kanban-origin-story-james-white-csp-sm-icp-acc-sa-sgp) (1950s), [Agile Manifesto](https://agilemanifesto.org/) (2001)) eases the friction between (1) requirements gathering and (2) development by adopting an iterative and flexible approach to software production. Instead of trying to define all requirements upfront, Agile promotes collaboration and continuous feedback throughout the development lifecycle. Requirements are gathered incrementally and revisited during each iteration, allowing for adjustments based on client feedback, changing needs, or new insights. 
 
 However, it neglects the operational aspects of software production leading to friction between (2) development and (3) operations:
 
 - **Limited Integration with Operations**: Dev teams might build features without thinking about how they’ll be deployed, scaled, or maintained.
 - **Deployment as an Afterthought**: Shipping to production happens late in the cycle and often causes problems.
-- **Operational Silos**: Developers and operations work separately with little collaboration.
-- **Insufficient Monitoring and Feedback**: Once the software is live, there's weak feedback from production issues back into the development cycle.
+- **Low Feedback**: Once the software is live, there's weak feedback from production issues back into the development cycle.
 
 ## The DevOps model
 
@@ -49,7 +48,10 @@ However, it neglects the operational aspects of software production leading to f
 - DevOps is a collaborative and multidisciplinary organizational effort to automate the continuous delivery of new software updates while ensuring their correctness and reliability. ([Leite et al., 2020](https://arxiv.org/abs/1909.05409))
 
 **What it is:**
-- **Teams integrate into a single unit (*you build it, you run it*)**, where developers participate throughout the entire application lifecycle, from development to production.
+- **Teams integrate into a single unit (*["you build it, you run it"](https://go9x.com/blog/you-run-it-you-build-it)*)**, where developers participate throughout the entire application lifecycle, from development to production.
+
+> “The traditional model is that you take your software to the wall that separates development and operations and throw it over and then forget about it. Not at Amazon. You build it, you run it. This brings developers into contact with the day-to-day operation of their software. It also brings them into day-to-day contact with the customer. This customer feedback loop is essential for improving the quality of the service.” - Amazon CTO Werner Vogels
+
 - Teams use **automation** to accelerate manual processes. DevOps tools and technologies enable faster, more reliable deployment.
 - Despite originally defined for monolithic architectures, DevOps practices are **highly beneficial in managing distributed systems**, which are inherently difficult to operate manually.
 
@@ -57,6 +59,9 @@ However, it neglects the operational aspects of software production leading to f
 * **When something breaks, developers are called to fix it**. This encourages developers to write more robust code, increase test coverage, enhance observability etc.
 
 * Automation allows fewer people to manage more code and handle increased complexity, but this can create a more stressful environment as the **responsibility scales**.
+
+> "Something that I should have known all along became clearer and clearer to me: Methodology and tools will not change your organisation. They can support it but culture is the important ingredient that was missing. As Drucker says: “Culture eats strategy for breakfast”. It is so very true ... But how do I really change the culture of an organisation, how do I avoid the old saying that “to change people, you sometimes have to change (read replace) people” ? - Mirco Hering (DevOps Engineer)"
+
 
 ![](images/devops-devops.webp)
 
@@ -181,9 +186,9 @@ Key Principles:
 ### Configuration Management
 
 * **What it does**: Tools based on textual configuration files (recipes, playbooks, etc.) which define automation tasks (installing software, configuring services, copying files, or restarting servers) to be executed on remote systems.
-* **Use case**: Install NGINX, set environment variables, deploy SSH keys.
+* **Use case**: Install Apache, set environment variables, deploy files.
 
-[**Chef**](https://www.chef.io/) (Master/Agent, Imperative, Ruby DSL, Hard to learn). Ohai is a system profiling tool used by Chef to collect detailed information about the node (i.e., the system or server) where the Chef client is running.
+[**Chef**](https://www.chef.io/) (Master/Agent, Imperative, Ruby DSL, Hard to learn). 
 ![](images/chef.png)
 
 ```text
@@ -204,7 +209,6 @@ file '/var/www/html/index.html' do
   owner 'root'
   group 'root'
 end
-
 ```
 
 [**Puppet**](https://puppet.com/): (Master/Agent, Declarative, Ruby DSL, Hard to learn)
@@ -234,7 +238,7 @@ file { '/var/www/html/index.html':
 }
 ```
 
-[**Ansible**](https://www.ansible.com/): (Agentless, Imperative, YAML DSL, Easy to learn)
+[**Ansible**](https://www.ansible.com/): (Agentless, Wannabe Declarative, YAML DSL, Easy to learn)
 ![](images/ansible.png)
 
 ```text
@@ -270,7 +274,7 @@ file { '/var/www/html/index.html':
 * **What it does**: Automates build, test, package, deploy steps using pipelines.
 * **Use case**:
    1. Triggered by a `git push`.
-   2. Pulls code, runs `mvn test`, builds a Docker image, pushes to a registry.
+   2. Runs `git pull/clone`, `mvn clean`, `mvn test` , `mvn package`, `docker build`, `docker push`.
 
 [**Jenkins**](https://www.jenkins.io/): (Master/Agent, Imperative, Groovy DSL)
 ![](images/jenkins-agent-architecture.webp)
@@ -287,19 +291,19 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-org/your-spring-boot-app.git'
+                git clone 'https://github.com/your-org/your-java-service.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh './mvnw clean package -DskipTests=false'
+                sh 'mvn clean package -DskipTests=false'
             }
         }
 
         stage('Test') {
             steps {
-                sh './mvnw test'
+                sh 'mvn test'
             }
         }
 
@@ -315,7 +319,6 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        dockerImage.push()
                         dockerImage.push('latest')
                     }
                 }
@@ -338,10 +341,7 @@ pipeline {
 }
 ```
 
-[**GitHub Actions**](https://github.com/features/actions): (Cloud-based ephemeral runners, YAML, Declarative/Imperative)
-
-![](images/)
-
+[**GitHub Actions**](https://github.com/features/actions): (Cloud-based ephemeral runners, YAML, Imperative)
 
 ```yaml
 name: Build and Push Spring Boot App
@@ -373,10 +373,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build with Maven
-        run: ./mvnw clean package -DskipTests=false
+        run: mvn clean package -DskipTests=false
 
       - name: Run tests
-        run: ./mvnw test
+        run: mvn test
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -399,33 +399,27 @@ jobs:
 
 ---
 
-### Deployment Automation — **Jenkins + Ansible / Helm / ArgoCD**
+### Deployment Automation
 
-* After Jenkins builds the artifact, it can:
+* **What it does**: Make deployment repeatable, fast, and reliable across environments (dev, test, prod).
+* **Use case**: After Jenkins builds the artifact, it can deploy to various environments, such as:
+  * Kubernetes (via kubectl or Helm).
+  * Cloud platforms (e.g., AWS, GCP, Azure using CLI or SDKs)
+  * On-prem servers (via SSH, SCP, or Ansible). 
+  * ArgoCD (trigger GitOps workflows by pushing to Git).
 
-   * Run an **Ansible playbook** to deploy to EC2.
-   * Deploy to **Kubernetes** using **Helm** charts.
-   * Trigger a **GitOps workflow** via **ArgoCD**.
-* **Goal**: Make deployment repeatable, fast, and reliable across environments (dev, test, prod).
+---
 
+### Observability
 
-### Monitoring and Observability — **OpenTelemetry + Grafana**
-
-* **Tool: OpenTelemetry**
-
-   * **What it does**: Standardized collection of logs, metrics, and traces.
-   * **Use**: Instrument code and export data to backends (Prometheus, Jaeger, etc.).
-
-* **Tool: Grafana**
-
-   * **What it does**: Visualizes metrics and dashboards using data from Prometheus, Loki, etc.
-   * **Use**: Track CPU usage, request latency, memory, error rates.
+* **What it does**: Standardized collection/visualization of logs, metrics, and traces.
+* **Use case**: Instrument code, export data to backends (Prometheus, Jaeger, etc.), and visualize dashboards.
 
 ### Key Performance Indicators (KPIs)
 
-**Deployment Frequency**: Measures how often updates are released to production. High-performing teams deploy multiple times a day, requiring a highly automated pipeline with thorough testing and minimal manual intervention.
+**Deployment Frequency**: Measures how often updates are released to production. 
 
-**Change Failure Rate**: Tracks the percentage of deployments that need immediate fixes or rollbacks. High-performing teams aim for a failure rate between 0% and 15%, achieved through test automation and early defect detection.
+**Change Failure Rate**: Tracks the percentage of deployments that need immediate fixes or rollbacks. 
 
 ---
 
@@ -433,21 +427,23 @@ jobs:
 
 **Lead Time**: The total time from request to full deployment of a product or feature, encompassing the entire development and delivery workflow. A key indicator of organizational efficiency.
 
-**Cycle Time**: The time it takes to complete a specific part of the workflow, from development start to task completion, often including reviews and testing but not deployment. This metric highlights team productivity and potential bottlenecks.
+**Cycle Time**: The time it takes to complete a specific part of the workflow, from development start to task completion. This metric highlights team productivity and potential bottlenecks.
 
-**Lead Time for Changes**: Measures the time from a code commit to deployment in production. Short lead times indicate efficient workflows with quick feedback loops and minimal delays.
+**Lead Time for Changes**: Measures the time from a code commit to deployment in production. Short lead times indicate efficient automated workflows.
 
 ---
 
-![](images/devops-MTTR.webp)
+![](images/devops-metrics.jpg)
 
-- **Mean Time to Failure (MTTF)**: The average time a system or service operates before failing. A high MTTF indicates robust system design and low unexpected downtime.
+- **Mean Time Between Failures (MTBF)**: The average time between successive system failures. A high MTBF suggests system stability, while low MTBF calls for improvements in reliability and fault tolerance.
 
 - **Mean Time to Detect (MTTD)**: The average time to identify a failure, performance issue, or security problem. Low MTTD ensures quick response to minimize impact on users and business.
 
 - **Mean Time to Recovery (MTTR)**: The average time needed to restore a service after a failure. A low MTTR reflects efficient incident response, with practices like continuous monitoring and automated recovery.
 
-- **Mean Time Between Failures (MTBF)**: The average time between successive system failures. A high MTBF suggests system stability, while low MTBF calls for improvements in reliability and fault tolerance.
+- **Availability**: $$Availability = \frac{\text{MTBF}}{\text{MTBF} + \text{MTTR}}$$
+
+
 
 ### The DORA metrics
 The DORA metrics were developed by the DevOps Research and Assessment (DORA) organization, which spent years studying engineering teams and their DevOps processes. They also deliver an interesting [annual report](../../../books/dora-report-2024.pdf).
@@ -455,9 +451,9 @@ The DORA metrics were developed by the DevOps Research and Assessment (DORA) org
 ![](images/dora-metrics.webp)
 
 These metrics are valuable because:
-* they correlate with business outcomes and employee satisfaction, offering industry standards for benchmarking. 
-* push teams to focus on continuous improvement.
-* only four key metrics are needed to differentiate elite engineering teams from mediocre ones.
+* they **correlate with business outcomes** and employee satisfaction, offering industry standards for benchmarking. 
+* push teams to focus on **continuous improvement**.
+* **only four key metrics are needed** to differentiate elite engineering teams from mediocre ones.
 
 ![](images/dora-categories.webp)
 
@@ -482,17 +478,65 @@ How to improve DORA metrics within an organization?
 
 ## Deployment Strategies
 
-**Blue-Green Deployment** uses two identical environments—one active (blue) and one idle (green). The new version is deployed to the idle environment and tested. Once verified, all traffic is instantly switched to it. This minimizes downtime and makes rollback simple by redirecting traffic back to the old environment if needed. It's ideal for major upgrades that require minimal disruption.
+**Blue-Green Deployment** uses two identical environments—one active (blue) and one idle (green). The new version is deployed to the idle environment and tested. Once verified, all traffic is instantly switched to it. This minimizes downtime and makes rollback simple by redirecting traffic back to the old environment if needed. It's **ideal for major upgrades**.
 
 ![](images/deployment-blue-green.webp)
 
-**Rolling Deployment** gradually replaces old instances of the application with new ones across the infrastructure. All users are progressively exposed to the new version as the update spreads. This approach avoids full downtime, but rollbacks are more involved since already updated instances must be reverted individually. It works well in stable environments with low rollback risk.
+**Rolling Deployment** gradually replaces old instances of the application with new ones across the infrastructure. All users are progressively exposed to the new version as the update spreads. This approach avoids full downtime, but rollbacks are more involved since already updated instances must be reverted individually. **It works well in stable environments with low rollback risk**.
 
 ![](images/deployment-rolling.webp)
 
-**Canary Deployment** starts by releasing the new version to a small subset of users. If no issues are observed, the rollout continues to a larger user base. This minimizes risk by limiting initial exposure and allows quick rollback if needed. It's especially useful when introducing potentially disruptive changes or testing new features under real-world conditions.
+**Canary Deployment** starts by releasing the new version to a small subset of users. If no issues are observed, the rollout continues to a larger user base. This minimizes risk by limiting initial exposure and allows quick rollback if needed. **It's especially useful when introducing potentially disruptive changes or testing new features under real-world conditions.**
 
 ![](images/deployment-canary.webp)
+
+---
+
+Deployment strategies can be implemented by using **NGINX** as a reverse proxy and dynamically reconfiguring its routing rules with **Ansible**. 
+
+For example, you might have three instances of a service to upgraded with a **rolling** strategy:
+
+* `app_v1` running on `10.0.0.1`
+* `app_v1` running on `10.0.0.2`
+* `app_v2` (new version) on `10.0.0.3`
+
+**NGINX Config**
+
+```nginx
+upstream app_backend {
+    server 10.0.0.1 weight=45;
+    server 10.0.0.2 weight=45;
+    server 10.0.0.3 weight=10;
+}
+
+server {
+    listen 8080;
+
+    location / {
+        proxy_pass http://app_backend;
+    }
+}
+```
+
+**Ansible Playbook**
+
+```yaml
+- name: Update NGINX config for canary deployment
+  hosts: load_balancer
+  become: yes
+  tasks:
+    - name: Update nginx.conf with new weights
+      template:
+        src: templates/nginx_rolling_config.conf
+        dest: /etc/nginx/nginx.conf
+      notify: Reload NGINX
+
+  handlers:
+    - name: Reload NGINX
+      service:
+        name: nginx
+        state: reloaded
+```
 
 ## The DevSecOps model
 
@@ -520,9 +564,9 @@ Another key challenge is **selecting the right security tools and integrating th
 
 ### Key Performance Indicators (KPIs)
 
-1. **Mean Time to Detect (MTTD) and Mean Time to Remediate (MTTR)**
+1. **Mean Time to Detect (MTTD) and Mean Time to Recover (MTTR)**
    - **MTTD**: This metric measures the average time taken to detect security incidents or vulnerabilities. It indicates the effectiveness of security monitoring, detection systems, and incident response processes in identifying potential threats.
-   - **MTTR**: This metric measures the average time required to remediate or mitigate security incidents or vulnerabilities after they are detected. It reflects the efficiency of incident response, patch management, and vulnerability resolution processes.
+   - **MTTR**: This metric measures the average time required to recover security incidents after they are detected. It reflects the efficiency of incident response, patch management, and vulnerability resolution processes.
 
 2. **Number of Security Vulnerabilities**  
    This metric quantifies the total number of vulnerabilities identified during the development cycle. It helps track trends in the identification, remediation, and resolution of security flaws, ensuring that they are addressed promptly before deployment.
@@ -533,9 +577,7 @@ Another key challenge is **selecting the right security tools and integrating th
 4. **Deployment Frequency**  
    This metric measures how frequently software deployments are made to production. It indicates how seamlessly security practices are integrated into the deployment pipeline and highlights the ability to deliver secure software at a fast pace while maintaining quality.
 
-5. **Security Test Coverage**  
-   This metric evaluates the extent to which security testing is performed during the development lifecycle. It assesses the thoroughness of security assessments, including penetration testing, vulnerability scanning, and static/dynamic analysis, ensuring that security issues are detected early in the process.
-
 ## Resources
 - [DevOps at Netflix](https://www.youtube.com/watch?v=m-gkDpmdTqI)
+- [How Netflix Uses Java - 2025 Edition](https://www.youtube.com/watch?v=XpunFFS-n8I)
 - [DORA Metrics: We've Been Using Them Wrong](https://www.youtube.com/watch?v=H3nlvHQHb5E)
