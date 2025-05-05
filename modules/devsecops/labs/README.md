@@ -1,6 +1,43 @@
 # Labs
 
-# Questions
+## Lab 1: Create a Secure CI/CD Pipeline for a Spring Boot Application
+
+Implement a complete CI/CD workflow for a Java-based Spring Boot application hosted on GitHub. The pipeline must ensure code quality, security, and automate the entire process from build to container image deployment. Follow the steps below:
+
+1. **Trigger Conditions**
+
+    * The workflow must run automatically on every push or pull request to the `main` branch.
+
+2. **Linting and Code Validation**
+
+    * Integrate a Java linter (e.g., GitHub Super-Linter) to check the code style and syntax.
+    * Configure the linter to validate only Java code.
+
+3. **Security Scanning**
+
+    * Include a job that scans for exposed secrets using GitGuardian.
+    * Include a job that performs static code analysis using Semgrep.
+    * Add a container image vulnerability scan using Trivy before pushing to Docker Hub.
+
+4. **Java Build Matrix**
+
+    * Use GitHub Actions' matrix strategy to build the application with two Java versions (e.g., Java 21 and 22).
+    * Use Maven to build and test the project.
+    * Upload the generated JAR as an artifact.
+
+5. **Docker Image Build and Deployment**
+
+    * Use the JAR built with Java 21 to build a Docker image.
+    * Tag the image appropriately and run a vulnerability scan with Trivy.
+    * Log in to Docker Hub using secrets and push the image to your Docker repository.
+
+6. **Secrets Management**
+
+    * All sensitive credentials (GitHub tokens, Docker credentials, API keys) must be stored as GitHub repository secrets.
+
+The solution can be found [here](https://github.com/nbicocchi/product-service-ci-cd).
+
+## Questions
 1. How does the DevOps approach differ from traditional models such as Waterfall and Agile? In what ways does DevOps improve automation in the software development lifecycle?
 2. What are the key benefits of DevOps automation, and which tools are commonly used to support it? What is the role of Jenkins in DevOps pipelines?
 3. What are the seven C's of DevOps, and how do they contribute to the success of DevOps practices? Does DevOps require only technical implementation, or does it also involve organizational change?
