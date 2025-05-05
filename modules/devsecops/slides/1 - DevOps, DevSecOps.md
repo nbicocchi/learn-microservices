@@ -136,15 +136,15 @@ Configuration drift happens when a system’s actual state diverges from its int
 
 1. Manually monitor. This is incredibly time-consuming and therefore is not done on a regular basis, if at all.
 
-![](images/iac-manual.png)
+![](images/iac-manual.webp)
 
 2. Scan for compliance. While not as tedious as the first level, this still requires a certain level of interaction to create administrative credentials for the tool to scan with, as well as someone to schedule or run the scans when required and remediate the results. This is typically done once a month or once a quarter to try to get ahead of the audit process.
    
-![](images/iac-periodic.png)
+![](images/iac-periodic.webp)
 
 3. Monitor all systems in a near real-time manner. This would require that the systems are provisioned with a lightweight agent that can monitor/update the systems continuously.
    
-![](images/iac-automatic.png)
+![](images/iac-automatic.webp)
 
 
 
@@ -181,7 +181,7 @@ Key Principles:
 * **Use case**: You define resources in `.tf` files and apply them via `terraform apply`.
 
 [**Terraform**](https://www.terraform.io/)
-![](images/terraform.png)
+![](images/terraform.webp)
 
 ### Configuration Management
 
@@ -189,7 +189,7 @@ Key Principles:
 * **Use case**: Install Apache, set environment variables, deploy files.
 
 [**Chef**](https://www.chef.io/) (Master/Agent, Imperative, Ruby DSL, Hard to learn). 
-![](images/chef.png)
+![](images/chef.webp)
 
 ```text
 # Install Apache package
@@ -212,7 +212,7 @@ end
 ```
 
 [**Puppet**](https://puppet.com/): (Master/Agent, Declarative, Ruby DSL, Hard to learn)
-![](images/puppet.png)
+![](images/puppet.webp)
 
 ```text
 # Install Apache package
@@ -239,7 +239,7 @@ file { '/var/www/html/index.html':
 ```
 
 [**Ansible**](https://www.ansible.com/): (Agentless, Wannabe Declarative, YAML DSL, Easy to learn)
-![](images/ansible.png)
+![](images/ansible.webp)
 
 ```text
 - name: Setup Apache on web servers
@@ -433,7 +433,7 @@ jobs:
 
 ---
 
-![](images/devops-metrics.jpg)
+![](images/devops-metrics.webp)
 
 - **Mean Time Between Failures (MTBF)**: The average time between successive system failures. A high MTBF suggests system stability, while low MTBF calls for improvements in reliability and fault tolerance.
 
@@ -460,7 +460,7 @@ These metrics are valuable because:
 How to improve DORA metrics within an organization?
 
 1. **Monitor**  
-   ![](images/linearb-dashboard.png)
+   ![](images/linearb-dashboard.webp)
 
    [LinearB Dashboard](https://linearb.io/blog/dora-metrics)
 
