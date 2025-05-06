@@ -53,7 +53,7 @@ However, it neglects the operational aspects of software production leading to f
 > “The traditional model is that you take your software to the wall that separates development and operations and throw it over and then forget about it. Not at Amazon. You build it, you run it. This brings developers into contact with the day-to-day operation of their software. It also brings them into day-to-day contact with the customer. This customer feedback loop is essential for improving the quality of the service.” - Amazon CTO Werner Vogels
 
 - Teams use **automation** to accelerate manual processes. DevOps tools and technologies enable faster, more reliable deployment.
-- Despite originally defined for monolithic architectures, DevOps practices are **highly beneficial in managing distributed systems**, which are inherently difficult to operate manually.
+- DevOps practices are **highly beneficial in managing distributed systems**, which are inherently difficult to operate manually.
 
 **What implies for Developers:**
 * **When something breaks, developers are called to fix it**. This encourages developers to write more robust code, increase test coverage, enhance observability etc.
@@ -117,7 +117,7 @@ Domain-Specific Languages (DSLs) are widely used in CI/CD to simplify automation
 * **Automated**: Tools execute code to provision, update, or destroy resources automatically.
 
 
-### Configuration as Code
+### Configuration as Code (CaC)
 Configuration drift happens when a system’s actual state diverges from its intended configuration.
 
 **What causes configuration drift?**
@@ -163,7 +163,7 @@ Key Principles:
 * **Continuous Reconciliation**: The actual state of the system is continuously compared to the desired state in Git, and drift is corrected.
   * Chef InSpec
   * Ansible lint
-  * DriftCTL (Terraform)
+  * Terraform DriftCTL
 
 ## DevOps Pipelines Overview
 
@@ -182,6 +182,31 @@ Key Principles:
 
 [**Terraform**](https://www.terraform.io/)
 ![](images/terraform.webp)
+
+```text
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_s3_bucket" "example" {
+  bucket = "my-unique-example-bucket-123456"
+  acl    = "private"
+
+  tags = {
+    Name        = "MyExampleBucket"
+    Environment = "Dev"
+  }
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0c94855ba95c71c99"  # Example Amazon Linux 2 AMI in us-east-1
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "MyWebServer"
+  }
+}
+```
 
 ### Configuration Management
 
@@ -467,11 +492,11 @@ How to improve DORA metrics within an organization?
 1. **Reduction of Codebase Size**  
    Reducing size/complexity of the codebase (e.g., microservices) improves **Change Failure Rate**, **Time to Restore Service**, and **Deployment Frequency**.
 
-2. **Reduction of PR Size**  
-   Smaller pull requests are easier to review, merge, and test, reducing the risk of issues and speeding up the overall development process, which directly impacts **Lead Time for Changes**.
+2. **Automate CI/CD Pipelines**  
+   Automating continuous integration/delivery pipelines reduces manual errors, accelerates testing and deployment processes improving both **Deployment Frequency** and **Lead Time for Changes**.
 
-3. **Automate CI/CD Pipelines**  
-   Automating continuous integration/delivery pipelines reduces manual errors, accelerates testing and deployment processes improving both **Deployment Frequency** and **Lead Time for Changes**. 
+3. **Reduction of PR Size**  
+   Smaller pull requests are easier to review, merge, and test, reducing the risk of issues and speeding up the overall development process, which directly impacts **Lead Time for Changes**.
 
 4. **Implement Deployments Strategies**  
    Deployment strategies reduce the impact of failed releases by gradually introducing changes to a small subset of users before improving both **Change Failure Rate** and **Time to Restore Service**.

@@ -120,8 +120,8 @@ jobs:
 ```
 In this case:
 - `job1` runs first.
+- `job3` runs in parallel with `job1`.
 - `job2` starts after `job1` completes.
-- `job3` runs in parallel with `job2`.
 - `job4` runs only after both `job2` and `job3` finish.
 
 ## Continuous Delivery Workflow
@@ -269,7 +269,7 @@ This job builds a Docker image, scans it for vulnerabilities using Trivy, and pu
 
 ### GitGuardian: A Secret Detection Tool
 
-**GitGuardian** is a security tool designed to detect sensitive information (secrets) such as API keys, passwords, and tokens in source code repositories. It helps organizations secure their codebases by preventing accidental leaks of confidential data.
+[GitGuardian](https://www.gitguardian.com/) is a security tool designed to detect sensitive information (secrets) such as API keys, passwords, and tokens in source code repositories. It helps organizations secure their codebases by preventing accidental leaks of confidential data.
 
 - **Secret Detection**: Identifies hardcoded secrets like API keys, access tokens, and private credentials that may have been inadvertently committed to version control.
 - **Real-Time Scanning**: Continuously scans repositories for secrets, either on push or in pull requests, to ensure that sensitive data does not get exposed.
@@ -302,7 +302,7 @@ This job builds a Docker image, scans it for vulnerabilities using Trivy, and pu
 
 ### Semgrep: A Static Code Analysis Tool
 
-**Semgrep** is a powerful, fast, and flexible static code analysis tool designed to find vulnerabilities, enforce coding standards, and detect patterns in codebases. It is used for security scanning, bug hunting, and code quality checks.
+[Semgrep](https://semgrep.dev/index.html) is a powerful, fast, and flexible static code analysis tool designed to find vulnerabilities, enforce coding standards, and detect patterns in codebases. It is used for security scanning, bug hunting, and code quality checks.
 
 - **Pattern Matching**: Allows users to define custom patterns for detecting specific code issues, such as security vulnerabilities, anti-patterns, or code smells.
 - **Multi-Language Support**: Works with a wide range of programming languages, including Python, JavaScript, Go, Java, and many more.
@@ -333,7 +333,7 @@ semgrep-scan:
 
 ### Trivy: A Vulnerability Scanning Tool
 
-**Trivy** is a versatile and easy-to-use security tool designed to detect vulnerabilities in software components. It is widely used in DevOps workflows for ensuring secure deployments.
+[Trivy](https://trivy.dev/latest/) is a versatile and easy-to-use security tool designed to detect vulnerabilities in software components. It is widely used in DevOps workflows for ensuring secure deployments.
 
 - **Vulnerability Detection**: Scans operating system packages and application dependencies for known security vulnerabilities.
 - **Container Image Scanning**: Identifies vulnerabilities in Docker images, including both OS-level issues and library dependencies.
