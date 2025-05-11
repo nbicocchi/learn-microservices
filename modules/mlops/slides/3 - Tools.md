@@ -1,13 +1,12 @@
 # Tools for MLOps
 This slide presents useful tools that can help automate various processes in the MLOps pipeline,
 enhancing efficiency and collaboration among teams.
-Among these tools, MLflow and Evidently AI stand out for their capabilities in experiment tracking and model monitoring.
 
 ## MLflow
 
 MLflow's primary feature is **experiment tracking**. This functionality enables users to log and track parameters, metrics, and artifacts for each experiment. Users can effectively monitor model performance and compare different configurations, maintaining transparency in the development process and facilitating team collaboration through shared results.
 
-### 1. Metadata and Artifacts in MLflow
+### Metadata and Artifacts in MLflow
 
 MLflow distinguishes between two main types of information: **metadata** and **artifacts**. This distinction is crucial for understanding how experiment data is managed and stored.
 
@@ -36,7 +35,7 @@ This separation between metadata and artifacts optimizes MLflow's efficiency and
 
 ---
 
-### 2. Setup
+### Setup
 
 #### 1. Automatic Database Creation
 
@@ -100,7 +99,7 @@ with mlflow.start_run(experiment_id=experiment_id, run_name="name_of_the_run") a
 ```
 
 ---
-### 3. Logging Run Information
+### Logging Run Information
 
 After starting a run, you can log several types of information that are critical for analyzing and comparing model performance. In MLflow, you can log various types of data during a run, including:
 
@@ -125,7 +124,7 @@ While this metadata doesn't contain the model itself, it provides all necessary 
 
 ---
 
-### 4. Information Retrieval
+### Information Retrieval
 
 MLflow provides APIs for accessing information about experiments and runs, enabling retrieval of parameters, metrics, tags, and context for analysis and comparison. Key functions include:
 
@@ -141,17 +140,19 @@ These functions support filtering, sorting, and detailed data retrieval for effe
 
 ### Overview
 
-Evidently AI is a powerful tool designed for monitoring and evaluating machine learning models in production environments.  
-It provides a comprehensive suite of features that enable data scientists and machine learning engineers to ensure the quality and performance of their models over time.  
-The platform focuses on observability, allowing users to track **data drift**, **model performance**, and **data quality**, which are critical for maintaining robust machine learning systems.
+Evidently AI is a powerful tool designed for monitoring and evaluating machine learning models in production environments. It provides a comprehensive suite of features that enable data scientists and machine learning engineers to ensure the quality and performance of their models over time. The platform focuses on observability:
+* **data drift**
+* **data quality**
+* **model performance**
+
 
 ---
 
 ### Reports
 
-Evidently allows users to generate detailed **Reports** that provide insights into various aspects of their data and models. These reports help identify issues like data drift, data quality problems, or performance degradation, offering a clear overview of your ML pipeline’s health.  
-You can think of reports as combinations of the metrics and statistical tests that are grouped together. Evidently includes a set of pre-built Reports, but users can also create custom reports tailored to their specific needs.
-Each of the predefined reports addresses a specific aspect of the data or model performance. 
+Evidently allows users to generate detailed **Reports** that provide insights into various aspects of their data and models. You can think of reports as combinations of the metrics and statistical tests that are grouped together. 
+
+Evidently includes a set of pre-built Reports, but users can also create custom reports tailored to their specific needs.
 
 ![Evidently Reports](images/evidently_reports.webp)
 
@@ -235,8 +236,7 @@ Evidently offers flexible ways to visualize and monitor data and model performan
 
 ## Sources
 
-- [Official MLflow Documentation](https://mlflow.org/docs/latest/index.html)
-- [MLflow Tutorials](https://mlflow.org/docs/latest/getting-started/index.html)
+- [MLflow Documentation](https://mlflow.org/docs/latest/index.html)
 - [Evidently AI Documentation](https://docs.evidentlyai.com/)
 
 

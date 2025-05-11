@@ -154,7 +154,6 @@ To build a **machine learning model that generalizes well**, we must carefully m
 
 ![](images/ml-pipeline.png)
 
-
 ## Model Deployment
 
 Deploy machine learning models to production while ensuring effective integration, monitoring, and updating.
@@ -258,6 +257,11 @@ async def predict(request: Request):
 * Implement scheduled retraining or continual learning.
 * Continuous delivery of models is complex as code, model, and data all evolve simultaneously.
 
+
+## Issues of deployed models
+
+- Data drift
+- Concept drift
 
 
 ## What is MLOps?
