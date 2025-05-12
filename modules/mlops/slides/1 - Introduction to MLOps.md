@@ -249,6 +249,58 @@ Through a set of practices, MLOps helps ensure that **models remain effective, s
 * **Model integration/deployment**: Integrate model into the product and deploy via platforms like AWS or GCP.
 * **Model release/monitoring**: Monitor the model in production to detect issues and support future retraining.
 
+## MLOps Implementation
+
+![](images/mlops-architecture.jpg)
+
+![](images/mlops-tools.png)
+
+###  Data Versioning
+* Track and manage dataset versions
+* Tools: DVC, LakeFS, Delta Lake
+
+![](images/dvc-arch.png)
+
+### Feature Store
+* Serve consistent features for training and inference
+* Tools: Feast, Tecton, Hopsworks
+
+![](images/feast-arch.webp)
+
+![](images/feast-and-redis.png)
+
+### Experiment Tracking
+* Log and compare training runs
+* Tools: MLflow, Weights & Biases, Neptune.ai
+
+![](images/mlflow-arch.png)
+![](images/mlflow-deployment.png)
+![](images/mlflow-recipes.png)
+
+### Automated Pipelines
+* Automate ML workflows end-to-end
+* Tools: Kedro, ZenML, Airflow, Kubeflow Pipelines
+
+![](images/kedro-pipeline.png)
+
+### Model Registry (Object Store)
+* Manage model versions and lifecycle
+* Tools: MLflow Model Registry, Minio, Hugging Face Hub
+
+![](images/mlflow-registry.jpg)
+
+### Model Serving
+* Deploy models for inference
+* Tools: BentoML, Seldon Core, TensorFlow Serving, TorchServe
+
+![](images/bentoml-arch.png)
+
+### Model Monitoring
+* Track performance, drift, and anomalies
+* Tools: Evidently, Arize AI, Fiddler
+
+![](images/evidently-arch.png)
+
 
 ## MLOps Maturity
 
@@ -291,42 +343,6 @@ Through a set of practices, MLOps helps ensure that **models remain effective, s
 * **Scalability**: Pipelines and inference services scale horizontally using distributed training or GPU-backed clusters.
 
 ![](images/mlops-l2.webp)
-
-## MLOps Implementation
-
-* **Data Versioning**
-  * Track and manage dataset versions
-  * Tools: DVC, LakeFS, Delta Lake
-
-* **Feature Store**
-  * Serve consistent features for training and inference
-  * Tools: Feast, Tecton, Hopsworks
-
-* **Experiment Tracking**
-  * Log and compare training runs
-  * Tools: MLflow, Weights & Biases, Neptune.ai
-
-* **Automated Pipelines**
-  * Automate ML workflows end-to-end
-  * Tools: Kedro, ZenML, Airflow, Kubeflow Pipelines
-
-* **Model Registry (Object Store)**
-  * Manage model versions and lifecycle
-  * Tools: MLflow Model Registry, Hugging Face Hub, Sagemaker Model Registry
-
-* **Model Serving**
-  * Deploy models for inference
-  * Tools: BentoML, Seldon Core, TensorFlow Serving, TorchServe
-
-* **Model Monitoring**
-  * Track performance, drift, and anomalies
-  * **Tools:** Evidently, Arize AI, Fiddler
-
-![](images/mlops-tools.png)
-
-
-
-
 
 
 
