@@ -202,7 +202,7 @@ MLOps is a set of practices that combines machine learning (ML) model developmen
 
 Through a set of practices, MLOps helps ensure that **models remain effective, scalable, and adaptable to changing production environment conditions**.
 
-![](images/mlops-cycle.png)
+![](images/mlops-cycle.webp)
 
 
 ### MLOps Benefits
@@ -251,15 +251,15 @@ Through a set of practices, MLOps helps ensure that **models remain effective, s
 
 ## MLOps Implementation
 
-![](images/mlops-architecture.jpg)
+![](images/mlops-architecture.webp)
 
-![](images/mlops-tools.png)
+![](images/mlops-tools.webp)
 
 ###  Data Versioning
 * Track and manage dataset versions
 * Tools: DVC, LakeFS, Delta Lake
 
-![](images/dvc-arch.png)
+![](images/dvc-arch.webp)
 
 ### Feature Store
 * Serve consistent features for training and inference
@@ -267,39 +267,39 @@ Through a set of practices, MLOps helps ensure that **models remain effective, s
 
 ![](images/feast-arch.webp)
 
-![](images/feast-and-redis.png)
+![](images/feast-and-redis.webp)
 
 ### Experiment Tracking
 * Log and compare training runs
 * Tools: MLflow, Weights & Biases, Neptune.ai
 
-![](images/mlflow-arch.png)
-![](images/mlflow-deployment.png)
-![](images/mlflow-recipes.png)
+![](images/mlflow-arch.webp)
+![](images/mlflow-deployment.webp)
+![](images/mlflow-recipes.webp)
 
 ### Automated Pipelines
 * Automate ML workflows end-to-end
 * Tools: Kedro, ZenML, Airflow, Kubeflow Pipelines
 
-![](images/kedro-pipeline.png)
+![](images/kedro-pipeline.webp)
 
 ### Model Registry (Object Store)
 * Manage model versions and lifecycle
 * Tools: MLflow Model Registry, Minio, Hugging Face Hub
 
-![](images/mlflow-registry.jpg)
+![](images/mlflow-registry.webp)
 
 ### Model Serving
 * Deploy models for inference
 * Tools: BentoML, Seldon Core, TensorFlow Serving, TorchServe
 
-![](images/bentoml-arch.png)
+![](images/bentoml-arch.webp)
 
 ### Model Monitoring
 * Track performance, drift, and anomalies
 * Tools: Evidently, Arize AI, Fiddler
 
-![](images/evidently-arch.png)
+![](images/evidently-arch.webp)
 
 
 ## MLOps Maturity

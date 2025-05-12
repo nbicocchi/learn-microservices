@@ -232,7 +232,7 @@ To build a **machine learning model that generalizes well**, we must carefully m
 - **Overfitting occurs when the model perfectly learns the training data but fails to generalize to new, unseen examples.**
 - The model becomes **too complex** and “memorizes” the training set, capturing even the **noise** or irrelevant patterns in the data.
 
-![](images/overfitting.png)
+![](images/overfitting.webp)
 
 ### Model Validation
 
@@ -243,10 +243,10 @@ To build a **machine learning model that generalizes well**, we must carefully m
   - **Maximizes Data Usage**: Especially useful when the dataset is small, as each data point gets to be in both training and validation sets.
   - **Reliable Performance Estimate**: By averaging over multiple folds, we get a more stable estimate of model performance.
 
-![](images/cross-validation.jpg)
+![](images/cross-validation.webp)
 
 ## The Complete Workflow
-![](images/ml-pipeline.png)
+![](images/ml-pipeline.webp)
 
 
 
