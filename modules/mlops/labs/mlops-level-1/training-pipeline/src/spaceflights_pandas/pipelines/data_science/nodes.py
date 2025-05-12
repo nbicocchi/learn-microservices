@@ -7,7 +7,7 @@ from sklearn.metrics import max_error, mean_absolute_error, mean_squared_error, 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 import mlflow
 from mlflow.models import infer_signature
@@ -29,7 +29,7 @@ def split_data(data: pd.DataFrame, parameters: dict) -> tuple:
     return X_train, X_test, y_train, y_test
 
 
-def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> LinearRegression:
+def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> RandomForestRegressor:
     """Trains the linear regression model.
 
     Args:
@@ -39,17 +39,22 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> LinearRegression:
     Returns:
         Trained model.
     """
-    regressor = make_pipeline(
-        PolynomialFeatures(degree=1, include_bias=False),
-        LinearRegression()
-    )
-    regressor.fit(X_train, y_train)
-    return regressor
+    rf_params = {
+        'n_estimators': 300,
+        'max_depth': None,
+        'min_samples_split': 5,
+        'min_samples_leaf': 2,
+        'max_features': 'sqrt',
+        'random_state': 42,
+        'n_jobs': -1
+    }
+    regressor = RandomForestRegressor(**rf_params)
+    return regressor.fit(X_train, y_train)
 
 
 def evaluate_model_and_log_to_mlflow(
     parameters: dict,
-    regressor: LinearRegression,
+    regressor: RandomForestRegressor,
     X_train: pd.DataFrame,
     y_train: pd.Series,
     X_test: pd.DataFrame,
@@ -83,7 +88,6 @@ def evaluate_model_and_log_to_mlflow(
         mlflow.log_metric("r2", r2_score(y_test, y_pred))
         mlflow.log_metric("mae", mean_absolute_error(y_test, y_pred))
         mlflow.log_metric("rmse", mean_squared_error(y_test, y_pred))
-        mlflow.log_metric("max_error", max_error(y_test, y_pred))
 
         # Log a chart
         fig, ax = plt.subplots()
@@ -97,8 +101,6 @@ def evaluate_model_and_log_to_mlflow(
 
         # Infer the model signature
         signature = infer_signature(X_train, regressor.predict(X_train))
-
-        print(X_train)
 
         # Log the model
         model_info = mlflow.sklearn.log_model(

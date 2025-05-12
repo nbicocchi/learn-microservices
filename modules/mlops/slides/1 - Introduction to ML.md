@@ -155,7 +155,6 @@ The High-Interest Credit Card of Technical Debt](https://static.googleuserconten
 **Computational Cost**
 - **Storage Costs**: Storing raw and processed data in databases, data lakes, or cloud storage (e.g., AWS S3, Google Cloud Storage).
 - **Processing Power**: High computational costs for large-scale datasets, especially for distributed computing frameworks (e.g., Spark, Dask).
-- **Data Pipeline Maintenance**: Continuous updates to data pipelines in production environments.
 
 **Human Cost**
 - **Data Scientists & Engineers**: Skilled professionals are needed to clean and preprocess data.
@@ -163,9 +162,8 @@ The High-Interest Credit Card of Technical Debt](https://static.googleuserconten
 - **Annotation Teams**: Crowdsourcing or hiring dedicated annotators for image, video, and text datasets.
 
 **Compliance Cost**
-- **Bias & Fairness Checks**: Ensuring unbiased datasets to prevent model discrimination.
+- **Bias Checks**: Ensuring unbiased datasets to prevent model discrimination.
 - **Regulatory Compliance**: GDPR, HIPAA, and other regulations require proper handling of sensitive data.
-- **Data Versioning**: Keeping track of data changes to maintain reproducibility and auditing.
 
 ## Model Development
 
@@ -176,7 +174,7 @@ The High-Interest Credit Card of Technical Debt](https://static.googleuserconten
 
 ### Model Selection
 
-* **Goal:** Choose the appropriate model based on the problem type and data available. When choosing a model, it is important to consider complexity and interpretability. Simple models may offer advantages in computational resources and ease of interpretation, while more complex models may improve performance but require more resources.
+* **Goal:** Choose the appropriate model based on the problem type and data available. Complex models may improve performance but require more resources.
 
 * **Supervised Learning:**
 
