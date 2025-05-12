@@ -13,9 +13,6 @@
 
 **Why it matters:** Detecting and addressing data drift is vital to maintaining model reliability in dynamic environments.
 
-![Data drift in ML monitoring](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c83dc614ac9ad2502f3_654050601aa35f38778a6abf_data_drift1.png)
-
-
 ### Example of Data Drift
 
 **Scenario:** Imagine a retail chain that uses machine learning to predict how many products to stock in each of their stores. The model was trained using historical sales data, mostly from physical store sales.

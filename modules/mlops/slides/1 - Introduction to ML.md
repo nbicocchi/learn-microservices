@@ -274,11 +274,6 @@ Model deployment is the process of **making a trained ML model available** to re
 * Passes it to the inference engine to **generate predictions**.
 * **Postprocesses** and returns the results (e.g., label mapping, confidence scores).
 
-3. **Expose via a Web Framework**
-
-* **Python:** Flask, FastAPI, Django
-* **Java:** Spring Boot
-
 **Example (FastAPI + ONNX Runtime):**
 
 ```python
