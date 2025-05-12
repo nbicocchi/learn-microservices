@@ -1,6 +1,8 @@
 # Introduction to MLOps
 
-## What is Data Drift?
+## Issues of Production Models
+
+### Data Drift
 
 **Definition:** Data drift refers to a change in the statistical properties and characteristics of the input data over time.
 
@@ -114,7 +116,7 @@ Both involve changes in input data and can be detected using **distribution comp
 
 ![Data Drift vs. Data Quality](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad25033c_65406e80cb01f04e47c042dd_data_drift9.png)
 
-### What is Feedback Delay?
+### Feedback Delay
 
 * **Definition**: Time gap between model prediction and receiving the true outcome.
 * **Challenge**: Hinders **real-time monitoring** of model performance.
@@ -188,7 +190,7 @@ While such checks do not directly measure drift, they can serve as good alerting
 ![Drift detection methods](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250336_654071c344425ec15327393c_data_drift20.png)
 
 
-## What is MLOps?
+## MLOps
 
 **MLOps (Machine Learning Operations) extends DevOps principles to address the unique workflows and challenges associated with machine**. Specifically, it is tailored to manage the complexities of integrating ML models into production environments.
 
