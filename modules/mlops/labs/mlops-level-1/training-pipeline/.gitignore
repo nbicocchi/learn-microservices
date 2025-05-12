@@ -3,7 +3,7 @@
 # KEDRO PROJECT
 
 # ignore all local configuration
-conf/local/**
+conf/local/.gitkeep
 !conf/local/.gitkeep
 
 # ignore potentially sensitive credentials files
