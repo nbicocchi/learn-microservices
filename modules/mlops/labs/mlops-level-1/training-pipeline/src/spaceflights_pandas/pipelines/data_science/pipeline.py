@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import evaluate_model_and_log_to_mlflow, split_data, train_model
+from .nodes import evaluate_model, split_data, train_model
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -14,13 +14,13 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=train_model,
-                inputs=["X_train", "y_train"],
+                inputs=["X_train", "y_train", "params:model_options"],
                 outputs="regressor",
                 name="train_model_node",
             ),
             node(
-                func=evaluate_model_and_log_to_mlflow,
-                inputs=["params:model_options", "regressor", "X_train", "y_train", "X_test", "y_test"],
+                func=evaluate_model,
+                inputs=["regressor", "X_test", "y_test" ],
                 outputs=None,
                 name="evaluate_model_and_log_to_mlflow",
             ),

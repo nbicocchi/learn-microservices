@@ -10,3 +10,10 @@ model_options:
     - iata_approved
     - company_rating
     - review_scores_rating
+  regressor:
+    n_estimators: 300
+    max_depth: 300
+    min_samples_split: 5
+    min_samples_leaf: 2
+    max_features: "sqrt"
+    random_state: 42

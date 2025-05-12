@@ -57,8 +57,8 @@ def create_model_input_table(
         reviews: Raw data for reviews.
     Returns:
         Model input table.
-
     """
+
     rated_shuttles = shuttles.merge(reviews, left_on="id", right_on="shuttle_id")
     rated_shuttles = rated_shuttles.drop("id", axis=1)
     model_input_table = rated_shuttles.merge(
