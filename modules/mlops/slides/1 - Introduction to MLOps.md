@@ -2,6 +2,19 @@
 
 ## Issues of Production Models
 
+* Machine learning models are **not "set it and forget it"**.
+* Models are trained on **specific historical datasets**.
+* Real-world data is **dynamic** — new products, customer behavior, and market conditions evolve.
+* **Data drift** and **concept drift** are natural over time.
+
+**Key Actions for Maintenance**
+
+1. **Retrain models regularly** on updated data.
+2. Design a **model update and retraining schedule**.
+3. Implement **model monitoring** to track performance between updates.
+
+![ML model retraining](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c83d06a3de5f69b1fd8_654038d197fb95f407fe9853_concept_drift7.png)
+
 ### Data Drift
 
 **Definition:** Data drift refers to a change in the statistical properties and characteristics of the input data over time.
@@ -69,26 +82,21 @@ Both **data drift** and **prediction drift** are important techniques for monito
 
 ![Monitoring for data and prediction drift](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250324_65406da3f6d35d98c287e9bb_data_drift6.png)
 
+### Feedback Delay
 
+* **Definition**: Time gap between model prediction and receiving the true outcome.
+* **Challenge**: Hinders **real-time monitoring** of model performance.
 
-### Data Drift vs. Training-Serving Skew
+**Real-World Examples**
 
-**Training-Serving Skew**
+* **Recommender systems**: Did the user click or buy?
+* **Fraud detection**: Was the transaction actually fraudulent?
 
-* Happens when there’s a **mismatch** between the data used to train the model and the data seen in production.
+Feedback can take **seconds... or months** to arrive.
 
-**Difference:**
+![Data drift monitoring](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250308_65406fe4e977b96808699238_data_drift13.png)
 
-* **Training-serving skew**: Appears **immediately** after deployment due to discrepancies between training and live data.
-* **Data drift**: Develops **over time** as production data distribution evolves.
-
-**Similarity:**
-
-Both involve changes in input data and can be detected using **distribution comparison techniques** between training and production data.
-
-
-![Data Drift vs. Training-Serving Skew](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250339_65406e1844425ec153247753_data_drift8.png)
-
+![Data drift monitoring](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250317_6540702e96b738b8be29b075_data_drift14.png)
 
 ### Data Drift vs. Data Quality
 
@@ -116,47 +124,33 @@ Both involve changes in input data and can be detected using **distribution comp
 
 ![Data Drift vs. Data Quality](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad25033c_65406e80cb01f04e47c042dd_data_drift9.png)
 
-### Feedback Delay
+### Data Drift vs. Training-Serving Skew
 
-* **Definition**: Time gap between model prediction and receiving the true outcome.
-* **Challenge**: Hinders **real-time monitoring** of model performance.
+**Training-Serving Skew**
 
-**Real-World Examples**
+* Happens when there’s a **mismatch** between the data used to train the model and the data seen in production.
 
-* **Recommender systems**: Did the user click or buy?
-* **Fraud detection**: Was the transaction actually fraudulent?
+**Difference:**
 
-Feedback can take **seconds... or months** to arrive.
+* **Training-serving skew**: Appears **immediately** after deployment due to discrepancies between training and live data.
+* **Data drift**: Develops **over time** as production data distribution evolves.
 
-![Data drift monitoring](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250308_65406fe4e977b96808699238_data_drift13.png)
+**Similarity:**
 
-![Data drift monitoring](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250317_6540702e96b738b8be29b075_data_drift14.png)
-
-### Model Maintenance
-
-**Why Maintenance Matters**
-
-* Machine learning models are **not "set it and forget it"**.
-* Models are trained on **specific historical datasets**.
-* Real-world data is **dynamic** — new products, customer behavior, and market conditions evolve.
-* **Data drift** and **concept drift** are natural over time.
-
-**Key Actions for Maintenance**
-
-1. **Retrain models regularly** on updated data.
-2. Design a **model update and retraining schedule**.
-3. Implement **model monitoring** to track performance between updates.
-
-![ML model retraining](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c83d06a3de5f69b1fd8_654038d197fb95f407fe9853_concept_drift7.png)
+Both involve changes in input data and can be detected using **distribution comparison techniques** between training and production data.
 
 
-### How to Detect Data Drift
+![Data Drift vs. Training-Serving Skew](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250339_65406e1844425ec153247753_data_drift8.png)
+
+
+
+## How to Detect Drifts
 
 **Summary Statistics**
 
 * Track shifts in **mean, median, variance**, quantiles, etc.
 * Monitor **min-max compliance** to catch unexpected values.
-* ✅ Simple but can be noisy with many features.
+* Simple but can be noisy with many features.
 
 ![An example statistical summary for categorical features](https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c3c84dc614ac9ad250321_6540708b60e364a2684857d4_data_drift16.png)
 
@@ -237,23 +231,24 @@ Through a set of practices, MLOps helps ensure that **models remain effective, s
 
   * Establishing frameworks for monitoring, auditing, and ensuring models comply with industry regulations and ethical standards.
 
-### MLOps lifecycle
-
-![ZenML MLOps lifecycle diagram: Problem Definition, Data Collection, Processing, Exploration, Feature Engineering, Model Training, Integration, Deployment, Release, and Monitoring. Flowchart showing interconnected stages of the machine learning process.](https://cdn.prod.website-files.com/65264f6bf54e751c3a776db1/66b0e7d74101550234af602c_66b0e65763eecc7c05a83371_mlops-flow.png)
-
-* **Problem definition**: Clearly identify the business problem to solve with AI.
-* **Data collection**: Gather data from internal sources (e.g., user behavior) or external datasets.
-* **Data processing/storage**: Store and clean data in a data warehouse or data lake; process in batches or streams.
-* **Metrics definition**: Define success metrics to evaluate model performance.
-* **Data exploration**: Analyze data to guide modeling choices and form hypotheses.
-* **Feature engineering**: Create and manage model input features; ensure they’re updateable.
-* **Model training/evaluation**: Train and evaluate models using training and validation data (typically 70–80% train, 20–30% evaluate).
-* **Model integration/deployment**: Integrate model into the product and deploy via platforms like AWS or GCP.
-* **Model release/monitoring**: Monitor the model in production to detect issues and support future retraining.
-
 ## MLOps Implementation
 
 ![](images/mlops-architecture.webp)
+
+1. **Training Data**: The dataset used to train machine learning models. It should be curated and representative of the problem domain.
+
+2. **Data Versioning**: Training data must be versioned to ensure reproducibility and traceability across model iterations.
+
+3. **Model Training**: The process of building the machine learning model using the training data. This should be integrated with CI/CD pipelines to align with application development workflows.
+
+4. **Model Tracking**: Tools and practices to track experiments, including hyperparameters, training metrics, and outcomes, enabling comparison and reproducibility.
+
+5. **Model Artifact**: The trained model, typically stored in a model registry or object store, ready for deployment or further evaluation.
+
+6. **Model Monitoring**: In-production monitoring to detect data drift, concept drift, or performance degradation based on real-time or batch inference data.
+
+7. **Production Data**: New data collected during model operation, often including ground truth labels, used for monitoring and retraining purposes.
+
 
 ![](images/mlops-tools.webp)
 
