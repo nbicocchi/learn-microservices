@@ -66,3 +66,5 @@ logs, traces -> red with empty space (when circuit breakers open)
 
 ## Rate limiting
 
+## Differences between sync/async
+
