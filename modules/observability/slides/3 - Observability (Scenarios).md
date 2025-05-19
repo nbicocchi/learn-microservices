@@ -55,3 +55,14 @@ http_server_request_duration_seconds_bucket -> low
 http://localhost:8080/actuator/circuitbreakers -> open
 logs, traces -> red with empty space (when circuit breakers open)
 ```
+
+## Redis caching
+
+## Communication becoming slow (more threads)
+
+## Communication becoming faulty (retries/circuitbreakers)
+
+## One thread pool saturating (bulkhead)
+
+## Rate limiting
+
