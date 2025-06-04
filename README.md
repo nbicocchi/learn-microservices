@@ -5,16 +5,12 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 
 ## Software
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
-* [IntelliJ IDEA](https://www.jetbrains.com/idea/) [Plugins: [Envfile](https://plugins.jetbrains.com/plugin/7861-envfile)]
+* [IntelliJ IDEA](https://www.jetbrains.com/idea/) [Plugins: [Envfile](https://plugins.jetbrains.com/plugin/7861-envfile),[Mermaid](https://plugins.jetbrains.com/plugin/20146-mermaid)]
 * [Apache Maven](https://maven.apache.org/)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-* [mlflow](https://mlflow.org/)
-* [EvidentlyAI](https://github.com/evidentlyai/evidently)
 
 ## Books
 * Microservices Patterns; Richardson
-* Spring Microservices in Action; Carnell, Sánchez
-* Microservices with Spring Boot 3 and Spring Cloud; Larsson
 
 ## Videos
 * [MIT 6.824 Distributed Systems](https://www.youtube.com/watch?v=cQP8WApzIQQ&list=PLrw6a1wE39_tb2fErI4-WkMbsvGQk9_UB)
@@ -72,13 +68,14 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Observing ML models in production with EvidentlyAI
 
 ## Project Ideas
-- Studiare e documentare il problema della modellazione un sistema distribuito (definire microservizi, API, bounded contexts).
-- Confrontare REST, GraphQL e Protobuf implementando un servizio con tutte e tre le tecnologie e analizzandone le differenze.
-- Continuare a sviluppare progetto già presente di un social network.
-- Studiare e documentare l’architettura distribuita di piattaforme come Facebook, Uber o Netflix.
-- Creare un laboratorio interattivo per testare la resilienza di microservizi utilizzando strumenti di osservabilità (testare anche signoz e openobserve).
-- Eseguire test di performance su un sistema distribuito con strumenti come Istio, Locust, k6 o Gatling.
-- Utilizzare **[Microsim](https://github.com/yurishkuro/microsim)** per simulare il comportamento di un’architettura a microservizi in scenari di carico e guasto.
-- Esplorare progetti open-source tra quelli elencati in **[Awesome Distributed System Projects](https://github.com/roma-glushko/awesome-distributed-system-projects?tab=readme-ov-file)**.
-- Approfondire tools di deployment automatico (e.g. Chef, Puppet, Ansible)
-- Porting degli esempi attuali in Python
+
+* Study and document the problem of modeling a distributed system (define microservices, APIs, bounded contexts).
+* Compare REST, GraphQL, and Protobuf by implementing a service using all three technologies and analyzing their differences.
+* Continue developing an existing social network project.
+* Study and document the distributed architecture of platforms like Facebook, Uber, or Netflix.
+* Create an interactive lab to test the resilience of microservices using observability tools (also test Signoz and OpenObserve).
+* Perform performance testing on a distributed system using tools like Istio, Locust, k6, or Gatling.
+* Use **[Microsim](https://github.com/yurishkuro/microsim)** to simulate the behavior of a microservices architecture under load and failure scenarios.
+* Explore open-source projects listed in **[Awesome Distributed System Projects](https://github.com/roma-glushko/awesome-distributed-system-projects?tab=readme-ov-file)**.
+* Deepen knowledge of automatic deployment tools (e.g., Chef, Puppet, Ansible).
+* Port current examples to Python.
