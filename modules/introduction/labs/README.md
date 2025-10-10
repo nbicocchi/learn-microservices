@@ -54,8 +54,5 @@ The solution can be found [here](https://github.com/nbicocchi/product-service-ci
 14. Describe the concept of a modular monolith and its benefits over other monolithic architectures.
 15. Explain the *database per service pattern* in microservices architecture. What are the benefits and challenges of this approach?
 16. What challenges arise when transitioning from a monolithic architecture to microservices? How does the *Strangler Pattern* relates to these challenges?
-17. Describe advantages and drawbacks of *service-based* and *service-oriented* architectures. Which of the two is the natural evolution in the distributed context of the *modular monolith architecture*?
-18. Explain the role and challenges of communications in microservices architecture.
-19. Discuss the key features and challenges of the *microservices architecture*.
-20. What is the microservice *chassis pattern*, and how does it help in simplifying cross-cutting concerns in microservices architecture?
-21. Describe the concept of *scale cube* and its three dimensions.
+17. Discuss the key features and challenges of the *microservices architecture*. 
+18. Describe the concept of *scale cube* and its three dimensions.

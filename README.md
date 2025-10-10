@@ -23,7 +23,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Monolithic and distributed architectural styles
 * The transition towards microservices architectures
 
-[M2 Tools: Maven, Spring Boot](modules/tools)
+[M2 Tools: Maven, Spring Boot](modules/chassis-java)
 * Introduction to Spring Boot as microservice chassis
 * Building a basic layered microservice with Spring Boot
 * Packaging a project with Maven

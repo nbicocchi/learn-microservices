@@ -5,13 +5,7 @@ Spring is a [back-end](https://en.wikipedia.org/wiki/Front_and_back_ends) techno
 
 ![](images/trends-spring.webp)
 
-Spring was originally built in response to the complexity of developing with [J2EE](https://www.oracle.com/technetwork/java/javaee/appmodel-135059.html) / Java EE, let's compare it with that: [Spring Framework - Java EE Google Search Trend Comparison](https://trends.google.com/trends/explore?date=all&q=%2Fm%2F0dhx5b,Java%20EE)
-
-![](images/trends-spring-vs-javaee.webp)
-
 Backend technologies (such as the Spring Framework) are also propelled by the **massive increase in popularity of edge-cloud technologies and microservice architecture**. [OReilly's Technology Trends for 2024](https://www.oreilly.com/radar/technology-trends-for-2024/) also shows how Java Technologies related to cloud software engineering and microservices architectures are currently relevant.
-
-
 
 ![](images/trends-microservices.webp)
 ![](images/trends-k8s.webp)
@@ -20,9 +14,7 @@ Backend technologies (such as the Spring Framework) are also propelled by the **
 
 
 ## Why Use Spring?
-The early goal of Spring, and still a core guideline of the framework, is removing complexity, clutter and boilerplate code. Basically, **Spring aims to make building a system easier for developers**. 
-
-Spring is also not an all or nothing choice. **You can actually pick and choose the parts of Spring that make sense for your system**.
+The early goal of Spring, and still a core guideline of the framework, is removing complexity, clutter and boilerplate code. Basically, **Spring aims to make building a system easier for developers**.
 
 An interesting aspect of Spring is how much of a long-term investment learning Spring actually is, as its evolution is quite unique. On the one hand, it's **actively developed and always improving** at the edges. But, at the core, it's **highly stable**. 
 
@@ -46,11 +38,7 @@ Due to the success of the framework, the Spring ecosystem is now quite vast, as 
 * Integration: remoting, JMS, JCA, JMX, email, tasks, scheduling, cache and observability.
 
 ### Spring Boot
-**Spring Boot simplifies the development of a Spring application.**
-
-**Spring Boot is an extension of the Spring framework that comes with default configuration with an opinionated take on building web application with Spring**. Before Boot, a Spring application needed a lot of configuration just to get started.
-
-Spring Boot key features:
+Spring Boot is an extension of the Spring framework that comes with default configuration with an opinionated take on building web application with Spring. Before Boot, a Spring application needed a lot of configuration just to get started.
 
 * **Embedded web servers** (no need to deploy WAR files)
 * Provide **starter** dependencies to simplify your build configuration
@@ -76,6 +64,20 @@ Spring Cloud provides out of box experience for typical use cases and extensibil
 * Load balancing
 * Circuit Breakers
 * Distributed messaging
+
+### Spring Security
+
+Spring Security provides authentication, authorization, and protection mechanisms for securing Spring applications, with extensibility for custom scenarios.
+
+* Authentication and authorization
+* Password encoding and user management
+* Session and security context management
+* CSRF and CORS protection
+* HTTP headers hardening
+* OAuth2 and OpenID Connect integration
+* Method-level security
+* JWT and stateless API security
+
 
 ## Resources
 - https://spring.io/projects/spring-framework
