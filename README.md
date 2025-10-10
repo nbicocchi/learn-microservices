@@ -33,7 +33,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 * Building *docker* images (single-layer, multi-layer)
 * Container orchestration with *docker compose*
 
-[M4 Communication](modules/communication)
+[M4 Communication](modules/communication-sync)
 * Synchronous communications and their limitations (*Rest/GraphQL/Protobuf*)
 * Asynchronous messaging systems (*RabbitMQ*)
 * *Spring Cloud Stream* and its abstraction over messaging systems
