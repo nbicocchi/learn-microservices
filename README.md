@@ -19,7 +19,7 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 Your pull requests are very welcome! To contribute, please refer to [this](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) guide. For a more general introduction to GitHub, refer to [this](https://github.com/skills/) page. By contributing to this repository, you agree that your contributions will be licensed under the LICENSE file in the root directory of this source tree.
 
 ## Modules
-[M1 Software architectures](modules/software-architectures)
+[M1 Software architectures](modules/introduction)
 * Monolithic and distributed architectural styles
 * The transition towards microservices architectures
 
