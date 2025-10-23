@@ -15,9 +15,6 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 ## Videos
 * [MIT 6.824 Distributed Systems](https://www.youtube.com/watch?v=cQP8WApzIQQ&list=PLrw6a1wE39_tb2fErI4-WkMbsvGQk9_UB)
 
-## Contributing
-Your pull requests are very welcome! To contribute, please refer to [this](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) guide. For a more general introduction to GitHub, refer to [this](https://github.com/skills/) page. By contributing to this repository, you agree that your contributions will be licensed under the LICENSE file in the root directory of this source tree.
-
 ## Modules
 [M1 Introduction](modules/introduction)
 * Software production metrics
@@ -31,7 +28,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 [M3 Containerization and orchestration](modules/containerization)
 * Building *docker* images (single-layer, multi-layer)
 * Container orchestration with *docker compose*
-* Lightweight orchestration for the edge (K3s, MicroK8s, KubeEdge)
+* Orchestration for the edge-cloud continuum (K8s, K3s, MicroK8s, KubeEdge)
 
 [M4 Synchronous Communication](modules/communication-sync)
 * Synchronous communications and their limitations
@@ -41,7 +38,7 @@ Your pull requests are very welcome! To contribute, please refer to [this](https
 [M5 Infrastructure](modules/infrastructure)
 * Service discovery, routing, configuration
 * Edge-cloud hybrid routing strategies
-* The RAFT distributed algorithm
+* Raft consensus algorithm
 
 [M6 Observability](modules/observability)
 * Instrumentation and maintenance costs

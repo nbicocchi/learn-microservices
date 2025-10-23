@@ -1,31 +1,5 @@
 # Raft Consensus Algorithm - Theory
 
-<p align="center">
-   <img src="images/raft-logo.svg" alt="Raft Logo" width="30%" />
-</p>
-
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Overview of Raft](#overview-of-raft)
-- [Key Components](#key-components)
-- [Detailed Mechanisms](#detailed-mechanisms)
-- [Advantages of Raft](#advantages-of-raft)
-- [Use Cases](#use-cases)
-- [Conclusion](#conclusion)
-- [References](#references)
-
----
-
-## Introduction
-
-In the realm of distributed systems, achieving consensus among multiple nodes is paramount for ensuring data
-consistency, reliability, and fault tolerance. The **Raft Consensus Algorithm** stands out as a robust solution designed
-to simplify the complexities associated with consensus mechanisms. Introduced by Diego Ongaro and John Ousterhout in
-2013, Raft emphasizes understandability and ease of implementation without compromising on performance and reliability.
-
-## Overview of Raft
-
 Raft (Replicated and Fault-Tolerant) is a consensus algorithm that facilitates the coordination of replicated logs
 across a cluster of nodes. Unlike pther consensus algorithms like Paxos, Raft is structured to be more comprehensible,
 making it easier for developers to implement and reason about. The primary goal of Raft is to ensure that multiple nodes
@@ -216,28 +190,6 @@ Raft offers several benefits that make it a preferred choice for consensus in di
 - **Robustness**: Raft can handle various failure scenarios, including leader crashes and network partitions, ensuring
   system reliability.
 - **Efficiency**: Raft minimizes the number of message exchanges required to achieve consensus, enhancing performance.
-
-## Use Cases
-
-Raft is widely adopted in various distributed systems to ensure data consistency and reliability:
-
-- **Distributed Databases**: Systems like [etcd](https://etcd.io), [CockroachDB](https://www.cockroachlabs.com),
-  and [TiDB](https://www.pingcap.com) use Raft for managing replicated logs and ensuring
-  consistent state across nodes.
-- **Distributed Key-Value Stores**: [Consul](https://www.consul.io) employs Raft for service discovery and configuration
-  management.
-- **Distributed File Systems**: Some distributed file systems leverage Raft to coordinate metadata operations and
-  maintain consistency.
-
-## Conclusion
-
-The Raft Consensus Algorithm provides a robust, understandable, and efficient mechanism for achieving consensus in
-distributed systems. By emphasizing clarity and modularity, Raft simplifies the complexities associated with consensus
-protocols, making it accessible for developers and engineers to implement reliable distributed applications. Its proven
-safety and fault-tolerance properties make Raft a foundational component in modern distributed architectures, ensuring
-data consistency and system reliability across diverse use cases.
-
----
 
 ## References
 
