@@ -51,6 +51,7 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 
 [M8 ASynchronous Communication](modules/communication-sync)
 * Asynchronous messaging systems (*RabbitMQ*)
+* https://groups.csail.mit.edu/tds/papers/Lynch/jacm85.pdf
 * Event-driven architectures
 * Event-sourcing architectures
 
