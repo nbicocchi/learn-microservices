@@ -66,16 +66,20 @@ These metrics are valuable because:
 1. **Monitor**  
    ![](images/linearb-dashboard.webp)
 
-1. **Reduction of Codebase Size**  
-   Reducing size/complexity of the codebase (e.g., microservices) improves **Change Failure Rate**, **Time to Restore Service**, and **Deployment Frequency**.
+--- 
 
-2. **Automate CI/CD Pipelines**  
-   Automating continuous integration/delivery pipelines reduces manual errors, accelerates testing and deployment processes improving both **Deployment Frequency** and **Lead Time for Changes**.
-
-3. **Reduction of PR Size**  
+2. **Reduction of PR Size**  
    Smaller pull requests are easier to review, merge, and test, reducing the risk of issues and speeding up the overall development process, which directly impacts **Lead Time for Changes**.
 
-4. **Implement Deployments Strategies**  
+3. **Reduction of Codebase Size**  
+   Reducing size/complexity of the codebase (e.g., microservices) improves **Change Failure Rate**, **Time to Restore Service**, and **Deployment Frequency**.
+
+---
+
+4. **Automate CI/CD Pipelines**  
+   Automating continuous integration/delivery pipelines reduces manual errors, accelerates testing and deployment processes improving both **Deployment Frequency** and **Lead Time for Changes**.
+
+5. **Implement Deployments Strategies**  
    Deployment strategies reduce the impact of failed releases by gradually introducing changes to a small subset of users before improving both **Change Failure Rate** and **Time to Restore Service**.
 
 
