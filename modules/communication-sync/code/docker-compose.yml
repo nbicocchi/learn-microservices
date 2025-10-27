@@ -1,0 +1,41 @@
+services:
+  rest-spring:
+    build: ./product-service-spring
+    ports:
+      - "8001:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - product-net
+
+  rest-fastapi:
+    build: ./product-service-fastapi
+    ports:
+      - "8002:8000"
+    networks:
+      - product-net
+
+  graphql:
+    build: ./product-service-graphql
+    ports:
+      - "8003:8000"
+    networks:
+      - product-net
+
+  grpc:
+    build: ./product-service-grpc
+    ports:
+      - "8004:50051"
+    networks:
+      - product-net
+      
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "3000:80"
+    networks:
+      - product-net
+
+networks:
+  product-net:
+    driver: bridge

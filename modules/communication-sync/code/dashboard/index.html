@@ -1,0 +1,33 @@
+<!-- dashboard/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Service Dashboard</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    h1, h2 { color: #333; }
+    ul { line-height: 2; }
+    a { color: #007BFF; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>Product Service Dashboard</h1>
+
+  <h2>Implementations</h2>
+  <ul>
+    <li><a href="http://localhost:8001/products" target="_blank">REST (Spring Boot)</a></li>
+    <li><a href="http://localhost:8002/products" target="_blank">REST (FastAPI)</a></li>
+    <li><a href="http://localhost:8003/graphql" target="_blank">GraphQL Playground</a></li>
+  </ul>
+  <!--
+  <h2>Load Testing Dashboards</h2>
+  <ul>
+    <li><a href="http://localhost:8005" target="_blank">Locust - REST (Spring and FastAPI)</a></li>
+    <li><a href="http://localhost:8006" target="_blank">Locust - GraphQL</a></li>
+    <li><a href="http://localhost:8007" target="_blank">Locust - gRPC</a></li>
+  </ul>
+  -->
+</body>
+</html>

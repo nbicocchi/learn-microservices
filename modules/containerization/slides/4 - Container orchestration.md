@@ -12,10 +12,10 @@ Container orchestration is the **automated management** of containerized applica
 
 **Popular Container Orchestration Tools**
 
+* Docker Compose (single-node)
+* Docker Swarm (multi-node)
 * Kubernetes (K8s)
-* Docker Swarm
-* Apache Mesos & Marathon
-* Red Hat OpenShift
+* Red Hat OpenShift (K8s-based platform)
 
 ## The `docker-compose.yml` file
 **Docker Compose is a powerful tool that allows us to define and manage multi-container Docker applications**. **Docker running a single node does not provide full orchestration features**. It is particularly useful when working with microservices ecosystems, as it enables the coordination of multiple containers. With Compose, we can configure networking, resources, and also address scalability requirements.

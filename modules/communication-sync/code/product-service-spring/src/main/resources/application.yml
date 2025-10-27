@@ -1,0 +1,29 @@
+server:
+  port: 7001
+
+spring:
+  datasource:
+    url: jdbc:sqlite:file:memdb1?mode=memory&cache=shared
+    username: sa
+    password: sa
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: create-drop
+      show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+
+---
+spring.config.activate.on-profile: docker
+server:
+  port: 8080
+
+---
+spring.config.activate.on-profile: no-banner
+spring:
+  main:
+    banner-mode: off

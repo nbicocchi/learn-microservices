@@ -216,6 +216,3 @@ query {
 - **Complexity in Query Optimization**: While GraphQL gives clients flexibility, it also puts more responsibility on the server to optimize the queries. If not properly managed, complex or deeply nested queries can lead to performance bottlenecks on the server side.
 - **Caching Challenges**: Caching in GraphQL is more complex than REST, as queries can be dynamic and granular. REST APIs can leverage HTTP-based caching more easily (based on endpoints), while GraphQL requires more sophisticated caching strategies.
 - **Schemas Overhead**: The overhead of managing schemas and resolvers might not justify the benefits in all use cases.
-
-## Summary 
-While **REST**, **gRPC**, and **GraphQL** offer distinct advantages in specific contexts, they all have limitations due to their synchronous nature. gRPC and GraphQL address many of REST’s inefficiencies, such as performance bottlenecks, over-fetching/under-fetching, and API evolution issues. However, the inherent challenges of synchronous communication often necessitate a shift toward **asynchronous communications**.
