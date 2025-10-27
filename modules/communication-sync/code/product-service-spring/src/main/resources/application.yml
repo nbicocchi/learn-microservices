@@ -1,5 +1,5 @@
 server:
-  port: 7001
+  port: 8080
 
 spring:
   datasource:
@@ -16,14 +16,3 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.community.dialect.SQLiteDialect
-
----
-spring.config.activate.on-profile: docker
-server:
-  port: 8080
-
----
-spring.config.activate.on-profile: no-banner
-spring:
-  main:
-    banner-mode: off

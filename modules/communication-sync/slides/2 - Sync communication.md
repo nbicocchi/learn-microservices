@@ -1,20 +1,9 @@
 # Synchronous communications
 
+In synchronous communication, services interact in a *request–response* manner — the caller sends a request and waits for a reply before continuing. This model is simple and intuitive, resembling traditional client-server interactions. Typical implementations include REST, GraphQL, and gRPC (using Protobuf), each offering different trade-offs in flexibility, performance, and data format (best for edge/cloud/both). 
+
+
 ## Definitions and Know Issues
-
-**Serialization** is the process of converting data structures or objects into a format that can be easily transmitted or stored. This format is often a byte stream or text, which can be later deserialized (converted back) into the original data structure or object.
-
-```java
-@RestController
-@RequestMapping("/api")
-public class UserController {
-
-    @PostMapping("/user")
-    public Response createUser(@RequestBody User user) {
-        return new Response("User " + user.getFirstName() + " registered successfully!", true);
-    }
-}
-```
 
 **Spatial coupling** refers to the degree of dependency between different components or services in a system at a given point in time. A high degree of spatial coupling means that components are tightly connected, requiring direct knowledge of each other’s existence, interfaces, or locations. This can lead to reduced flexibility and increased maintenance complexity.
 
@@ -216,3 +205,25 @@ query {
 - **Complexity in Query Optimization**: While GraphQL gives clients flexibility, it also puts more responsibility on the server to optimize the queries. If not properly managed, complex or deeply nested queries can lead to performance bottlenecks on the server side.
 - **Caching Challenges**: Caching in GraphQL is more complex than REST, as queries can be dynamic and granular. REST APIs can leverage HTTP-based caching more easily (based on endpoints), while GraphQL requires more sophisticated caching strategies.
 - **Schemas Overhead**: The overhead of managing schemas and resolvers might not justify the benefits in all use cases.
+
+## Protocols in the Edge-Cloud Continuum
+
+* **REST (JSON/HTTP)**
+
+    * Simple and widely supported
+    * Ideal for cloud-facing APIs and interoperability
+    * Higher latency and larger payloads limit suitability for edge or real-time
+
+* **GraphQL**
+
+    * Flexible queries allow fetching exactly needed data
+    * Reduces over-fetching in cloud-aggregated services
+    * JSON parsing and query processing can introduce latency at the edge
+
+* **gRPC (Protobuf)**
+
+    * Compact binary messages and streaming support
+    * Low-latency, high-throughput communication across cloud and edge
+    * Excellent for IoT, real-time pipelines, and edge-device microservices
+
+## Resources

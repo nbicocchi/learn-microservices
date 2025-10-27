@@ -2,19 +2,7 @@
 
 All exercises have to support both a development configuration (default profile) and a production configuration (docker profile).
 
-## Lab 1: Basic REST Communication
-
-1. Implement a **provider-service** returning a greeting message.
-   * `GET /greet` → returns a greet message
-   * `POST /setDelay {delay}` → set a wait delay before replying to `/greet`
-2. Implement a **consumer-service**.
-   * `GET /greet` → consumes `/greet` on the **provider-service** and returns the message
-   * Logs the received message.
-3. Use **prometheus** to show the changes in *peak threads* within both services after calling **consumer-service**/greet 100 times in parallel.
-
----
-
-## Lab 2: Scaling services with REST Communication
+## Lab 1: Scaling services with REST Communication
 
 1. Implement a **math-service** for computing prime numbers.
     * `POST /primes {lowerbound, upperbound, email}` → returns the list of all prime numbers between `lowerbound` and `upperbound`.
@@ -24,7 +12,7 @@ All exercises have to support both a development configuration (default profile)
 
 ---
 
-## Lab 3: REST Communication for a Social Network
+## Lab 2: REST Communication for a Social Network
 
 1. Implement a **post-service** for managing posts on a social network.
   - `GET /posts` → Returns all posts.

@@ -1,4 +1,4 @@
-# Communication styles (RESTClient)
+# Communication styles (RESTClient Integration)
 
 ## RESTful Providers
 
