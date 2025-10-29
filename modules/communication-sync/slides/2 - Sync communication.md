@@ -165,25 +165,59 @@ public class BookController {
 ![](images/rest-vs-graphql.webp)
 
 
-**GraphQL Example Query**
+```mermaid
+flowchart TB
+    %% --- Client ---
+    subgraph Client
+        RESTClient[REST Client]
+        GraphQLClient[GraphQL Client]
+    end
 
-```graphql
-query {
-  user(id: "123") {
-    id
-    name
-    email
-    posts {
-      title
-      content
-    }
-  }
-}
+    %% --- REST Services ---
+    subgraph REST_Services
+        RESTPost[Post Service]
+        RESTUser[User Service]
+        RESTComment[Comment Service]
+    end
+
+    %% --- GraphQL Services ---
+    subgraph GraphQL_Services
+        PostResolver[Post Resolver]
+        UserResolver[User Resolver]
+        CommentResolver[Comment Resolver]
+        UserService[User Service]
+        CommentService[Comment Service]
+    end
+
+    %% --- REST Flow ---
+    RESTClient -->|GET /posts| RESTPost
+    RESTClient -->|GET /users/1| RESTUser
+    RESTClient -->|GET /users/2| RESTUser
+    RESTClient -->|GET /comments?postId=1| RESTComment
+    RESTClient -->|GET /comments?postId=2| RESTComment
+
+    %% --- GraphQL Flow ---
+    GraphQLClient -->|getPosts + nested user & comments| PostResolver
+    PostResolver --> UserResolver
+    PostResolver --> CommentResolver
+    UserResolver -->|fetch user data| UserService
+    CommentResolver -->|fetch comments| CommentService
+    PostResolver -->|aggregate all data| GraphQLClient
+
+    %% --- Styling ---
+    classDef client fill:#f9f,stroke:#333,stroke-width:1px;
+    classDef server fill:#bbf,stroke:#333,stroke-width:1px;
+    class RESTClient,GraphQLClient client;
+    class RESTPost,RESTUser,RESTComment,PostResolver,UserResolver,CommentResolver,UserService,CommentService server;
 ```
 
-- This query requests data for a specific user with `id: "123"`.
-- It retrieves the `id`, `name`, and `email` of the user.
-- It also fetches a list of posts written by the user, including each post's `title` and `content`.
+The figure illustrates the difference in client-server communication between a traditional REST architecture and a GraphQL-based architecture, highlighting the concept of *chattiness*.
+
+* **REST Flow (left side):** The REST client must make multiple HTTP requests to different services to aggregate all the data it needs. For example, it calls the Post Service to get posts, then individually calls the User Service for each post’s author and the Comment Service for each post’s comments. This results in a high number of round-trips between client and server, representing high *chattiness*.
+
+* **GraphQL Flow (right side):** The GraphQL client sends a single query requesting posts along with nested user and comment information. The GraphQL server uses resolvers (`PostResolver`, `UserResolver`, `CommentResolver`) to fetch the required data from the underlying microservices (Post, User, Comment services) and aggregates it before sending it back to the client. Although multiple internal calls occur between services, the client receives all requested data in a single response, significantly reducing chattiness from the client’s perspective.
+
+* **Key Point:** GraphQL reduces client-side chattiness by delegating data aggregation to the server, even if internal service-to-service communication still happens.
 
 **How GraphQL Solves REST Limitations**:
 
