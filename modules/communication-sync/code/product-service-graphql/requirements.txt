@@ -1,5 +1,0 @@
-strawberry-graphql
-typer
-libcst==1.2.0
-strawberry-graphql[debug-server]
-sqlalchemy

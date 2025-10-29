@@ -22,6 +22,35 @@ public class Product {
 
 ---
 
+## Dependencies
+
+To use **GraphQL** with **Spring Boot**, add the following dependencies to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-graphql</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>com.graphql-java</groupId>
+    <artifactId>graphql-java-extended-scalars</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+These enable:
+
+* GraphQL endpoint auto-configuration (`/graphql`)
+* GraphQL Playground (via Altair or other clients)
+* Integration with Spring WebMVC for HTTP transport
+
+---
+
 ## GraphQL Schema
 
 * **Defines the API contract**: types, queries, mutations, and inputs.
@@ -125,7 +154,8 @@ public class ProductGraphQLController {
 
 * Queries are **read-only operations**.
 * Clients request **exactly the fields they need**.
-* Example: fetch all products
+
+Example: fetch all products
 
 ```graphql
 query {
@@ -137,7 +167,7 @@ query {
 }
 ```
 
-* Example: fetch a single product by UUID
+Example: fetch a single product by UUID
 
 ```graphql
 query {
@@ -155,7 +185,8 @@ query {
 
 * Mutations are **write operations** (create, update, delete).
 * They can return the modified object, enabling the client to update its UI immediately.
-* Example: create a product
+
+Example: create a product
 
 ```graphql
 mutation {
@@ -167,7 +198,7 @@ mutation {
 }
 ```
 
-* Example: update a product
+Example: update a product
 
 ```graphql
 mutation {
@@ -184,10 +215,9 @@ mutation {
     weight
   }
 }
-
 ```
 
-* Example: delete a product
+Example: delete a product
 
 ```graphql
 mutation {
@@ -197,9 +227,21 @@ mutation {
 
 ---
 
+## Testing the API
+
+You can test the GraphQL API in several ways:
+
+* **Altair GraphQL Client (browser plugin)**
+  Available for Chrome and Firefox, it provides an interactive interface to send queries and mutations to your Spring Boot GraphQL endpoint (default: `http://localhost:8080/graphql`).
+
+* **GraphQL Playground / Postman**
+  These tools can also send HTTP POST requests to `/graphql` with a GraphQL query body.
+
+---
+
 ## Resources
 
 * [Spring GraphQL Reference](https://docs.spring.io/spring-graphql/docs/current/reference/html/)
 * [GraphQL Official Website](https://graphql.org/)
-* [Altair GraphQL Client](https://altair.sirmuel.design/)
+* [Altair GraphQL Client (browser plugin)](https://altair.sirmuel.design/)
 

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.example.product";
+option java_outer_classname = "ProductProto";
+
+message Product {
+  string uuid = 1;
+  string name = 2;
+  double weight = 3;
+}
+
+message ProductRequest {
+  string uuid = 1;
+}
+
+message ProductList {
+  repeated Product products = 1;
+}
+
+message CreateProductRequest {
+  Product product = 1;
+}
+
+message UpdateProductRequest {
+  string uuid = 1;
+  Product product = 2;
+}
+
+message DeleteProductRequest {
+  string uuid = 1;
+}
+
+message DeleteProductResponse {
+  bool success = 1;
+}
+
+service ProductService {
+  rpc GetAllProducts(google.protobuf.Empty) returns (ProductList);
+  rpc GetProductByUuid(ProductRequest) returns (Product);
+  rpc CreateProduct(CreateProductRequest) returns (Product);
+  rpc UpdateProduct(UpdateProductRequest) returns (Product);
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
+}
