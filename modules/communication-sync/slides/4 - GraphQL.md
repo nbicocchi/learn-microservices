@@ -234,10 +234,11 @@ You can test the GraphQL API in several ways:
 * **Altair GraphQL Client (browser plugin)**
   Available for Chrome and Firefox, it provides an interactive interface to send queries and mutations to your Spring Boot GraphQL endpoint (default: `http://localhost:8080/graphql`).
 
-* **GraphQL Playground / Postman**
+* **Postman**
   These tools can also send HTTP POST requests to `/graphql` with a GraphQL query body.
 
----
+* **GraphiQL Interface (optional, built-in)**
+  Spring Boot can expose a GraphiQL web interface at `/graphiql` (if enabled via `spring.graphql.graphiql.enabled=true`). It allows you to interactively explore your GraphQL schema, execute queries, and test mutations directly in the browser.
 
 ## Resources
 
