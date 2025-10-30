@@ -117,7 +117,7 @@ public class BookController {
 
 ![](images/thread-pool.webp)
 
-## REST (Representational State Transfer)
+## REST (JSON over HTTP)
 
 **Limitations of REST**:
 
@@ -130,7 +130,21 @@ public class BookController {
 | **Under-fetching (chattiness)** | Y  |
 | **Thread Pool Exhaustion** | Y    |
 
-## gRPC (Google Remote Procedure Call)
+## gRPC (Protobuf over gRPC)
+
+* **gRPC** is a **Remote Procedure Call (RPC) framework** developed by Google.
+* It allows you to **define services** and **call methods on remote servers as if they were local**.
+    * Bi-directional streaming
+    * Unary RPC (normal request-response)
+    * Client and server stubs generation
+    * Works over HTTP/2 for multiplexing, flow control, and performance
+
+* **Protobuf** is a **serialization format and schema language**:
+
+    * Defines messages and types in `.proto` files
+    * Generates **language-specific classes**
+    * Serializes data efficiently in a **compact binary format**
+    * **Used by gRPC by default** for defining message payloads.
 
 ![](images/rest-vs-grpc.webp)
 
@@ -160,7 +174,68 @@ public class BookController {
 - **Browser Support**: While gRPC is excellent for backend and service-to-service communication, it is not well-supported in browser environments, limiting its use for frontend applications.
 - **Strict Typing**: While strict typing ensures robustness, it also introduces rigidity, as changes to the API require careful management of Protobuf contracts.
 
-## GraphQL (Meta)
+## Apache Avro
+
+* **Apache Avro** is a **data serialization system** from the Apache Hadoop ecosystem.
+* Optimized for **compact, fast, and schema-based binary serialization**.
+* Supports **cross-language communication** (Java, Python, C++, Go, etc.).
+
+**Key difference from Protobuf**:
+
+* Avro can embed **schema with the data** (self-describing), while Protobuf requires the schema to be **pre-shared** between client and server. This allows Avro to be **more flexible** in evolving schemas dynamically.
+
+**Avro Schema Example**
+
+```json
+{
+  "type": "record",
+  "name": "User",
+  "namespace": "com.example.avro",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age",  "type": "int"},
+    {"name": "email", "type": ["null", "string"], "default": null}
+  ]
+}
+```
+
+**Serialization Example (Java)**
+
+```java
+Schema schema = new Schema.Parser().parse(new File("user.avsc"));
+GenericRecord user = new GenericData.Record(schema);
+user.put("name", "Alice");
+user.put("age", 30);
+
+ByteArrayOutputStream out = new ByteArrayOutputStream();
+DatumWriter<GenericRecord> writer = new SpecificDatumWriter<>(schema);
+BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
+writer.write(user, encoder);
+encoder.flush();
+byte[] bytes = out.toByteArray();
+```
+
+**Deserialization Example**
+
+```java
+DatumReader<GenericRecord> reader = new SpecificDatumReader<>(schema);
+BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
+GenericRecord user = reader.read(null, decoder);
+System.out.println(user);
+```
+
+**How Apache Avro Solves REST Limitations**:
+
+* **Serialization**: Avro uses a **compact binary format** with schemas, which is much more efficient than JSON or XML. Binary encoding reduces message size and improves serialization/deserialization speed, making it suitable for edge-cloud communication and streaming pipelines.
+
+* **Schema Evolution / API Coupling**: Avro provides **flexible schema evolution**. Fields can be added or removed with defaults, and readers can use schemas different from the writers’ schemas. This reduces the risk of breaking changes compared to REST JSON payloads and allows smoother cross-service evolution.
+
+* **Over-fetching**: Avro payloads include only the required data fields, avoiding unnecessary data transfer compared to verbose JSON responses in REST.
+
+* **Under-fetching / Chattiness**: While Avro does not inherently solve network chattiness like gRPC’s HTTP/2 streaming, it **reduces payload sizes**, making repeated calls more efficient. When combined with messaging systems like Kafka, it enables high-throughput, low-latency communication across edge and cloud components.
+
+
+## GraphQL (JSON over HTTP)
 
 ![](images/rest-vs-graphql.webp)
 
@@ -259,5 +334,39 @@ The figure illustrates the difference in client-server communication between a t
     * Compact binary messages and streaming support
     * Low-latency, high-throughput communication across cloud and edge
     * Excellent for IoT, real-time pipelines, and edge-device microservices
+
+* **Avro**
+
+    * Schema-based binary serialization with optional embedded schema
+    * Well-suited for **data pipelines**, edge-cloud messaging, and streaming systems (Kafka, Spark)
+    * Slightly higher complexity than Protobuf for direct RPC, but ideal where **schema evolution and cross-language compatibility** matter
+
+
+## DTOs
+A **DTO (Data Transfer Object)** is a design pattern used in software engineering to transfer data between different parts of an application, often across network boundaries or between layers within the same application. The main purpose of a DTO is to encapsulate data and reduce the amount of information sent over the network by only containing necessary fields, and it’s commonly used in distributed systems and applications that follow the layered architecture (such as MVC or service-oriented architectures).
+
+### Key Characteristics of DTOs
+- **Encapsulation**: DTOs wrap data in a structure that hides complex entities or potentially sensitive information, only exposing fields relevant for the specific data transfer operation.
+- **No Business Logic**: DTOs typically don’t contain business logic, as they serve only as containers for data. Their purpose is purely data transfer, so methods like getters and setters are usually the only ones included.
+- **Serialization**: Since DTOs are often transferred over a network or between application boundaries, they are usually designed to be serializable (e.g., JSON or XML).
+
+### When to Use DTOs
+- **APIs and Microservices**: DTOs are commonly used in REST APIs and microservices. They provide a way to define the format and content of the data being exchanged without exposing internal models or database entities.
+- **Reducing Data Load**: By selecting only relevant fields, DTOs can reduce the amount of data transmitted, especially useful in mobile applications or low-bandwidth networks.
+- **Decoupling Layers**: In a layered architecture (e.g., separating data access, business logic, and presentation layers), DTOs help maintain separation by acting as an intermediary between the business and presentation layers.
+
+Automatic mapping between entities and DTOs is a common requirement, as it simplifies the process of converting data between different layers of an application. In both Java and Python, libraries are available to facilitate this mapping, reducing boilerplate code and improving code readability.
+
+### Entity-to-DTO Mapping
+Several libraries provide automatic mapping capabilities. Here are the most popular ones:
+
+**MapStruct**: (Java) MapStruct is a powerful, compile-time, code-generating library that creates type-safe mappers between Java objects (e.g., entities and DTOs). It generates code at compile-time, so there's no runtime overhead, making it fast and efficient.
+
+**ModelMapper**: (Java) ModelMapper is a more flexible, runtime-based library that provides a convention-based approach to object mapping. It can automatically map properties with similar names and is highly customizable.
+
+**Marshmallow**: (Python) Marshmallow is a popular library for object serialization/deserialization in Python. It is typically used to convert objects to and from JSON, but it can also be used for DTO mappings.
+
+**Pydantic**: (Python) Pydantic is primarily used for data validation and settings management, but it also serves as a great DTO library. It provides data validation and conversion between Python objects and JSON-compatible formats.
+
 
 ## Resources
