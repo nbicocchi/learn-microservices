@@ -1,0 +1,71 @@
+services:
+  eureka:
+    build: eureka-service
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8761" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  traefik:
+    image: traefik:v3.6
+    command:
+      - "--api.insecure=true"             # allows dashboard access without auth
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/dashboard/" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  user-service:
+    build: user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-service.rule=Host(`user.localhost`)"
+      - "traefik.http.services.user-service.loadbalancer.server.port=8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  post-service:
+    build: post-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.post-service.rule=Host(`post.localhost`)"
+      - "traefik.http.services.post-service.loadbalancer.server.port=8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  comment-service:
+    build: comment-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.comment-service.rule=Host(`comment.localhost`)"
+      - "traefik.http.services.comment-service.loadbalancer.server.port=8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
