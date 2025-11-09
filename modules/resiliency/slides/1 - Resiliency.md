@@ -235,5 +235,6 @@ When implementing the Rate Limiting pattern, **it is crucial to consider factors
 
 ## Resources
 - Microservices with Spring Boot 3 and Spring Cloud (Chapter 13)
+- https://www.youtube.com/watch?v=sNzxX45zhJY
 
 
