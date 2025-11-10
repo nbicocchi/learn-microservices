@@ -2,3 +2,7 @@
   - senza aggregazione
   - con aggregazione
   - con aggregazione/graphql 
+- finire continuos deployment workflow dentro devops
+- modulo security da sistemare
+- modulo devops integrare progetto studente
+- modulo observability integrare progetto studente
