@@ -15,9 +15,3 @@ spring:
   h2:
     console:
       enabled: true
-
----
-spring.config.activate.on-profile: docker
-server:
-  port: 8080
-

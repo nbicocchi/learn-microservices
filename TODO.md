@@ -1,8 +1,7 @@
 - dentro comm sync implementare social:
   - senza aggregazione
   - con aggregazione
-  - con aggregazione/graphql 
-- finire continuos deployment workflow dentro devops
+  - con aggregazione/graphql
 - modulo security da sistemare
 - modulo mlops integrare progetto studente
 - modulo observabilidevopsty integrare progetto studente

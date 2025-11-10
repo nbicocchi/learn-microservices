@@ -1,0 +1,10 @@
+type Post {
+    userUUID: String
+    timestamp: String
+    content: String
+}
+
+type Query {
+    allPosts: [Post]
+    postsByUser(userUUID: String!): [Post]
+}

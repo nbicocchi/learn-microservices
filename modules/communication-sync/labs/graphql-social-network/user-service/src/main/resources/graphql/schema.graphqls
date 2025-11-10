@@ -1,0 +1,17 @@
+type Query {
+  allUsers: [User!]!
+  userByUUID(userUUID: String!): User
+}
+
+type User {
+  userUUID: String!
+  nickname: String!
+  birthDate: String
+  posts: [Post!]!
+}
+
+type Post {
+  userUUID: String!
+  timestamp: String
+  content: String!
+}
