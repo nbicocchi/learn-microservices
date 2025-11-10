@@ -26,12 +26,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - DATETIME_SERVICE_URL=http://nginx:8080
 
   datetime-1:
     build: datetime-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s
@@ -41,7 +44,8 @@ services:
   datetime-2:
     build: datetime-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s
@@ -51,7 +55,8 @@ services:
   datetime-3:
     build: datetime-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s

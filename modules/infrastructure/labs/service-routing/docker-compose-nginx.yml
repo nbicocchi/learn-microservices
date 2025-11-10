@@ -26,7 +26,8 @@ services:
   user-service:
     build: user-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s
@@ -36,7 +37,8 @@ services:
   post-service:
     build: post-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s
@@ -46,7 +48,19 @@ services:
   comment-service:
     build: comment-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bff-service:
+    build: bff-service
+    environment:
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s

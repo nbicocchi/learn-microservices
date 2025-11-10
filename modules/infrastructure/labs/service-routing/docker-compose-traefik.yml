@@ -12,13 +12,14 @@ services:
   traefik:
     image: traefik:v3.6
     command:
-      - "--api.insecure=true"             # allows dashboard access without auth
+      - "--api.insecure=true"
       - "--api.dashboard=true"
       - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.address=:8080"
+      - "--entrypoints.traefik.address=:8888"
     ports:
-      - "80:80"
       - "8080:8080"
+      - "8888:8888"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     healthcheck:
@@ -28,13 +29,29 @@ services:
       retries: 3
       start_period: 10s
 
+  bff-service:
+    build: bff-service
+    environment:
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bff-service.rule=PathPrefix(`/bff`)"
+      - "traefik.http.services.bff-service.loadbalancer.server.port=8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   user-service:
     build: user-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user-service.rule=Host(`user.localhost`)"
+      - "traefik.http.routers.user-service.rule=PathPrefix(`/users`)"
       - "traefik.http.services.user-service.loadbalancer.server.port=8080"
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
@@ -45,10 +62,11 @@ services:
   post-service:
     build: post-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.post-service.rule=Host(`post.localhost`)"
+      - "traefik.http.routers.post-service.rule=PathPrefix(`/posts`)"
       - "traefik.http.services.post-service.loadbalancer.server.port=8080"
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
@@ -59,10 +77,11 @@ services:
   comment-service:
     build: comment-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.comment-service.rule=Host(`comment.localhost`)"
+      - "traefik.http.routers.comment-service.rule=PathPrefix(`/comments`)"
       - "traefik.http.services.comment-service.loadbalancer.server.port=8080"
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]

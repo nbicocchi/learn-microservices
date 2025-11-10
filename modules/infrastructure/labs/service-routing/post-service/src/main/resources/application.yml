@@ -27,13 +27,3 @@ spring:
   h2:
     console:
       enabled: true
-
----
-spring.config.activate.on-profile: docker
-server:
-  port: 8080
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://eureka:8761/eureka/

@@ -3,6 +3,7 @@ package com.nbicocchi.composite.controller;
 import com.nbicocchi.composite.model.LocalDateTimeWithTimestamp;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
@@ -13,13 +14,16 @@ import java.time.LocalTime;
 
 @RestController
 public class CompositeController {
+    @Value("${datetime.service.url}")
+    private String datetimeServiceUrl;
+
     private static final Logger LOG = LoggerFactory.getLogger(CompositeController.class);
 
     @GetMapping(value = "/datetime")
     public LocalDateTimeWithTimestamp dateTime() {
         RestClient restClient = RestClient.builder().build();
-        String urlTime = "http://nginx:8080/time";
-        String urlDate = "http://nginx:8080/date";
+        String urlTime = datetimeServiceUrl + "/time";
+        String urlDate = datetimeServiceUrl + "/date";
 
         LOG.info("Calling time API on URL: {}", urlTime);
         LocalTime localTime = restClient.get()
