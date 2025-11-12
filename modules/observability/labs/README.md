@@ -6,14 +6,12 @@
 flowchart TD
     Client --> Gateway[Gateway-Service]
     Eureka
-    Gateway --> Math1[Math-Service-1]
-    Gateway --> Math2[Math-Service-2]
+    Gateway --> Math1[Math-Service]
+    Gateway --> Math2[Math-MCD-Service]
     Math1 --> Gateway
     Math2 --> Gateway
     Gateway --> Client
-    Gateway --> Redis[Redis-Service]
-    Redis --> Gateway
-
+    
     subgraph Observability_Backend
         Prometheus
         Loki

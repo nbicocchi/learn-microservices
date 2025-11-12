@@ -29,26 +29,23 @@ services:
     volumes:
       - ./config/loki.yaml:/etc/loki/loki.yaml
 
-  # Tempo runs as user 10001, and docker compose creates the volume as root.
-  # As such, we need to chown the volume in order for Tempo to start correctly.
-  init:
-    image: &tempoImage grafana/tempo:latest
+  # Helper container to fix permissions on tempo-data
+  tempo-init:
+    image: alpine:latest
     user: root
-    entrypoint:
-      - "chown"
-      - "10001:10001"
-      - "/var/tempo"
+    entrypoint: ["sh", "-c", "chown -R 10001:10001 /var/tempo"]
     volumes:
       - ./tempo-data:/var/tempo
 
+  # Tempo service
   tempo:
-    image: *tempoImage
+    image: &tempoImage grafana/tempo:latest
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./config/tempo.yaml:/etc/tempo.yaml
       - tempo-data:/var/tempo
     depends_on:
-      - init
+      - tempo-init
 
   grafana:
     image: grafana/grafana:latest
@@ -63,16 +60,6 @@ services:
       - "3000:3000"
     healthcheck:
       test: [ "CMD-SHELL", "wget --spider http://localhost:3000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -123,6 +110,26 @@ services:
       replicas: 2
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
+
+  mcd:
+    build: math-mcd-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_METRIC_EXPORT_INTERVAL=1000
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    ports:
+      - "8082"
+    deploy:
+      replicas: 2
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8082/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 5

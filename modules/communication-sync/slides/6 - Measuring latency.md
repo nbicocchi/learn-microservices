@@ -10,7 +10,7 @@
   * **Error rate**
 * Tools by protocol:
 
-  * REST: `hey`, `Locust`
+  * REST: `hey`, `Locust`, `Vegeta`
   * gRPC: `ghz`, `grpcurl`
   * GraphQL: `Locust`
   * Flexible/custom: `Locust` (Python)
@@ -24,7 +24,7 @@
 
 ```bash
 go install github.com/rakyll/hey@latest
-```
+````
 
 * Usage example:
 
@@ -117,5 +117,49 @@ class GraphQLUser(HttpUser):
 ```bash
 locust -f locustfile.py
 ```
+
+---
+
+## Vegeta – HTTP Load Testing
+
+* Flexible HTTP load testing tool for REST or any HTTP service.
+* Can be used as CLI or library (Go).
+* Installation (Go):
+
+```bash
+go install github.com/tsenart/vegeta@latest
+```
+
+* Usage example – **attack mode**:
+
+```bash
+echo "GET http://localhost:8080/products" | vegeta attack -duration=30s -rate=50 | vegeta report
+```
+
+* `-duration=30s`: total test duration
+
+* `-rate=50`: requests per second
+
+* Usage example – **generate report**:
+
+```bash
+echo "GET http://localhost:8080/products" | vegeta attack -duration=30s -rate=50 | vegeta report -type=text
+```
+
+* Can produce reports in **text, JSON, or plots**:
+
+```bash
+vegeta plot < results.bin > plot.html
+```
+
+* Can read a file of requests:
+
+```bash
+vegeta attack -targets=targets.txt -rate=100 -duration=1m | vegeta report
+```
+
+* Good for **scriptable, high-throughput HTTP testing**.
+
+---
 
 ## Resources
