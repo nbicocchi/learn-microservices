@@ -36,7 +36,7 @@ To use the library integrated in Spring Boot (not in its native form) add the fo
 
 ### Retry
 
-The current state of circuit breakers can be monitored at:
+The current state of retries can be monitored at:
 * [/actuator/retries](http://localhost:8080/actuator/retries)
 * [/actuator/retryevents](http://localhost:8080/actuator/retryevents)
 
@@ -73,22 +73,24 @@ resilience4j.retry:
 To enable retries, annotate a method with the `@Retry` annotation:
 
 ```java
-@Retry(name = "time")
-public LocalTime getTime(int delay, int faultPercent) {
-    URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
-
-    LOG.info("Calling time API on URL: {}", url);
+@Retry(name = "divisors")
+public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
+    String url = UriComponentsBuilder.fromHttpUrl("http://MATH-SERVICE/divisors")
+            .queryParam("n", n)
+            .queryParam("times", times)
+            .queryParam("faults", faults)
+            .toUriString();
     return restClient.get()
             .uri(url)
             .retrieve()
-            .body(LocalTime.class);
+            .body(new ParameterizedTypeReference<>() {});
 }
 ```
 
 #### Testing
 
 ```bash
-curl -X GET 'http://127.0.0.1:8080/time?faultPercent=100' 
+curl -X GET http://localhost:8080/divisors\?n=60\&times=2\&faults=100 
 ```
 
 ```bash
@@ -127,7 +129,7 @@ Looking carefully at the timestamps you can see both exponential backoff and ran
 You can run the following command to observe how rare it is to encounter an error when the failure rate is 20% and retries are set to 3.
 
 ```bash
-curl -X GET 'http://127.0.0.1:8080/time?faultPercent=20' 
+curl -X GET http://localhost:8080/divisors\?n=60\&times=2\&faults=20 
 ```
 
 ### Circuit Breaker

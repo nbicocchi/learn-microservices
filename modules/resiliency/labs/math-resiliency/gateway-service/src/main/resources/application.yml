@@ -1,0 +1,83 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+resilience4j.retry:
+  configs:
+    default:
+      maxAttempts: 3
+      waitDuration: 1s
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      enableRandomizedWait: true
+      randomizedWaitFactor: 0.5
+      retryExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+  instances:
+    mcd:
+      base-config: default
+    divisors:
+      base-config: default
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      allowHealthIndicatorToFail: false
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 13
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      record-exceptions:
+        - org.springframework.web.client.HttpServerErrorException
+  instances:
+    mcd:
+      base-config: default
+    divisors:
+      base-config: default
+
+resilience4j.bulkhead:
+  configs:
+    default:
+      maxConcurrentCalls: 2   # for the default bulkhead only 2 calls are permitted --> 2 threads on the same endpoint
+  instances:
+    divisors:
+      base-config: default
+    mcd:
+      base-config: default
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+server:
+  port: 8080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka:8761/eureka/

@@ -1,0 +1,123 @@
+services:
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: --config /etc/otel-collector-config.yaml
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus.yaml
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-otlp-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:9090" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/loki.yaml
+    volumes:
+      - ./config/loki.yaml:/etc/loki/loki.yaml
+
+  # Helper container to fix permissions on tempo-data
+  tempo-init:
+    image: alpine:latest
+    user: root
+    entrypoint: ["sh", "-c", "chown -R 10001:10001 /var/tempo"]
+    volumes:
+      - ./tempo-data:/var/tempo
+
+  # Tempo service
+  tempo:
+    image: &tempoImage grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./config/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/var/tempo
+    depends_on:
+      - tempo-init
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:3000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  eureka:
+    build: eureka-service
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_METRIC_EXPORT_INTERVAL=1000
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8761" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway:
+    build: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_METRIC_EXPORT_INTERVAL=1000
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
+
+  math:
+    build: math-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_METRIC_EXPORT_INTERVAL=1000
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    ports:
+      - "8080"
+    deploy:
+      replicas: 4
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      eureka:
+        condition: service_healthy
+
+volumes:
+  grafana-data:
+  tempo-data:
+  pg-data:
