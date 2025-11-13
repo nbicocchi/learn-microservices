@@ -1,7 +1,2 @@
-- dentro comm sync implementare social:
-  - senza aggregazione
-  - con aggregazione
-  - con aggregazione/graphql
 - modulo security da sistemare
 - modulo mlops integrare progetto studente
-- modulo observabilidevopsty integrare progetto studente

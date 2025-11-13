@@ -408,7 +408,90 @@ To pattern suggests to **separate read and write concerns at the architectural l
 - **CQRS with CP**: Used in systems that require **immediate consistency**, ensuring that read and write operations are strictly synchronized (when sync after write is not available, reads fail).
 - **CQRS with AP**: Common in **scalable, distributed systems** where reads are fast and based on an **eventually consistent** model (when sync after write is not available, reads might be inconsistent).
 
+
+## Event Sourcing
+
+### Motivation
+
+In traditional CRUD-based systems, the state of an application is stored as the latest snapshot in a database. While simple, this approach has several limitations:
+
+* **Loss of history**: Only the current state is stored; previous states are lost unless explicitly logged.
+* **Complexity for auditing**: Reconstructing the history of changes requires additional logging or auditing mechanisms.
+* **Challenges for distributed systems**: Maintaining consistency and traceability across services becomes harder in microservices.
+
+**Event Sourcing** addresses these challenges by storing **all changes to the application state as a sequence of immutable events**, rather than storing just the current state. The current state can always be reconstructed by replaying the events.
+
+### Key Concepts
+
+1. **Events**:
+   Each event represents a state change in the system. For example, in an e-commerce system:
+
+    * `OrderCreated`
+    * `PaymentProcessed`
+    * `InventoryUpdated`
+    * `OrderShipped`
+
+2. **Event Store**:
+   A dedicated storage system that persists all events in order. It acts as the **source of truth** for the application state. Events are **append-only** and immutable.
+
+3. **State Reconstruction**:
+   The current state of a service or entity is reconstructed by replaying events from the event store. This allows for:
+
+    * Auditing: Every change can be traced back to its originating event.
+    * Temporal queries: Ability to view the system state at any point in time.
+    * Debugging: Developers can replay events to reproduce past states or issues.
+
+4. **Integration with CQRS**:
+   Event Sourcing pairs naturally with CQRS:
+
+    * **Write model (Command side)**: Emits events instead of directly updating the database.
+    * **Read model (Query side)**: Builds projections (denormalized views) by consuming these events. These projections can be optimized for queries without affecting the write model.
+
+### Benefits
+
+* **Auditability and traceability**: Every change is recorded as an event, creating a full audit trail.
+* **Reproducibility**: The system state can be rebuilt at any point in time by replaying events.
+* **Scalability**: Events can be published to multiple consumers, enabling asynchronous processing and integration with other services.
+* **Resilience to failure**: As the event log is immutable, lost state can be reconstructed even after failures.
+
+### Challenges
+
+* **Increased complexity**: The need to manage an event store, handle event versioning, and build projections adds complexity.
+* **Eventual consistency**: Read models built from events may be slightly out-of-date compared to the latest write, requiring careful handling of stale data.
+* **Storage overhead**: Storing all events over time may require significant storage, though snapshots can mitigate this.
+* **Debugging and reasoning**: Understanding the current state requires reasoning about sequences of events, which can be less intuitive than direct CRUD updates.
+
+### Event Sourcing Example
+
+For an e-commerce order service, an event-sourced workflow might look like this:
+
+```mermaid
+flowchart TD
+  CustomerOrderService -->|OrderCreated| EventStore
+  PaymentService -->|PaymentProcessed| EventStore
+  InventoryService -->|InventoryReserved| EventStore
+  ShippingService -->|OrderShipped| EventStore
+
+  EventStore -->|UpdateProjections| OrderReadModel
+  EventStore -->|NotifyOtherServices| NotificationService
+```
+
+* **Command side**: Each service emits events to the **Event Store**.
+* **Query side**: Events are consumed to update **read models** or trigger notifications.
+
+### Event Sourcing and CAP Theorem
+
+Event Sourcing can be implemented in both **AP** and **CP** systems, depending on the consistency guarantees of the event store and read models:
+
+* **AP systems**: Read projections are eventually consistent with the write model; services continue to operate during partitions.
+* **CP systems**: Writes may block during network partitions to ensure the event log remains strictly consistent.
+
+
+
+
 ## References
 * https://www.orkes.io/what-is-conductor
 * https://www.baeldung.com/cqrs-event-sourcing-java
 * https://www.baeldung.com/orkes-conductor-saga-pattern-spring-boot
+* https://www.baeldung.com/java-domain-driven-design-event-sourcing
+* https://martinfowler.com/eaaDev/EventSourcing.html
