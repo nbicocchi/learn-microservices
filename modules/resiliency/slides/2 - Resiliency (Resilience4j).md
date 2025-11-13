@@ -90,7 +90,7 @@ public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
 #### Testing
 
 ```bash
-curl -X GET http://localhost:8080/divisors\?n=60\&times=2\&faults=100 
+curl -X GET http://localhost:8080/divisors\?n=60\&times=1\&faults=100
 ```
 
 ```bash
@@ -132,6 +132,12 @@ You can run the following command to observe how rare it is to encounter an erro
 curl -X GET http://localhost:8080/divisors\?n=60\&times=2\&faults=20 
 ```
 
+To see retry in Grafana Dashboard:
+
+```bash
+echo 'GET http://127.0.0.1:8080/mcd?a=18&b=12&times=10000&faults=30' | vegeta attack -duration=120s --rate=2 -timeout=180s | vegeta report
+```
+
 ### Circuit Breaker
 
 The current state of circuit breakers can be monitored at:
@@ -170,34 +176,36 @@ resilience4j.circuitbreaker:
 Now, it is enough to annotate methods using external resources (e.g., other services, databases, etc.) with the corresponding annotation.
 
 ```java
-@CircuitBreaker(name = "time", fallbackMethod = "getTimeFallbackValue")
-public LocalTime getTime(int delay, int faultPercent) {
-    URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "/time" + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
-
-    log.info("Calling time API on URL: {}", url);
-    Map<String, LocalTime> map = restClient.get()
+@CircuitBreaker(name = "divisors")
+public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
+    String url = UriComponentsBuilder.fromHttpUrl("http://MATH-SERVICE/divisors")
+            .queryParam("n", n)
+            .queryParam("times", times)
+            .queryParam("faults", faults)
+            .toUriString();
+    return restClient.get()
             .uri(url)
             .retrieve()
             .body(new ParameterizedTypeReference<>() {});
-    return map.get("time");
-}
-
-public LocalTime getTimeFallbackValue(int delay, int faultPercent, CallNotPermittedException e) {
-    return LocalTime.of(LocalTime.now().getHour(), 0, 0);
 }
 ```
 
 #### Testing
 
-Give the following command multiple times to reset the circuit breaker:
+Give the following commands multiple times to see the circuit breaker change state:
 
 ```bash
-curl -X GET 'http://127.0.0.1:8080/time?faultPercent=0'
+# simulates a succeeded call
+curl -X GET http://localhost:8080/divisors\?n=60\&times=1\&faults=0
 ```
 
-As you can see, none of the last 13 calls is failed.
+```bash
+# simulates a failed call
+curl -X GET http://localhost:8080/divisors\?n=60\&times=1\&faults=100
+```
 
 ```bash
+# show the status of the circuit breaker
 curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
 ```
 
@@ -220,113 +228,6 @@ curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
 }
 ```
 
-After 1 call failed (with 3 retries):
-
-```bash
-curl -X GET 'http://127.0.0.1:8080/time?faultPercent=100'
-```
-
-```bash
-curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
-```
-
-```json
-{
-  "circuitBreakers": {
-    "time": {
-      "failureRate": "23.07%",
-      "slowCallRate": "0.0%",
-      "failureRateThreshold": "50.0%",
-      "slowCallRateThreshold": "100.0%",
-      "bufferedCalls": 13,
-      "failedCalls": 3,
-      "slowCalls": 0,
-      "slowFailedCalls": 0,
-      "notPermittedCalls": 0,
-      "state": "CLOSED"
-    }
-  }
-}
-```
-
-After 2 calls failed (with 3 retries):
-
-```bash
-curl -X GET 'http://127.0.0.1:8080/time?faultPercent=100'
-```
-
-```bash
-curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
-```
-
-```json
-{
-  "circuitBreakers": {
-    "time": {
-      "failureRate": "46.15%",
-      "slowCallRate": "0.0%",
-      "failureRateThreshold": "50.0%",
-      "slowCallRateThreshold": "100.0%",
-      "bufferedCalls": 13,
-      "failedCalls": 6,
-      "slowCalls": 0,
-      "slowFailedCalls": 0,
-      "notPermittedCalls": 0,
-      "state": "CLOSED"
-    }
-  }
-}
-```
-
-After 3 calls failed (with 3 retries). This one is fast because the circuit breaker opens after the first try:
-
-```bash
-curl -X GET 'http://127.0.0.1:8080/time?faultPercent=100'
-```
-
-```bash
-curl -X GET 'http://localhost:8080/actuator/circuitbreakers' | jq
-```
-
-```json
-{
-  "circuitBreakers": {
-    "time": {
-      "failureRate": "53.84%",
-      "slowCallRate": "0.0%",
-      "failureRateThreshold": "50.0%",
-      "slowCallRateThreshold": "100.0%",
-      "bufferedCalls": 13,
-      "failedCalls": 7,
-      "slowCalls": 0,
-      "slowFailedCalls": 0,
-      "notPermittedCalls": 0,
-      "state": "OPEN"
-    }
-  }
-}
-```
-
-After 10 seconds (see configuration), the circuit breaker automatically transition to the HALF_OPEN state.
-
-```json
-{
-  "circuitBreakers": {
-    "time": {
-      "failureRate": "-1.0%",
-      "slowCallRate": "-1.0%",
-      "failureRateThreshold": "50.0%",
-      "slowCallRateThreshold": "100.0%",
-      "bufferedCalls": 0,
-      "failedCalls": 0,
-      "slowCalls": 0,
-      "slowFailedCalls": 0,
-      "notPermittedCalls": 0,
-      "state": "HALF_OPEN"
-    }
-  }
-}
-```
 
 
 ### Bulkhead
@@ -350,9 +251,9 @@ resilience4j.bulkhead:
     default:
       maxConcurrentCalls: 2
   instances:
-    time:
+    divisors:
       base-config: default
-    date:
+    mcd:
       base-config: default
 ```
 
@@ -362,14 +263,17 @@ resilience4j.bulkhead:
 After that, we just need to annotate the method that we want to protect with the `@Bulkhead` annotation:
 
 ```java
-@Bulkhead(name = "time")
-public LocalTime getTimeWithBulkhead(int delay, int faultPercent) {
-    return getTime(delay, faultPercent);
-}
-
-@Bulkhead(name = "date")
-public LocalDate getDateWithBulkhead(int delay, int faultPercent) {
-    return getDate(delay, faultPercent);
+@Bulkhead(name = "divisors")
+public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
+    String url = UriComponentsBuilder.fromHttpUrl("http://MATH-SERVICE/divisors")
+            .queryParam("n", n)
+            .queryParam("times", times)
+            .queryParam("faults", faults)
+            .toUriString();
+    return restClient.get()
+            .uri(url)
+            .retrieve()
+            .body(new ParameterizedTypeReference<>() {});
 }
 ```
 
@@ -377,32 +281,24 @@ public LocalDate getDateWithBulkhead(int delay, int faultPercent) {
 
 The datetime-composite-service exposes, among others, the following endpoints:
 
-* /datetime/time -> Calls the datetime service and returns time
-* /datetime/date -> Calls the datetime service and returns date
-* /datetime/timeBulkhead -> Like /time, but with Bulkhead|
-* /datetime/dateBulkhead -> Like /date, but with Bulkhead|
+* /time -> Local call returns time
+* /date -> Local call returns date
+* /divisors -> Call a remote math service
+* /mcd -> Call a remote math service
 
-Inside the /testing directory you can find two files that can be used with curl.
+Inside the /testing directory you can find a file that can be used with curl.
 
-**urls-shared-pool.txt**
-
-```yaml
-url = "http://127.0.0.1:8080/time?delay=10000"
-url = "http://127.0.0.1:8080/time?delay=10000"
-url = "http://127.0.0.1:8080/time?delay=10000"
-url = "http://127.0.0.1:8080/time?delay=10000"
-```
-
-**urls-bulkhead-pool.txt**
+**urls.txt**
 
 ```yaml
-url = "http://127.0.0.1:8080/timeBulkhead?delay=10000"
-url = "http://127.0.0.1:8080/timeBulkhead?delay=10000"
-url = "http://127.0.0.1:8080/timeBulkhead?delay=10000"
-url = "http://127.0.0.1:8080/timeBulkhead?delay=10000"
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"
+
 ```
 
-The following command send all the requests in parallel so that the thread pool of the service (size=4) gets saturated and the endpoint /date becomes unavailable despite being unused.
+The following command send all the requests in parallel so that the thread pool of the service (size=4) gets saturated and the endpoints /time or /date becomes unavailable despite being unused.
 
 ```bash
 curl --parallel --parallel-immediate --config urls-shared-pool.txt
@@ -411,76 +307,6 @@ curl --parallel --parallel-immediate --config urls-shared-pool.txt
 ```bash
 curl -X GET 'http://127.0.0.1:8080/date' 
 ```
-
-Instead, the following command calls the bulkhead-protected endpoint preventing the saturation of the thread pool. The endpoint /date immediately responds.
-
-```bash
-curl --parallel --parallel-immediate --config urls-shared-pool.txt
-```
-
-```bash
-curl -X GET 'http://127.0.0.1:8080/date' 
-```
-
-### Time Limiter
-
-The current state of bulkheads can be monitored at:
-* [/actuator/timelimiters](http://localhost:8080/actuator/timelimiters)
-* [/actuator/timelimiterevents](http://localhost:8080/actuator/timelimiterevents)
-
-
-To help a circuit breaker handle slow or unresponsive services, a timeout mechanism can be helpful. Resilience4j’s timeout mechanism, called a TimeLimiter, can be configured using standard Spring Boot configuration files. We will use the following configuration parameter:
-
-```yaml
-resilience4j.timelimiter:
-  configs:
-    default:
-      timeoutDuration: 3s
-  instances:
-    time:
-      base-config: default
-```
-
-* **timeoutDuration**: Specifies how long a TimeLimiter instance waits for a call to complete before it throws a timeout exception. We will set it to 3 seconds.
-
-After that, we just need to annotate the method that we want to protect with the `@TimeLimiter` annotation:
-
-```java
-@TimeLimiter(name = "time")
-public LocalTime getTime(int delay, int faultPercent) {
-    URI url = UriComponentsBuilder.fromUriString(TIME_SERVICE_URL + "?delay={delay}&faultPercent={faultPercent}").build(delay, faultPercent);
-
-    LOG.info("Calling time API on URL: {}", url);
-    return restClient.get()
-            .uri(url)
-            .retrieve()
-            .body(LocalTime.class);
-}
-```
-
-#### Testing
-
-The `@TimeLimiter` annotation in Resilience4j is designed to work with **asynchronous** operations. It requires the annotated method to return a `CompletionStage<T>`, such as a `CompletableFuture<T>`. If the method is synchronous (i.e., it returns a direct value instead of a future), the **TimeLimiter will not be able to enforce a timeout**, and you may encounter errors like:
-
-> "TimeLimiter requires a CompletionStage as return type"
-
-To ensure that `@TimeLimiter` functions correctly, wrap your logic inside a `CompletableFuture`, for example:
-
-```java
-@TimeLimiter(name = "myService")
-public CompletableFuture<LocalTime> callExternalService() {
-    return CompletableFuture.supplyAsync(() -> 
-            restClient.get()
-            .uri(url)
-            .retrieve()
-            .body(LocalTime.class)
-    );
-}
-```
-
-Read more: https://reflectoring.io/time-limiting-with-springboot-resilience4j/
-
-
 
 ### Rate Limiter
 
@@ -511,24 +337,16 @@ resilience4j.ratelimiter:
 As always, annotate the methods we want to protect with the `@RateLimiter` annotation:
 
 ```java
-@GetMapping(value = "/date")
-@RateLimiter(name = "date")
-public LocalDate date(
-        @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
-        @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent) throws InterruptedException {
-    Thread.sleep(delay);
-    throwErrorIfBadLuck(faultPercent);
-    return LocalDate.now(ZoneId.of(zoneId));
+@RateLimiter(name = "time")
+@GetMapping("/time")
+public LocalTime getLocalTime() {
+    return LocalTime.now();
 }
 
-@GetMapping(value = "/time")
-@RateLimiter(name = "time")
-public LocalTime time(
-        @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
-        @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent) throws InterruptedException {
-    Thread.sleep(delay);
-    throwErrorIfBadLuck(faultPercent);
-    return LocalTime.now(ZoneId.of(zoneId));
+@RateLimiter(name = "date")
+@GetMapping("/date")
+public LocalDate getLocalDate() {
+    return LocalDate.now();
 }
 ```
 

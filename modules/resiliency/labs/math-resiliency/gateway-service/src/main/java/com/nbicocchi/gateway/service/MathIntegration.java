@@ -2,6 +2,8 @@ package com.nbicocchi.gateway.service;
 
 import com.nbicocchi.gateway.dto.DivisorsWithLatency;
 import com.nbicocchi.gateway.dto.MCDWithLatency;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.log4j.Log4j2;
@@ -35,7 +37,6 @@ public class MathIntegration {
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {});
     }
-
 
     @Retry(name = "mcd")
     //@CircuitBreaker(name = "mcd")

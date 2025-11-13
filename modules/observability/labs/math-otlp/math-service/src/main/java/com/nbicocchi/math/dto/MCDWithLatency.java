@@ -1,4 +1,4 @@
-package com.nbicocchi.mathmcd.dto;
+package com.nbicocchi.math.dto;
 
 import java.util.List;
 

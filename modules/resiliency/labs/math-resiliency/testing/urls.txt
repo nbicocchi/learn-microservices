@@ -1,0 +1,4 @@
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"
+url = "http://localhost:8080/divisors\?n=99999\&times=200000000\&faults=0"

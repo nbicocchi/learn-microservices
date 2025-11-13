@@ -1,5 +1,8 @@
 server:
   port: 8080
+  tomcat:
+    threads:
+      max: 4
 
 spring:
   application:
@@ -58,6 +61,18 @@ resilience4j.bulkhead:
     divisors:
       base-config: default
     mcd:
+      base-config: default
+
+resilience4j.ratelimiter:
+  configs:
+    default:
+      limit-for-period: 100
+      limit-refresh-period: 60s
+      timeout-duration: 0s
+  instances:
+    time:
+      base-config: default
+    date:
       base-config: default
 
 management:

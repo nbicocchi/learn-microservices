@@ -12,6 +12,5 @@
         <module>eureka-service</module>
         <module>gateway-service</module>
         <module>math-service</module>
-        <module>math-mcd-service</module>
     </modules>
 </project>

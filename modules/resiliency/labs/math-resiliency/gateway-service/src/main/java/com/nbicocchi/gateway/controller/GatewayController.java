@@ -3,11 +3,15 @@ package com.nbicocchi.gateway.controller;
 import com.nbicocchi.gateway.dto.DivisorsWithLatency;
 import com.nbicocchi.gateway.dto.MCDWithLatency;
 import com.nbicocchi.gateway.service.MathIntegration;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -35,6 +39,9 @@ public class GatewayController {
         return mathIntegration.getDivisors(n, times, faults);
     }
 
+    /**
+     * curl -X GET "http://localhost:8080/mcd?a=84&b=36&times=2&faults=0
+     */
     @GetMapping("/mcd")
     public MCDWithLatency getMCD(
             @RequestParam Long a,
@@ -46,4 +53,17 @@ public class GatewayController {
 
         return mathIntegration.getMCD(a, b, aDivisors, bDivisors, times, faults);
     }
+
+    @RateLimiter(name = "time")
+    @GetMapping("/time")
+    public LocalTime getLocalTime() {
+        return LocalTime.now();
+    }
+
+    @RateLimiter(name = "date")
+    @GetMapping("/date")
+    public LocalDate getLocalDate() {
+        return LocalDate.now();
+    }
+
 }

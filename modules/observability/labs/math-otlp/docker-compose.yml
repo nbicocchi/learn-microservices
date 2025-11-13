@@ -117,26 +117,6 @@ services:
       eureka:
         condition: service_healthy
 
-  mcd:
-    build: math-mcd-service
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - OTEL_METRIC_EXPORT_INTERVAL=1000
-      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-    ports:
-      - "8082"
-    deploy:
-      replicas: 2
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8082/actuator/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    depends_on:
-      eureka:
-        condition: service_healthy
-
 volumes:
   grafana-data:
   tempo-data:
