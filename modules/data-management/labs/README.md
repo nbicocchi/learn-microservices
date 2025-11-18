@@ -43,7 +43,7 @@ flowchart TD
 
 ## Lab 3: CQRS
 
-In this exercise, three services collaborate to implement a **Saga Pattern** using asynchronous messaging. The services are:
+In this exercise, three services collaborate to implement a **Saga Pattern** using asynchronous messaging. In this example, the CQRS pattern is also applied to separate read and write responsibilities. The services are:
 
 1. **Order Service**: Accepts a POST request to create an order (`POST /order`), and starts the workflow.
 2. **Payment Service**: Validates and processes the customer’s payment.

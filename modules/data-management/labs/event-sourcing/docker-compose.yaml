@@ -1,0 +1,40 @@
+services:
+  lavinmq:
+    image: cloudamqp/lavinmq:latest
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "lavinmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  account:
+    build: account-service
+    ports:
+      - "9001:9001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9001/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  account-read:
+    build: account-read-service
+    ports:
+      - "9002:9002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9001/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      lavinmq:
+        condition: service_healthy

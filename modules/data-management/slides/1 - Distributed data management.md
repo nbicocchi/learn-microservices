@@ -421,6 +421,9 @@ In traditional CRUD-based systems, the state of an application is stored as the 
 
 **Event Sourcing** addresses these challenges by storing **all changes to the application state as a sequence of immutable events**, rather than storing just the current state. The current state can always be reconstructed by replaying the events.
 
+![](images/event-sourcing-1.png)
+![](images/event-sourcing-2.png)
+
 ### Key Concepts
 
 1. **Events**:
