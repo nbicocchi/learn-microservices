@@ -1,16 +1,14 @@
 services:
   publisher:
-    image: async-rabbitmq-publisher
-    build: async-rabbitmq-publisher
+    build: publisher-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       lavinmq:
         condition: service_healthy
 
-  consumer:
-    image: async-rabbitmq-consumer
-    build: async-rabbitmq-consumer
+  subscriber:
+    build: subscriber-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:

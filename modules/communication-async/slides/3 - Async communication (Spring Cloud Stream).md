@@ -276,7 +276,7 @@ services:
 Start the system landscape with the following commands:
 
 ```bash
-export COMPOSE_FILE=docker-compose-one-to-many.yml
+export COMPOSE_FILE=docker-compose.yml
 mvn clean package -Dmaven.test.skip=true
 docker compose up --build --detach
 ```

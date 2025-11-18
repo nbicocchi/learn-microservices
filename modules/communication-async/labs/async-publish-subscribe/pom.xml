@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>async-rabbitmq-consumer</module>
-        <module>async-rabbitmq-publisher</module>
+        <module>subscriber-service</module>
+        <module>publisher-service</module>
     </modules>
 
 </project>

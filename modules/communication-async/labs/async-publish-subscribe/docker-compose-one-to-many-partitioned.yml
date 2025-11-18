@@ -1,7 +1,6 @@
 services:
   publisher:
-    image: async-rabbitmq-publisher
-    build: async-rabbitmq-publisher
+    build: publisher-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker,partitioned
     depends_on:
@@ -9,8 +8,7 @@ services:
         condition: service_healthy
 
   consumer-0:
-    image: async-rabbitmq-consumer
-    build: async-rabbitmq-consumer
+    build: subscriber-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_0
     depends_on:
@@ -18,8 +16,7 @@ services:
         condition: service_healthy
 
   consumer-1:
-    image: async-rabbitmq-consumer
-    build: async-rabbitmq-consumer
+    build: subscriber-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_1
     depends_on:
@@ -27,8 +24,7 @@ services:
         condition: service_healthy
 
   consumer-2:
-    image: async-rabbitmq-consumer
-    build: async-rabbitmq-consumer
+    build: subscriber-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker,groups,partitioned_instance_2
     depends_on:
