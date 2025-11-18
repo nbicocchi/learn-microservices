@@ -37,7 +37,15 @@ flowchart LR
     Queue2 --> Consumer2
 ```
 
-## Exchange
+## Exchange**Diagram:**
+
+```mermaid
+sequenceDiagram
+    Service A ->> Broker: Publish Even
+    Service ->> EventStore: Append Event
+    EventStore ->> Service: Stream Events
+    Service ->> State: Rebuild Aggregate
+```
 
 **Exchange** is the AMPQ entity which receives messages from producers and routes them to one or more [queues](#queue) based on routing rules.
 

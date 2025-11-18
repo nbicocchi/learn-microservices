@@ -120,6 +120,226 @@ For efficient communication, peers spawn **multiple threads or use asynchronous 
 3. **No Built-in Scaling**: Scaling brokerless systems can be more complex, especially in high-throughput environments. You may need to implement custom load balancing and failover mechanisms to ensure that the system can handle large numbers of connections or messages.
 4. **No Built-in Concurrency**: Handling multiple concurrent connections or ensuring message ordering and delivery can become problematic, requiring careful design and management of the communication logic.
 
+## Message Brokers vs Event Logs
+
+### Message Broker (e.g., RabbitMQ)
+
+* Push delivery
+* Messages are removed once consumed
+* Routing via exchanges → queues
+
+### Event Log (e.g., Kafka)
+
+* Pull-based
+* Messages are *not removed*
+* Partitioned, replicated log
+* Consumers track their own offsets
+
+```mermaid
+flowchart LR
+    subgraph RabbitMQ
+        Ex[Exchange] --> Q1[Queue]
+        Ex --> Q2[Queue]
+    end
+
+    subgraph Kafka
+        T1["Topic (Partition 0)"]
+        T2["Topic (Partition 1)"]
+    end
+```
+
+## Design Patterns
+
+### Event Notification
+
+**Purpose:**
+Notify other services that “something happened,” without expecting a direct reply.
+
+**Characteristics:**
+
+* Fire-and-forget
+* No business data flow, only signals
+* Consumers decide if the event matters
+
+**Use cases:**
+
+* Cache invalidation
+* Search index update
+* Trigger workflows
+
+**Mermaid sequence:**
+
+```mermaid
+sequenceDiagram
+    Service A ->> Broker: Publish EventX
+    Broker ->> Service B: EventX
+    Broker ->> Service C: EventX
+```
+
+### Message Routing (Content-Based Router)
+
+**Purpose:**
+Route messages to different channels/services based on content.
+
+**Characteristics:**
+
+* Supports complex routing logic
+* Enables service specialisation
+* Often implemented by Kafka consumers or brokers like RabbitMQ
+
+**Use cases:**
+
+* Fraud vs non-fraud transactions
+* High-priority vs low-priority queues
+
+**Diagram:**
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|type=A| S1[Service A]
+    M -->|type=B| S2[Service B]
+    M -->|type=high-priority| S3[Priority Handler]
+```
+
+
+### Competing Consumers
+
+**Purpose:**
+Increase throughput by letting multiple consumers share work.
+
+**Characteristics:**
+
+* Horizontal scalability
+* FIFO not guaranteed between partitions
+* Perfect for Kafka
+
+**Diagram:**
+
+```mermaid
+flowchart LR
+    P[Partition] --> C1[Consumer 1]
+    P --> C2[Consumer 2]
+    P --> C3[Consumer 3]
+```
+
+### Event-Carried State Transfer
+
+**Purpose:**
+Events *carry the state* needed by other services, so they maintain **local copies** and avoid synchronous calls.
+
+**Characteristics:**
+
+* Highly decoupled
+* Enables local read models
+* Events act as a source of truth
+
+**Use cases:**
+
+* CQRS view creation
+* Materialized product catalogs
+* User profile replication
+
+**Diagram:**
+
+```mermaid
+flowchart LR
+    A[Service A\nwrites DB] -->|Publishes Event with data| B[Service B\nupdates its local state]
+    A --> C[Service C\nupdates its local projection]
+```
+
+### Event Sourcing
+
+**Purpose:**
+The *event log is the system of record*, not a table with current state.
+
+**Characteristics:**
+
+* Every state change = event
+* State is rebuilt by event replay
+* Perfect audit log
+* Enables temporal queries
+
+**Use cases:**
+
+* Finance / banking
+* Inventory
+* IoT state tracking
+
+### Saga Pattern (Choreography)
+
+**Purpose:**
+Manage distributed transactions via *a series of local transactions* coordinated by events.
+
+**Characteristics:**
+
+* No central orchestrator
+* Services listen/react to events
+* Good for small flows
+
+**Use cases:**
+
+* E-commerce orders
+* Booking systems (hotel/flight/car)
+
+**Diagram:**
+
+```mermaid
+sequenceDiagram
+    Order ->> Broker: OrderCreated
+    Inventory ->> Broker: InventoryReserved
+    Broker ->> Payment: ProcessPayment
+    Payment ->> Broker: PaymentCompleted
+    Broker ->> Order: CompleteOrder
+```
+
+### Saga Pattern (Orchestration)
+
+**Purpose:**
+A *central coordinator service* commands steps and compensations.
+
+**Characteristics:**
+
+* Workflow is easier to follow
+* Logic centralized
+* Better for long/complex processes
+
+**Diagram:**
+
+```mermaid
+flowchart TD
+    O[Orchestrator] --> I[Reserve Inventory]
+    I --> P[Process Payment]
+    P --> S[Schedule Shipment]
+    P -->|Failure| C[Compensate Inventory]
+```
+
+### Message Aggregator
+
+**Purpose:**
+Combine multiple messages into a single result.
+
+**Characteristics:**
+
+* Used when partial info arrives from many sources
+* Requires correlation IDs
+* Completes when all parts arrive or timeout
+
+**Use cases:**
+
+* Analytics
+* Distributed search
+* Collecting telemetry
+
+**Diagram:**
+
+```mermaid
+flowchart TD
+    A[Message 1] --> AGG[Aggregator]
+    B[Message 2] --> AGG
+    C[Message 3] --> AGG
+    AGG --> R[Result]
+```
+
 
 ## Resources
 
