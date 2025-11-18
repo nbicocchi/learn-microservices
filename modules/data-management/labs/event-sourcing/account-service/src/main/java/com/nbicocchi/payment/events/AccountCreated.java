@@ -5,7 +5,5 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AccountCreated {
-    private String accountId;
-    private double initialBalance;
+public class AccountCreated extends AccountEvent {
 }

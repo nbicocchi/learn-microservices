@@ -17,7 +17,7 @@ spring.cloud.stream:
     bindings:
       accountProcessor-in-0:
         consumer:
-          binding-routing-key: money.#
+          binding-routing-key:
   binders:
     local_rabbit:
       type: rabbit

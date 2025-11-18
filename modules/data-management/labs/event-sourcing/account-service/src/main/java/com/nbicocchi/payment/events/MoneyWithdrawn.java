@@ -5,7 +5,5 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class MoneyWithdrawn {
-    private String accountId;
-    private double amount;
+public class MoneyWithdrawn extends AccountEvent {
 }

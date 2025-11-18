@@ -16,28 +16,22 @@ public class EventReceiver {
     AccountProjection accountProjection;
 
     @Bean
-    public Consumer<Event<String, Object>> accountProcessor() {
+    public Consumer<Event<String, AccountEvent>> accountProcessor() {
         return event -> {
             log.info("Received event: key={}, data={}", event.getKey(), event.getData());
 
+            String accountId = event.getData().getAccountId();
+            double amount = event.getData().getAmount();
+
             switch (event.getKey()) {
                 case "money.account.created" -> {
-                    AccountCreated ac = new ObjectMapper()
-                            .convertValue(event.getData(), AccountCreated.class);
-                    log.info("AccountCreated event: {}", ac);
-                    accountProjection.createAccount(ac.getAccountId(), ac.getAmount());
+                    accountProjection.createAccount(accountId, amount);
                 }
                 case "money.deposit" -> {
-                    MoneyDeposited md = new ObjectMapper()
-                            .convertValue(event.getData(), MoneyDeposited.class);
-                    log.info("MoneyDeposited event: {}", md);
-                    accountProjection.apply(md.getAccountId(), md.getAmount());
+                    accountProjection.apply(accountId, amount);
                 }
                 case "money.withdraw" -> {
-                    MoneyWithdrawn mw = new ObjectMapper()
-                            .convertValue(event.getData(), MoneyWithdrawn.class);
-                    log.info("MoneyWithdrawn event: {}", mw);
-                    accountProjection.apply(mw.getAccountId(), -mw.getAmount());
+                    accountProjection.apply(accountId, amount);
                 }
                 default -> log.warn("Unknown event: {}", event.getKey());
             }

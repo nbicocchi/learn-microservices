@@ -13,15 +13,8 @@ spring.cloud.stream:
       destination: app.events
       contentType: application/json
       binder: local_rabbit
-    accountProcessor-out-0:
-      destination: app.events
-      contentType: application/json
-      binder: local_rabbit
   rabbit:
     bindings:
-      accountProcessor-out-0:
-        producer:
-          routingKeyExpression: headers['routingKey']
       accountProcessor-in-0:
         consumer:
           binding-routing-key:
