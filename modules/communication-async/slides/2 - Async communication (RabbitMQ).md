@@ -19,7 +19,23 @@ Broker is internally composed by two main components:
 - [**Exchange**](#exchange)
 - [**Queue**](#queue)
 
-![](images/rabbitMQ-message-cycle.webp)
+```mermaid
+flowchart LR
+    Producer1[Producer]
+    Producer2[Producer]
+    Exchange[Exchange]
+    Queue1[Queue A]
+    Queue2[Queue B]
+    Consumer1[Consumer A]
+    Consumer2[Consumer B]
+
+    Producer1 --> Exchange
+    Producer2 --> Exchange
+    Exchange -->|binding| Queue1
+    Exchange -->|binding| Queue2
+    Queue1 --> Consumer1
+    Queue2 --> Consumer2
+```
 
 ## Exchange
 
