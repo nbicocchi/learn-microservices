@@ -1,31 +1,33 @@
 package com.nbicocchi.math.controller;
 
-import com.nbicocchi.math.dto.ProxyRequest;
-import com.nbicocchi.math.service.PrimesService;
+import com.nbicocchi.math.dto.MathRequest;
+import com.nbicocchi.math.service.MathService;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @Log4j2
 @RestController
+@AllArgsConstructor
 public class MathController {
-    PrimesService primeService;
+    MathService mathService;
 
-    public MathController(PrimesService primeService) {
-        this.primeService = primeService;
-    }
-
-    /**
-     * curl -X POST "http://localhost:8081/primes" -H "Content-Type: application/json" -d '{ "lowerBound": 10, "upperBound": 1000, "email": "example@example.com" }'
+    /*
+    echo 'GET http://localhost:8080/divisors?number=1234&times=40&email=test@test.com' | vegeta attack -rate=50 -duration=30s | vegeta report
      */
-    @PostMapping("/primes")
-    public Iterable<Long> searchPrimes(@RequestBody ProxyRequest request) {
-        log.info("searchPrimes() request: {}", request);
-        return primeService.computePrimes(
-                request.lowerBound(),
-                request.upperBound()
-        );
+    @GetMapping("/divisors")
+    public Map<String, Object> searchPrimes(
+            @RequestParam Long number,
+            @RequestParam Long times,
+            @RequestParam String email) {
+
+        List<Long> divisors = null;
+        for (int i = 0; i < times; i++) {
+            divisors = mathService.findPrimeDivisors(number);
+        }
+
+        return Map.of("divisors", divisors);
     }
 }

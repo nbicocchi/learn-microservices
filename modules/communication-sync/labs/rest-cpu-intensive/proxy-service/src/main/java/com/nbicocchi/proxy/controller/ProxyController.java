@@ -1,40 +1,45 @@
 package com.nbicocchi.proxy.controller;
 
-import com.nbicocchi.proxy.dto.ProxyRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import java.util.Map;
 
 @Log4j2
 @RestController
 public class ProxyController {
     String mathServiceUrl;
 
-    public ProxyController(
-            @Value("${app.math-service.host}") String providerServiceHost,
-            @Value("${app.math-service.port}") int providerServicePort) {
+    public ProxyController(@Value("${app.math-service.host}") String providerServiceHost, @Value("${app.math-service.port}") int providerServicePort) {
         mathServiceUrl = "http://" + providerServiceHost + ":" + providerServicePort;
     }
 
-    /**
-     * curl -X POST "http://localhost:8080/primes" -H "Content-Type: application/json" -d '{ "lowerBound": 10, "upperBound": 1000, "email": "example@example.com" }'
+    /*
+    echo 'GET http://localhost:8080/divisors?number=1234&times=40&email=test@test.com' | vegeta attack -rate=50 -duration=30s | vegeta report
      */
-    @PostMapping("/primes")
-    public Iterable<Long> primes(@RequestBody ProxyRequest request) {
-        log.info("endpoint /primes() invoked");
-        RestClient restClient = RestClient.builder().build();
-        return restClient.post()
-                .uri(mathServiceUrl + "/primes")
-                .contentType(APPLICATION_JSON)
-                .body(request)
+    @GetMapping("/divisors")
+    public Map<String, Object> searchPrimes(
+            @RequestParam Long number,
+            @RequestParam Long times,
+            @RequestParam String email) {
+
+        RestClient restClient = RestClient.builder()
+                .baseUrl(mathServiceUrl)  // set base URL here
+                .build();
+
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/divisors")  // only the path, not full URL
+                        .queryParam("number", number)
+                        .queryParam("times", times)
+                        .queryParam("email", email)
+                        .build())
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {});
     }
 }
