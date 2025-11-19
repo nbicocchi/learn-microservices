@@ -9,7 +9,7 @@ services:
       lavinmq:
         condition: service_healthy
 
-  math-service:
+  math-service-1:
     build: math-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -17,7 +17,7 @@ services:
       lavinmq:
         condition: service_healthy
     deploy:
-      replicas: 3
+      replicas: 1
 
   lavinmq:
     image: cloudamqp/lavinmq:latest
@@ -29,3 +29,40 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-otlp-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:9090" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost:3000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  grafana-data:

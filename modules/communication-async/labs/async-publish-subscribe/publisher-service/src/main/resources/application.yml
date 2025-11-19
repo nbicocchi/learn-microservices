@@ -3,7 +3,7 @@ server:
 
 spring.cloud.stream:
   bindings:
-    message-out-0:
+    messageProcessor-out-0:
       contentType: application/json
       destination: queue.messages
       binder: local_rabbit
@@ -32,7 +32,7 @@ spring.cloud.stream:
 spring.config.activate.on-profile: partitioned
 spring.cloud.stream:
   bindings:
-    message-out-0:
+    messageProcessor-out-0:
       producer:
         partition-key-expression: headers['partitionKey']
         partition-count: 3
@@ -46,6 +46,6 @@ server:
 spring.cloud.stream:
   rabbit:
     bindings:
-      message-out-0:
+      messageProcessor-out-0:
         producer:
           routingKeyExpression: headers['routingKey']

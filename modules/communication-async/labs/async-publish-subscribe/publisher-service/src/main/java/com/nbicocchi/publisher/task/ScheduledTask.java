@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.random.RandomGenerator;
 
 
@@ -16,18 +17,43 @@ import java.util.random.RandomGenerator;
 @Component
 @AllArgsConstructor
 public class ScheduledTask {
+    private final EventSender eventSender;
     private final RandomGenerator randomGenerator = RandomGenerator.getDefault();
-    private final List<String> keys = List.of("money.account.created", "money.deposit", "money.withdraw");
-    EventSender eventSender;
+    private final List<String> actions = List.of(
+            "money.account.created",
+            "money.deposit",
+            "money.withdraw");
+    private final List<String> accounts = List.of(
+            "BA-1001-2025",
+            "BA-1002-2025",
+            "BA-1003-2025",
+            "BA-1004-2025",
+            "BA-1005-2025",
+            "BA-1006-2025",
+            "BA-1007-2025",
+            "BA-1008-2025",
+            "BA-1009-2025",
+            "BA-1010-2025"
+    );
 
     @Scheduled(fixedRate = 100)
     public void randomMessage() {
+        String account = accounts.get(randomGenerator.nextInt(accounts.size()));
+        String action = actions.get(randomGenerator.nextInt(actions.size()));
 
         Event<String, SpecificEvent> event = new Event<>(
-                keys.get(randomGenerator.nextInt(keys.size())),
-                new SpecificEvent("abc", randomGenerator.nextDouble(100.0)));
+                account,
+                new SpecificEvent(
+                        account,
+                        action,
+                        randomGenerator.nextDouble(100.0)));
 
-        eventSender.send("message-out-0", event.getKey(), event);
-        log.info(event.toString());
+        log.info("Sending event: {}", event);
+
+        //eventSender.send("messageProcessor-out-0", event);
+
+        eventSender.send("messageProcessor-out-0", event,
+                new EventSender.Header<>("routingKey", action),
+                new EventSender.Header<>("partitionKey", account));
     }
 }

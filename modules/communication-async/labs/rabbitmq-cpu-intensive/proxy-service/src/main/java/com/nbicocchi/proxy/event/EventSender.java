@@ -1,4 +1,4 @@
-package com.nbicocchi.publisher.events;
+package com.nbicocchi.proxy.event;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;

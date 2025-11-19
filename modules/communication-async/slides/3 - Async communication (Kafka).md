@@ -141,31 +141,7 @@ flowchart LR
 
 ---
 
-### **3. Event-Driven Microservice Communication**
-
-Microservices publish events to Kafka topics, which other services consume independently.
-
-```mermaid
-flowchart LR
-    OrderService[Order Service]
-    PaymentService[Payment Service]
-    InventoryService[Inventory Service]
-    KafkaTopic[Kafka Topic: order-events]
-
-    OrderService --> KafkaTopic
-    KafkaTopic --> PaymentService
-    KafkaTopic --> InventoryService
-```
-
-**Key Points:**
-
-* Decouples services (producer doesn’t know consumers).
-* Supports adding new consumers without changing producers.
-* Enables event-driven architecture.
-
----
-
-### **4. Real-Time Analytics**
+### **3. Real-Time Analytics**
 
 Kafka streams data to analytics systems for immediate insights.
 
@@ -191,7 +167,7 @@ flowchart LR
 
 ---
 
-### **5. Event Sourcing**
+### **4. Event Sourcing**
 
 Kafka acts as the event store: all state changes are persisted as events and can be replayed to rebuild system state.
 

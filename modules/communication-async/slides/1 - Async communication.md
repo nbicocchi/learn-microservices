@@ -229,8 +229,8 @@ Events *carry the state* needed by other services, so they maintain **local copi
 
 **Characteristics:**
 
-* Highly decoupled
-* Enables local read models
+* Service A updates its state → publishes an event with the full relevant data. 
+* Service B consumes the event → updates its local copy.
 * Events act as a source of truth
 
 **Use cases:**
@@ -245,6 +245,34 @@ Events *carry the state* needed by other services, so they maintain **local copi
 flowchart LR
     A[Service A\nwrites DB] -->|Publishes Event with data| B[Service B\nupdates its local state]
     A --> C[Service C\nupdates its local projection]
+```
+
+### Change Data Capture (CDC)
+
+**Purpose:**  
+Capture database changes (inserts, updates, deletes) and propagate them as events so other services or systems can **maintain synchronized copies** without direct synchronous access.
+
+**Characteristics:**
+
+* Database-centric
+* Produces a stream of change events
+* Supports near real-time replication
+* Decouples consumers from the database
+
+**Use cases:**
+
+* Data replication across microservices
+* Event-driven pipelines
+* Analytics and reporting
+* Materialized views from legacy databases
+
+**Diagram:**
+
+```mermaid
+flowchart LR
+    DB[(Database)] -->|Changes captured by CDC| CDC[Debezium / CDC Stream]
+    CDC --> B[Service B\nupdates its local state]
+    CDC --> C[Service C\nupdates its local projection]
 ```
 
 ### Event Sourcing

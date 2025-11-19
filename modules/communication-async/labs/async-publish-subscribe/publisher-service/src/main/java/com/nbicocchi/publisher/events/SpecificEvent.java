@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SpecificEvent {
     String id;
+    String action;
     Double amount;
 }

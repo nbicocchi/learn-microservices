@@ -37,15 +37,18 @@ flowchart LR
     Queue2 --> Consumer2
 ```
 
-## Exchange**Diagram:**
+## Queue
 
-```mermaid
-sequenceDiagram
-    Service A ->> Broker: Publish Even
-    Service ->> EventStore: Append Event
-    EventStore ->> Service: Stream Events
-    Service ->> State: Rebuild Aggregate
-```
+**Queue** is the fundamental component that stores messages sent by producers. In fact, messages sent by producers (and routed by exchanges) wait to be processed by consumer applications in queues.
+
+Key attributes of queues in RabbitMQ include:
+
+* **Storage**: Queues store messages until they are processed or consumed by applications.
+* **Durability**: Queues can be durable, meaning they survive broker restarts. Durability ensures that messages are not lost even if RabbitMQ restarts.
+* **Message Order**: By default, RabbitMQ maintains the order of messages within a queue (FIFO — First-In, First-Out).
+* **Configurable Properties**: Queues have configurable properties such as maximum length, maximum priority levels, message TTL (Time-To-Live), etc., allowing fine-tuning to meet specific requirements.
+
+## Exchange
 
 **Exchange** is the AMPQ entity which receives messages from producers and routes them to one or more [queues](#queue) based on routing rules.
 
@@ -106,27 +109,63 @@ A headers exchange **routes messages based on the message's header attributes ra
 
 ![](images/exchange-header.webp)
 
-## Queue
 
-**Queue** is the fundamental component that stores messages sent by producers. In fact, messages sent by producers (and routed by exchanges) wait to be processed by consumer applications in queues.
+## Message Structure
 
-Key attributes of queues in RabbitMQ include:
+### Message Overview
 
-* **Storage**: Queues store messages until they are processed or consumed by applications.
-* **Durability**: Queues can be durable, meaning they survive broker restarts. Durability ensures that messages are not lost even if RabbitMQ restarts.
-* **Message Order**: By default, RabbitMQ maintains the order of messages within a queue (FIFO — First-In, First-Out).
-* **Configurable Properties**: Queues have configurable properties such as maximum length, maximum priority levels, message TTL (Time-To-Live), etc., allowing fine-tuning to meet specific requirements.
+A **message** is the unit of communication in RabbitMQ.
 
-## Consumers
+**Components:**
+- **Payload**: the actual data sent (e.g., JSON, string, byte array)
+- **Properties / Headers**: metadata about the message
+- **Message ID / Timestamp**: optional identifiers and timestamps
 
-In RabbitMQ, consumers are applications or components that retrieve and process messages from queues. They play a pivotal role in the message processing flow within the RabbitMQ ecosystem.
+```
+## Anatomy of a RabbitMQ Message
 
-Key aspects of consumers in RabbitMQ include:
+Message {
+    payload: { "accountId": "BA-1001-2025", "amount": 100.0 },
+    headers: {
+        "routingKey": "money.deposit",
+        "paritionKey": "BA-1001-2025",
+        "priority": 5,
+        "source": "bank-service"
+    },
+    timestamp: 2025-11-19T13:30:00Z
+}
+```
 
-* **Message Processing**: Once a consumer is connected and subscribed to a queue, it actively listens for incoming messages. Upon receiving a message from the queue, the consumer processes it based on predefined logic or business requirements.
-* **Concurrency and Scaling**: Consumers can be scaled horizontally to handle increased message loads. Multiple instances of a consumer application can be created to process messages concurrently from the same queue, enabling better performance and scalability.
-* **Message Acknowledgment Modes**: RabbitMQ supports different acknowledgment modes such as automatic acknowledgment (messages are marked as acknowledged as soon as they're delivered to consumers) and manual acknowledgment (consumers explicitly acknowledge messages after processing).
-* **Error Handling**: Consumers need to handle errors gracefully. If a message processing fails, consumers can choose to reject, requeue, or handle the failed message according to predefined error-handling strategies.
+### Headers
+
+- Key-value pairs attached to the message
+- Can be used for:
+  - Filtering in headers exchange
+  - Setting priorities
+  - Traceability (correlation ID, origin)
+  - Any custom metadata
+- Example:
+  headers = {
+      "eventType": "money.deposit",
+      "correlationId": "123e4567-e89b-12d3-a456-426614174000"
+  }
+
+### Routing Key
+
+- String used by **direct, topic** exchanges to route messages
+- Examples:
+  - Direct: "money.deposit" → routed to queue with exact match
+  - Topic: "money.deposit.account" → routed to queues using wildcard patterns
+- Allows selective message delivery to queues
+
+### Partition Key
+
+- RabbitMQ does not have partitions like Kafka by default
+- **Partitioning / sharding** can be achieved using:
+  - Headers (custom partition key)
+- Example: hash(partitionKey) % number_of_shards
+- Ensures messages for the same entity go to the same consumer instance
+- Useful for **stateful consumers** (e.g., account balances)
 
 ## Resources
 
