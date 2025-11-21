@@ -45,6 +45,7 @@ Consensus algorithms are **protocols used in distributed systems** to ensure tha
 
 ### Raft
 
+* Introduced by **Ongaro e Ousterhout (2008)**
 * Raft builds on VR and Paxos ideas:
 
     * Leader-based replication (like VR)
@@ -57,7 +58,7 @@ Consensus algorithms are **protocols used in distributed systems** to ensure tha
 - **Safety** – Guaranteeing that committed entries remain durable and consistent across all nodes.
 
 
-## FLP Impossibility
+## Definitions
 
 ### Deterministic Algorithms
 
@@ -76,11 +77,6 @@ Consensus algorithms are **protocols used in distributed systems** to ensure tha
 **Example:**
 
 * A node always chooses the first value it receives in a queue — no random tie-breaking.
-
-**Implication:**
-
-* Deterministic consensus cannot “guess” which nodes are slow or failed.
-* FLP impossibility applies **only to deterministic algorithms**.
 
 
 ### Network Asynchrony
@@ -102,19 +98,45 @@ A distributed system is **asynchronous** if:
 * LAN with predictable latency → synchronous
 * Internet with variable delays → asynchronous
 
-**Implication:**
 
-* Purely asynchronous networks make **deterministic consensus very hard**, because waiting for messages can take forever.
+## Two Generals Problem
 
-### Fischer–Lynch–Paterson (1985) Theorem
+**Scenario:**
+
+* Two generals must attack a city **simultaneously** to succeed.
+* They can communicate **only via messengers**, who may be **captured or lost**.
+* Goal: agree on the **exact time of the attack**.
+
+---
+
+**Why it’s hard:**
+
+* General A sends a message → General B confirms → A confirms the confirmation…
+* Any message can be lost → there is **no way to guarantee that both generals know that the other knows**.
+* In theory → **no deterministic protocol can solve this**.
+
+---
+
+**Key Lesson:**
+
+* Abstract model for **consensus problems in unreliable networks**.
+* Shows that in **asynchronous networks**, guaranteed coordination is impossible **without extra assumptions**.
+* Foundation for understanding:
+
+    * **FLP impossibility**
+    * The need for **timeouts, quorums, or leader election** in real-world consensus algorithms
+
+
+## Fischer–Lynch–Paterson (FLP)
 
 > In a **purely asynchronous network**, with even **one possible crash**, **no deterministic consensus algorithm can guarantee termination**.
 
 **Assumptions:**
 
 * Asynchronous network (unbounded message delays)
-* At least one node may crash
 * Algorithm is deterministic
+* At least one node may crash
+
 
 **Intuition:**
 

@@ -123,6 +123,45 @@ In a distributed system, network partitions are inevitable. Under normal conditi
 - **Examples**:
     - **Cassandra**, **DynamoDB**: NoSQL databases that prioritize availability and partition tolerance, offering eventual consistency.
 
+
+## PACEL Theorem
+
+In 2007, **Daniel Abadi** extended the CAP theorem to describe a more complete trade-off in distributed systems, called **PACELC**.
+
+* PACELC states that in a distributed system:
+
+> **If there is a Partition (P), choose between Availability (A) and Consistency (C).
+> Else (E), choose between Latency (L) and Consistency (C).**
+
+### Partition Scenario (P)
+
+* Like CAP, when a network partition occurs:
+
+    * **C vs A trade-off** must be made
+    * Either prioritize **consistency** (block some operations) → CP behavior
+    * Or prioritize **availability** (accept all requests) → AP behavior
+
+### Else Scenario (E)
+
+* When there is **no partition**, systems still face a trade-off:
+
+    * **Consistency (C)**: ensure all replicas are fully synchronized before responding → may increase **latency**
+    * **Latency (L)**: respond quickly, possibly before all replicas are updated → leads to **eventual consistency**
+
+* This trade-off occurs **even in healthy networks**, because data replication across nodes is never instantaneous.
+
+### Examples
+
+| Database / System            | Partition (P) | Else / No Partition (E) | Notes                                                                                                                         |
+| ---------------------------- | ------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Cassandra**                | A             | L                       | Prioritizes **Availability** during partitions; prioritizes **low latency** and eventual consistency when network is healthy. |
+| **DynamoDB**                 | A             | L                       | Similar to Cassandra: highly available and fast, with eventual consistency when no partitions.                                |
+| **HBase**                    | C             | C                       | Prioritizes **Consistency** both during partitions and when network is healthy; may sacrifice availability or latency.        |
+| **MongoDB**                  | C             | C                       | Strong consistency focus, both during partitions and in normal operation (configurable with replica set settings).            |
+| **Zookeeper**                | C             | C                       | Strong consistency system, may block writes during partitions; consistency prioritized even when network is healthy.          |
+| **Redis (config-dependent)** | C             | C / L                   | Can be configured for strong consistency (CP) or faster, eventually consistent responses.                                     |
+
+
 ## Challenges of Distributed Transaction
 
 We'll take an example of an e-commerce application that processes online orders and is implemented as a microservice architecture.
