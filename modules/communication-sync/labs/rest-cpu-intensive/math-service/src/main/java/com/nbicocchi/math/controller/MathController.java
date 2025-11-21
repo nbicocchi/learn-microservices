@@ -1,6 +1,5 @@
 package com.nbicocchi.math.controller;
 
-import com.nbicocchi.math.dto.MathRequest;
 import com.nbicocchi.math.service.MathService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
