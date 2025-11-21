@@ -1,19 +1,206 @@
-# Raft Consensus Algorithm – Theory
+# Consensus Algorithms
+## What Are Consensus Algorithms?
 
-Raft (Replicated and Fault-Tolerant) is a consensus algorithm designed to manage replicated logs across a cluster of nodes. Unlike other consensus algorithms such as **Paxos**, Raft emphasizes **understandability**, making it easier for developers to implement and reason about. Its primary goal is to ensure that all nodes in a distributed system agree on a shared state, even in the presence of failures.
+**Definition:**
+Consensus algorithms are **protocols used in distributed systems** to ensure that multiple nodes agree on a single value or state, even in the presence of failures.
 
-![Raft Consensus Process Overview](images/raft-process-overview.png)  
-*Figure 1: Overview of the Raft Consensus Process*
+**Why we need them:**
 
-Raft achieves consensus through three core components:
+* Distributed systems often replicate data or state across multiple nodes.
+* Nodes may **fail, crash, or be slow**.
+* Network delays or partitions can occur.
+* Without consensus, nodes may **disagree**, causing inconsistency.
+
+**Key Properties of Consensus Algorithms:**
+
+1. **Agreement** — All non-faulty nodes decide on the same value.
+2. **Validity** — The chosen value must be proposed by some node.
+3. **Termination** — All non-faulty nodes eventually decide.
+
+### Viewstamped Replication
+
+* Introduced by **Oki & Liskov (1988)**.
+* **Leader-based replication** protocol.
+* Key ideas:
+
+    * One **primary** (leader) coordinates requests.
+    * **Backups** follow the primary’s sequence.
+    * Requests are **committed in the same order** across replicas.
+* **View changes:** If primary fails, a new primary is elected.
+* Fault tolerance: can survive up to **f crashes with 2f+1 replicas**.
+
+### Paxos
+
+* Introduced by **Lamport (1990s)**.
+* **General-purpose consensus protocol** for asynchronous networks.
+* Key ideas:
+
+    * **Proposers**, **Acceptors**, **Learners** roles.
+    * Agreement is reached even with **message delays** and **failures**.
+    * Focuses on **safety** (never choose conflicting values).
+    * Liveness guaranteed only under **partial synchrony** assumptions.
+* Foundation for:
+    * Google Chubby, Spanner
+    * Many modern distributed databases
+
+### Raft
+
+* Raft builds on VR and Paxos ideas:
+
+    * Leader-based replication (like VR)
+    * Safety-first consensus (like Paxos)
+
+* Raft achieves consensus through three core components:
 
 - **Leader Election** – Selecting a single node as leader, responsible for log management and coordination.
 - **Log Replication** – Ensuring the leader’s log entries are consistently replicated to followers.
 - **Safety** – Guaranteeing that committed entries remain durable and consistent across all nodes.
 
----
 
-## Key Components
+## FLP Impossibility
+
+### Deterministic Algorithms
+
+**Definition:**
+
+* An algorithm is **deterministic** if, given the same initial state and same inputs, it always:
+
+    * Produces the **same output**
+    * Follows the **same execution path**
+
+**Key idea:**
+
+* No randomness, no probabilistic choices
+* Behavior is fully **predictable**
+
+**Example:**
+
+* A node always chooses the first value it receives in a queue — no random tie-breaking.
+
+**Implication:**
+
+* Deterministic consensus cannot “guess” which nodes are slow or failed.
+* FLP impossibility applies **only to deterministic algorithms**.
+
+
+### Network Asynchrony
+
+**Definition:**
+A distributed system is **asynchronous** if:
+
+* Messages can be **delayed arbitrarily long**
+* Nodes can take **arbitrary time to process messages**
+* No global clock or timing guarantees
+* Messages may arrive out of order
+
+**Key idea:**
+
+* Nodes cannot reliably distinguish a **slow node** from a **crashed node**.
+
+**Examples:**
+
+* LAN with predictable latency → synchronous
+* Internet with variable delays → asynchronous
+
+**Implication:**
+
+* Purely asynchronous networks make **deterministic consensus very hard**, because waiting for messages can take forever.
+
+### Fischer–Lynch–Paterson (1985) Theorem
+
+> In a **purely asynchronous network**, with even **one possible crash**, **no deterministic consensus algorithm can guarantee termination**.
+
+**Assumptions:**
+
+* Asynchronous network (unbounded message delays)
+* At least one node may crash
+* Algorithm is deterministic
+
+**Intuition:**
+
+1. Node A and B must agree on a value.
+2. Node C is slow (or crashed).
+3. Waiting for C → may never terminate.
+4. Ignoring C → may violate agreement.
+
+**Result:**
+
+* **No deterministic algorithm can guarantee both agreement and termination** in this setting.
+
+**Takeaway:**
+
+* Real-world systems **escape FLP** by introducing:
+
+    * **Timeouts**
+    * **Partial synchrony**
+    * **Leader election**
+
+### Timeouts
+
+Timeouts introduce **time-based decisions**:
+
+* “If I don’t hear from the leader in 150ms, I assume it failed.”
+* “If a follower is silent for 500ms, I skip it.”
+
+This breaks the FLP assumption of *pure asynchrony*, because now the system relies on **timing guarantees**.
+
+In a truly asynchronous network, a message might be delayed arbitrarily long → so a timeout cannot be trusted.
+
+But real networks **usually** behave well enough that timeouts work.
+
+👉 Timeouts = “Let’s use time to guess failure.”
+
+### Partial Synchrony
+
+FLP assumes:
+
+* **No upper bound** on message delays
+* No guarantee that delays will ever become stable
+
+Partial synchrony says:
+
+* The system might behave badly now…
+* But **eventually** message delays become bounded and stable
+
+So after some unknown point:
+
+* messages arrive on time
+* nodes respond predictably
+* the system behaves almost synchronous
+
+This makes timeouts **meaningful** and lets algorithms like Raft/Paxos **eventually terminate**.
+
+👉 Partial synchrony = “Eventually, the network behaves predictably.”
+
+
+### Leader Election
+
+Consensus is hard when:
+
+* Every node proposes values
+* Nodes cannot tell slow nodes from dead nodes
+
+So real systems elect **one leader** to:
+
+* serialize log entries
+* send heartbeats
+* coordinate replication
+
+Leader election uses timeouts and is *not deterministic*, which again breaks FLP’s assumptions.
+
+Once a leader stabilizes:
+
+* only one node drives the protocol
+* fewer conflicts
+* progress becomes possible
+
+👉 Leader election = “Pick one coordinator so the system can make progress.”
+
+
+
+
+
+## Raft
 
 ### Leader Election
 

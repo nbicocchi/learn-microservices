@@ -38,7 +38,7 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 [M5 Infrastructure](modules/infrastructure)
 * Service discovery, routing, configuration
 * Edge-cloud hybrid routing strategies
-* Raft consensus algorithm
+* Consensus algorithms (RAFT)
 
 [M6 Observability](modules/observability)
 * Instrumentation and maintenance costs
@@ -51,7 +51,6 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 
 [M8 ASynchronous Communication](modules/communication-sync)
 * Asynchronous messaging systems (*RabbitMQ*)
-* https://groups.csail.mit.edu/tds/papers/Lynch/jacm85.pdf
 * Event-driven architectures
 * Event-sourcing architectures
 
