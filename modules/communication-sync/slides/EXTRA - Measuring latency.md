@@ -17,7 +17,7 @@
 
 ---
 
-## hey – Simple REST Benchmark
+## hey – REST Load Testing
 
 * Lightweight CLI for HTTP load testing.
 * Installation (Go):
@@ -36,6 +36,47 @@ hey -n 1000 -c 50 http://localhost:8080/products
 * `-c 50`: total threads
 
 ---
+
+## Vegeta – REST Load Testing
+
+* Flexible HTTP load testing tool for REST or any HTTP service.
+* Can be used as CLI or library (Go).
+* Installation (Go):
+
+```bash
+go install github.com/tsenart/vegeta@latest
+```
+
+* Usage example – **attack mode**:
+
+```bash
+echo "GET http://localhost:8080/products" | vegeta attack -duration=30s -rate=50 | vegeta report
+```
+
+* `-duration=30s`: total test duration
+
+* `-rate=50`: requests per second
+
+* Usage example – **generate report**:
+
+```bash
+echo "GET http://localhost:8080/products" | vegeta attack -duration=30s -rate=50 | vegeta report -type=text
+```
+
+* Can produce reports in **text, JSON, or plots**:
+
+```bash
+vegeta plot < results.bin > plot.html
+```
+
+* Can read a file of requests:
+
+```bash
+vegeta attack -targets=targets.txt -rate=100 -duration=1m | vegeta report
+```
+
+* Good for **scriptable, high-throughput HTTP testing**.
+
 
 ## ghz – gRPC Load Testing
 
@@ -59,7 +100,7 @@ ghz --proto product.proto \
 
 ---
 
-## grpcurl – Interactive gRPC CLI
+## grpcurl – gRPC CLI
 
 * Like `curl` for gRPC.
 * Installation (Go):
@@ -117,49 +158,5 @@ class GraphQLUser(HttpUser):
 ```bash
 locust -f locustfile.py
 ```
-
----
-
-## Vegeta – HTTP Load Testing
-
-* Flexible HTTP load testing tool for REST or any HTTP service.
-* Can be used as CLI or library (Go).
-* Installation (Go):
-
-```bash
-go install github.com/tsenart/vegeta@latest
-```
-
-* Usage example – **attack mode**:
-
-```bash
-echo "GET http://localhost:8080/products" | vegeta attack -duration=30s -rate=50 | vegeta report
-```
-
-* `-duration=30s`: total test duration
-
-* `-rate=50`: requests per second
-
-* Usage example – **generate report**:
-
-```bash
-echo "GET http://localhost:8080/products" | vegeta attack -duration=30s -rate=50 | vegeta report -type=text
-```
-
-* Can produce reports in **text, JSON, or plots**:
-
-```bash
-vegeta plot < results.bin > plot.html
-```
-
-* Can read a file of requests:
-
-```bash
-vegeta attack -targets=targets.txt -rate=100 -duration=1m | vegeta report
-```
-
-* Good for **scriptable, high-throughput HTTP testing**.
-
----
 
 ## Resources
