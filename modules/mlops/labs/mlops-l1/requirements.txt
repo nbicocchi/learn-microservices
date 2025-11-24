@@ -1,0 +1,12 @@
+bentoml
+fastapi
+uvicorn
+mlflow
+pandas
+seaborn
+pydantic
+scikit-learn
+jupyterlab
+kedro[jupyter]~=0.19.12
+kedro-datasets[pandas-csvdataset, pandas-exceldataset, pandas-parquetdataset, plotly-plotlydataset, plotly-jsondataset, matplotlib-matplotlibwriter]>=3.0
+kedro-viz>=6.7.0
