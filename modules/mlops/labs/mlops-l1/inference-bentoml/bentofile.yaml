@@ -11,6 +11,3 @@ python:
     - numpy
     - scikit-learn
     - scipy
-docker:
-  env:
-    MLFLOW_TRACKING_URI: "http://localhost:5000"

@@ -1,0 +1,109 @@
+services:
+  mlflow:
+    build: mlflow
+    ports:
+      - "5000:5000"
+    command:
+      - --host=0.0.0.0
+    volumes:
+      - ./mlflow/data/mlruns:/mlruns
+      - ./mlflow/data/mlartifacts:/mlartifacts
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  inference:
+    image: spaceflight_service:mu45t2gjpgqxhigt   # <- your generated image name:tag here
+    pull_policy: never
+    environment:
+      - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
+    depends_on:
+      - mlflow
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/healthz" ]
+      interval: 20s
+      timeout: 15s
+      retries: 10
+
+  training-pipeline:
+    build: training-pipeline
+    depends_on:
+      - mlflow
+    ports:
+      - "8005:8005"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
+
+  minio:
+    image: minio/minio:latest
+    command: minio server /data --console-address=0.0.0.0:9001
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./minio/data/buckets:/data:consistent
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5;
+        /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
+        mc mb --ignore-existing myminio/evidently-ai;
+        mc mb --ignore-existing myminio/datasets;
+        exit 0;
+      "
+
+  evidently-service:
+    build:
+      context: evidently_ai
+      dockerfile: Dockerfile.s3
+    image: evidently/evidently-service:s3
+    container_name: evidently-service
+    depends_on:
+      - createbuckets
+    ports:
+      - "8000:8000"
+    environment:
+      - FSSPEC_S3_KEY=${MINIO_ROOT_USER}
+      - FSSPEC_S3_SECRET=${MINIO_ROOT_PASSWORD}
+      - FSSPEC_S3_ENDPOINT_URL=${MINIO_URL}
+    command: [ "--workspace", "s3://evidently-ai/workspace" ]
+
+  reference:
+    build:
+      context: reference
+      dockerfile: Dockerfile
+    depends_on:
+      - inference
+      - minio
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - BENTO_URL=${BENTO_URL}
+      - REFERENCE_DIR_PATH=/app/data
+    volumes:
+      - ${REFERENCE_DIR_PATH}:/app/data

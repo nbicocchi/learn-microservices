@@ -1,0 +1,13 @@
+service: "service:SpaceflightService"
+include:
+  - "service.py"
+python:
+  packages:
+    - bentoml
+    - uvicorn
+    - mlflow
+    - pandas
+    - pydantic
+    - numpy
+    - scikit-learn
+    - scipy

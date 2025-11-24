@@ -1,0 +1,6 @@
+artifact_location: mlflow-artifacts:/664489794811880452
+creation_time: 1764022387849
+experiment_id: '664489794811880452'
+last_update_time: 1764022387849
+lifecycle_stage: active
+name: spaceflights-kedro
