@@ -29,8 +29,8 @@ services:
       timeout: 15s
       retries: 10
 
-  training-pipeline:
-    build: training-pipeline
+  training-kedro:
+    build: training-kedro
     depends_on:
       - mlflow
     volumes:
