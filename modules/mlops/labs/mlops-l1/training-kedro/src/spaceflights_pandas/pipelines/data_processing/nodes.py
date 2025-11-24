@@ -76,7 +76,7 @@ def load_and_merge_from_minio(bucket: str) -> pd.DataFrame:
     """
     MINIO_ROOT_USER = os.getenv("MINIO_ROOT_USER", "minioadmin")
     MINIO_ROOT_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "minioadmin")
-    MINIO_URL = os.getenv("MINIO_URL", "http://host.docker.internal:9000")
+    MINIO_URL = os.getenv("MINIO_URL", "http://localhost:9000")
 
     try:
         fs = s3fs.S3FileSystem(

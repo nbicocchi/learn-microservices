@@ -60,7 +60,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, parameters: dict) -> 
         name="model",
         signature=signature,
         input_example=X_train,
-        registered_model_name="spaceflights-jupyter-model",
+        registered_model_name="spaceflights-kedro-model",
     )
 
     return regressor
