@@ -15,7 +15,7 @@ services:
       retries: 12
 
   inference:
-    image: spaceflight_service:h3f3atgjikqxhigt   # <- your generated image name:tag here
+    image: spaceflight_service:mu45t2gjpgqxhigt   # <- your generated image name:tag here
     pull_policy: never
     environment:
       - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
@@ -29,8 +29,8 @@ services:
       timeout: 15s
       retries: 10
 
-  training-kedro:
-    build: training-kedro
+  training-pipeline:
+    build: training-pipeline
     depends_on:
       - mlflow
     volumes:

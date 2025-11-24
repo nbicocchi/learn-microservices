@@ -21,5 +21,10 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs="preprocessed_shuttles",
                 outputs="shuttle_passenger_capacity_plot_go",
             ),
+            node(
+                func=create_confusion_matrix,
+                inputs="companies",
+                outputs="dummy_confusion_matrix",
+            ),
         ]
     )

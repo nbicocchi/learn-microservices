@@ -21,7 +21,7 @@ def split_data(data: pd.DataFrame, parameters: dict) -> tuple:
     MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
 
     mlflow.set_tracking_uri(uri=MLFLOW_TRACKING_URI)
-    mlflow.set_experiment("spaceflights-pipeline")
+    mlflow.set_experiment("spaceflights-kedro")
     mlflow.start_run(run_name="__default__")
     mlflow.set_tag("Training Info", "RandomForest model for spaceship data")
     mlflow.log_params(parameters)
@@ -60,7 +60,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, parameters: dict) -> 
         name="model",
         signature=signature,
         input_example=X_train,
-        registered_model_name="spaceflights-kedro-model",
+        registered_model_name="spaceflights-kedro",
     )
 
     return regressor

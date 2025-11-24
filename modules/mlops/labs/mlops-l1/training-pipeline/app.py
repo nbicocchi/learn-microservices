@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Kedro Trigger API")
 
+
 @app.post("/run-pipeline")
 def run_pipeline(background_tasks: BackgroundTasks):
     """
