@@ -76,12 +76,8 @@ services:
         exit 0;
       "
 
-  evidently-service:
-    build:
-      context: evidently_ai
-      dockerfile: Dockerfile.s3
-    image: evidently/evidently-service:s3
-    container_name: evidently-service
+  evidently-ai:
+    build: evidently-ai
     depends_on:
       - createbuckets
     ports:
@@ -93,9 +89,7 @@ services:
     command: [ "--workspace", "s3://evidently-ai/workspace" ]
 
   reference:
-    build:
-      context: reference
-      dockerfile: Dockerfile
+    build: reference
     depends_on:
       - inference
       - minio
@@ -107,3 +101,16 @@ services:
       - REFERENCE_DIR_PATH=/app/data
     volumes:
       - ${REFERENCE_DIR_PATH}:/app/data
+
+  monitoring:
+    build: monitoring
+    depends_on:
+      - inference
+      - minio
+    environment:
+      - SCENARIO=drift
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - BENTO_URL=${BENTO_URL}
+      - KEDRO_API_URL=${KEDRO_API_URL}
