@@ -31,13 +31,6 @@ public class User {
 - Use Maven to build and run the Spring Boot application locally.
 - Use curl to test the REST endpoints.
 
-## Lab 3: Performance Testing with JMeter
-**Objective:** Use JMeter to perform load testing on a Spring Boot application.
-
-**Instructions:**
-- Install JMeter and create a new test plan for the Spring Boot application developed in Lab 2.
-- Configure thread groups to simulate multiple users accessing the RESTful API endpoints and capture response times. Is there a noticeable difference between request involving H2 (e.g. `/users`), `/sleep`, and `/greet` ?
-
 # Questions
 1. What is Maven, and what role does it play in Java project management?
 2. How are dependencies defined in a Maven `pom.xml` file? Provide an example of adding a dependency to a project.
