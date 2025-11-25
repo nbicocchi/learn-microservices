@@ -5,13 +5,16 @@ pyenv virtualenv mlops
 pyenv activate mlops
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+```
 
+```
 cd inference-bentoml
 bento build
 bentoml containerize spaceflight_service:h3f3atgjikqxhigt <-- update this
 ```
 
 update docker-compose.yml
+
 ```
   inference:
     image: spaceflight_service:h3f3atgjikqxhigt   # <- your generated image name:tag here
