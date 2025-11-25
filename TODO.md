@@ -1,3 +1,4 @@
+- serve introduzione su async/reactive/backpressure
 - modulo security da sistemare
 - modulo mlops integrare progetto studente
 
