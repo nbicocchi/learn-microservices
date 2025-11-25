@@ -1,7 +1,3 @@
-- serve introduzione su async/reactive/backpressure
-- modulo security da sistemare
-- modulo mlops integrare progetto studente
-
 ### **Settimana 1: Introduzione**
 
 **Lezione 1:** Cos’è l’Edge Computing e differenze con il cloud
