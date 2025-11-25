@@ -12,23 +12,9 @@ Backend technologies (such as the Spring Framework) are also propelled by the **
 ![](images/trends-devops.webp)
 ![](images/trends-mlops.webp)
 
-
-## Why Use Spring?
-The early goal of Spring, and still a core guideline of the framework, is removing complexity, clutter and boilerplate code. Basically, **Spring aims to make building a system easier for developers**.
-
-An interesting aspect of Spring is how much of a long-term investment learning Spring actually is, as its evolution is quite unique. On the one hand, it's **actively developed and always improving** at the edges. But, at the core, it's **highly stable**. 
-
-[This article](https://medium.com/javarevisited/10-reasons-why-it-is-worth-learning-spring-boot-in-2023-fd06bf833de8) underlines the key factors behind Spring relevance:
-* Massive ecosystem
-* Testability
-* Monitoring
-* Observability
-* Rapid development
-* Embedded servers
-* Open source
-
-
 ## The Spring Ecosystem
+An interesting aspect of Spring is how much of a long-term investment learning Spring actually is, as its evolution is quite unique. On the one hand, it's **actively developed and always improving** at the edges. But, at the core, it's **highly stable**.
+
 Due to the success of the framework, the Spring ecosystem is now quite vast, as you can see on the [official site](https://spring.io/projects/spring-framework).
 
 ### Spring Core

@@ -18,7 +18,7 @@ These directories contain our test source code and resources, similarly to the _
 
 ## Project configuration (pom.xml)
 
-First, we have a core part of the pom here, namely the _parent_:
+## Parent
 
 ```xml
 <parent>
@@ -29,9 +29,7 @@ First, we have a core part of the pom here, namely the _parent_:
 </parent>
 ```
 
-We are using the Boot parent, which defines dependencies, plugins, properties that our project will inherit. This greatly simplifies the configuration of our project, as no longer have to define all these explicitly.
-
-Next, we've defined the basic identifying information about our project: the _groupId_, _artifactId_, _version_ and then _packaging_:
+## Identifying information
 
 ```
 <groupId>com.nbicocchi</groupId>
@@ -40,7 +38,7 @@ Next, we've defined the basic identifying information about our project: the _gr
 <description>Demo product for Spring Boot</description>
 ```
 
-Below, we have a handful of properties which override what’s defined in the parent:
+## Properties
 
 ```
 <properties>
@@ -49,9 +47,7 @@ Below, we have a handful of properties which override what’s defined in the pa
 </properties>
 ```
 
-Now we’re reached the _dependencies_ section **(see The Twelve Factors #2)**. 
-
-This section of the `pom.xml` configures the necessary libraries for developing a Spring Boot web application.
+## Dependencies
 
 ```xml
 <dependencies>
@@ -75,11 +71,6 @@ This section of the `pom.xml` configures the necessary libraries for developing 
 </dependencies>
 ```
 
-* **Lombok**: Lombok simplifies the code by using annotations to auto-generate common Java methods, reducing redundancy and improving maintainability. 
-* **Spring Boot Starter Web**: This dependency enables building web applications using Spring MVC. It includes essential libraries for creating REST APIs, handling HTTP requests, and rendering web content. It also comes with an embedded server (e.g., Tomcat) to run the application without external configuration. 
-* **Spring Boot Starter Actuator**: Actuator adds production-ready features like health monitoring, metrics, and application diagnostics. It exposes various endpoints to track the status of the application (e.g., `/health` for health checks and `/metrics` for performance insights). 
-* **Spring Boot Starter Test**: his dependency bundles essential libraries for testing Spring Boot applications, such as JUnit for writing unit tests, Mockito for mocking objects, and Spring's testing framework for integration tests. It simplifies the process of testing Spring components and ensures the application behaves as expected.
-
 We can view all the transitive dependencies either by using the _Dependency Hierarchy_ tab (inside an IDE), or with the Maven command:
 
 ```
@@ -95,60 +86,7 @@ $ mvn dependency:tree
 [INFO] |  |  |  |  \- ch.qos.logback:logback-core:jar:1.4.14:compile
 [INFO] |  |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.21.1:compile
 [INFO] |  |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.21.1:compile
-[INFO] |  |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.9:compile
-[INFO] |  |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
-[INFO] |  |  \- org.yaml:snakeyaml:jar:2.2:compile
-[INFO] |  +- org.springframework.boot:spring-boot-starter-json:jar:3.2.1:compile
-[INFO] |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.15.3:compile
-[INFO] |  |  |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.15.3:compile
-[INFO] |  |  |  \- com.fasterxml.jackson.core:jackson-core:jar:2.15.3:compile
-[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.3:compile
-[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.3:compile
-[INFO] |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.15.3:compile
-[INFO] |  +- org.springframework.boot:spring-boot-starter-tomcat:jar:3.2.1:compile
-[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.17:compile
-[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:10.1.17:compile
-[INFO] |  |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:10.1.17:compile
-[INFO] |  +- org.springframework:spring-web:jar:6.1.2:compile
-[INFO] |  |  +- org.springframework:spring-beans:jar:6.1.2:compile
-[INFO] |  |  \- io.micrometer:micrometer-observation:jar:1.12.1:compile
-[INFO] |  |     \- io.micrometer:micrometer-commons:jar:1.12.1:compile
-[INFO] |  \- org.springframework:spring-webmvc:jar:6.1.2:compile
-[INFO] |     +- org.springframework:spring-aop:jar:6.1.2:compile
-[INFO] |     +- org.springframework:spring-context:jar:6.1.2:compile
-[INFO] |     \- org.springframework:spring-expression:jar:6.1.2:compile
-[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.2.1:test
-[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.2.1:test
-[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.2.1:test
-[INFO]    +- com.jayway.jsonpath:json-path:jar:2.8.0:test
-[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.9:compile
-[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.1:test
-[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.2:test
-[INFO]    +- net.minidev:json-smart:jar:2.5.0:test
-[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.0:test
-[INFO]    |     \- org.ow2.asm:asm:jar:9.3:test
-[INFO]    +- org.assertj:assertj-core:jar:3.24.2:test
-[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.10:test
-[INFO]    +- org.awaitility:awaitility:jar:4.2.0:test
-[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
-[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.1:test
-[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.1:test
-[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
-[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.1:test
-[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
-[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.1:test
-[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.1:test
-[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.1:test
-[INFO]    +- org.mockito:mockito-core:jar:5.7.0:test
-[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.10:test
-[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
-[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.7.0:test
-[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.1:test
-[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
-[INFO]    +- org.springframework:spring-core:jar:6.1.2:compile
-[INFO]    |  \- org.springframework:spring-jcl:jar:6.1.2:compile
-[INFO]    +- org.springframework:spring-test:jar:6.1.2:test
-[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+...
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
@@ -157,7 +95,7 @@ $ mvn dependency:tree
 [INFO] ------------------------------------------------------------------------
 ```
 
-Next, we have the _build_ section.
+## Build
 
 ```xml
 <build>
@@ -185,9 +123,6 @@ Next, we have the _build_ section.
     </plugins>
 </build>
 ```
-
-* **Spring Boot Maven Plugin**: This plugin is used to package Spring Boot applications as executable JARs or WARs. It provides goals like `mvn spring-boot:run` for running the application directly from the command line and `mvn package` for creating an executable JAR with embedded dependencies.
-* **Jib Maven Plugin**: Jib is a plugin for building Docker and OCI containers without requiring Docker to be installed. It is used to containerize the application directly from the Maven build process, skipping the need for a Dockerfile (`mvn jib:dockerBuild`).
 
 ## Lifecycles
 
@@ -320,40 +255,6 @@ mvn clean package -Dmaven.skip.test=true
 ```bash
 java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
-
-**Command line arguments (see The Twelve Factors #1, #3).**
-
-We can provide runtime configurations using command line arguments, if needed:
-
-```bash
-java -jar -Dserver.port=8082 target/product-service-no-db-0.0.1-SNAPSHOT.jar
-```
-
-or environment variables:
-
-```bash
-SERVER_PORT=8182 java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
-```
-
-or both:
-
-```bash
-SERVER_PORT=8082 java -jar -Dserver.port=8083 target/product-service-no-db-0.0.1-SNAPSHOT.jar
-```
-
-```
-2024-10-06T15:29:49.860+02:00  INFO 63986 --- [           main] com.nbicocchi.product.App                : No active profile set, falling back to 1 default profile: "default"
-2024-10-06T15:29:50.944+02:00  INFO 63986 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8083 (http)
-2024-10-06T15:29:50.957+02:00  INFO 63986 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2024-10-06T15:29:50.957+02:00  INFO 63986 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
-2024-10-06T15:29:50.987+02:00  INFO 63986 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-
-...
-```
-
-Spring Boot uses a very particular order that is designed to allow sensible overriding of values. Later property sources can override the values defined in earlier ones as described [here](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config). **As a rule of thumb, *ops* sources have priority over *dev* sources.**
-
-This is a comparatively better approach for running the app in a production environment, as we’ve decoupled the build and execution processes; the server only needs to have the required Java version installed to run the app.
 
 ## Resources
 - [Maven Getting Started Guide](https://maven.apache.org/guides/getting-started/)
