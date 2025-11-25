@@ -1,23 +1,3 @@
-# Concurrency vs Parallelism
-
-In computer science, we often need to manage multiple tasks to improve efficiency. This is where the concepts of concurrency and parallelism come into play. While often used interchangeably, they are fundamentally different.
-
-## Concurrency
-
-**Concurrency** is about dealing with many things at once. It's a way of structuring a program so that it can handle multiple tasks seemingly at the same time, even if the computer's processor can only execute one instruction at a time.
-
-A good analogy is a single *juggler*. The juggler is only catching and throwing one ball at a time, but by quickly switching between them, they keep all the balls in the air. This is a context-switching process. In a single-core CPU, concurrent tasks take turns using the processor.
-
-## Parallelism
-
-**Parallelism** is about doing *many things at the same time*. This requires multiple processors or processor cores.
-
-Think of a team of chefs in a kitchen. Each chef is working on a different dish simultaneously. This is true simultaneous execution. Parallelism is essential for CPU-bound tasks, which are operations that are limited by the speed of the CPU, such as heavy computations or complex calculations.
-
-## Is concurrency better than parallelism?
-
-Concurrency is different than parallelism. And it is better on specific scenarios that involve a lot of waiting. Because of that, it generally is a lot better than parallelism for web application development. But not for everything.
-
 # Python async/await
 
 ## Synchronous vs Asynchronous
