@@ -7,17 +7,7 @@ The server waits indefinitely for a connection on **sock1**, and only after comp
 This means the server can only handle one port at a time and becomes unresponsive on the other port until the current accept completes.
 
 ```python
-import socket
-
-# Create two TCP sockets
-sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Bind them to localhost on different ports
-sock1.bind(('localhost', 9001))
-sock2.bind(('localhost', 9002))
-sock1.listen()
-sock2.listen()
+...
 
 print("Server listening on ports 9001 and 9002...")
 
@@ -61,26 +51,11 @@ sequenceDiagram
 
 ### Non-blocking I/O
 
-In this version, the server becomes **event-driven**.
 Instead of blocking on a single `accept()`, it uses `select()` to wait for **any** socket to become readable.
 This allows the server to react to whichever port receives a connection first, making it responsive on both ports concurrently.
 
 ```python
-import socket
-import select
-
-# Create two TCP sockets
-sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Bind them to localhost on different ports
-sock1.bind(('localhost', 9001))
-sock2.bind(('localhost', 9002))
-sock1.listen()
-sock2.listen()
-
-# List of sockets to monitor
-sockets = [sock1, sock2]
+...
 
 print("Server listening on ports 9001 and 9002...")
 
@@ -121,58 +96,162 @@ sequenceDiagram
     Server->>Server: Loop repeats
 ```
 
-### Synchronous (blocking) code
+### How event-driven programming comes in
+
+In event-driven systems:
+
+1. You **register interest** in certain events (e.g., data available, connection ready, timeout).
+2. The system notifies you **only when the event occurs**.
+3. Your callback or handler executes in response to the event.
+
+Non-blocking I/O fits this naturally because:
+
+* You **do not wait** for I/O to complete.
+* You rely on **events or readiness notifications** (e.g., `select()`, `poll()`, `epoll()`, `kqueue`) to know when you can actually perform I/O.
+* Your program reacts **only when data is ready**, which is the core of event-driven design.
+
+
+### Blocking calls in microservices
 
 ```python
 import time
 
-def task(name, duration):
-    print(f"Task {name} started")
-    time.sleep(duration)  # Blocks the whole program
-    print(f"Task {name} finished")
+def db_query(name, duration):
+    print(f"Query {name} started")
+    time.sleep(duration)  # Simulate blocking DB call
+    print(f"Query {name} finished")
 
-task("A", 2)
-task("B", 3)
-print("All tasks done")
+# Two database queries executed sequentially
+db_query("A", 2)
+db_query("B", 3)
+print("All queries done")
 ```
 
-**Behavior:**
+* In traditional blocking code, each incoming request is handled by a dedicated thread.
+* While the thread waits (e.g., for a database query, HTTP call, or file I/O), it **cannot do anything else**.
+* Microservices often handle **thousands of concurrent requests**, so:
 
-* Task A runs for 2 seconds, then Task B runs for 3 seconds.
-* Total time ≈ 5 seconds.
-* Nothing else happens while a task is sleeping.
+    * Blocking threads consume memory and CPU.
+    * Thread pools can become exhausted, leading to request rejection or increased latency.
+
+**Example:**
+
+```text
+Thread pool: 200 threads
+Requests per second: 500
+If each request blocks 2 seconds → threads saturate → new requests must wait → slow response
+```
 
 ---
 
-### Asynchronous code with an event loop
+### Non-blocking calls in microservices
 
 ```python
 import asyncio
 
-async def task(name, duration):
-    print(f"Task {name} started")
-    await asyncio.sleep(duration)  # Non-blocking sleep
-    print(f"Task {name} finished")
+async def db_query(name, duration):
+    print(f"Query {name} started")
+    await asyncio.sleep(duration)  # Simulate non-blocking DB call
+    print(f"Query {name} finished")
 
 async def main():
-    # Schedule two tasks concurrently
+    # Schedule two queries concurrently
     await asyncio.gather(
-        task("A", 2),
-        task("B", 3)
+        db_query("A", 2),
+        db_query("B", 3)
     )
-    print("All tasks done")
+    print("All queries done")
 
 # Run the event loop
 asyncio.run(main())
 ```
 
-**Behavior:**
+---
 
-* Task A and Task B start at almost the same time.
-* Task A finishes after 2 seconds, Task B after 3 seconds.
-* Total time ≈ 3 seconds, not 5 — because the event loop allows overlapping tasks.
+#### What is `async`?
+
+* The `async` keyword is used to **define an asynchronous function**, also called a **coroutine** in Python.
+* Calling an `async` function **does not immediately run it**. Instead, it returns a **coroutine object**, which represents the work that can be scheduled on an event loop.
+
+**Example:**
+
+```python
+import asyncio
+
+async def say_hello():
+    print("Hello")
+```
+
+* `say_hello()` here is asynchronous.
+* If you call `say_hello()` directly, it **does not execute yet**; it returns a coroutine object:
+
+```python
+coro = say_hello()
+print(coro)
+# <coroutine object say_hello at 0x...>
+```
+
+* To actually run it, you need to **schedule it on an event loop**, e.g., with `asyncio.run()`.
 
 ---
+
+#### What is `await`?
+
+* The `await` keyword **pauses the coroutine until another async operation finishes**.
+* Unlike `time.sleep()` (blocking), `await` is **non-blocking**: it tells the event loop, “I’m waiting, you can run other tasks in the meantime.”
+
+**Example:**
+
+```python
+import asyncio
+
+async def wait_and_print():
+    print("Start waiting")
+    await asyncio.sleep(2)  # Non-blocking sleep
+    print("Done waiting")
+
+asyncio.run(wait_and_print())
+```
+
+* Output:
+
+```
+Start waiting
+(wait 2 seconds without blocking)
+Done waiting
+```
+
+* During the `await asyncio.sleep(2)`, the event loop could run **other coroutines**.
+
+---
+
+#### How `async` and `await` work together
+
+* `async` defines a **coroutine**.
+* `await` tells Python to **pause this coroutine until the awaited coroutine completes**, allowing other tasks to run in the meantime.
+
+**Example with multiple tasks:**
+
+```python
+import asyncio
+
+async def task(name, duration):
+    print(f"{name} started")
+    await asyncio.sleep(duration)  # Non-blocking
+    print(f"{name} finished")
+
+async def main():
+    await asyncio.gather(
+        task("A", 2),
+        task("B", 3)
+    )
+
+asyncio.run(main())
+```
+
+* `task("A")` and `task("B")` start almost simultaneously.
+* Total runtime ≈ 3 seconds, not 5, because `await` allows overlapping execution.
+
 
 ## Event Loop Concept
 
@@ -192,8 +271,9 @@ while tasks:
 
 
 
+## Microservices frameworks
 
-## Synchronous Microservices
+### Synchronous Approach
 **Definition:** Each request is handled in a **dedicated thread** and blocks until the operation completes.  
 
 **Technical Details / Limitations:**
@@ -203,7 +283,6 @@ while tasks:
 - **Poor support for long-lived connections:** Each WebSocket/SSE consumes a thread  
 - **High latency under load:** Slow downstream calls block processing  
 
-**Spring Boot Example:**
 ```java
 @GetMapping("/items")
 public List<String> getItems() {
@@ -212,7 +291,22 @@ public List<String> getItems() {
 }
 ```
 
-**Python / FastAPI Example (blocking):**
+```java
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import java.util.List;
+
+@Path("/items")
+public class ItemResource {
+
+    @GET
+    public List<String> getItems() {
+        try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        return List.of("Item1","Item2","Item3");
+    }
+}
+```
+
 ```python
 from fastapi import FastAPI
 import time
@@ -225,9 +319,30 @@ def get_items_sync():
     return ["Item1","Item2","Item3"]
 ```
 
+```python
+from flask import Flask
+import time
+
+app = Flask(__name__)
+
+@app.route("/items")
+def get_items():
+    time.sleep(1)  ## blocks thread
+    return ["Item1","Item2","Item3"]
+```
+
+```python
+import time
+from django.http import JsonResponse
+
+def items_view(request):
+    time.sleep(1)  ## blocks thread
+    return JsonResponse(["Item1","Item2","Item3"], safe=False)
+```
+
 ---
 
-## Asynchronous Microservices
+### Asynchronous Approach
 **Definition:** Tasks **yield control while awaiting I/O**; the **event loop** schedules pending operations.  
 
 **Benefits:**
@@ -236,7 +351,6 @@ def get_items_sync():
 - Supports long-lived connections (WebSockets, streaming)  
 - Reduces latency spikes under load  
 
-**Spring Boot WebFlux Example:**
 ```java
 @GetMapping("/items")
 public Mono<List<String>> getItems() {
@@ -245,7 +359,18 @@ public Mono<List<String>> getItems() {
 }
 ```
 
-**Python / FastAPI Example (async):**
+```java
+@Path("/items")
+public class ItemResource {
+
+    @GET
+    public Uni<List<String>> getItems() {
+        return Uni.createFrom().item(List.of("Item1","Item2","Item3"))
+                  .onItem().delayIt().by(Duration.ofSeconds(1));
+    }
+}
+```
+
 ```python
 from fastapi import FastAPI
 import asyncio
@@ -285,7 +410,7 @@ Example ("retry storm" or "death spiral"):
 * Entire service mesh becomes unstable
 
 
-### Backpressure strategies
+## Backpressure strategies
 Whenever a producer is able to generate data faster than the consumer can process, there must be a strategy to:
 
 * slow down
@@ -298,58 +423,38 @@ Whenever a producer is able to generate data faster than the consumer can proces
 Without this regulation, systems become unstable.
 
 ```text
-Flux.range(1, 1000)
-    .onBackpressureBuffer(100) // buffer up to 100 items
-    .limitRate(50)             // request 50 items at a time
-    .subscribe(
-        item -> process(item),
-        err -> System.err.println("Error: " + err),
-        () -> System.out.println("Processing complete")
-    );
+Flux.fromIterable(items)
+    .flatMap(item -> webClient.post()
+                              .uri("http://consumer-service/items")
+                              .bodyValue(item)
+                              .retrieve()
+                              .bodyToMono(Void.class
+
 ```
 
 ```python
-import asyncio
+queue = asyncio.Queue(maxsize=10)  # max pending requests
 
-async def producer(queue):
-    for i in range(1000):
-        await queue.put(i)  # waits if queue is full
-        print(f"Produced {i}")
+async def producer(items):
+    for item in items:
+        await queue.put(item)  # waits if queue is full → backpressure
 
-async def consumer(queue):
-    while True:
-        item = await queue.get()
-        print(f"Consumed {item}")
-        await asyncio.sleep(0.1)  # simulate slow consumer
-        queue.task_done()
+async def consumer():
+    async with httpx.AsyncClient() as client:
+        while True:
+            item = await queue.get()
+            await client.post("http://consumer-service/items", json=item)
+            queue.task_done()
 
-async def main():
-    queue = asyncio.Queue(maxsize=50)  # backpressure: limits queue size
-    prod_task = asyncio.create_task(producer(queue))
-    cons_task = asyncio.create_task(consumer(queue))
-    await prod_task
-    await queue.join()
-    cons_task.cancel()
-
-asyncio.run(main())
+@app.post("/produce")
+async def produce_endpoint(items: list):
+    # start consumer task
+    consumer_task = asyncio.create_task(consumer())
+    await producer(items)
+    await queue.join()  # wait until all items processed
+    consumer_task.cancel()
+    return {"status": "done"}
 ```
----
-
-## Modern Framework Examples
-**Spring Boot:**
-- Sync: Servlet/Tomcat → blocking threads  
-- Async/Reactive: WebFlux + Netty → Mono/Flux, event-driven, backpressure  
-
-**FastAPI / Starlette:**
-- Async endpoints: `async def`, awaitable I/O  
-- Event loop (`asyncio`) schedules tasks efficiently  
-- Backpressure via async queues  
-
-**Quarkus / Vert.x:**
-- Event-driven with lightweight event loops  
-- Event bus enables async messaging  
-- Reactive messaging support (Kafka, AMQP)  
-
 ---
 
 ## References
