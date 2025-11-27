@@ -1,10 +1,10 @@
 # Errors
 
-When building web applications, it is crucial to handle errors in a way that provides useful feedback to the client without exposing unnecessary internal details. FastAPI provides a simple and powerful way to manage errors through exceptions.
+When building web applications, it is crucial to handle errors in a way that provides useful feedback to the client without exposing unnecessary internal details. 
 
 The most common tool is the `HTTPException` class, which allows us to return HTTP error responses with custom status codes and messages.
 
-In order to raise an HTTP exception you must simple `raise HTTPException(...)` providing at least `status_code` and `detail`:
+In order to raise an HTTP exception you must `raise HTTPException(...)` providing at least `status_code` and `detail`:
 
 ```py
 @app.get("/products/{product_id}", status_code=200)
@@ -36,20 +36,6 @@ When a client requests `/products/3`, FastAPI automatically generates a response
 {
   "detail": "Product not found"
 }
-```
-
-You can also create custom exception handlers. For example:
-
-```py
-from fastapi.responses import JSONResponse
-from fastapi.requests import Request
-
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"message": f"Oops! {exc.detail}"}
-    )
 ```
 
 ## References

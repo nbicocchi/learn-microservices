@@ -1,4 +1,4 @@
-# Bigger project
+# Project Structure
 
 If you are building an application or a web API, it's rarely the case that you can put everything in a single file.
 
@@ -134,6 +134,55 @@ app/
     ├── product_repository.py # Data access
     ├── product_service.py    # Business logic
     └── product_controller.py # router FastAPI
+```
+
+```
+app/
+├── main.py
+│
+├── api/                   # Presentation Layer (controllers / routers)
+│   ├── v1/
+│   │   ├── user_controller.py
+│   │   ├── product_controller.py
+│   │   └── ...
+│   └── dependencies.py
+│
+├── services/              # Business Logic Layer
+│   ├── user_service.py
+│   ├── product_service.py
+│   └── ...
+│
+├── repositories/          # Persistence Layer
+│   ├── user_repository.py
+│   ├── product_repository.py
+│   └── ...
+│
+├── models/                # Domain Layer (entities / SQLAlchemy models)
+│   ├── user_model.py
+│   ├── product_model.py
+│   └── ...
+│
+├── schemas/               # DTOs (Pydantic models)
+│   ├── user_schemas.py
+│   ├── product_schemas.py
+│   └── ...
+│
+├── core/                  # Infrastructure
+│   ├── config.py
+│   ├── database.py
+│   ├── security.py
+│   └── logging.py
+│
+├── common/                # Shared utils / exceptions
+│   ├── exceptions.py
+│   ├── utils.py
+│   └── constants.py
+│
+└── tests/
+    ├── unit/
+    ├── integration/
+    └── e2e/
+
 ```
 
 ## References

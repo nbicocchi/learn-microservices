@@ -13,8 +13,6 @@ Some of the main benefits of FastAPI are:
 - **Validation and serialization** powered by Python type hints and Pydantic.
 - **Easy to learn** and use, with concise, readable code.
 
-This makes FastAPI particularly well-suited for modern applications where speed, data integrity, and developer productivity are crucial such in *distributed edge programming*.
-
 ## Install
 
 If you use Conda, create a new environment called `fastapi` or whatever:
