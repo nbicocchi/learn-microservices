@@ -22,6 +22,7 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 * Automation in software production (DevOps, DevSecOps) 
 
 [M2 Microservices chassis](modules/chassis)
+* Synchronous vs Asynchronous approaches
 * Java microservices (Maven, Spring Boot)
 * Python microservices (FastAPI)
 
