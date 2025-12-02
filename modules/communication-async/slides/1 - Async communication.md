@@ -32,23 +32,25 @@ Asynchronous communication is a key architectural pattern in distributed systems
    Errors in asynchronous communication are often harder to detect and handle than in synchronous systems. **When a service fails to process a message, it may not be immediately obvious**. Retry mechanisms, dead-letter queues, and monitoring are essential to managing errors effectively.
 
 
-## Broker-Based and Broker-less Messaging Systems
+## Messaging Systems Architectures
 
 There are two primary approaches to asynchronous messaging passing: **broker-based** and **broker-less** (also known as peer-to-peer or direct messaging) systems.
 
 ![](images/brokerless-architecture.webp)
 
-### Broker-Based Messaging Systems
+## Broker-Based Messaging Systems
 
 Broker-based messaging systems rely on a **central message broker** to manage the communication between different services. The broker acts as an intermediary, receiving messages from producers and delivering them to consumers. Common broker-based systems include:
 
-* RabbitMQ (https://www.rabbitmq.com)
-* Apache Kafka (http://kafka.apache.org)
-* ActiveMQ (http://activemq.apache.org)
+| Software                    | Protocol(s) Used                                      |
+| --------------------------- | ----------------------------------------------------- |
+| RabbitMQ                    | AMQP (Advanced Message Queuing Protocol), MQTT, STOMP |
+| Apache Kafka                | Kafka Protocol (custom TCP-based protocol)            |
+| ActiveMQ                    | AMQP, STOMP, MQTT, OpenWire                           |
+| AWS SQS                     | HTTPS/REST API, optionally JMS (via SDK)              |
+| Microsoft Azure Service Bus | AMQP 1.0, HTTPS/REST API                              |
+| Google Cloud Pub/Sub        | HTTPS/REST API, gRPC                                  |
 
-* AWS SQS (https://aws.amazon.com/sqs/)
-* Microsoft Azure Service Bus (https://azure.microsoft.com/en-us/products/service-bus/)
-* Google Cloud Pub/Sub (https://cloud.google.com/pubsub)
 
 #### Advantages
 1. **Decoupling**: Producers and consumers don’t need to know about each other’s existence **(solves spatial coupling!)**. They only interact with the broker, making the system loosely coupled and easier to maintain and scale.
@@ -90,7 +92,17 @@ function AppD (x) {
 | ![](images/broker-classic.webp) | ![](images/broker-pipeline.webp) |
 
 
-### Brokerless Messaging Systems
+### Protocols
+
+| Protocol                                                      | Description                                                                                                                                                                                                | Typical Use Cases                                                                                                                                          |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AMQP (Advanced Message Queuing Protocol)**                  | An open standard binary protocol for messaging. Defines a complete messaging system: message format, broker behavior, routing, and reliability. Designed for interoperability between clients and brokers. | Enterprise messaging, reliable message delivery, financial services, systems requiring guaranteed delivery. Used by RabbitMQ, ActiveMQ, Azure Service Bus. |
+| **STOMP (Simple/Streaming Text Oriented Messaging Protocol)** | A simple, text-based protocol for messaging over TCP. Works like “HTTP for messaging” — easy to implement and debug. Less feature-rich than AMQP.                                                          | Lightweight messaging, simple pub/sub systems, connecting web clients to brokers. Supported by RabbitMQ, ActiveMQ.                                         |
+| **MQTT (Message Queuing Telemetry Transport)**                | A lightweight publish/subscribe protocol designed for constrained devices and unreliable networks. Runs over TCP/IP. Focused on low bandwidth, low power usage, and small code footprint.                  | IoT devices, sensors, telemetry, mobile apps. Supported by RabbitMQ, ActiveMQ, AWS IoT, others.                                                            |
+| **OpenWire**                                                  | A binary protocol developed specifically for ActiveMQ. Efficient for Java clients, optimized for high throughput and reliable delivery within ActiveMQ brokers.                                            | Internal messaging between Java applications and ActiveMQ, enterprise message routing.                                                                     |
+
+
+## Brokerless Messaging Systems
 
 Brokerless messaging, eliminates the need for a central broker. Instead, services communicate directly with each other. Brokerless systems use protocols such as **gRPC**, **ZeroMQ**, and **HTTP-based messaging**. 
 

@@ -67,10 +67,5 @@ The `<dependencyManagement>` section is typically used in Spring-based projects 
 </dependencyManagement>
 ```
 
-## Publishing events
-
-## Receiving events
-
-
 ## Resources
 - https://www.baeldung.com/spring-maven-bom

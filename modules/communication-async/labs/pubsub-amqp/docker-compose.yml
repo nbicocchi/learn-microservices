@@ -28,7 +28,3 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
-    deploy:
-      resources:
-        limits:
-          memory: 512m
