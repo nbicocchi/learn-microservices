@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+mqtt:
+  url: tcp://localhost:1883
+  username:
+  password:
+  clean-session: true
+  client-id: publisher-service
+  default-topic: events.topic
+
+---
+spring.config.activate.on-profile: docker
+
+mqtt:
+  url: tcp://mosquitto:1883
+  username:
+  password:
+  clean-session: true
+  client-id: publisher-service
+  default-topic: events.topic
+

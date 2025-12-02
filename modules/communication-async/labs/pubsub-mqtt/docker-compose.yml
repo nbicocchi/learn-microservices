@@ -1,0 +1,37 @@
+services:
+  publisher:
+    build: publisher-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+
+  subscriber:
+    build: subscriber-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 3
+
+  mosquitto:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"     # MQTT broker port
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "healthcheck", "-C", "1"]
+      interval: 5s
+      timeout: 2s
+      retries: 60
+    deploy:
+      resources:
+        limits:
+          memory: 512m
