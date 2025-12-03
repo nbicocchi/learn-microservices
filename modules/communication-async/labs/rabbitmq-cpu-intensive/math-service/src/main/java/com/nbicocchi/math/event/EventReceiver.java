@@ -14,16 +14,21 @@ import java.util.function.Consumer;
 @Component
 @AllArgsConstructor
 public class EventReceiver {
+    EventSender eventSender;
     private final MathService mathService;
 
     @Bean
-    public Consumer<Event<String, EventMathRequest>> processPrimeRequest() {
+    public Consumer<Event<String, EventMathRequest>> processPrimes() {
         return event -> {
             List<Long> divisors = null;
             for (int i = 0; i < event.getData().times(); i++) {
                 divisors = mathService.findPrimeDivisors(event.getData().number());
             }
             log.info("Divisors: {}", divisors);
+
+            eventSender.send("processPrimes-out-0", event,
+                    new EventSender.Header<>("routingKey", "notification.divisors"));
+
         };
     }
 }

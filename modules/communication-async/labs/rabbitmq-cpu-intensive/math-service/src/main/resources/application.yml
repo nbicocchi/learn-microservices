@@ -12,13 +12,19 @@ management:
 
 spring.cloud.stream:
   function:
-    definition: processPrimeRequest
+    definition: processPrimes
   bindings:
-    processPrimeRequest-in-0:
-      group: primesGroup
+    processPrimes-in-0:
+      group: messagesGroup
       binder: local_rabbit
       contentType: application/json
       destination: queue.messages
+      consumer:
+        binding-routing-key: 'math.#'
+    processPrimes-out-0:
+      binder: local_rabbit
+      contentType: application/json
+      destination: notification.messages
   binders:
     local_rabbit:
       type: rabbit

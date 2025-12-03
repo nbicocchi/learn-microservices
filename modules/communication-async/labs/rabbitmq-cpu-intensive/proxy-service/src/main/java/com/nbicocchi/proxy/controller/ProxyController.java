@@ -26,7 +26,8 @@ public class ProxyController {
 
         EventMathRequest request = new EventMathRequest(number, times, email);
         Event<String, EventMathRequest> event = new Event<>(UUID.randomUUID().toString(), request);
-        eventSender.send("message-out-0", event);
+        eventSender.send("message-out-0", event,
+                new EventSender.Header<>("routingKey", "math.divisors"));
 
         return request;
     }

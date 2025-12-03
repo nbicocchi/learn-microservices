@@ -8,7 +8,9 @@ spring.cloud.stream:
     processNotification-in-0:
       binder: local_rabbit
       contentType: application/json
-      destination: notifications.messages
+      destination: notification.messages
+      consumer:
+        binding-routing-key: 'notification.#'
   binders:
     local_rabbit:
       type: rabbit

@@ -16,6 +16,8 @@ spring.cloud.stream:
       binder: local_rabbit
       contentType: application/json
       destination: queue.messages
+      producer:
+        routingKeyExpression: headers['routingKey']
   binders:
     local_rabbit:
       type: rabbit

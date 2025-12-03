@@ -9,7 +9,7 @@ services:
       lavinmq:
         condition: service_healthy
 
-  math-service-1:
+  math-service:
     build: math-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -18,6 +18,14 @@ services:
         condition: service_healthy
     deploy:
       replicas: 1
+
+  notification-service:
+    build: notification-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      lavinmq:
+        condition: service_healthy
 
   lavinmq:
     image: cloudamqp/lavinmq:latest

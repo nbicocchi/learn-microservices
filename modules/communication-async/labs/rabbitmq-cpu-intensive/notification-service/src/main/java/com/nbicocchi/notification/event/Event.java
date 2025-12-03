@@ -1,15 +1,16 @@
-package com.nbicocchi.math.model;
+package com.nbicocchi.math.event;
 
 import lombok.*;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Data
+@Builder
 public class Event<K, T> {
     @NonNull private K key;
     @NonNull private T data;
-    private ZonedDateTime eventCreatedAt = ZonedDateTime.now();
+    private LocalDateTime timestamp = LocalDateTime.now();
 }
