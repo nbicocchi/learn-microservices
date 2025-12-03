@@ -38,19 +38,55 @@ There are two primary approaches to asynchronous messaging passing: **broker-bas
 
 ![](images/brokerless-architecture.webp)
 
+## Brokerless Messaging Systems
+
+Brokerless messaging, eliminates the need for a central broker. Instead, services communicate directly with each other. Brokerless systems use protocols such as **gRPC**, **ZeroMQ**, and **HTTP-based messaging**.
+
+For efficient communication, peers spawn **multiple threads or use asynchronous I/O to handle multiple connections at once**. This ensures that the peer can send/receive messages without blocking other tasks.
+
+* ZeroMQ (https://zeromq.org/)
+* NanoMsg (https://nanomsg.org/)
+
+#### Advantages
+1. **No Single Point of Failure**: Brokerless systems avoid the broker becoming a single point of failure, making the architecture more resilient to certain types of failures.
+2. **Low Latency**: Messages travel directly between services, reducing the additional overhead introduced by a broker. This leads to faster communication and lower latency.
+3. **More Control**: Direct communication gives services full control over how messages are handled, improving flexibility in handling specific scenarios like retries or error handling.
+
+| Direct Communication            | Directory Service                |
+|---------------------------------|----------------------------------|
+| ![](images/broker-nobroker.webp) | ![](images/broker-directory.webp) |
+
+| Distributed Broker                        | Distributed Directory Service                |
+|-------------------------------------------|----------------------------------------------|
+| ![](images/broker-distributed-broker.webp) | ![](images/broker-distributed-directory.webp) |
+
+
+
+#### Disadvantages
+1. **Tight Coupling**: In a brokerless system, services need to know how to communicate with each other directly. This increases the coupling between services and makes changes harder to manage (e.g., changing a service’s location or API may require updating all services that communicate with it).
+2. **No Built-in Reliability**: In brokerless systems, reliability features like message persistence, retries, and delivery guarantees need to be implemented by the developers. This increases complexity, as the system lacks the reliability mechanisms provided by brokers.
+3. **No Built-in Scaling**: Scaling brokerless systems can be more complex, especially in high-throughput environments. You may need to implement custom load balancing and failover mechanisms to ensure that the system can handle large numbers of connections or messages.
+4. **No Built-in Concurrency**: Handling multiple concurrent connections or ensuring message ordering and delivery can become problematic, requiring careful design and management of the communication logic.
+
 ## Broker-Based Messaging Systems
 
-Broker-based messaging systems rely on a **central message broker** to manage the communication between different services. The broker acts as an intermediary, receiving messages from producers and delivering them to consumers. Common broker-based systems include:
+Broker-based messaging systems rely on a **central message broker** to manage the communication between different services. The broker acts as an intermediary, receiving messages from producers and delivering them to consumers. 
 
-| Software                    | Protocol(s) Used                                      |
-| --------------------------- | ----------------------------------------------------- |
-| RabbitMQ                    | AMQP (Advanced Message Queuing Protocol), MQTT, STOMP |
-| Apache Kafka                | Kafka Protocol (custom TCP-based protocol)            |
-| ActiveMQ                    | AMQP, STOMP, MQTT, OpenWire                           |
-| AWS SQS                     | HTTPS/REST API, optionally JMS (via SDK)              |
-| Microsoft Azure Service Bus | AMQP 1.0, HTTPS/REST API                              |
-| Google Cloud Pub/Sub        | HTTPS/REST API, gRPC                                  |
+Common systems:
 
+| Software                | Protocol(s) Used                                      |
+| ----------------------- | ----------------------------------------------------- |
+| RabbitMQ                | AMQP (Advanced Message Queuing Protocol), MQTT, STOMP |
+| Apache Kafka            | Kafka Protocol (custom TCP-based protocol)            |
+| ActiveMQ                | AMQP, STOMP, MQTT, OpenWire                           ||
+
+Proprietary systems:
+
+| Proprietary Managed Broker | Provider  | Protocol(s)              |
+|----------------------| --------- | ------------------------ |
+| Amazon SQS           | AWS       | HTTPS/REST API           |
+| Azure Service Bus    | Microsoft | AMQP 1.0, HTTPS/REST API |
+| Google Cloud Pub/Sub | Google    | HTTPS/REST API, gRPC     |
 
 #### Advantages
 1. **Decoupling**: Producers and consumers don’t need to know about each other’s existence **(solves spatial coupling!)**. They only interact with the broker, making the system loosely coupled and easier to maintain and scale.
@@ -94,71 +130,13 @@ function AppD (x) {
 
 ### Protocols
 
-| Protocol                                                      | Description                                                                                                                                                                                                | Typical Use Cases                                                                                                                                          |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **AMQP (Advanced Message Queuing Protocol)**                  | An open standard binary protocol for messaging. Defines a complete messaging system: message format, broker behavior, routing, and reliability. Designed for interoperability between clients and brokers. | Enterprise messaging, reliable message delivery, financial services, systems requiring guaranteed delivery. Used by RabbitMQ, ActiveMQ, Azure Service Bus. |
-| **STOMP (Simple/Streaming Text Oriented Messaging Protocol)** | A simple, text-based protocol for messaging over TCP. Works like “HTTP for messaging” — easy to implement and debug. Less feature-rich than AMQP.                                                          | Lightweight messaging, simple pub/sub systems, connecting web clients to brokers. Supported by RabbitMQ, ActiveMQ.                                         |
-| **MQTT (Message Queuing Telemetry Transport)**                | A lightweight publish/subscribe protocol designed for constrained devices and unreliable networks. Runs over TCP/IP. Focused on low bandwidth, low power usage, and small code footprint.                  | IoT devices, sensors, telemetry, mobile apps. Supported by RabbitMQ, ActiveMQ, AWS IoT, others.                                                            |
-| **OpenWire**                                                  | A binary protocol developed specifically for ActiveMQ. Efficient for Java clients, optimized for high throughput and reliable delivery within ActiveMQ brokers.                                            | Internal messaging between Java applications and ActiveMQ, enterprise message routing.                                                                     |
+| Protocol                                                  | Description                                                                                                                                                                                                | Typical Use Cases                                                                                                                                          |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AMQP (Advanced Message Queuing Protocol)                  | An open standard binary protocol for messaging. Defines a complete messaging system: message format, broker behavior, routing, and reliability. Designed for interoperability between clients and brokers. | Enterprise messaging, reliable message delivery, financial services, systems requiring guaranteed delivery. Used by RabbitMQ, ActiveMQ, Azure Service Bus. |
+| STOMP (Simple/Streaming Text Oriented Messaging Protocol) | A simple, text-based protocol for messaging over TCP. Works like “HTTP for messaging” — easy to implement and debug. Less feature-rich than AMQP.                                                          | Lightweight messaging, simple pub/sub systems, connecting web clients to brokers. Supported by RabbitMQ, ActiveMQ.                                         |
+| MQTT (Message Queuing Telemetry Transport)                | A lightweight publish/subscribe protocol designed for constrained devices and unreliable networks. Runs over TCP/IP. Focused on low bandwidth, low power usage, and small code footprint.                  | IoT devices, sensors, telemetry, mobile apps. Supported by RabbitMQ, ActiveMQ, AWS IoT, others.                                                            |
+| Kafka Protocol                                            | A high-throughput, distributed messaging protocol designed for streaming data. Supports partitioning, replication, and fault-tolerant message delivery. Works over TCP.                                    | Real-time data streaming, event sourcing, log aggregation, analytics pipelines. Used by Apache Kafka and Kafka-compatible platforms.                       |
 
-
-## Brokerless Messaging Systems
-
-Brokerless messaging, eliminates the need for a central broker. Instead, services communicate directly with each other. Brokerless systems use protocols such as **gRPC**, **ZeroMQ**, and **HTTP-based messaging**. 
-
-For efficient communication, peers spawn **multiple threads or use asynchronous I/O to handle multiple connections at once**. This ensures that the peer can send/receive messages without blocking other tasks.
-
-* ZeroMQ (https://zeromq.org/)
-* NanoMsg (https://nanomsg.org/)
-
-#### Advantages
-1. **No Single Point of Failure**: Brokerless systems avoid the broker becoming a single point of failure, making the architecture more resilient to certain types of failures.
-2. **Low Latency**: Messages travel directly between services, reducing the additional overhead introduced by a broker. This leads to faster communication and lower latency.
-3. **More Control**: Direct communication gives services full control over how messages are handled, improving flexibility in handling specific scenarios like retries or error handling.
-
-| Direct Communication            | Directory Service                |
-|---------------------------------|----------------------------------|
-| ![](images/broker-nobroker.webp) | ![](images/broker-directory.webp) |
-
-| Distributed Broker                        | Distributed Directory Service                |
-|-------------------------------------------|----------------------------------------------|
-| ![](images/broker-distributed-broker.webp) | ![](images/broker-distributed-directory.webp) |
-
-
-
-#### Disadvantages
-1. **Tight Coupling**: In a brokerless system, services need to know how to communicate with each other directly. This increases the coupling between services and makes changes harder to manage (e.g., changing a service’s location or API may require updating all services that communicate with it).
-2. **No Built-in Reliability**: In brokerless systems, reliability features like message persistence, retries, and delivery guarantees need to be implemented by the developers. This increases complexity, as the system lacks the reliability mechanisms provided by brokers.
-3. **No Built-in Scaling**: Scaling brokerless systems can be more complex, especially in high-throughput environments. You may need to implement custom load balancing and failover mechanisms to ensure that the system can handle large numbers of connections or messages.
-4. **No Built-in Concurrency**: Handling multiple concurrent connections or ensuring message ordering and delivery can become problematic, requiring careful design and management of the communication logic.
-
-## Message Brokers vs Event Logs
-
-### Message Broker (e.g., RabbitMQ)
-
-* Push delivery
-* Messages are removed once consumed
-* Routing via exchanges → queues
-
-### Event Log (e.g., Kafka)
-
-* Pull-based
-* Messages are *not removed*
-* Partitioned, replicated log
-* Consumers track their own offsets
-
-```mermaid
-flowchart LR
-    subgraph RabbitMQ
-        Ex[Exchange] --> Q1[Queue]
-        Ex --> Q2[Queue]
-    end
-
-    subgraph Kafka
-        T1["Topic (Partition 0)"]
-        T2["Topic (Partition 1)"]
-    end
-```
 
 ## Design Patterns
 
@@ -210,9 +188,11 @@ Route messages to different channels/services based on content.
 flowchart LR
     M[Incoming Message] -->|type=A| S1[Service A]
     M -->|type=B| S2[Service B]
-    M -->|type=high-priority| S3[Priority Handler]
-```
 
+%% Optional: emphasize competition
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+```
 
 ### Competing Consumers
 
@@ -229,9 +209,16 @@ Increase throughput by letting multiple consumers share work.
 
 ```mermaid
 flowchart LR
-    P[Partition] --> C1[Consumer 1]
-    P --> C2[Consumer 2]
-    P --> C3[Consumer 3]
+    M[Incoming Message] -->|type=A| S1[Service A Instance 1]
+    M -->|type=A| S1b[Service A Instance 2]
+    M -->|type=B| S2[Service B Instance 1]
+    M -->|type=B| S2b[Service B Instance 2]
+
+%% Optional: emphasize competition
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+    style S2b fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ### Event-Carried State Transfer
@@ -325,11 +312,10 @@ Manage distributed transactions via *a series of local transactions* coordinated
 
 ```mermaid
 sequenceDiagram
-    Order ->> Broker: OrderCreated
-    Inventory ->> Broker: InventoryReserved
-    Broker ->> Payment: ProcessPayment
-    Payment ->> Broker: PaymentCompleted
-    Broker ->> Order: CompleteOrder
+    Order ->> Inventory: OrderCreated
+    Inventory -->> Payment: InventoryReserved
+    Payment -->> Order: PaymentCompleted
+    Order ->> Order: CompleteOrder
 ```
 
 ### Saga Pattern (Orchestration)
@@ -346,40 +332,15 @@ A *central coordinator service* commands steps and compensations.
 **Diagram:**
 
 ```mermaid
-flowchart TD
-    O[Orchestrator] --> I[Reserve Inventory]
-    I --> P[Process Payment]
-    P --> S[Schedule Shipment]
-    P -->|Failure| C[Compensate Inventory]
+sequenceDiagram
+    Order ->> Broker: OrderCreated
+    Broker ->> Inventory: NotifyInventory
+    Inventory -->> Broker: InventoryReserved
+    Broker ->> Payment: NotifyPayment
+    Payment -->> Broker: PaymentCompleted
+    Broker ->> Order: OrderCompletedEvent
+
 ```
-
-### Message Aggregator
-
-**Purpose:**
-Combine multiple messages into a single result.
-
-**Characteristics:**
-
-* Used when partial info arrives from many sources
-* Requires correlation IDs
-* Completes when all parts arrive or timeout
-
-**Use cases:**
-
-* Analytics
-* Distributed search
-* Collecting telemetry
-
-**Diagram:**
-
-```mermaid
-flowchart TD
-    A[Message 1] --> AGG[Aggregator]
-    B[Message 2] --> AGG
-    C[Message 3] --> AGG
-    AGG --> R[Result]
-```
-
 
 ## Resources
 

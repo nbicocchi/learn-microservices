@@ -154,6 +154,59 @@ A headers exchange **routes messages based on the message's header attributes ra
 * Multiple consumers can subscribe to different patterns without changing producer logic.
 * `Direct` is too rigid for complex systems; `fanout` is too blunt for most enterprise needs; `headers` exchanges are rarely used because pattern-matching on routing keys is simpler and more performant.
 
+## Consumer Groups
+
+* Concept borrowed from Kafka (and also supported in Spring Cloud Stream with RabbitMQ).
+* Multiple consumers **subscribe to the same logical destination** (queue or topic).
+* The broker (or framework) **distributes messages among consumers** automatically (**scaling!**).
+
+**Behavior**
+
+* Each message is **delivered to only one consumer** in the group.
+* Parallelism is **dynamic**: any consumer can get the next message.
+* Order is **not guaranteed globally**, but usually per queue.
+* No control over **which consumer gets which message**.
+
+**Example**
+
+* Queue: `orders`
+
+* Consumer group: 3 consumers (C1, C2, C3)
+
+* Messages: M1, M2, M3, M4
+
+* Delivery could be:
+
+    * M1 → C2
+    * M2 → C1
+    * M3 → C3
+    * M4 → C1
+
+
+
+## Partitioned Producers
+
+* Producer assigns messages to **logical partitions**, often based on a **key** (`partition-key-expression`).
+* Spring Cloud Stream maps each partition to a **specific queue** (for RabbitMQ).
+* Consumers can bind to **specific partitions**, ensuring **messages with same key always go to the same consumer**.
+
+**Behavior**
+
+* **Key-based ordering**: messages with same key always go to the same partition/queue.
+* **Deterministic routing**: you control which consumer instance gets which messages.
+* Parallelism is **aligned with partition count**, not just number of consumers.
+
+**Example**
+
+* Partition count: 3
+
+* Partition key: `customerId`
+
+* Messages from customer 123 always go to **partition 0** → specific consumer.
+
+* Messages from customer 456 go to **partition 1** → another consumer.
+
+* **Good for**: processing **per-key ordered streams**, e.g., financial transactions, user activity, IoT events.
 
 ## Resources
 
