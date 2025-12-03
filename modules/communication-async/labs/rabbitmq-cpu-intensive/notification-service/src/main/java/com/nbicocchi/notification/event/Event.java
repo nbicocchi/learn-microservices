@@ -1,4 +1,4 @@
-package com.nbicocchi.math.event;
+package com.nbicocchi.notification.event;
 
 import lombok.*;
 

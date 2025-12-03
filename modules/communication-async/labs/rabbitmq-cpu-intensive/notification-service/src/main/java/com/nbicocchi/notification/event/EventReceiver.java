@@ -1,7 +1,5 @@
 package com.nbicocchi.notification.event;
 
-import com.nbicocchi.math.event.Event;
-import com.nbicocchi.math.event.EventNotification;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;

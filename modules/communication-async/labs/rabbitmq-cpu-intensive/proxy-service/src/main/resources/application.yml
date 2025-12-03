@@ -18,6 +18,8 @@ spring.cloud.stream:
       destination: queue.messages
       producer:
         routingKeyExpression: headers['routingKey']
+        #partition-key-expression: headers['partitionKey']
+        #partition-count: 3
   binders:
     local_rabbit:
       type: rabbit

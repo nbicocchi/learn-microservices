@@ -26,9 +26,9 @@ public class EventReceiver {
             }
             log.info("Divisors: {}", divisors);
 
-            eventSender.send("processPrimes-out-0", event,
+            Event<String, EventNotification> outputEvent = new Event<>(UUID.randomUUID().toString(), new EventNotification(divisors.toString()));
+            eventSender.send("processPrimes-out-0", outputEvent,
                     new EventSender.Header<>("routingKey", "notification.divisors"));
-
         };
     }
 }
