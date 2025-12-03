@@ -166,23 +166,10 @@ sequenceDiagram
     Broker ->> Service C: EventX
 ```
 
-### Message Routing (Content-Based Router)
+### Routing (Routing Key)
 
 **Purpose:**
 Route messages to different channels/services based on content.
-
-**Characteristics:**
-
-* Supports complex routing logic
-* Enables service specialisation
-* Often implemented by Kafka consumers or brokers like RabbitMQ
-
-**Use cases:**
-
-* Fraud vs non-fraud transactions
-* High-priority vs low-priority queues
-
-**Diagram:**
 
 ```mermaid
 flowchart LR
@@ -194,18 +181,28 @@ flowchart LR
     style S2 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
-### Competing Consumers
+### Routing (Competing Consumers)
 
 **Purpose:**
 Increase throughput by letting multiple consumers share work.
 
-**Characteristics:**
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|type=A| S1[Service A Instance 1]
+    M -->|type=A| S1b[Service A Instance 2]
+    M -->|type=B| S2[Service B Instance 1]
+    M -->|type=B| S2b[Service B Instance 2]
 
-* Horizontal scalability
-* FIFO not guaranteed between partitions
-* Perfect for Kafka
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+    style S2b fill:#9f9,stroke:#333,stroke-width:2px
+```
 
-**Diagram:**
+### Routing (Sharded Consumers)
+
+**Purpose:**
+Increase throughput by letting multiple consumers share work.
 
 ```mermaid
 flowchart LR
@@ -220,6 +217,38 @@ flowchart LR
     style S2 fill:#9f9,stroke:#333,stroke-width:2px
     style S2b fill:#9f9,stroke:#333,stroke-width:2px
 ```
+
+### Dead-Letter Queue (DLQ)
+
+**Purpose:**
+Handle messages that cannot be processed (nack, TTL expired, retries exceeded).
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|deliver| S1[Service Instance 1]
+    M -->|deliver| S1b[Service Instance 2]
+
+    %% Normal processing (ACK)
+    S1 -->|ack| OK1[Processed Successfully]
+    S1b -->|ack| OK2[Processed Successfully]
+
+    %% Failure (dead-letter)
+    S1 -->|nack / error| DLQ[Dead-Letter Queue]
+    S1b -->|nack / error| DLQ
+
+    DLQ --> DLP[DLQ Processor]
+
+%% Same style family
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+
+    style OK1 fill:#9f9,stroke:#333,stroke-width:2px
+    style OK2 fill:#9f9,stroke:#333,stroke-width:2px
+
+    style DLQ fill:#f99,stroke:#333,stroke-width:2px
+    style DLP fill:#fcc,stroke:#333,stroke-width:2px
+```
+
 
 ### Event-Carried State Transfer
 
