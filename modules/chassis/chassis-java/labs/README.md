@@ -1,36 +1,5 @@
 # Labs
 
-## Lab 1: Managing Dependencies with Maven
-**Objective:** Learn to use Maven for project management and dependency management in a Java application.
-
-**Instructions:**
-- Create a new Maven project using [Spring Initializr](https://start.spring.io/). 
-- Add `lombok`, `spring-boot-starter-web` and `spring-boot-starter-test` to the project dependencies.
-- Create a REST controller that returns a greeting message at the `/greet` endpoint (GET).
-- Use Maven commands (`mvn clean`, `mvn package`, `mvn dependency:tree`) to build the project and ensure all dependencies are resolved correctly.
-
-## Lab 2: Building a Spring Application
-**Objective:** Develop a Spring Boot application with various components and configurations.
-
-**Instructions:**
-- Create a new Spring Boot application using the [Spring Initializr](https://start.spring.io/), selecting appropriate dependencies (e.g., Spring Web, Spring Data JPA, etc).
-- Configure `application.yml` and `pom.xml` to run the service on port 9000 and establish a connection with an H2 in-memory database.
-- Implement a `/greet` endpoint returning the application name and version (fetched from application.yml).
-- Implement a `/sleep` endpoint sleeping 100ms.
-- Implement CRUD operations for managing the resource below. Each time a CRUD operation is requested the application should log the event at the `debug` level.
-
-```java
-public class User {
-    Long id;
-    String email;
-    String name;
-    String country;
-}
-```
-
-- Use Maven to build and run the Spring Boot application locally.
-- Use curl to test the REST endpoints.
-
 # Questions
 1. What is Maven, and what role does it play in Java project management?
 2. How are dependencies defined in a Maven `pom.xml` file? Provide an example of adding a dependency to a project.
