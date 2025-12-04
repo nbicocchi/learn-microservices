@@ -50,8 +50,8 @@ The course requires a decent understanding of Java. A dedicated course can be fo
 * Client-side patterns
 * Server-side patterns
 
-[M8 ASynchronous Communication](modules/communication-sync)
-* Asynchronous messaging systems (*RabbitMQ*)
+[M8 Asynchronous Communication](modules/communication-sync)
+* Asynchronous messaging systems
 * Event-driven architectures
 * Event-sourcing architectures
 
