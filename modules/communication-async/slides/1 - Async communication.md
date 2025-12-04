@@ -140,32 +140,6 @@ function AppD (x) {
 
 ## Design Patterns
 
-### Event Notification
-
-**Purpose:**
-Notify other services that “something happened,” without expecting a direct reply.
-
-**Characteristics:**
-
-* Fire-and-forget
-* No business data flow, only signals
-* Consumers decide if the event matters
-
-**Use cases:**
-
-* Cache invalidation
-* Search index update
-* Trigger workflows
-
-**Mermaid sequence:**
-
-```mermaid
-sequenceDiagram
-    Service A ->> Broker: Publish EventX
-    Broker ->> Service B: EventX
-    Broker ->> Service C: EventX
-```
-
 ### Routing (Routing Key)
 
 **Purpose:**
@@ -202,20 +176,19 @@ flowchart LR
 ### Routing (Sharded Consumers)
 
 **Purpose:**
-Increase throughput by letting multiple consumers share work.
+Increase throughput by letting multiple consumers share work (each consumer receives events related to same entity).
 
 ```mermaid
 flowchart LR
-    M[Incoming Message] -->|type=A| S1[Service A Instance 1]
-    M -->|type=A| S1b[Service A Instance 2]
-    M -->|type=B| S2[Service B Instance 1]
-    M -->|type=B| S2b[Service B Instance 2]
+    M1[Message Key=A] --> S1[Consumer Instance 1]
+    M2[Message Key=B] --> S2[Consumer Instance 2]
+    M3[Message Key=A] --> S1
+    M4[Message Key=C] --> S3[Consumer Instance 3]
 
-%% Optional: emphasize competition
     style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S1b fill:#f9f,stroke:#333,stroke-width:2px
     style S2 fill:#9f9,stroke:#333,stroke-width:2px
-    style S2b fill:#9f9,stroke:#333,stroke-width:2px
+    style S3 fill:#9ff,stroke:#333,stroke-width:2px
+
 ```
 
 ### Dead-Letter Queue (DLQ)
@@ -275,7 +248,7 @@ flowchart LR
     A --> C[Service C\nupdates its local projection]
 ```
 
-### Change Data Capture (CDC)
+### Change Data Capture (CDC) AKA Automated Event-Carried State Transfer
 
 **Purpose:**  
 Capture database changes (inserts, updates, deletes) and propagate them as events so other services or systems can **maintain synchronized copies** without direct synchronous access.
@@ -368,7 +341,6 @@ sequenceDiagram
     Broker ->> Payment: NotifyPayment
     Payment -->> Broker: PaymentCompleted
     Broker ->> Order: OrderCompletedEvent
-
 ```
 
 ## Resources
