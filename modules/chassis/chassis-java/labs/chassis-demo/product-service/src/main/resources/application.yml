@@ -1,0 +1,60 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jdbc_schema
+    username: user
+    password: secret
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init.mode: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      post:
+        enabled: true
+
+app:
+  name: Awesome Service
+  version: 1.0.0
+  maintainer: "Nicola"
+
+
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/jdbc_schema
+
+---
+spring.config.activate.on-profile: h2
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init.mode: always
+  h2:
+    console:
+      enabled: true
+
+---
+spring.config.activate.on-profile: no-banner
+spring:
+  main:
+    banner-mode: off

@@ -27,18 +27,12 @@ public class PersistenceConfig {
 }
 ```
 
-**The _@Configuration_ annotation indicates to Spring that this class needs to be processed by the Spring Container** because it will contribute bean definitions. Of course, the _@Bean_ annotation is such bean definition. In our case, this is a bean named _productRepository,_ as that’s the name of the method.
+**The _@Configuration_ annotation indicates to Spring that this class needs to be processed by the Spring Container** because it will contribute bean definitions. 
 
-By default, **Spring Boot loads all classes annotated with _@Component_, _@Configuration_ that are located in the same package as the main class (and sub-packages).** This is defined by the _@ComponentScan_ annotation and can be changed manually.
-
-> **NOTE:** **_@SpringBootApplication_ includes _@ComponentScan_** (In Intellij: View > Jump to Source). That's why we usually do not use _@ComponentScan_ explicitly.
-
-
+By default, **Spring Boot loads all classes annotated with _@Component_, _@Configuration_ that are located in the same package as the main class (and sub-packages).**
 
 ## Stereotype Annotations
 Besides _@Component_, there are a few more stereotype annotations that use _@Component_ under the hood and just bring an extra layer of semantics on top.
-
-For example, on the _ProductRepository_ we can replace _@Component_ with the _@Repository_ annotation:
 
 ```java
 @Repository
@@ -46,8 +40,6 @@ public class ProductRepository {
     // ...
 }
 ```
-
-Nothing changes technically, but this fits better the exact semantics of this particular bean, since it's actually a repository. Similarly, we can use the _@Service_ and _@RestController_ annotation:
 
 ```java
 @Service
@@ -72,7 +64,7 @@ Basically, **the lifecycle of a Spring bean consists of 3 phases:**
 * use phase
 * destroy phase
 
-**We focus on the _initialization_ and _destroy_ phases**, as they’re the most interesting ones from the point of view of dependency injection. Our goal here is to understand the lifecycle but also the [hooks](https://en.wikipedia.org/wiki/Hooking) in the framework connected to that lifecycle.
+**We focus on the _initialization_ and _destroy_ phases**, as they’re the most interesting ones from the point of view of dependency injection. 
 
 ### @Component
 
@@ -92,31 +84,7 @@ public class BeanA {
     }
 }
 ```
-### @Bean
 
-```java
-@Configuration
-public class AppConfig {
-    @Bean(initMethod="initialize", destroyMethod="destroy")
-    public BeanB beanB() {
-        return new BeanB();
-    }
-}
-```
-
-```java
-public class BeanB {
-    private static final Logger log = LoggerFactory.getLogger(BeanB.class);
-
-    public void initialize() {
-        log.info("Custom initialize() is called.");
-    }
-
-    public void destroy() {
-        log.info("Custom destroy() is called.");
-    }
-}
-```
 ## Bean Scopes
 
 In Spring, **singleton** and **prototype** are two common bean scopes that define how beans are created and managed in the Spring container.
@@ -144,28 +112,6 @@ In the singleton scope, Spring creates **only one instance** of a bean per Sprin
 ### Prototype Scope
 In the prototype scope, a **new instance** of the bean is created **every time** it is requested from the Spring container. Unlike singleton, the lifecycle of a prototype bean is short-lived. Once the bean is created and delivered by the container, the container does not manage the bean’s lifecycle any further (i.e., it won't handle destruction of the bean).
 
-### Example
-
-```java
-@Component
-public class BeanD {
-    BeanB beanB1;
-    BeanB beanB2;
-    BeanC beanC1;
-    BeanC beanC2;
-
-    public BeanD(BeanB beanB1, BeanB beanB2, BeanC beanC1, BeanC beanC2) {
-        this.beanB1 = beanB1;
-        this.beanB2 = beanB2;
-        this.beanC1 = beanC1;
-        this.beanC2 = beanC2;
-        // breakpoint here and debug
-        // you will see that b1 and b2 are in fact references to the same object
-        // while c1 and c2 are references to different objects
-    }
-}
-
-```
 
 ## Resources
 - [Spring Bean Scopes](https://www.baeldung.com/spring-bean-scopes)

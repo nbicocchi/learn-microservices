@@ -178,41 +178,6 @@ Key Phases in the Site Lifecycle:
 - **post-site**: Executes processes needed after generating the site.
 - **site-deploy**: Deploys the generated site to a web server.
 
-## Goals and plugins
-
-A **goal** is a specific task that Maven performs, typically defined by a plugin. Goals can be executed independently or as part of a phase.
-
-A **plugin** is a set of goals that provide specific functionalities to the Maven build process. Some commonly used plugins include:
-
-1. **maven-compiler-plugin**: Used for compiling Java code.
-    - Command:
-      ```bash
-      mvn compiler:compile
-      ```
-    - Explanation: Directly invokes the `compile` goal from the compiler plugin.
-
-2. **maven-surefire-plugin**: Used for running unit tests.
-    - Command:
-      ```bash
-      mvn surefire:test
-      ```
-    - Explanation: Runs the tests defined in the project using the Surefire plugin.
-
-3. **maven-jar-plugin**: Used for creating JAR files.
-    - Command:
-      ```bash
-      mvn jar:jar
-      ```
-    - Explanation: Invokes the `jar` goal from the JAR plugin.
-
-To determine whether you are invoking a phase or a goal **check the command structure**:
-
-- **Phase**: If the command is in the format `mvn <phase-name>`, you are invoking a phase.
-    - Example: `mvn install`
-- **Goal**: If the command is in the format `mvn <plugin>:<goal>`, you are invoking a specific goal.
-    - Example: `mvn surefire:test` invokes the `test` goal from the `surefire` plugin.
-
-
 ## Running the project
 
 ### Running with the Spring Boot Maven plugin
@@ -240,7 +205,7 @@ mvn spring-boot:run
 * **Source code has to be present on the server**. 
 * **Cold start would be slow**: it has to pull the dependencies, build the app, and then run the application (high Mean Time To Start).
 
-In production environments, it is more suitable to run a pre-packaged artifact such as a JAR file or a [container](https://www.docker.com/resources/what-container/).
+In production environments, it is more suitable to run a pre-packaged artifact such as a container.
 
 ### Running as a Jar
 
@@ -253,7 +218,7 @@ mvn clean package -Dmaven.skip.test=true
 ```
 
 ```bash
-java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
+java -jar target/product-service-h2-0.0.1-SNAPSHOT.jar
 ```
 
 ## Resources

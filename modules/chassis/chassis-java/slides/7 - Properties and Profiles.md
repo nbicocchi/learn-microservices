@@ -1,9 +1,7 @@
 # Properties
 
 ## Properties
-In Spring Boot, `src/manin/resources/application.yml` configures the application settings. YAML (YAML Ain’t Markup Language) provides a structured and human-readable way of defining hierarchical configurations compared to the previous key-value format of `application.properties`.
-
-Here's an example of a basic `application.yml` file:
+In Spring Boot, `src/manin/resources/application.yml` configures the application settings. YAML (YAML Ain’t Markup Language) provides a structured and human-readable way of defining hierarchical configurations.
 
 ```yaml
 server:
@@ -53,7 +51,9 @@ See [here](https://docs.spring.io/spring-boot/appendix/application-properties/in
 
 ## Custom Properties
 
-Custom properties allow you to define application-specific settings that are loaded from external configuration files such as `application.yml`. These properties can then be injected into your beans using the `@Value` annotation. **This approach decouples configuration from code, making the application easier to maintain**.
+Custom properties allow you to define application-specific settings that are loaded from external configuration files such as `application.yml`. These properties can then be injected into your beans using the `@Value` annotation. 
+
+**This approach decouples configuration from code, making the application easier to maintain**.
 
 ### Defining Custom Properties
 
@@ -110,19 +110,10 @@ public class AppService {
 
 The constructor of AppService takes three arguments: appName, appVersion, and maxUsers. These values are injected from the `application.yml` file using the `@Value` annotation.
 
-* `@Value("${app.name}")`: Injects the value of the app.name property.
-* `@Value("${app.version}")`: Injects the value of the app.version property.
-* `@Value("${app.max-users}")`: Injects the value of the app.max-users property.
 
 ## Profiles
 
 **Profiles** provide a way to segregate parts of your application configuration and make it adaptable to different environments, such as **development**, **testing**, **staging**, and **production**. 
-
-**By using profiles, you can define multiple configurations for different environments and switch between them easily**, depending on the context in which the application is running.
-
-* **Profile-specific properties**: You can define different property files for different profiles.
-* **Conditional Beans**: You can define beans that should only be loaded for specific profiles using the `@Profile` annotation.
-* **Profile activation**: Profiles can be activated via environment variables, command-line arguments, or within code.
 
 
 ```yaml
@@ -154,8 +145,6 @@ In this file:
 
 ## Activating Profiles
 
-Profiles can be activated in various ways. See [rule #1 and #3](https://12factor.net/) of the 12 Factors App. 
-
 ### `application.yml`
 You can specify which profile is active by setting the `spring.profiles.active` property in the `application.yml` file.
 
@@ -183,14 +172,6 @@ mvn clean package -Dmaven.skip.test=true
 SPRING_PROFILES_ACTIVE=docker,no-banner java -jar target/properties-0.0.1-SNAPSHOT.jar
 ```
 
-### Environment Variables (Docker)
-
-```bash
-mvn clean package
-docker buildx build -t $(basename $(pwd)) .
-docker run -e SPRING_PROFILES_ACTIVE='docker,no-banner' properties
-```
-
 ### Environment Variables (Docker Compose)
 
 Define a docker-compose.yml file
@@ -199,14 +180,13 @@ Define a docker-compose.yml file
 services:
    properties:
       build: .
-      mem_limit: 512m
       environment:
          - SPRING_PROFILES_ACTIVE=docker,no-banner
 ```
 
 ```bash
-mvn clean package
-docker compose up
+mvn clean package -Dmaven.test.skip=true
+docker compose up --build -d
 ```
 
 ### Programmatically
