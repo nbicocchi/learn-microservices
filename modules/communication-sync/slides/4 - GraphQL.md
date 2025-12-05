@@ -8,10 +8,6 @@ Unlike traditional REST APIs, where the client has to make multiple requests to 
 
 In addition, GraphQL provides a strong typing system, which allows developers to clearly define the data structure and validate queries at compile time. This leads to better automatic API documentation and greater robustness in client and server code.
 
-Another advantage to using GraphQL is the lack of the need to provide for api versioning to allow, for example, legacy applications to run. This is because this query language only returns the data that’s explicitly requested, so new capabilities can be added via new types and new fields on those types without creating a breaking change.
-
-For example, if you want to obtain information about an individual post, you can send the query:
-
 ```
 query {
   getPostById(id: "123") {
@@ -30,15 +26,6 @@ query {
   }
 }
 ```
-
-In this query:
-
-- **`query`** is the keyword indicating that a query is being performed.
-- **`getPostById`** is the name of the query endpoint, which may correspond to a function or a field defined in the GraphQL server.
-- **`(id: "123")`** specifies the query arguments. In this case, we are querying the information of a post with a specific ID (in our example, "123").
-- **`id`** and **`description`** are the required post fields.
-- **`user`** is a field that can contain additional fields, such as **`id`** and **`username`**, representing the post's author.
-- **`comments`** is a field that can be a list of objects, which may contain additional fields such as **`id`** and **`content`**, representing the post's comments.
 
 When this query is executed on the GraphQL server, a JSON object will be returned containing the required information about the post, or possibly an error if the post is not found or another problem occurs during the execution of the query. For example:
 
@@ -69,16 +56,8 @@ When this query is executed on the GraphQL server, a JSON object will be returne
 }
 ```
 
-In this response:
-
-- We have a JSON object with a key **`data`**, which contains the data required by the query.
--
-- Within the object **`data`**, we have an object **`post`**, which contains information about the requested user.
-- The object **`post`** contains the properties **`id`**, **`description`**, **`likesCount`**, and **`imagePath`**, representing the post's ID, description, number of likes, and image path, respectively.
-- The property **`user`** contains an object with the properties **`id`** and **`username`**, representing the post's author.
-- The property **`comments`** contains an array of objects, each representing a comment on the post. Each comment object contains the properties **`id`** and **`content`**, representing the comment's ID and content.
-
 In the above example, the values of all parameters were requested; in case it wants only some of them (e.g., just the name), the answer will be:
+
 ```json
 {
   "data": {
@@ -88,7 +67,9 @@ In the above example, the values of all parameters were requested; in case it wa
   }
 }
 ```
+
 making the query:
+
 ```
 query {
   getPostById(id: "123") {
@@ -96,15 +77,17 @@ query {
   }
 }
 ```
+
 For the moment, we will focus on the basic concepts of GraphQL also by using examples with queries, and then we will move on to the technical aspects of its implementation.
 
 
 ### Queries & Mutations
 In GraphQL, queries are used to retrieve data from the server, while mutations are used to modify or create data on the server. Both queries and mutations are defined in the GraphQL schema and can be executed by clients to interact with the server.
-The main difference between queries and mutations is that queries are read-only operations that do not modify the server's state, while mutations are write operations that can modify the server's state.
-The syntax for queries and mutations is similar, but they are distinguished by the operation keyword at the beginning of the request:
+
 - **Query**: Used to retrieve data from the server; we have talked about it in the previous section.
-- **Mutation**: Used to modify or create data on the server. An example can be:
+- **Mutation**: Used to modify or create data on the server. 
+
+An example can be:
     ```
     mutation {
         createPost(description: "This is a description", userId: "200", imagePath: "posts/default.jpg") {
@@ -115,6 +98,7 @@ The syntax for queries and mutations is similar, but they are distinguished by t
     }
     ```
   Note the *Data mutations and after fetch* principle: after a mutation, the server returns the data that was modified or created. This allows the client to update its local cache or UI based on the server's response.
+
   If we don't want to return anything, we can use the keyword *void*:
     ```
     mutation {
@@ -123,20 +107,18 @@ The syntax for queries and mutations is similar, but they are distinguished by t
         }
     }
     ```
-  In this case, the server will delete the post with the specified ID and return nothing.
+
 
 ### Aliases
 In GraphQL, aliases are used to request the same field or fields multiple times within a single query, but with different names for each occurrence.
 This is particularly useful when you want to retrieve similar data from a GraphQL server but need to differentiate between them in the response.
-Anyway,  if any part of a query fails to execute successfully, the entire query will result in an error.
-This is known as "all or nothing" behavior. So, when using aliases, it's important to ensure that each aliased field is valid and can be resolved successfully. Otherwise, the entire query will fail.
-Just for example, if you want to retrieve information about two posts with different IDs, you can use aliases to differentiate between them in the response:
+
 ```
 query GetProduct {
     alias0: getPostById(productId: 111) {
        id
        description
-}
+    }
 
     alias1: getPostById(productId: 112) {
        id
@@ -162,7 +144,7 @@ Here is the response:
 
 ### Fragments
 Fragments in GraphQL are like reusable units of fields. They allow you to define a set of fields that you can include in multiple queries, mutations, or other fragments.
-Here's a breakdown of how fragments work in GraphQL:
+
 ```
 fragment PostFields on Post {
     id
@@ -170,7 +152,7 @@ fragment PostFields on Post {
 }
 ```
 In this example, the fragment **`PostFields`** defines a set of fields that can be included in queries or mutations that require information about a post. The **`on Post`** part specifies that the fragment applies to objects of type **`Post`**.
-To use the fragment in a query, you can include it like this:
+
 ```
 query GetPost {
     getPostById(productId: 111) {
@@ -185,7 +167,7 @@ The operationName in GraphQL is an optional piece of metadata that you can inclu
 
 In GraphQL, you can send multiple operations (queries, mutations, or subscriptions) in a single request separated by curly braces {}. This is particularly useful when you want to fetch or mutate multiple sets of data in a single round trip to the server.
 Here's an example of a GraphQL request with multiple operations:
-```
+```To use the fragment in a query, you can include it like this:
 query PleaseGetPost {
   getPostById(id: 111) {
     id

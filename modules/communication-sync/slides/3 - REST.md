@@ -137,7 +137,6 @@ public class PostIntegration {
               .body(new ParameterizedTypeReference<>() {});
    }
 }
-
 ```
 
 
@@ -148,14 +147,16 @@ services:
   post-service:
     build: post-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
     ports:
       - "8080:8080"
 
   user-service:
     build: user-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - APP_POST-SERVICE_HOST=post-service
+      - APP_POST-SERVICE_PORT=8080
     ports:
       - "8081:8080"
 ```
@@ -165,57 +166,14 @@ mvn clean package -Dmaven.test.skip=true
 docker compose up --build --detach
 ```
 
-The following command shows the locally stored data about posts (without details about users).
-
 ```bash
 curl -X GET http://localhost:8080/posts | jq
 ```
-
-```json
-[
-  {
-    "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
-    "timestamp": "2025-03-01T10:30:00",
-    "content": "hello!"
-  },
-  {
-    "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
-    "timestamp": "2025-03-01T10:32:00",
-    "content": "i'm json!"
-  },
-  {
-    "userUUID": "b1f4748a-f3cd-4fc3-be58-38316afe1574",
-    "timestamp": "2025-03-01T10:32:00",
-    "content": "looking for an apartment"
-  }
-]
-```
-
-The following query shows data about users, augmented with posts data.
 
 ```bash
 curl -X GET http://localhost:8081/users/171f5df0-b213-4a40-8ae6-fe82239ab660 | jq
 ```
 
-```json
-{
-  "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
-  "nickname": "hannibal",
-  "birthDate": "2000-03-01",
-  "posts": [
-    {
-      "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
-      "timestamp": "2025-03-01T10:32:00",
-      "content": "i'm json!"
-    },
-    {
-      "userUUID": "171f5df0-b213-4a40-8ae6-fe82239ab660",
-      "timestamp": "2025-03-01T10:30:00",
-      "content": "hello!"
-    }
-  ]
-}
-```
 
 ## Resources
 * https://www.baeldung.com/spring-boot-restclient

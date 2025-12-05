@@ -1,49 +1,5 @@
 # Labs
 
-All exercises have to support both a development configuration (default profile) and a production configuration (docker profile).
-
-## Lab 1: Scaling services with REST Communication
-
-1. Implement a **math-service** for computing prime numbers.
-    * `POST /primes {lowerbound, upperbound, email}` → returns the list of all prime numbers between `lowerbound` and `upperbound`.
-2. Implement a **proxy-service** for consuming **math-service**.
-   * `POST /primes {lowerbound, upperbound, email}` → returns the list of all prime numbers between `lowerbound` and `upperbound`.
-3. After testing the two services by themselves, add a containerized nginx service acting as a load balancer. Refer to the `docker-compose.yml` file and `nginx` folder for properly running it.
-
----
-
-## Lab 2: REST Communication for a Social Network
-
-1. Implement a **post-service** for managing posts on a social network.
-  - `GET /posts` → Returns all posts.
-  - `GET /posts/{userUUID}` → Returns all posts created by a specific user.
-
-   ```java
-   class Post {
-       Long id;
-       String userUUID;
-       LocalDateTime timestamp;
-       String content;
-   }
-   ```  
-
-2. Implement a **user-service**, exposing the following endpoints:
-  - `GET /users` → Returns all users (only local details).
-  - `GET /users/{userUUID}` → Returns local details and all posts of a specific user.
-
-   ```java
-   class User {
-       Long id;
-       String userUUID;
-       String nickname;
-       LocalDate birthDay;
-   }
-   ```  
-
-3. Use DTOs to abstract internal details, such as database primary keys, in API responses.
-
----
-
 # Questions
 1. Comment on the key fallacies of distributed systems.
 2. How does dependency injection contribute to the spread of the fallacies of distributed systems?
