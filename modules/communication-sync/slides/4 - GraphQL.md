@@ -198,15 +198,6 @@ Pass the variable values when executing the operation
 
 The server will replace `$userUUID` with the provided value at runtime.
 
-Benefits of using variables in GraphQL
-
-* **Dynamic Queries**: Construct queries based on user input or runtime conditions.
-* **Security**: Helps protect against injection attacks, as values are passed separately from the query string.
-* **Reusability**: Parameterized queries and mutations can be reused with different input values, reducing duplication and improving maintainability.
-
-
-Here’s your **Directives section updated for your User service example**, using your schema and UUIDs:
-
 ---
 
 ### Directives
@@ -236,8 +227,6 @@ query GetUser($includeBirthDate: Boolean!) {
   "includeBirthDate": true
 }
 ```
-
-Here’s a **clear technical explanation** for GraphQL in Spring Boot, focusing on **dependencies, schema, and how to write a controller**. I’ll use your User/Post example to keep it concrete.
 
 ---
 

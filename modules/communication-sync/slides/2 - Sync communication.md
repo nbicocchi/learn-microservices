@@ -1,6 +1,6 @@
 # Synchronous Communications
 
-In synchronous communication, services interact in a *request–response* manner — the caller sends a request and waits for a reply before continuing. This model is simple and intuitive, resembling traditional client-server interactions. Typical implementations include **REST**, **GraphQL**, and **gRPC** (using Protobuf), each offering different trade-offs in flexibility, performance, and data format (best for edge, cloud, or both).
+In synchronous communication, services interact in a *request–response* manner — the caller sends a request and waits for a reply before continuing. This model is simple and intuitive, resembling traditional client-server interactions. Typical implementations include **REST**, **GraphQL**, **gRPC**, **Avro**, each offering different trade-offs in flexibility, performance, and data format (best for edge, cloud, or both).
 
 ---
 
