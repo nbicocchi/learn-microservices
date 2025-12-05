@@ -1,10 +1,21 @@
 type Post {
-    userUUID: String
+    userUUID: String!
     timestamp: String
-    content: String
+    content: String!
 }
 
 type Query {
     allPosts: [Post]
     postsByUser(userUUID: String!): [Post]
+}
+
+type Mutation {
+    addPost(input: AddPostInput!): Post!
+    removePost(userUUID: String!, timestamp: String!): Boolean!
+}
+
+input AddPostInput {
+    userUUID: String!
+    timestamp: String
+    content: String!
 }

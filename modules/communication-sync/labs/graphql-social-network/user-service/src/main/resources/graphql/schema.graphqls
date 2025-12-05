@@ -3,6 +3,18 @@ type Query {
   userByUUID(userUUID: String!): User
 }
 
+type Mutation {
+  addUser(input: UserDTOInput!): User!
+  removeUser(userUUID: String!): Boolean!
+}
+
+input UserDTOInput {
+  userUUID: String!
+  nickname: String!
+  birthDate: String
+}
+
+
 type User {
   userUUID: String!
   nickname: String!

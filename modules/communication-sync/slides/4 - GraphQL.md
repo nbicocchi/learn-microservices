@@ -1,112 +1,62 @@
 # GraphQL
 
-## Theory
-
-GraphQL is a query language for APIs (Application Programming Interfaces), developed by Facebook in 2012.
+GraphQL is a query language for APIs (Application Programming Interfaces), developed by Meta.
 
 Unlike traditional REST APIs, where the client has to make multiple requests to obtain all the information it needs, GraphQL allows the client to specify exactly what data it wants to obtain and from where, in a single request.
 
 In addition, GraphQL provides a strong typing system, which allows developers to clearly define the data structure and validate queries at compile time. This leads to better automatic API documentation and greater robustness in client and server code.
 
-```
-query {
-  getPostById(id: "123") {
-    id
-    description
-    user {
-      id
-      username
-    }
-    comments {
-      id
-      content
-    }
-    likesCount
-    imagePath
-  }
-}
-```
-
-When this query is executed on the GraphQL server, a JSON object will be returned containing the required information about the post, or possibly an error if the post is not found or another problem occurs during the execution of the query. For example:
-
-```json
-{
-  "data": {
-    "post": {
-      "id": "123",
-      "description": "This is the post description.",
-      "user": {
-        "id": "456",
-        "username": "john_doe"
-      },
-      "comments": [
-        {
-        "id": "789",
-        "content": "This is the first comment."
-        },
-        {
-        "id": "1011",
-        "content": "This is the second comment."
-        }
-      ],
-      "likesCount": "10",
-      "imagePath": "posts/default.jpg"
-    }
-  }
-}
-```
-
-In the above example, the values of all parameters were requested; in case it wants only some of them (e.g., just the name), the answer will be:
-
-```json
-{
-  "data": {
-    "post": {
-      "description": "This is the post description."
-    }
-  }
-}
-```
-
-making the query:
-
-```
-query {
-  getPostById(id: "123") {
-    description
-  }
-}
-```
-
-For the moment, we will focus on the basic concepts of GraphQL also by using examples with queries, and then we will move on to the technical aspects of its implementation.
-
-
 ### Queries & Mutations
-In GraphQL, queries are used to retrieve data from the server, while mutations are used to modify or create data on the server. Both queries and mutations are defined in the GraphQL schema and can be executed by clients to interact with the server.
+ Both queries and mutations are defined in the GraphQL schema and can be executed by clients to interact with the server.
 
-- **Query**: Used to retrieve data from the server; we have talked about it in the previous section.
+- **Query**: Used to retrieve data from the server.
 - **Mutation**: Used to modify or create data on the server. 
 
-An example can be:
-    ```
-    mutation {
-        createPost(description: "This is a description", userId: "200", imagePath: "posts/default.jpg") {
-            id
-            description
-            likescount
-        }
+```graphql
+query {
+  allUsers {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
     }
-    ```
-  Note the *Data mutations and after fetch* principle: after a mutation, the server returns the data that was modified or created. This allows the client to update its local cache or UI based on the server's response.
+  }
+}
+```
 
-  If we don't want to return anything, we can use the keyword *void*:
-    ```
-    mutation {
-        deletePost(id: "123") {
-            void
-        }
+```graphql
+query {
+  userByUUID(userUUID: "b1f4748a-f3cd-4fc3-be58-38316afe1574") {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
     }
-    ```
+  }
+}
+```
+
+```graphql
+mutation {
+  addUser(input: {
+    userUUID: "new-uuid"
+    nickname: "nickname123"
+    birthDate: "2000-01-01"
+  }) {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
+    }
+  }
+}
+```
 
 
 ### Aliases
@@ -114,29 +64,24 @@ In GraphQL, aliases are used to request the same field or fields multiple times 
 This is particularly useful when you want to retrieve similar data from a GraphQL server but need to differentiate between them in the response.
 
 ```
-query GetProduct {
-    alias0: getPostById(productId: 111) {
-       id
-       description
+query GetUsers {
+  alias0: userByUUID(userUUID: "171f5df0-b213-4a40-8ae6-fe82239ab660") {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
     }
+  }
 
-    alias1: getPostById(productId: 112) {
-       id
-       description
-    }
-}
-```
-Here is the response:
-```json
-{
-  "data": {
-    "alias0": {
-      "id": 111,
-      "description": "post 111"
-    },
-    "alias1": {
-      "id": 112,
-      "description": "post 112"
+  alias1: userByUUID(userUUID: "b1f4748a-f3cd-4fc3-be58-38316afe1574") {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
     }
   }
 }
@@ -145,278 +90,164 @@ Here is the response:
 ### Fragments
 Fragments in GraphQL are like reusable units of fields. They allow you to define a set of fields that you can include in multiple queries, mutations, or other fragments.
 
-```
-fragment PostFields on Post {
-    id
-    description
-}
-```
-In this example, the fragment **`PostFields`** defines a set of fields that can be included in queries or mutations that require information about a post. The **`on Post`** part specifies that the fragment applies to objects of type **`Post`**.
-
-```
-query GetPost {
-    getPostById(productId: 111) {
-        ...PostFields
+```graphql
+query GetUsers {
+  alias0: userByUUID(userUUID: "171f5df0-b213-4a40-8ae6-fe82239ab660") {
+    ...UserFields
+    posts {
+      ...PostFields
     }
-  
+  }
+
+  alias1: userByUUID(userUUID: "b1f4748a-f3cd-4fc3-be58-38316afe1574") {
+    ...UserFields
+    posts {
+      ...PostFields
+    }
+  }
+}
+
+# -----------------------
+# Fragments
+# -----------------------
+fragment UserFields on User {
+  userUUID
+  nickname
+  birthDate
+}
+
+fragment PostFields on Post {
+  timestamp
+  content
 }
 ```
 
 ### Operations
-The operationName in GraphQL is an optional piece of metadata that you can include in your GraphQL requests. It's used to specify the name of the operation being performed within a multi-operation request.
-
 In GraphQL, you can send multiple operations (queries, mutations, or subscriptions) in a single request separated by curly braces {}. This is particularly useful when you want to fetch or mutate multiple sets of data in a single round trip to the server.
-Here's an example of a GraphQL request with multiple operations:
-```To use the fragment in a query, you can include it like this:
-query PleaseGetPost {
-  getPostById(id: 111) {
-    id
-    description
-  }
-  getPostByUserId(userId: 200) {
-    id
-    likesCount
+
+```graphql
+# First operation
+query PleaseGetHannibal {
+  userByUUID(userUUID: "171f5df0-b213-4a40-8ae6-fe82239ab660") {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
+    }
   }
 }
-```
-Will be possible to see *operationName* in some places, like in the GraphQL debug interface:
-```
---- logs here ---
-    getPostById(id: 111) {
-        id
-        description
+
+# Second operation
+query PleaseGetShyGuy {
+  userByUUID(userUUID: "b1f4748a-f3cd-4fc3-be58-38316afe1574") {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
     }
-    getPostByUserId(userId: 200) {
-        id
-        likesCount
-    },
-    operationName='PleaseGetProduct'
---- others logs here ---
+  }
+}
 ```
 
 ### Variables
-Variables in GraphQL allow you to parameterize your queries, mutations, or subscriptions, making them dynamic and reusable. Instead of hardcoding values directly into your GraphQL operations, you can use variables to pass values from the client to the server at runtime.
 
-Here's how you can define and use variables in GraphQL:
-1. Define the variable in the query or mutation operation.
-    ```
-        query GetPost($postId: ID!) {
-            getPostById(id: $postId) {
-                description
-                likesCount
-            }
-        }
-    ```
-   You can define the default variable value by adding a colon and the default value after the type declaration:
-   ```
-       query GetPost($postId: ID = "123") {
-         getPostById(id: $postId) {
-           description
-           likesCount
-         }
-       }
-   ```
+Variables in GraphQL allow you to parameterize your queries or mutations, making them dynamic and reusable.
+Instead of hardcoding values directly into your GraphQL operations, you can use variables to pass values from the client to the server at runtime.
 
-2. Pass the variable values when executing the operation.
-  ```
-    {
-        "postId": "123"
+```graphql
+query GetUser($userUUID: String!) {
+  userByUUID(userUUID: $userUUID) {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
     }
-  ```
-Using variables in GraphQL provides several benefits:
-- **Dynamic Queries**: Variables allow you to construct dynamic queries based on user input or other runtime conditions.
-- **Security**: Using variables helps protect against injection attacks, as values are passed separately from the query string.
-- **Query Reusability**: By parameterizing your queries, mutations, or subscriptions, you can reuse them with different input values, improving code maintainability and reducing duplication.
-
-### Directives
-Directives in GraphQL are used to conditionally include or exclude fields or fragments in a query based on certain conditions. They provide a way to control the execution of a query and customize the response based on the client's requirements.
-Here is an example of how you can use directives in a GraphQL query:
-```
-query GetPost($includeImage: Boolean!) {
-  getPostById(id: "123") {
-    description
-    imagePath @include(if: $includeImage)
   }
 }
 ```
-In this query, the **`@include`** directive is used to conditionally include the **`imagePath`** field based on the value of the **`$includeImage`** variable. If the variable is **`true`**, the **`imagePath`** field will be included in the response; otherwise, it will be excluded.
-```
-{
-    "$includeImage": true
-}
-```
 
-### Introspection query
-The introspection query is a special query in GraphQL that allows you to query the schema of a GraphQL server to retrieve information about the types, fields, and directives defined in the schema. This can be useful for exploring the capabilities of a GraphQL API, generating documentation, or building tools that work with GraphQL schemas.
-Some application like Postman uses this query in advance to retrieve the schema of the API and to allow the user to compose queries and mutations in an intuitive way.
-
-It is possible to do this query, by cURL for example, by sending the attached JSON body file *introspection_query.json* (omitted in this text for readability reasons because is very long) to the desired endpoint (e.g., *http://localhost:7001/graphql*) by the command:
-```bash
-curl --location --request POST 'http://localhost:7001/graphql' \
---header 'Content-Type: application/json' \
--d @introspection_query.json
-```
-The response is also omitted for brevity because can be really verbose.
-
-Obviously, using this kind of method is a little bit cumbersome, so it is advisable to not use it.
-This query will return a JSON object containing information about the schema of the GraphQL server, including the query type, mutation type, subscription type, types, and directives defined in the schema.
-
-## Technical explanation
-
-### Schema
-
-The GraphQL schema defines the structure of the data available through a GraphQL API. This schema provides a clear map of the available data types and the relationships between them, enabling developers to understand how to interact with the API and what data can be requested and sent. In fact, it is possible to make a request in advance in order to know what objects and queries are available.
-
-In the GraphQL schema, several data types are defined, including:
-
-1. **Object Types**: They represent objects within the system. For example, an object type could represent a user, a post or any other entity in the system.
-2. **Fields**: These are the properties of an object type. Each field has a name and a type. Fields can be scalar (strings, numbers, booleans, etc.) or they can be other object types.
-3. **Arguments**: These are the parameters passed to fields to customise the result. For example, a query to obtain information about a user might require an argument such as the user's ID.
-4. **Scalar types**: These are the primitive data types, such as strings, numbers, Booleans, etc.
-5. **List of types**: Indicates an array of a specific type of data. For example, a list of posts.
-
-Here is a simplified example of what a GraphQL schema might look like:
+You can also provide a **default value** for the variable:
 
 ```graphql
-type User {
-    id: ID!
-    username: String!
-    email: String!
-    password: String!
-    avatarPath: String!
-}
-
-input UserInput {
-    username: String!
-    email: String!
-    password: String!
-}
-
-type Query {
-    getUserById(id: ID!): User
-    getUserByUsername(username: String!): User
-    getUserByEmail(email: String!): User
-    getUsers: [User]!
-}
-
-type Mutation {
-    createUser(username: String!, email: String!, password: String!, avatarPath:String!): User!
-    deleteUser(id: ID!): Boolean
-    updateUser(id: ID!, username: String, email: String, password: String, avatarPath: String): User
-}
-```
-
-In this example:
-
-- An object type was defined: User, which represents users in the system.
-- Each object type has fields representing the properties of that object; with their respective types (integer, string, etc.). The "!" symbol in a GraphQL schema indicates that a field is mandatory, i.e. it must always have a value when returned by the GraphQL server. If a field has the "!" symbol, it means that it cannot be null and must be included in the query result. The usage of the square brackets around type show that the object returned is a List.
-- The **`Input`** is a data type used to define the structure of input parameters for mutations. Mutations are operations that modify or update data in the GraphQL server, such as creating a new user or editing a post.
-- The type **`Query`** defines the available read operations (queries), such as getUserById, which returns the details of the user having that specific *id*. It is similar to the GET method in REST.
-- The **`Mutation`** in GraphQL are operations that allow data to be modified on the server. Whereas queries are used to read data, mutations allow data to be created, modified or deleted in the system; they take as input the parameters defined within the round brackets and return the values of the type defined after the symbol ":"; again the presence of the symbol "!" symbol means that after the operation is executed, it must return something other than *null*. Mutations are defined within the GraphQL schema just like queries, but are annotated with the type **`Mutation`** instead of **`Query`**.
-  It works like the POST, PUT, PATCH and DELETE methods in REST.
-
-### Responses
-
-A special feature of GraphQL, unlike REST, is that the status code of the HTTP response is always 200, regardless of whether the request was successful or not. This is because GraphQL handles errors differently from traditional REST APIs.
-
-Instead of using the HTTP status code to report errors, GraphQL returns a JSON object with an 'errors' key in the response body if errors occur during query processing. This object contains a list of errors giving details of the type of error and where it occurred.
-
-For example, if a GraphQL query contains a syntax error, the server will respond with a status 200 and include an 'errors' object in the response to indicate the specific error:
-
-- **Wrong query**:
-
-    ```bash
-    query GetUser {
-        getUserById(id: 123 { # it lacks the ")" symbol after 123
-            username
-            email
-        }
+query GetUser($userUUID: String = "171f5df0-b213-4a40-8ae6-fe82239ab660") {
+  userByUUID(userUUID: $userUUID) {
+    userUUID
+    nickname
+    birthDate
+    posts {
+      timestamp
+      content
     }
-    ```
-
-- **Response**:
-
-    ```bash
-    {
-        "errors": [
-          {
-            "message": "Invalid Syntax : offending token '{' at line 2 column 31"
-          }
-        ]
-     }
-    ```
-
-
-On the other hand, if the query is processed correctly and there are no errors, the response will still be status 200 and will include the requested data in the JSON response.
-
-Therefore, when working with GraphQL, it is important to examine the content of the JSON response to determine whether the request was successful or not, rather than relying solely on the HTTP status code.
-
-**Exceptions handling**
-
-It is possible to enhance the response of wrong query in order to make it more verbose (e.g. *notfoundexception* in the case of an object not found instead of a generic one). It can be done by adding a custom exception resolver class (extending *DataFetcherExceptionResolverAdapter*) like this:
-
-```java
-@Component
-public class GraphQlCustomExceptionResolver extends DataFetcherExceptionResolverAdapter {
-
-    @Override
-    protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
-        if (ex instanceof NotFoundException) {
-            return GraphqlErrorBuilder.newError()
-                    .errorType(ErrorType.NOT_FOUND)
-                    .message(ex.getMessage())
-                    .path(env.getExecutionStepInfo().getPath())
-                    .location(env.getField().getSourceLocation())
-                    .build();
-        } else if (ex instanceof InvalidInputException) {
-            return GraphqlErrorBuilder.newError()
-                    .errorType(ErrorType.BAD_REQUEST)
-                    .message(ex.getMessage())
-                    .path(env.getExecutionStepInfo().getPath())
-                    .location(env.getField().getSourceLocation())
-                    .build();
-        } else if (ex instanceof BadRequestException) {
-            return GraphqlErrorBuilder.newError()
-                    .errorType(ErrorType.BAD_REQUEST)
-                    .message(ex.getMessage())
-                    .path(env.getExecutionStepInfo().getPath())
-                    .location(env.getField().getSourceLocation())
-                    .build();
-        }
-        else {
-            return null;
-        }
-    }
+  }
 }
 ```
-where every exception returns a more verbose error. Obviously each exception will have to be declared separately (see attached code in the repository).
 
+Pass the variable values when executing the operation
 
-Refer to the *product-service-graphql* example (labs/product-service-graphql):
-
-The **product-service** manages product data. The model class is reported below:
-
-```java
-@AllArgsConstructor
-@NoArgsConstructor
-@RequiredArgsConstructor
-@Data
-@Entity
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @NonNull @EqualsAndHashCode.Include private String uuid;
-    @NonNull private String name;
-    @NonNull private Double weight;
+```json
+{
+  "userUUID": "b1f4748a-f3cd-4fc3-be58-38316afe1574"
 }
 ```
+
+The server will replace `$userUUID` with the provided value at runtime.
+
+Benefits of using variables in GraphQL
+
+* **Dynamic Queries**: Construct queries based on user input or runtime conditions.
+* **Security**: Helps protect against injection attacks, as values are passed separately from the query string.
+* **Reusability**: Parameterized queries and mutations can be reused with different input values, reducing duplication and improving maintainability.
+
+
+Here’s your **Directives section updated for your User service example**, using your schema and UUIDs:
 
 ---
 
-## Dependencies
+### Directives
 
-To use **GraphQL** with **Spring Boot**, add the following dependencies to your `pom.xml`:
+Directives in GraphQL are used to **conditionally include or skip fields** in a query based on runtime conditions.
+They allow you to customize the response without changing the query itself.
+
+```graphql
+query GetUser($includeBirthDate: Boolean!) {
+  userByUUID(userUUID: "171f5df0-b213-4a40-8ae6-fe82239ab660") {
+    userUUID
+    nickname
+    birthDate @include(if: $includeBirthDate)
+    posts {
+      timestamp
+      content
+    }
+  }
+}
+```
+
+* The `@include(if: $includeBirthDate)` directive will include the `birthDate` field **only if `$includeBirthDate` is `true`**.
+* If `$includeBirthDate` is `false`, `birthDate` will not appear in the response.
+
+```json
+{
+  "includeBirthDate": true
+}
+```
+
+Here’s a **clear technical explanation** for GraphQL in Spring Boot, focusing on **dependencies, schema, and how to write a controller**. I’ll use your User/Post example to keep it concrete.
+
+---
+
+## GraphQL in Spring Boot
+
+GraphQL allows clients to request exactly the data they need in a single request. In Spring Boot, you define a **schema**, provide a **controller** to handle queries and mutations, and use dependencies to enable GraphQL support.
+
+---
+
+### 1. Dependencies
 
 ```xml
 <dependency>
@@ -425,216 +256,160 @@ To use **GraphQL** with **Spring Boot**, add the following dependencies to your 
 </dependency>
 
 <dependency>
-    <groupId>com.graphql-java</groupId>
-    <artifactId>graphql-java-extended-scalars</artifactId>
-</dependency>
-
-<dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-web</artifactId>
 </dependency>
 ```
 
-These enable:
-
-* GraphQL endpoint auto-configuration (`/graphql`)
-* GraphQL Playground (via Altair or other clients)
-* Integration with Spring WebMVC for HTTP transport
-
 ---
 
-## GraphQL Schema
+### 2. Schema
 
-* **Defines the API contract**: types, queries, mutations, and inputs.
-* Example schema for products:
+The **GraphQL schema** defines your API:
+
+* **Object Types**: Represent entities (e.g., `User`, `Post`).
+* **Fields**: Properties of each object (can be scalar or another object).
+* **Input Types**: Structure for mutation inputs (`UserDTOInput`).
+* **Queries**: Read operations (like GET in REST).
+* **Mutations**: Write operations (like POST/PUT/DELETE in REST).
+
+**Example: User/Post Schema**
 
 ```graphql
-type Product {
-    uuid: String!
-    name: String!
-    weight: Float!
+type User {
+  userUUID: String!
+  nickname: String!
+  birthDate: String
+  posts: [Post!]!
+}
+
+type Post {
+  userUUID: String!
+  timestamp: String
+  content: String!
+}
+
+input UserDTOInput {
+  userUUID: String!
+  nickname: String!
+  birthDate: String
 }
 
 type Query {
-    allProducts: [Product!]!
-    productByUuid(uuid: String!): Product
+  allUsers: [User!]!
+  userByUUID(userUUID: String!): User
 }
 
 type Mutation {
-    createProduct(product: ProductInput!): Product
-    updateProduct(uuid: String!, product: ProductInput!): Product
-    deleteProduct(uuid: String!): Boolean
-}
-
-input ProductInput {
-    uuid: String!
-    name: String!
-    weight: Float!
+  addUser(input: UserDTOInput!): User!
+  removeUser(userUUID: String!): Boolean!
 }
 ```
 
-* Strongly typed → clients know exactly what to send and expect.
-* Allows **auto-generated documentation** and schema introspection.
+* Queries: `allUsers`, `userByUUID`
+* Mutations: `addUser`, `removeUser`
 
 ---
 
-## GraphQL Controller
+### 3. Writing a GraphQL Controller
 
-The GraphQL controller handles incoming GraphQL queries and mutations. It supports two key queries and three mutations:
+* `@QueryMapping` → handles queries
+* `@MutationMapping` → handles mutations
+* `@Argument` → maps method parameters to GraphQL arguments
 
-* `allProducts` → Returns all products.
-* `productByUuid(uuid: String!)` → Returns a specific product.
-* `createProduct(product: ProductInput!)` → Creates a new product.
-* `updateProduct(uuid: String!, product: ProductInput!)` → Updates a product.
-* `deleteProduct(uuid: String!)` → Deletes a product.
+```mermaid
+flowchart LR
+    Client[Client<br/>Altair, Postman, Browser] -->|GraphQL Query/Mutation| GraphQLController[UserController<br/>GraphQL Controller]
+
+    GraphQLController -->|Fetch user| UserService[User Repository / UserService]
+    GraphQLController -->|Fetch posts| PostService[Post Integration Service]
+
+    UserService -->|Returns UserModel| GraphQLController
+    PostService -->|Returns PostDTO list| GraphQLController
+
+    GraphQLController -->|Combined UserDTO + Posts| Client
+
+    style Client fill:#f9f,stroke:#333,stroke-width:2px
+    style GraphQLController fill:#bbf,stroke:#333,stroke-width:2px
+    style UserService fill:#bfb,stroke:#333,stroke-width:2px
+    style PostService fill:#ffb,stroke:#333,stroke-width:2px
+
+```
 
 ```java
-@Controller
-public class ProductGraphQLController {
-    ProductService productService;
+@RestController
+@RequestMapping("/users")
+public class UserController {
 
-    public ProductGraphQLController(ProductService productService) {
-        this.productService = productService;
+    private final UserRepository userRepository;
+    private final PostIntegration postIntegration;
+
+    public UserController(UserRepository userRepository, PostIntegration postIntegration) {
+        this.userRepository = userRepository;
+        this.postIntegration = postIntegration;
+    }
+
+    // -------------------------------
+    // Queries
+    // -------------------------------
+    @QueryMapping
+    public List<UserDTO> allUsers() {
+        return userRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     @QueryMapping
-    public Iterable<Product> allProducts() {
-        return productService.findAll();
+    public UserDTO userByUUID(@Argument String userUUID) {
+        UserModel user = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        UserDTO dto = mapToDTO(user);
+        // Fetch posts from Post service
+        Iterable<PostDTO> posts = postIntegration.findByUserUUID(userUUID);
+        dto.setPosts(StreamSupport.stream(posts.spliterator(), false)
+                    .collect(Collectors.toSet()));
+
+        return dto;
     }
 
-    @QueryMapping
-    public Product productByUuid(@Argument String uuid) {
-        return productService.findByUuid(uuid)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    // -------------------------------
+    // Mutations
+    // -------------------------------
+    @MutationMapping
+    public UserDTO addUser(@Argument UserDTOInput input) {
+        if (userRepository.findByUserUUID(input.getUserUUID()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
+        }
+
+        UserModel newUser = mapToModel(input);
+        return mapToDTO(userRepository.save(newUser));
     }
 
     @MutationMapping
-    public Product createProduct(@Argument ProductInput product) {
-        Product p = new Product(product.getUuid(), product.getName(), product.getWeight());
-        return productService.save(p);
-    }
+    public Boolean removeUser(@Argument String userUUID) {
+        Optional<UserModel> user = userRepository.findByUserUUID(userUUID);
+        if (user.isEmpty()) return false;
 
-    @MutationMapping
-    public Product updateProduct(@Argument String uuid, @Argument ProductInput product) {
-        Product p = productService.findByUuid(uuid)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        p.setName(product.getName());
-        p.setWeight(product.getWeight());
-        return productService.save(p);
-    }
-
-    @MutationMapping
-    public Boolean deleteProduct(@Argument String uuid) {
-        Product p = productService.findByUuid(uuid)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        productService.delete(p);
+        userRepository.delete(user.get());
         return true;
     }
 
-    public static class ProductInput {
-        private String uuid;
-        private String name;
-        private Double weight;
-        // getters and setters
+    // -------------------------------
+    // Mapping helpers
+    // -------------------------------
+    private UserDTO mapToDTO(UserModel user) {
+        UserDTO dto = new UserDTO(user.getUserUUID(), user.getNickname(), user.getBirthDate());
+        dto.setPosts(new HashSet<>());
+        return dto;
+    }
+
+    private UserModel mapToModel(UserDTOInput dto) {
+        UserModel user = new UserModel();
+        user.setUserUUID(dto.getUserUUID());
+        user.setNickname(dto.getNickname());
+        user.setBirthDate(dto.getBirthDate());
+        return user;
     }
 }
 ```
-
----
-
-## GraphQL Queries
-
-* Queries are **read-only operations**.
-* Clients request **exactly the fields they need**.
-
-Example: fetch all products
-
-```graphql
-query {
-  allProducts {
-    uuid
-    name
-    weight
-  }
-}
-```
-
-Example: fetch a single product by UUID
-
-```graphql
-query {
-  productByUuid(uuid: "171f5df0-b213-4a40-8ae6-fe82239ab660") {
-    uuid
-    name
-    weight
-  }
-}
-```
-
----
-
-## GraphQL Mutations
-
-* Mutations are **write operations** (create, update, delete).
-* They can return the modified object, enabling the client to update its UI immediately.
-
-Example: create a product
-
-```graphql
-mutation {
-  createProduct(product: {uuid: "new-001", name: "Tablet", weight: 1.1}) {
-    uuid
-    name
-    weight
-  }
-}
-```
-
-Example: update a product
-
-```graphql
-mutation {
-  updateProduct(
-    uuid: "171f5df0-b213-4a40-8ae6-fe82239ab660",
-    product: {
-      uuid: "171f5df0-b213-4a40-8ae6-fe82239ab660",
-      name: "Laptop X",
-      weight: 2.5
-    }
-  ) {
-    uuid
-    name
-    weight
-  }
-}
-```
-
-Example: delete a product
-
-```graphql
-mutation {
-  deleteProduct(uuid: "new-001")
-}
-```
-
----
-
-## Testing the API
-
-You can test the GraphQL API in several ways:
-
-* **Altair GraphQL Client (browser plugin)**
-  Available for Chrome and Firefox, it provides an interactive interface to send queries and mutations to your Spring Boot GraphQL endpoint (default: `http://localhost:8080/graphql`).
-
-* **Postman**
-  These tools can also send HTTP POST requests to `/graphql` with a GraphQL query body.
-
-* **GraphiQL Interface (optional, built-in)**
-  Spring Boot can expose a GraphiQL web interface at `/graphiql` (if enabled via `spring.graphql.graphiql.enabled=true`). It allows you to interactively explore your GraphQL schema, execute queries, and test mutations directly in the browser.
-
-## Resources
-
-* [Spring GraphQL Reference](https://docs.spring.io/spring-graphql/docs/current/reference/html/)
-* [GraphQL Official Website](https://graphql.org/)
-* [Altair GraphQL Client (browser plugin)](https://altair.sirmuel.design/)
-
