@@ -1,4 +1,3 @@
-# First stage, build the custom JRE
 FROM eclipse-temurin:21-jdk-alpine AS jre-builder
 
 RUN $JAVA_HOME/bin/jlink \
