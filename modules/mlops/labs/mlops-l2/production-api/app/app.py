@@ -14,24 +14,24 @@ from utils.evidently_integration import project_setup, data_drift_check, model_p
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
-MINIO_REFERENCE_OBJ = "reference_table_and_target"
-
-BENTO_URL = os.getenv("BENTO_URL", "http://bentoml:3000/predict")
+BENTO_URL = os.getenv("BENTO_URL", "http://host.docker.internal:3000/predict")
 KEDRO_API_URL = os.getenv("KEDRO_API_URL", "http://host.docker.internal:8005/run-pipeline")
 
-ORIGINAL_DIR = os.getenv("REFERENCE_PATH", "/app/data")
-REFERENCE_PATH = "/app/data/reference/reference_table_and_target.csv"
-CURRENT_PATH = "/app/data/current/dataset_curr.csv"
-CURRENT_TARGET_PATH = "/app/data/current/dataset_curr_and_target.csv"
+REFERENCE_PATH = "/app/data/reference.csv"
+REFERENCE_TARGET_PATH = "/app/data/reference_target.csv"
+CURRENT_PATH = "/app/data/current.csv"
+CURRENT_TARGET_PATH = "/app/data/current_target.csv"
+
+MINIO_REFERENCE_OBJ = "reference_target"
+MINIO_CURRENT_OBJ = "current_target"
+
 
 np.random.seed(42)
 
 app = FastAPI()
 
-
-class GenerateRequest(BaseModel):
+class CurrentRequest(BaseModel):
     drift: bool = False
-
 
 def evidently_warnings(data_failed):
     logger.warning(f"{len(data_failed)} failed tests detected:")
@@ -43,87 +43,78 @@ def evidently_warnings(data_failed):
                        f"Threshold (drift/fixed test): {t.metric_config.params.get('drift_share') or t.test_config.get('threshold')}\n"
                        f"Critical test? {t.test_config.get('is_critical')}\n\n")
 
+def run_generation_pipeline(
+    *,
+    df: pd.DataFrame,
+    local_output_path: str,
+    minio_object_name: str,
+):
+    """
+    Common pipeline for running model predictions, saving CSV, and uploading to MinIO.
+    """
+    logger.info("Running model predictions...")
+    df_pred = model_predictions(df, BENTO_URL)
 
-def run_kedro_pipeline():
-    try:
-        result = requests.post(KEDRO_API_URL)
-        logger.info(f"Kedro pipeline triggered successfully: {result.json()}")
-    except requests.RequestException as e:
-        logger.error(f"Failed to trigger Kedro pipeline: {e}")
+    # --- Save CSV locally ---
+    df_pred.to_csv(local_output_path, index=False)
+    logger.info(f"Saved dataset to {local_output_path}")
 
+    # --- Upload to MinIO ---
+    upload_to_minio(df_pred, minio_object_name)
+    logger.info(f"Uploaded dataset to MinIO as '{minio_object_name}'")
 
-def get_dataset_path():
-    if not os.path.isdir(ORIGINAL_DIR):
-        raise HTTPException(status_code=500, detail=f"The directory {ORIGINAL_DIR} does not exist!")
-
-    csv_files = [f for f in os.listdir(ORIGINAL_DIR) if f.lower().endswith(".csv")]
-
-    if not csv_files:
-        raise HTTPException(status_code=500, detail="No CSV files found")
-    elif len(csv_files) > 1:
-        logger.info(f"Multiple CSV files found in {ORIGINAL_DIR}, using the first one: {csv_files[0]}")
-
-    logger.info(f"Using dataset file: {csv_files}")
-    return os.path.join(ORIGINAL_DIR, csv_files[0])
+    return df_pred
 
 
 @app.get("/reference")
 def reference():
-    # --- Load local dataset ---
-    dataset_path = get_dataset_path()
-    logger.info(f"Loading reference dataset: {dataset_path}")
-    df_ref = pd.read_csv(dataset_path)
+    logger.info(f"Loading reference dataset: {REFERENCE_PATH}")
+    df_ref = pd.read_csv(REFERENCE_PATH)
 
-    # --- Make predictions with the model ---
-    logger.info("Running model predictions...")
-    df_pred = model_predictions(df_ref, BENTO_URL)
-
-    # --- Save reference dataset locally ---
-    df_pred.to_csv(REFERENCE_PATH, index=False)
-    logger.info(f"Saved generated dataset to {REFERENCE_PATH}")
-
-    # --- Upload to MinIO ---
-    upload_to_minio(df_pred, MINIO_REFERENCE_OBJ)
-    logger.info(f"Uploaded reference predictions to MinIO as '{MINIO_REFERENCE_OBJ}'")
+    run_generation_pipeline(
+        df=df_ref,
+        local_output_path=REFERENCE_TARGET_PATH,
+        minio_object_name=MINIO_REFERENCE_OBJ,
+    )
 
     return {
         "status": "OK",
-        "message": "Predictions loaded on MinIO",
-        "file_uploaded": dataset_path
+        "message": "Reference dataset uploaded to MinIO",
+        "file_uploaded": MINIO_REFERENCE_OBJ,
     }
 
 
-@app.post("/generate")
-def generate(req: GenerateRequest):
+@app.post("/current")
+def generate(req: CurrentRequest):
     logger.info(f"Starting dataset generation (drift={req.drift})")
 
-    # --- Load local dataset ---
-    dataset_path = get_dataset_path()
-    logger.info(f"Base dataset loaded")
-    df_ref = pd.read_csv(dataset_path)
+    logger.info("Loading base dataset")
+    df_ref = pd.read_csv(REFERENCE_PATH)
 
-    # -- Generate current dataset ---
+    # --- Generate stable or drifted dataset ---
     logger.info("Applying drift" if req.drift else "Generating stable dataset")
     df_curr = generate_drift(df_ref) if req.drift else generate_stable(df_ref)
 
-    # --- Save current dataset locally ---
+    # --- Save locally before predictions ---
     df_curr.to_csv(CURRENT_PATH, index=False)
     logger.info(f"Saved generated dataset to {CURRENT_PATH}")
 
-    # --- Make predictions with the model ---
-    df_pred = model_predictions(df_curr, BENTO_URL)
-    logger.info("Running model predictions on generated dataset")
-    df_pred.to_csv(CURRENT_TARGET_PATH, index=False)
+    # --- Prepare MinIO object name with timestamp ---
+    minio_object_name = f"{MINIO_CURRENT_OBJ}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-    # --- Upload to MinIO ---
-    upload_to_minio(df_pred, f"current_table_and_target_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    logger.info(f"Uploaded generated dataset to MinIO")
+    # --- Run predictions and upload ---
+    run_generation_pipeline(
+        df=df_curr,
+        local_output_path=CURRENT_TARGET_PATH,
+        minio_object_name=minio_object_name,
+    )
 
     return {
         "status": "OK",
-        "message": "Current dataset generated and uploaded to MinIO",
-        "drift": req.drift
+        "message": "Current dataset uploaded to MinIO",
+        "file_uploaded": minio_object_name,
     }
+
 
 
 @app.get("/analyze")
@@ -138,21 +129,17 @@ def analyze():
         evidently_warnings(failed_data_tests)
 
     logger.info("Checking model performance...")
-    failed_model_tests = model_performance_check(REFERENCE_PATH, CURRENT_TARGET_PATH, project)
+    failed_model_tests = model_performance_check(REFERENCE_TARGET_PATH, CURRENT_TARGET_PATH, project)
     if failed_model_tests:
         evidently_warnings(failed_model_tests)
 
     # --- Trigger Kedro pipeline if any test failed ---
     if failed_data_tests or failed_model_tests:
-        logger.info("Drift detected — triggering Kedro pipeline")
-        run_kedro_pipeline()
-
-    logger.info("Evidently analysis completed")
+        logger.info("Drift detected — trigger Kedro pipeline")
 
     return {
         "status": "OK",
         "message": "Evidently analysis completed",
         "failed_data_tests": len(failed_data_tests),
         "failed_model_tests": len(failed_model_tests),
-        "kedro_pipeline_triggered": bool(failed_data_tests or failed_model_tests)
     }
