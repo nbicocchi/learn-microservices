@@ -100,8 +100,6 @@ services:
         - BENTO_URL=${BENTO_URL}
         - KEDRO_API_URL=${KEDRO_API_URL}
       volumes:
-        - ./data:/app/data
-        - ./data/current:/app/data/current
-        - ./data/reference:/app/data/reference
+        - ./production-api/data:/app/data
       ports:
         - "8100:8100"
