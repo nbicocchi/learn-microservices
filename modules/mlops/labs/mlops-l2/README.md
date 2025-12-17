@@ -1,3 +1,4 @@
+# Prepare
 ```
 pyenv install 3.13.3
 pyenv local 3.13.3
@@ -9,7 +10,7 @@ pip install -r requirements.txt
 
 ```
 cd inference-bentoml
-bento build
+bentoml build <-- this outputs a name (e.g., spaceflight_service:h3f3atgjikqxhigt) 
 bentoml containerize spaceflight_service:h3f3atgjikqxhigt <-- update this
 ```
 
@@ -36,20 +37,48 @@ update docker-compose.yml
 docker compose up --build -d
 ```
 
-# builds a model
+# Use
+
+Eventually, try manual experiments with training-pipeline/notebooks
+
+Run the automatic training pipeline to produce a model
 
 ```
 curl -X POST http://localhost:8005/run-pipeline \
      -H "Content-Type: application/json"
 ```
 
-# try manual experiments with jupiter-lab
+Check if a new model appears in model registry: http://localhost:5000/#/models
 
-# check models on mlflow
-http://localhost:5000/
+Ask the inference engine to load a model
 
-# check inference engine (import the model)
-http://localhost:3000/
+```
+curl -X POST http://localhost:3000/import_model \
+  -H "Content-Type: application/json" \
+  -d '{
+        "model_uri": {                     
+            "model_name": "spaceflights-kedro",
+            "model_version": 2
+        }
+      }
+```
 
-# use monitoring service
+Make a test prediction on the inference engine
+
+```
+curl -X POST http://localhost:3000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+        "input_data": {
+            "engines": 2.0,
+            "passenger_capacity": 5,
+            "crew": 1.0,
+            "d_check_complete": true,
+            "moon_clearance_complete": true,
+            "iata_approved": false,
+            "company_rating": 4.5,
+            "review_scores_rating": 4.7
+        }
+      }'
+```
 

@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+pandas
+numpy
+bentoml
+minio
+pydantic
+requests
+python-multipart
+s3fs
+gcsfs
+evidently~=0.7
+sniffio

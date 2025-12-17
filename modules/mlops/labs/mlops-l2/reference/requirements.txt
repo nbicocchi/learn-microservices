@@ -1,4 +1,0 @@
-pandas
-requests
-s3fs
-pydantic

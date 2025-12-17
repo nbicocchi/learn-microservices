@@ -1,6 +1,0 @@
-evidently~=0.7
-s3fs
-gcsfs
-pandas
-numpy
-requests

@@ -15,7 +15,7 @@ services:
       retries: 12
 
   inference:
-    image: spaceflight_service:mu45t2gjpgqxhigt   # <- your generated image name:tag here
+    image: spaceflight_service:ovy7iiw3ewqxhigt   # <- your generated image name:tag here
     pull_policy: never
     environment:
       - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
@@ -88,29 +88,20 @@ services:
       - FSSPEC_S3_ENDPOINT_URL=${MINIO_URL}
     command: [ "--workspace", "s3://evidently-ai/workspace" ]
 
-  reference:
-    build: reference
-    depends_on:
-      - inference
-      - minio
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_URL=${MINIO_URL}
-      - BENTO_URL=${BENTO_URL}
-      - REFERENCE_DIR_PATH=/app/data
-    volumes:
-      - ${REFERENCE_DIR_PATH}:/app/data
-
-  monitoring:
-    build: monitoring
-    depends_on:
-      - inference
-      - minio
-    environment:
-      - SCENARIO=drift
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_URL=${MINIO_URL}
-      - BENTO_URL=${BENTO_URL}
-      - KEDRO_API_URL=${KEDRO_API_URL}
+  production-api:
+      build: production-api
+      depends_on:
+        - inference
+        - minio
+      environment:
+        - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+        - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+        - MINIO_URL=${MINIO_URL}
+        - BENTO_URL=${BENTO_URL}
+        - KEDRO_API_URL=${KEDRO_API_URL}
+      volumes:
+        - ./data:/app/data
+        - ./data/current:/app/data/current
+        - ./data/reference:/app/data/reference
+      ports:
+        - "8100:8100"
