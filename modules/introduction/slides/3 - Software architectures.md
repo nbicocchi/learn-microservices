@@ -17,29 +17,22 @@ A **single, unified application** where all parts run in one process.
 
 **Pros**
 
-* Simple development tools
-* Straightforward testing
-* Easy deployment
+* Simple development, testing, deployment
 * Fast in-process communication
 
-**Cons**
+**Cons (when project grows)**
 
 * Tends toward a *big ball of mud*
-* Slow builds and startup
+* Slow development loops (startup, testing, deployment)
 * Hard to refactor
 * Tech lock-in
 * Can't scale or deploy individual pieces
 
-**When Monoliths Grow**
+![](images/ftgo-monolitic-hell.webp)
 
-* Slow development loops
-* Heavy end-to-end testing
-* Long, risky deployments
-* *Big Ball of Mud*
+**Big Ball of Mud**
 
 ![](images/swarch-big-ball-of-mud.webp)
-
-![](images/ftgo-monolitic-hell.webp)
 
 
 ---
