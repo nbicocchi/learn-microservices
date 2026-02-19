@@ -22,6 +22,40 @@
 
 **Mean Time to Recovery (MTTR)**: The average time needed to restore a service after a failure. A low MTTR reflects efficient incident response, with practices like continuous monitoring and automated recovery.
 
+## Flow Metrics
+
+**Flow Metrics** (introduced by the *Flow Framework* by Mik Kersten) help teams understand the **efficiency of the software delivery process itself** — identifying bottlenecks, handoff delays, and waste in the value stream. They measure how work items (features, bugs, risks, technical debts) flow from idea to production. The main Flow Metrics are:
+
+**Flow Time**: Measures the total time it takes for a work item to go from “start” (when development begins) to “finish” (when value is delivered to users).
+* Indicates how long customers wait for value.
+* Related to DORA’s *Cycle Time*, but considers the *entire value stream*, not just code-to-deploy.
+
+![](images/flow-time.png)
+
+**Flow Efficiency**: The ratio between *active time* (when work is progressing) and *total flow time* (including waiting).
+* Highlights process inefficiencies, approval delays, and overburdened teams.
+* High variability or low efficiency signals bottlenecks or context switching.
+
+![](images/flow-efficency.png)
+
+**Flow Load**: The total number of active work items in progress.
+* Helps manage team capacity and prevent overload.
+* Strongly correlates with *cycle time* and *quality* — when load is too high, delivery slows and error rates rise.
+
+![](images/flow-load.png)
+
+**Flow Distribution**: Tracks the proportion of different types of work (e.g., features, defects, technical debt, risks).
+* Balancing these categories ensures sustainable development — too little time on debt and risk reduction leads to long-term fragility.
+
+![](images/flow-distribution.png)
+
+**Flow Velocity**: The number of work items completed per unit of time.
+* Measures delivery throughput.
+* Should be analyzed together with Flow Time and Efficiency to avoid focusing solely on output.
+
+![](images/flow-load.png)
+
+
 ## DORA metrics
 The  [DORA metrics]((https://linearb.io/blog/dora-metrics)) were developed by the DevOps Research and Assessment (DORA) organization, which spent years studying engineering teams and their DevOps processes. They also deliver an interesting [annual report](../../../books/dora-report-2024.pdf).
 
@@ -33,39 +67,7 @@ These metrics are valuable because:
 * **only four key metrics are needed** to differentiate elite engineering teams from mediocre ones.
 
 ![](images/dora-categories.webp)
-   
-## Flow Metrics
 
-**Flow Metrics** (introduced by the *Flow Framework* by Mik Kersten) help teams understand the **efficiency of the software delivery process itself** — identifying bottlenecks, handoff delays, and waste in the value stream. They measure how work items (features, bugs, risks, technical debts) flow from idea to production. The main Flow Metrics are:
-
-**Flow Time**: Measures the total time it takes for a work item to go from “start” (when development begins) to “finish” (when value is delivered to users).
-   * Indicates how long customers wait for value.
-   * Related to DORA’s *Cycle Time*, but considers the *entire value stream*, not just code-to-deploy.
-
-![](images/flow-time.png)
-
-**Flow Efficiency**: The ratio between *active time* (when work is progressing) and *total flow time* (including waiting).
-   * Highlights process inefficiencies, approval delays, and overburdened teams.
-   * High variability or low efficiency signals bottlenecks or context switching.
-
-![](images/flow-efficency.png)
-
-**Flow Load**: The total number of active work items in progress.
-   * Helps manage team capacity and prevent overload.
-   * Strongly correlates with *cycle time* and *quality* — when load is too high, delivery slows and error rates rise.
-
-![](images/flow-load.png)
-
-**Flow Distribution**: Tracks the proportion of different types of work (e.g., features, defects, technical debt, risks).
-   * Balancing these categories ensures sustainable development — too little time on debt and risk reduction leads to long-term fragility.
-
-![](images/flow-distribution.png)
-
-**Flow Velocity**: The number of work items completed per unit of time.
-   * Measures delivery throughput.
-   * Should be analyzed together with Flow Time and Efficiency to avoid focusing solely on output.
-
-![](images/flow-load.png)
 
 ## How to improve metrics within an organization?
 

@@ -1,7 +1,7 @@
 # Learn Microservices
 
 ## Prerequisites
-The course requires a decent understanding of Java. A dedicated course can be found [here](https://github.com/nbicocchi/learn-java-core).
+The course requires a decent understanding of Java and Python.
 
 ## Software
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
