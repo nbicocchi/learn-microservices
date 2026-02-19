@@ -73,15 +73,9 @@ These metrics are valuable because:
 
 ![](images/linearb-dashboard.webp)
 
-1. **Monitor**
-
-2. **Reduction of PR Size**  
-
-3. **Reduction of Codebase Size**  
-
-4. **Automate CI/CD Pipelines**  
-
-5. **Implement Deployments Strategies**  
+* **Monitor**
+* **Reduction of Codebase Size (also PR size)**
+* **Automation (CI/CD Pipelines, Deployments Strategies)**  
 
 
 ## Resources
