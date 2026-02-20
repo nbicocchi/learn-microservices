@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
+		<version>4.0.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -56,7 +56,7 @@
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.4.3</version>
+				<version>4.0.3</version>
 				<configuration>
 					<from>
 						<image>eclipse-temurin:21-jre-ubi9-minimal@sha256:9a524a6aed54d2c6445d98e00003b403231154a29253a6ebb7586475f3bb28e9</image>

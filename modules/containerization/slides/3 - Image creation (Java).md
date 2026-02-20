@@ -115,7 +115,7 @@ This method automatically layers the JAR for faster builds and deploys.
         <plugin>
             <groupId>com.google.cloud.tools</groupId>
             <artifactId>jib-maven-plugin</artifactId>
-            <version>3.4.3</version>
+            <version>4.0.3</version>
         </plugin>
     </plugins>
 </build>

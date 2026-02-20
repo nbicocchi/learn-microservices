@@ -1,17 +1,13 @@
 # Boilerplate Code Reduction with Lombok
 
-In this guide, we will explore how to significantly reduce the amount of boilerplate code in Java. 
+```xml
+<dependency>
+  <groupId>org.projectlombok</groupId>
+  <artifactId>lombok</artifactId>
+  <optional>true</optional>
+</dependency>
+```
 
-## Project Dependencies
-
-  ```xml
-  <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <optional>true</optional>
-  </dependency>
-  ```
-  
 ## Hands-on Example
 
 Let's suppose we need to define an event in a class. Specifically, our event will be characterized by:

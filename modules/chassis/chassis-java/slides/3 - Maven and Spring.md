@@ -1,229 +1,207 @@
-# Maven
+# Maven Overview
+
+---
 
 ## Project Directory Structure
 
-Since our project is Maven-based, **it follows Maven’s standard directory layout**. 
+* Follows **Maven’s standard layout**
 
-### _src/main/java_:
+**Key Directories:**
 
-This directory contains the Java source code for the application we’re building; all our packages and classes go into this directory.
+* `src/main/java` → Java source code
+* `src/main/resources` → Configuration, properties, non-Java artifacts
+* `src/test/java` → Test source code
+* `src/test/resources` → Test resources
 
-### _src/main/resources_:
+---
 
-This directory contains all the non-Java artifacts that are used by our application; we can put our configuration and property files in this directory.
+## Project Configuration (`pom.xml`)
 
-### _src/test/java_ and _src/test/resources_:
+* Defines **project metadata, dependencies, build plugins, and lifecycles**
 
-These directories contain our test source code and resources, similarly to the _src/main/\*_ directories.
-
-## Project configuration (pom.xml)
-
-## Parent
+**Parent:**
 
 ```xml
 <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.3</version>
-    <relativePath/> <!-- lookup parent from repository -->
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-parent</artifactId>
+  <version>4.0.3</version>
+  <relativePath/>
 </parent>
 ```
 
-## Identifying information
+**Project Info:**
 
-```
+```xml
 <groupId>com.nbicocchi</groupId>
 <artifactId>product-service-no-db</artifactId>
 <version>0.0.1-SNAPSHOT</version>
 <description>Demo product for Spring Boot</description>
 ```
 
-## Properties
+**Properties:**
 
-```
+```xml
 <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>21</java.version>
+  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <java.version>21</java.version>
 </properties>
 ```
 
-## Dependencies
+**Dependencies:**
+
+* Manage libraries and frameworks for your project
 
 ```xml
 <dependencies>
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <optional>true</optional>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-test</artifactId>
-    </dependency>
+  <dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <optional>true</optional>
+  </dependency>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+  </dependency>
 </dependencies>
 ```
 
-We can view all the transitive dependencies either by using the _Dependency Hierarchy_ tab (inside an IDE), or with the Maven command:
+* View transitive dependencies:
 
-```
-$ mvn dependency:tree
-
-[INFO] com.baeldung:real-world-project:jar:0.0.1-SNAPSHOT
-[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:3.2.1:compile
-[INFO] |  +- org.springframework.boot:spring-boot-starter:jar:3.2.1:compile
-[INFO] |  |  +- org.springframework.boot:spring-boot:jar:3.2.1:compile
-[INFO] |  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.2.1:compile
-[INFO] |  |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.2.1:compile
-[INFO] |  |  |  +- ch.qos.logback:logback-classic:jar:1.4.14:compile
-[INFO] |  |  |  |  \- ch.qos.logback:logback-core:jar:1.4.14:compile
-[INFO] |  |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.21.1:compile
-[INFO] |  |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.21.1:compile
-...
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  18.961 s
-[INFO] Finished at: 2024-01-01T22:22:15+01:00
-[INFO] ------------------------------------------------------------------------
+```bash
+mvn dependency:tree
 ```
 
-## Build
+---
+
+## Build Plugins
+
+* Customize how Maven builds and packages the project
+
+**Spring Boot Maven Plugin:**
+
+* Build and run Spring Boot apps
+* Packages executable **fat jar**
+
+**Jib Maven Plugin:**
+
+* Build Docker images without a Dockerfile
 
 ```xml
 <build>
-    <plugins>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-        <plugin>
-            <groupId>com.google.cloud.tools</groupId>
-            <artifactId>jib-maven-plugin</artifactId>
-            <version>3.4.3</version>
-            <configuration>
-                <from>
-                    <image>eclipse-temurin:21-jdk-alpine@sha256:c63d8669d87e16bcee66c0379d1deedf844152da449ad48f2c8bd73a3705d36b</image>
-                </from>
-                <to>
-                    <image>product-service-no-db</image>
-                </to>
-                <container>
-                    <mainClass>com.nbicocchi.product.App</mainClass>
-                </container>
-            </configuration>
-        </plugin>
-    </plugins>
+  <plugins>
+    <plugin>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-maven-plugin</artifactId>
+    </plugin>
+    <plugin>
+      <groupId>com.google.cloud.tools</groupId>
+      <artifactId>jib-maven-plugin</artifactId>
+      <version>4.0.3</version>
+    </plugin>
+  </plugins>
 </build>
 ```
 
-## Lifecycles
+---
 
-Maven has three built-in lifecycles that govern the build process:
+## Maven Lifecycles
 
-1. **Default Lifecycle**: Manages the project build, testing, and packaging.
-2. **Clean Lifecycle**: Handles the cleaning of the project.
-3. **Site Lifecycle**: Generates project documentation and reports.
+* Maven organizes the build process into **three main lifecycles**:
 
-### 1. Default Lifecycle
+| Lifecycle | Purpose                                    |
+| --------- | ------------------------------------------ |
+| Default   | Build, test, and package the project       |
+| Clean     | Remove previous build outputs              |
+| Site      | Generate project documentation and reports |
 
-The default lifecycle is the main one used for building projects. It consists of several phases that are executed in order.
+---
 
-Key Phases in the Default Lifecycle:
+### Default Lifecycle
 
-- **validate**: Validates the project is correct and all necessary information is available.
-- **compile**: Compiles the source code.
-- **test**: Runs unit tests.
-- **package**: Packages the compiled code into a distributable format (like JAR or WAR).
-- **verify**: Runs checks to verify the package is valid and meets quality criteria.
-- **install**: Installs the package into the local repository.
-- **deploy**: Copies the final package to a remote repository for sharing with other developers.
+* Most commonly used lifecycle
+* Key Phases:
 
-Practical Example: To execute the default lifecycle up to the `package` phase, you can run (the name of the **lifecycle** is always omitted):
+    * **validate** → check project is correct
+    * **compile** → compile source code
+    * **test** → run unit tests
+    * **package** → create JAR/WAR
+    * **verify** → run quality checks
+    * **install** → install to local repo
+    * **deploy** → deploy to remote repo
+
+**Example:**
 
 ```bash
 mvn package
 ```
 
-This command will execute the following phases in order:
-- **validate**
-- **compile**
-- **test**
-- **package** (creates the JAR or WAR file)
+---
 
-### 2. Clean Lifecycle
+### Clean Lifecycle
 
-The clean lifecycle is focused on cleaning up the project by removing files created by previous builds.
+* Cleans the project build
 
-Key Phases in the Clean Lifecycle:
-- **pre-clean**: Executes processes needed prior to the cleaning.
-- **clean**: Removes the `target` directory.
-- **post-clean**: Executes processes needed after cleaning.
+Key Phases:
 
-### 3. Site Lifecycle
+* **pre-clean** → pre-clean steps
+* **clean** → remove `target` directory
+* **post-clean** → post-clean steps
 
-The site lifecycle is used for generating project documentation and reports.
+---
 
-Key Phases in the Site Lifecycle:
+### Site Lifecycle
 
-- **pre-site**: Executes processes needed before generating the site.
-- **site**: Generates the project's site documentation.
-- **post-site**: Executes processes needed after generating the site.
-- **site-deploy**: Deploys the generated site to a web server.
+* Generates project documentation
 
-## Running the project
+Key Phases:
 
-### Running with the Spring Boot Maven plugin
+* **pre-site** → before generating site
+* **site** → generate site
+* **post-site** → after generating site
+* **site-deploy** → deploy site to server
 
-**The Spring Boot Maven plugin provides various convenient features to build and run our application.** We have to explicitly include it in the _build > plugins_ section of our project’s _pom.xml_ file:
+---
 
-```xml
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-</build>
-```
+## Running the Project
 
-With this in place, we can now run the application by executing the _run_ goal of the plugin. This will build and then run the application in place:
+### Using Spring Boot Maven Plugin
 
 ```bash
 mvn spring-boot:run
 ```
 
-**It’s worth mentioning that running the application using the plugin isn’t recommended in production.** 
-* **Source code has to be present on the server**. 
-* **Cold start would be slow**: it has to pull the dependencies, build the app, and then run the application (high Mean Time To Start).
+* Builds and runs the app locally
+* **Not recommended for production**
 
-In production environments, it is more suitable to run a pre-packaged artifact such as a container.
+    * Requires source code on server
+    * Cold start is slow
 
-### Running as a Jar
+---
 
-**A regular jar can’t be executed out of the box, since it doesn’t include all the needed dependencies** that are required to run the application.
+### Running as an Executable Jar
 
-The Spring Boot Maven Plugin packages an executable **fat jar** containing the application class files and all the necessary dependencies to run the project as a self-contained app. Since we’re including the plugin in our _build_ configuration, the _package_ phase execution is preconfigured to build a **fat jar**.
+* Pre-packaged **fat jar** includes all dependencies
 
 ```bash
 mvn clean package -Dmaven.skip.test=true
+java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
 ```
 
-```bash
-java -jar target/product-service-h2-0.0.1-SNAPSHOT.jar
-```
+---
 
 ## Resources
-- [Maven Getting Started Guide](https://maven.apache.org/guides/getting-started/)
-- [Building Java Projects with Maven](https://spring.io/guides/gs/maven/)
-- [Spring Boot Maven Installation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started.installing.java.maven)
-- [Maven Transitive Dependencies](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Transitive_Dependencies)
-- [Maven Standard Directory Layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html)
+
+* [Maven Getting Started Guide](https://maven.apache.org/guides/getting-started/)
+* [Building Java Projects with Maven](https://spring.io/guides/gs/maven/)
+* [Spring Boot Maven Installation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started.installing.java.maven)
+* [Maven Transitive Dependencies](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Transitive_Dependencies)
+* [Maven Standard Directory Layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html)

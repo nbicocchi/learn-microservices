@@ -260,7 +260,7 @@ ENTRYPOINT ["java","-jar","/application.jar"]
 ```yaml
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:17-alpine
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: secret
