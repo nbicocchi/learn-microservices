@@ -79,4 +79,5 @@ These metrics are valuable because:
 
 
 ## Resources
+- https://www.youtube.com/watch?v=H3nlvHQHb5E
 - https://www.youtube.com/watch?v=7d5Sah0M6Zg
