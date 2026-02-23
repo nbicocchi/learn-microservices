@@ -1,24 +1,38 @@
 # Edge Computing
 
 
-## What is Edge Computing?
+## Limitations of Cloud-Only Architectures
 
-Modern software systems increasingly operate in environments where **latency, bandwidth, privacy, and reliability** are as important as raw computational power. **Edge computing** is a distributed computing in which instead of relying solely on centralized cloud servers, part of the application logic runs on:
-
-* industrial controllers
-* micro data centers
-* embedded devices
-* on-premise servers
-* regional/5G edge nodes
-
-
-Edge computing does **not replace** cloud computing; it complements it.
-* Computation and data storage are moved **closer to where data is produced**. This shift allows systems to react faster, reduce network usage, and operate even during connectivity disruptions.
-* The cloud still handles global coordination, long-term storage, machine learning training, and orchestration, while the edge handles **time-critical**, **local**, **bandwidth-sensitive**, or **privacy-sensitive** tasks.
-
-![](images/edge-computing.avif)
+* **High latency:** Centralized data centers introduce delays unsuitable for time-critical applications
+* **Network dependency:** Full connectivity required; outages can halt operations
+* **Bandwidth constraints:** Transmitting large volumes of data to the cloud is costly and inefficient
+* **Privacy concerns:** Sensitive data may traverse multiple jurisdictions
+* **Scalability limitations:** Centralized cloud may struggle with real-time, high-frequency workloads
 
 ---
+
+## Definition of Edge Computing
+
+**Edge computing** is a distributed computing paradigm in which computational tasks and data storage are performed closer to the sources of data, rather than solely in centralized cloud servers.
+
+**Deployment locations include:**
+
+* Industrial controllers and IoT devices
+* Embedded systems and on-premise servers
+* Micro data centers and regional/5G edge nodes
+
+---
+
+## Edge-Cloud Complementarity
+
+* **Edge:** Executes **time-critical**, **local**, **bandwidth-sensitive**, and **privacy-sensitive** operations
+* **Cloud:** Performs **global coordination**, **long-term storage**, **machine learning training**, and **orchestration**
+
+**Key Benefit:** This hybrid model reduces latency, conserves network bandwidth, enhances reliability, and preserves data privacy, while retaining the computational power and orchestration capabilities of the cloud.
+
+---
+
+![](images/edge-computing.avif)
 
 ## Edge Computing is Inherently Distributed
 
@@ -43,13 +57,6 @@ This naturally introduces classic distributed systems challenges:
 * operate in degraded network conditions
 * sync periodically
 
-
-**Low Latency Requirements**
-
-* detecting anomalies on a production line
-* braking in autonomous vehicles
-* local video analytics
-
 ---
 
 ## Distributed Programming Techniques
@@ -57,7 +64,7 @@ This naturally introduces classic distributed systems challenges:
 Programming for the edge means programming **distributed systems at scale**, where the cloud, edge, and devices form a single continuum. This introduces challenges such as:
 
 * microservices architecture
-* container and workload orchestration (K3s, MicroK8s, Nomad, containerd)
+* container and workload orchestration (Docker, K3s, MicroK8s, Nomad, containerd)
 * distributed communication/coordination
 * synchronous messaging (REST/GraphQL/Protobuf)
 * asynchronous messaging (MQTT, AMQP, Kafka)

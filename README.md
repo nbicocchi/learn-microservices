@@ -6,7 +6,6 @@ The course requires a decent understanding of Java and Python.
 ## Software
 * [JDK Development Kit 21](https://www.oracle.com/it/java/technologies/downloads/)
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/) [Plugins: [Envfile](https://plugins.jetbrains.com/plugin/7861-envfile),[Mermaid](https://plugins.jetbrains.com/plugin/20146-mermaid)]
-* [Apache Maven](https://maven.apache.org/)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## Books
@@ -47,8 +46,14 @@ The course requires a decent understanding of Java and Python.
 * *OpenTelemetry*
 
 [M7 Resiliency](modules/resiliency)
-* Client-side patterns
-* Server-side patterns
+* Client-Side Load Balancing
+* Circuit Breaker
+* Fallback
+* Retry
+* Timeout
+* Bulkhead
+* Rate Limiter
+* Distributed caching (Redis)
 
 [M8 Asynchronous Communication](modules/communication-sync)
 * Asynchronous messaging systems

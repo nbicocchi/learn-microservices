@@ -114,6 +114,12 @@ Organize code by **business modules**, not layers.
 
 ---
 
+## Monoliths and the Challenge of Traffic Spikes
+
+![](images/rakuten-france-traffic-spike.jpg)
+![](images/rapha-product-drop-traffic-spike.jpg)
+
+
 ## Scaling Monoliths — The Scale Cube
 
 ![](images/scale-cube.webp)
