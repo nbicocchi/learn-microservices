@@ -33,7 +33,7 @@ You can inspect layers with tools like [dive](https://github.com/wagoodman/dive)
 * `COPY <src> <dest>`: copies files or directories into the image.
 * `RUN <cmd>`: executes commands during image build.
 * `CMD ["cmd"]` / `CMD-SHELL "cmd"`: sets default container command. Only the last `CMD` is effective.
-* `ENTRYPOINT ["cmd"]`: sets a fixed container process. `ENTRYPOINT` is rarely overridden by `docker run` arguments.
+* `ENTRYPOINT ["cmd"]`: sets a fixed container process.
 * `WORKDIR <dir>`: sets the working directory for subsequent commands.
 * `EXPOSE <port>`: documents the port the app will listen on (does not publish it).
 * `ENV <key>=<value>`: sets environment variables inside the image.

@@ -40,17 +40,7 @@ Docker Compose manages **multi-container Docker apps**. Its YAML file uses inden
 
 ---
 
-## Commands
-
-```bash
-# With Maven and build
-mvn clean package -Dmaven.test.skip=true
-docker compose -f <compose>.yml up --build --detach
-```
-
----
-
-## Example: Simple Echo Server
+## Example: echo-server-logs
 
 `docker-compose-simple.yml`:
 
@@ -122,9 +112,23 @@ curl -X POST http://localhost:32768/echo -H "Content-Type: application/json" -d 
 
 ---
 
-## Volumes
+Here’s a concise explanation you can add to your slides or notes to clarify **what Docker volumes are** and the difference between the three types you listed:
 
-### Named Volume
+---
+
+## **Volumes**
+
+In Docker, a **volume** is a **persistent storage area** that exists outside of the container’s writable layer. Volumes are used to:
+
+* Preserve data between container restarts.
+* Share data between multiple containers.
+* Keep container images lightweight by storing large or mutable data externally.
+
+---
+
+### **Types of Volumes**
+
+1. **Named Volume**
 
 ```yaml
 services:
@@ -139,7 +143,13 @@ volumes:
   tmp:
 ```
 
-### Anonymous Volume
+* Stored and managed by Docker under `/var/lib/docker/volumes/`.
+* Named volumes are **persistent** and survive container removal.
+* Good for databases or other data that must outlive containers.
+
+---
+
+2. **Anonymous Volume**
 
 ```yaml
 services:
@@ -151,7 +161,13 @@ services:
       - /tmp
 ```
 
-### Bind Mount
+* Docker creates a volume automatically with a random name.
+* Also persistent, but **harder to reference or reuse**.
+* Useful for temporary storage where you don’t care about the volume name.
+
+---
+
+3. **Bind Mount**
 
 ```yaml
 services:
@@ -162,6 +178,10 @@ services:
     volumes:
       - ./data:/tmp
 ```
+
+* Maps a **host directory** to a directory inside the container.
+* Changes in the container or host are immediately visible on both sides.
+* Ideal for development, sharing code, or mounting configuration files.
 
 ---
 
