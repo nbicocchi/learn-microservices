@@ -66,7 +66,7 @@ public class Barista {
 
 ## Dependency Injection Types
 
-### 1️⃣ Constructor Injection
+### Constructor Injection
 
 * Dependencies are injected **via the constructor**.
 
@@ -97,7 +97,7 @@ public class ProductService {
 
 ---
 
-### 2️⃣ Setter Injection
+### Setter Injection
 
 * Dependencies are injected **via setter methods**.
 
@@ -181,7 +181,7 @@ public class Driver {
 
 ## Circular Dependencies in Spring
 
-* Occurs when **two or more beans depend on each other**, forming a cycle.
+Occurs when **two or more beans depend on each other**, forming a cycle.
 
 ```java
 @Component
@@ -203,7 +203,7 @@ public class B {
 }
 ```
 
-* **Spring resolution:** works only if **at least one dependency uses setter or field injection**.
+**Spring resolution:** works only if **at least one dependency uses setter or field injection**.
 
 **Setter Injection Example:**
 

@@ -2,20 +2,19 @@
 
 ## Creating the Project
 
-In this lesson, we'll build a simple layered microservice for handling a catalog of products. [**Spring Initializr**](https://start.spring.io/) is useful quickstart generator for Spring projects.
+1. Go to [Spring Initializr](https://start.spring.io/).
+2. Select **Maven Project**, **Java**, and **Spring Boot version** (latest stable).
+3. Fill in the project metadata:
 
-We'll choose a Maven project using Java, and we need to fill in the project details:
+    * **Group:** `com.nbicocchi`
+    * **Artifact:** `product-service-no-db`
+4. Add the dependency **Spring Web**.
+5. Click **Generate** to download the project as a `.zip`.
+6. Extract and open the project in your IDE (e.g., IntelliJ IDEA, VS Code).
 
--   Group: com.nbicocchi
--   Artifact: product-service-no-db
-
-For the dependencies section, choose the *Spring Web* dependency. Even though we won't be focusing on web aspects in this module, we include it since it allows us to keep the application running after startup.
+> **Note:** Spring Web keeps the app running and allows us to expose endpoints later.
 
 ![](images/spring-initializr.webp)
-
-Now we can click the "Generate" button to download the project, unzip it and import it into an IDE.
-
-If you are using IntelliJ, you can import the project by navigating to the main menu, select File > Open, and then navigating to the path where our project is present to add it as a Project.
 
 ## Adding the Persistence Layer
 

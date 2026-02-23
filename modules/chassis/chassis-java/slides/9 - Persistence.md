@@ -179,7 +179,7 @@ public class App implements ApplicationRunner {
 
 ## Custom Queries
 
-### 1️⃣ Method Naming Conventions
+### Method Naming Conventions
 
 ```java
 List<Product> findByName(String name);
@@ -190,7 +190,7 @@ List<Product> findByWeightBetween(Double minWeight, Double maxWeight);
 List<Product> findAllByOrderByNameAsc();
 ```
 
-### 2️⃣ Using `@Query` Annotation
+### Using `@Query` Annotation
 
 ```java
 @Query("SELECT p FROM Product p WHERE p.name = :name")

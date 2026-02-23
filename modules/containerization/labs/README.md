@@ -1,7 +1,7 @@
 # Labs
 
 ## Questions
-1. What are the main differences between bare-metal, virtual machines, and container-based deployments? Explain the concept of deployment density.
+1. Explain the concept of deployment density.
 2. What is a Docker registry, and how does it facilitate the distribution and management of container images?
 3. Describe the life cycle of a container from creation to termination.
 4. Comment a (given) Dockerfile, and explain the key directives.

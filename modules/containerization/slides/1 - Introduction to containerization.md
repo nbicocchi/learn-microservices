@@ -9,13 +9,6 @@
 **Deployment density:** how efficiently workloads share infrastructure.
 Higher density → better utilization, but requires careful resource isolation.
 
-```mermaid
-graph LR
-A[Bare Metal] -->|Low density| B[Apps share hardware]
-C[Virtual Machines] -->|Medium density| D[Hypervisor + isolated OS]
-E[Containers] -->|High density| F[App + dependencies on host kernel]
-```
-
 ### Bare Metal
 
 * Apps run directly on physical servers
@@ -77,13 +70,6 @@ sudo chroot cage /bin/ls
 sudo chroot cage /bin/bash
 ```
 
-```mermaid
-graph TD
-A[chroot] --> B[Filesystem isolation only]
-B --> C[Manual dependency management]
-C --> D[Limited security]
-```
-
 ---
 
 ## Modern Isolation Primitives
@@ -102,17 +88,8 @@ C --> D[Limited security]
 **Example:**
 
 ```bash
-unshare -mpf --mount-proc bash
-```
-
-```mermaid
-graph LR
-A[Namespaces] --> B[Mount]
-A --> C[PID]
-A --> D[Network]
-A --> E[IPC]
-A --> F[UTS]
-A --> G[User]
+sudo unshare --mount --pid --fork --mount-proc bash
+ps aux 
 ```
 
 ### Control Groups (cgroups)
@@ -124,113 +101,23 @@ A --> G[User]
     * I/O throttling → control disk bandwidth
     * Process priority → scheduling weight
 
-```mermaid
-graph TD
-A[Namespaces] --> B[Resource management via cgroups]
-B --> C[CPU limits]
-B --> D[Memory limits]
-B --> E[IO throttling]
-B --> F[Process priority]
-```
-
-### systemd-nspawn
-
-* Lightweight system container tool built on **namespaces + cgroups**
-* Supports:
-
-    * PID & network isolation
-    * User namespaces
-    * Snapshots & images
-    * Resource limits
-
-Example:
-
-```bash
-sudo systemd-nspawn -D myrootfs
-```
-
-```mermaid
-graph LR
-A[systemd-nspawn] --> B[Namespaces + cgroups]
-A --> C[Snapshots & images]
-A --> D[Safer chroot-like environment]
-```
-
-### LXC / LXD
-
-* Full system containers, behaves like lightweight VM
-* Built on:
-
-    * Namespaces
-    * cgroups
-    * AppArmor / SELinux profiles
-* Use cases:
-
-    * VPS
-    * CI/CD runners
-    * Legacy app isolation
-
-Example:
-
-```bash
-lxc launch ubuntu:22.04 mycontainer
-```
-
-* LXD adds management features: REST API, networking, storage pools, clustering
-* Supports rootless containers, custom storage backends (ZFS, Btrfs)
-
-```mermaid
-graph TD
-A[LXC/LXD] --> B[Namespaces]
-A --> C[cgroups]
-A --> D[Security profiles]
-B & C & D --> E[Isolated Linux system environment]
-```
-
 ---
 
 ## Container Technologies
 
-| Tool       | Description                                          | Use Case                                    |
-| ---------- | ---------------------------------------------------- | ------------------------------------------- |
-| Docker     | Application containers, layered images, OCI standard | Microservices, DevOps pipelines             |
-| Podman     | Docker-compatible, daemonless, rootless              | Secure dev/test environments                |
-| Kubernetes | Orchestrator, scheduling, scaling, networking        | Multi-node deployments, production clusters |
+| Tool           | Description                                              | Use Case                                    |
+| -------------- | -------------------------------------------------------- | ------------------------------------------- |
+| LXC / LXD      | Full Linux OS containers, system-level isolation         | Multi-service environments, lightweight VMs |
+| systemd-nspawn | Lightweight OS-level containers, integrates with systemd | Testing, lightweight isolated environments  |
+| Podman         | Docker-compatible, daemonless, supports rootless mode    | Secure development and testing environments |
+| Docker         | Application containers, layered images, OCI-compliant    | Running microservices, CI/CD pipelines      |
+| Kubernetes     | Container orchestrator: scheduling, scaling, networking  | Multi-node deployments, production clusters |
 
-```mermaid
-graph LR
-Docker[Docker] --> Images[Images]
-Docker --> Containers[Containers]
-Docker --> Engine[Docker Engine & CLI]
-Images & Containers --> K8s[Kubernetes orchestration]
-```
-
----
-
-## Why Containers?
-
-* Microservices → independent, scalable services
-* Consistency → dev/test/prod parity
-* Isolation → fault tolerance
-* Rollback → immutable images
-
----
-
-## Container Registries & Image Formats
-
-**Registries:**
-
-* Public: Docker Hub
-* Cloud: AWS ECR, Azure ACR, Google Artifact Registry
-
-**Image formats:**
-
-* OCI → modern, standard
-* Docker format → legacy
-* SIF → HPC workloads
-* LXD → system containers
-
----
+1. **LXC / LXD** → closest to a full OS, low-level containerization, more isolation, can run multiple services like a lightweight VM.
+2. **systemd-nspawn** → lightweight system container, integrates with host systemd, good for sandboxed environments.
+3. **Podman** → application-level containers, daemonless, rootless, very close to Docker but more secure.
+4. **Docker** → application containers, layered images, widely used for microservices and CI/CD pipelines.
+5. **Kubernetes** → orchestrates multiple containers across nodes; highest level of abstraction.
 
 ## Docker Architecture
 
@@ -241,33 +128,6 @@ Images & Containers --> K8s[Kubernetes orchestration]
 * Images → immutable, versioned app bundles
 * Containers → isolated runtime instances
 * Registry → centralized storage
-
----
-
-## Dockerfile Example
-
-```dockerfile
-FROM eclipse-temurin:21-jdk
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} application.jar
-ENTRYPOINT ["java","-jar","/application.jar"]
-```
-
----
-
-## Docker Compose Example
-
-```yaml
-services:
-  postgres:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: jdbc_schema
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-```
 
 ---
 
@@ -282,22 +142,6 @@ docker stop/start <id>
 docker rm <id>
 docker exec -it <id> bash
 docker rmi busybox
-```
-
----
-
-## Networking & Storage
-
-* Networking: bridge, overlay, macvlan, host
-* Storage: volumes, bind mounts, tmpfs, storage drivers (overlay2, aufs)
-* Security: namespaces + cgroups + AppArmor/SELinux + seccomp
-
-```mermaid
-graph TD
-A[Container] --> B[Network Namespace]
-A --> C[Filesystem via overlay2]
-A --> D[CPU/Memory via cgroups]
-A --> E[Security policies]
 ```
 
 ---
