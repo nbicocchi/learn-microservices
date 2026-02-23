@@ -84,16 +84,12 @@ mvn dependency:tree
 
 ## Build Plugins
 
-* Customize how Maven builds and packages the project
+Customize how Maven builds and packages the project
 
 **Spring Boot Maven Plugin:**
 
 * Build and run Spring Boot apps
 * Packages executable **fat jar**
-
-**Jib Maven Plugin:**
-
-* Build Docker images without a Dockerfile
 
 ```xml
 <build>
@@ -101,11 +97,6 @@ mvn dependency:tree
     <plugin>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-maven-plugin</artifactId>
-    </plugin>
-    <plugin>
-      <groupId>com.google.cloud.tools</groupId>
-      <artifactId>jib-maven-plugin</artifactId>
-      <version>4.0.3</version>
     </plugin>
   </plugins>
 </build>
@@ -193,7 +184,7 @@ mvn spring-boot:run
 
 ```bash
 mvn clean package -Dmaven.skip.test=true
-java -jar target/product-service-no-db-0.0.1-SNAPSHOT.jar
+java -jar target/product-service-0.0.1-SNAPSHOT.jar
 ```
 
 ---
