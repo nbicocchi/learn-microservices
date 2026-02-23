@@ -211,6 +211,77 @@ List<Product> findAllProductsOrderedByWeightDesc();
 
 ---
 
+Perfect! If the **DTO should not expose the entity ID**, we just remove it and keep only the fields needed by the client. Here's the revised section:
+
+---
+
+## Data Transfer Objects (DTOs)
+
+In **Spring Data JPA**, **DTOs** (Data Transfer Objects) are used to carry **data between layers** of an application, typically from the service or repository layer to the controller or client. They **decouple internal entity structure from external API**, avoid exposing sensitive fields (like IDs), and optimize queries by transferring only necessary data.
+
+---
+
+### Why Use DTOs?
+
+* **Encapsulation** – hides internal entity details from clients
+* **Performance** – select only needed fields instead of entire entities
+* **Flexibility** – allows combining data from multiple entities
+* **Validation & Transformation** – DTOs can include computed fields or data formatted for clients
+
+---
+
+### Example DTO (without ID)
+
+```java
+public class ProductDTO {
+    private String name;
+    private Double weight;
+
+    public ProductDTO(String name, Double weight) {
+        this.name = name;
+        this.weight = weight;
+    }
+
+    // Getters
+    public String getName() { return name; }
+    public Double getWeight() { return weight; }
+}
+```
+
+---
+
+### Mapping Entities to DTOs
+
+Manual mapping from entity to DTO:
+
+```java
+public List<ProductDTO> getAllProducts() {
+    List<Product> products = productRepository.findAll();
+    return products.stream()
+        .map(p -> new ProductDTO(p.getName(), p.getWeight()))
+        .collect(Collectors.toList());
+}
+```
+
+Or using **MapStruct**:
+
+```java
+@Mapper
+public interface ProductMapper {
+    ProductDTO toDTO(Product product);
+}
+```
+
+---
+
+### Best Practices
+
+* Keep DTOs **immutable**
+* Do **not expose entity references or IDs**
+* Use DTOs for **API responses**, while entities remain internal
+
+
+
 ## Resources
 
 * [Spring Data Projects](https://spring.io/projects/spring-data)
