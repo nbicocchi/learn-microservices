@@ -4,8 +4,6 @@
 
 ## Project Directory Structure
 
-* Follows **Maven’s standard layout**
-
 **Key Directories:**
 
 * `src/main/java` → Java source code

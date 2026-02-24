@@ -25,6 +25,20 @@
 
 ---
 
+## Spring Initializr
+
+* Quick project generation with **pre-configured Spring Boot setup**
+
+**Key Features:**
+
+* Dependency selection → choose starters like Web, JPA, Security
+* Project metadata → group, artifact, packaging, Java version
+* Multiple build tools → Maven or Gradle support
+* Customizable structure → ready-to-run project templates
+* Seamless integration → works with IDEs like IntelliJ and Eclipse
+
+---
+
 ## Spring Core
 
 * Provides **essential building blocks** for Spring applications

@@ -1,6 +1,6 @@
 # Real-World Project
 
-## Creating the Project
+## Create Project
 
 1. Go to [Spring Initializr](https://start.spring.io/).
 2. Select **Maven Project**, **Java**, and **Spring Boot version** (latest stable).
@@ -16,7 +16,7 @@
 
 ![](images/spring-initializr.webp)
 
-## Adding the Persistence Layer
+## Persistence Layer
 
 We'll create a simple [persistence layer](https://en.wikipedia.org/wiki/Persistence_(computer_science)#Persistence_layers) under the package _com.nbicocchi.product.persistence.model_, by adding a _Product_ class.
 
@@ -47,7 +47,7 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 }
 ```
 
-## Adding the Service Layer
+## Service Layer
 
 Moving on to the [service layer](https://en.wikipedia.org/wiki/Multitier_architecture#Common_layers), we'll add a similar service under the package _com.nbicocchi.product.service_:
 
@@ -78,7 +78,7 @@ public class ProductService {
 }
 ```
 
-## Adding the Presentation Layer
+## Presentation Layer
 
 Moving on to the [presentation layer](), we'll add a similar service interface under the package _com.nbicocchi.controller_:
 
