@@ -57,20 +57,3 @@ This naturally introduces classic distributed systems challenges:
 * operate in degraded network conditions
 * sync periodically
 
----
-
-## Distributed Programming Techniques
-
-Programming for the edge means programming **distributed systems at scale**, where the cloud, edge, and devices form a single continuum. This introduces challenges such as:
-
-* microservices architecture
-* container and workload orchestration (Docker, K3s, MicroK8s, Nomad, containerd)
-* distributed communication/coordination
-* synchronous messaging (REST/GraphQL/Protobuf)
-* asynchronous messaging (MQTT, AMQP, Kafka)
-* resiliency
-* eventual consistency
-* distributed observability
-
-* DevOps/MLOps
-* device shadowing / digital twins
