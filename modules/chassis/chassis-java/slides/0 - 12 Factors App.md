@@ -1,13 +1,18 @@
 # The Twelve-Factor App
 
-* A methodology for building **modern, scalable, cloud-native applications**
 
-**Goals:**
+The Twelve-Factor App is a methodology for building **modern, scalable, cloud-native applications**.
 
 * Portability across environments
 * Continuous deployment
 * Scalability and resilience
 * Maintainability in distributed systems
+
+![](images/ftgo-monolitic-architecture.webp)
+![](images/ftgo-microservices-architecture.webp)
+
+
+
 
 ---
 
@@ -55,7 +60,7 @@
 
 ## IV. Backing Services
 
-* Treat external services as attached resources
+* Treat external services as attached resources (*An attached resource is something the application does not own or embed internally, but connects to at runtime through configuration.*)
 
 **Examples:**
 
@@ -168,7 +173,11 @@
 
 ## XII. Admin Processes
 
-* Run admin tasks as one-off processes
+* Admin tasks must:
+
+* Use the same codebase
+* Use the same configuration
+* Run in the same environment
 
 **Examples:**
 
