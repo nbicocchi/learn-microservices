@@ -6,7 +6,6 @@ Docker images are **immutable snapshots** of an application and its environment.
 
 * **Base layer**: minimal OS/runtime (e.g., Alpine, Ubuntu).
 * **Intermediate layers**: modifications like installing packages, copying files, setting environment variables.
-* **Read-only layers**: once built, layers are immutable. Docker combines them using a **Union File System** (e.g., OverlayFS) when running a container.
 * **Writable layer**: added on top when a container starts. Changes are temporary and discarded when the container stops.
 
 Layers provide:

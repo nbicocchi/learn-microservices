@@ -74,7 +74,7 @@ sudo chroot cage /bin/bash
 
 ## Modern Isolation Primitives
 
-### Linux Namespaces
+### Namespaces
 
 * Kernel feature isolating system resources:
 
@@ -84,8 +84,6 @@ sudo chroot cage /bin/bash
     * **IPC** → inter-process communication
     * **UTS** → hostname/domainname
     * **User** → UID/GID mapping
-
-**Example:**
 
 ```bash
 sudo unshare --mount --pid --fork --mount-proc bash
