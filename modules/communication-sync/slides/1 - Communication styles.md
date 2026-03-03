@@ -1,7 +1,3 @@
-Absolutely! We can expand the technical depth of each section, adding **real-world implications, patterns, and implementation details**. Here’s an enhanced version that keeps all your fallacies, images, and examples but adds **more technical content** and reasoning:
-
----
-
 # Communication styles
 
 ## Towards a Distributed Data Model
@@ -34,11 +30,7 @@ direction LR
     Order "1" -- "*" OrderLine
 ```
 
-**Technical implications:**
-
-* **Distributed joins** are impossible; must query multiple services.
-* **Consistency challenges:** eventual consistency, sagas, or compensating transactions may be needed.
-* **Caching and CQRS:** Frequently requested aggregated data might require a **read-optimized view**.
+As a consequence, services must communicate!
 
 ---
 
@@ -52,30 +44,35 @@ Distributed systems introduce subtle complexities. Here’s a **deep technical v
 
 **Reality:** Networks fail due to hardware, misconfigurations, or transient errors.
 
-**Implications:**
-
-* **Timeouts and retries:** Use **exponential backoff** to avoid cascading failures.
-* **Idempotency:** Ensure repeated requests do not corrupt state.
-* **Circuit breakers:** Stop calling failing services temporarily to preserve system stability (Hystrix, Resilience4j).
-
 ```java
 @RestController
 public class NetworkReliabilityController {
-    NetworkService remoteService;
 
     @PostMapping("/reliable")
     public ResponseEntity<String> reliableService(@RequestBody String data) {
+        NetworkService remoteService = new NetworkService();
         String response = remoteService.process(data); // could timeout
         return ResponseEntity.ok(response);
     }
 }
 ```
 
+What to do when **HttpTimeoutException** is received?
+
+* **Retry:** Ensure repeated requests do not corrupt state (idempotent calls).
+* **Circuit breaker:** Stop calling failing services temporarily to preserve stability (Hystrix, Resilience4j).
+
+
+
 ---
 
 ### 2. Latency is Zero
 
 **Reality:** Every network call adds delay; distributed calls amplify latency.
+
+* **Latency:** Time for a single request to travel from sender to receiver, including propagation, transmission, and queuing.
+* **Round-Trip Time (RTT):** Time for a request to go to the receiver and back, including **serialization, processing, network delays, and deserialization**.
+
 
 | Operation            | Duration | Normalized  |
 | -------------------- | -------- | ----------- |
@@ -92,9 +89,22 @@ public class NetworkReliabilityController {
 | TCP retransmit       | 1s       | 100years    |
 | Container reboot     | 4s       | 400years    |
 
+
+```java
+@RestController
+public class NetworkReliabilityController {
+
+    @PostMapping("/reliable")
+    public ResponseEntity<String> reliableService(@RequestBody String data) {
+        NetworkService remoteService = new NetworkService();  // <- minutes
+        String response = remoteService.process(data);        // <- years
+        return ResponseEntity.ok(response);
+    }
+}
+```
+
 **Mitigation strategies:**
 
-* **Asynchronous messaging:** Avoid blocking client threads (e.g., Kafka, RabbitMQ).
 * **Batching:** Combine multiple small requests.
 * **Caching:** Reduce remote calls (Redis, Memcached).
 * **Timeouts:** Set realistic deadlines for service calls.

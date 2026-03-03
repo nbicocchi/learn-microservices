@@ -41,7 +41,7 @@
     * Synchronization and reconciliation occur automatically when the connection is restored.
     * Ensures **service continuity** and **resilience** in environments with intermittent networks.
 
-* **Supports AI-driven scheduling and resource optimization**
+* **Support scheduling and resource optimization**
 
     * Uses **machine learning models** to predict workload demands and adjust resource allocation.
     * Dynamically balances **power efficiency**, **performance**, and **cost** across the continuum.
@@ -91,6 +91,23 @@ flowchart TB
 
 ---
 
+## KubeEdge: Extending K8s to the Edge
+
+* Open-source project from **CNCF**
+* Extends Kubernetes **beyond the cloud** to edge nodes
+* Architecture:
+
+  * **CloudCore:** runs in the cloud (control plane)
+  * **EdgeCore:** runs on edge devices (data plane)
+* Features:
+
+  * Offline tolerance
+  * Device management APIs
+  * Synchronization between edge and cloud
+  * Works with AI and IoT workloads
+
+---
+
 ## K3s: Lightweight Kubernetes
 
 * **Optimized for edge and IoT** environments
@@ -118,23 +135,6 @@ flowchart TB
     * Modular via `microk8s enable <addon>`
     * Supports clustering (HA setups)
 * Runs on Linux, macOS, and Windows
-
----
-
-## KubeEdge: Extending K8s to the Edge
-
-* Open-source project from **CNCF**
-* Extends Kubernetes **beyond the cloud** to edge nodes
-* Architecture:
-
-    * **CloudCore:** runs in the cloud (control plane)
-    * **EdgeCore:** runs on edge devices (data plane)
-* Features:
-
-    * Offline tolerance
-    * Device management APIs
-    * Synchronization between edge and cloud
-    * Works with AI and IoT workloads
 
 ## References
 
