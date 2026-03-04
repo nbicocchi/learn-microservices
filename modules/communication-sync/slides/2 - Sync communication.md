@@ -1,6 +1,6 @@
 # Synchronous Communications
 
-In synchronous communication, services interact in a *request–response* manner — the caller sends a request and waits for a reply before continuing. This model is simple and intuitive, resembling traditional client-server interactions. Typical implementations include **REST**, **GraphQL**, **gRPC**, **Avro**, each offering different trade-offs in flexibility, performance, and data format (best for edge, cloud, or both).
+In synchronous communication, services interact in a *request–response* manner — the caller sends a request and waits for a reply before continuing. This model is simple and intuitive, resembling traditional client-server interactions. Typical implementations include **REST**, **GraphQL**, **gRPC**, **Avro**, each offering different trade-offs in flexibility, performance, and data format (best for edge or cloud).
 
 ---
 
@@ -48,7 +48,7 @@ public class Payment {
 }
 ```
 
-**Over-fetching** occurs when an API returns more data than the client actually needs, leading to wasted bandwidth and increased processing time. This typically happens in REST APIs with fixed response structures, where a client cannot specify exactly which fields it requires.
+**Over-fetching** occurs when an API returns more data than the client actually needs, leading to wasted bandwidth and increased serialization time. This typically happens in REST APIs with fixed response structures, where a client cannot specify exactly which fields it requires.
 
 *Scenario*: A client wants only the title and author of a book, but the API returns the entire book object, including unnecessary fields like ISBN, description, publisher, etc.
 
@@ -80,7 +80,7 @@ public class BookController {
 }
 ```
 
-**Under-fetching (aka chattiness)** occurs when a client requests data from an API but does not receive all the necessary information in a single response. As a result, the client must make additional requests to retrieve the missing data, leading to inefficiencies and increased latency.
+**Under-fetching (aka chattiness)** occurs when a client requests data from an API but does not receive all the necessary information in a single response. As a result, the client must make additional requests to retrieve the missing data, leading to inefficiencies, increased latency and costs.
 
 *Scenario*: The endpoint `/books` returns a simplified model for books. If the client also needs the publisher, it must make additional requests to fetch publisher details such as: `GET /books/{title}`
 
@@ -111,9 +111,9 @@ public class BookController {
 }
 ```
 
-**Thread pool exhaustion (on client side)**: Clients waiting for a response from the server consume system resources (threads, memory), which can be problematic in high-concurrency environments. **[unsolvable with synchronous approaches!]**
+**Thread pool exhaustion (on client side)**: Clients waiting for a response from the server consume system resources (threads, memory), which can be problematic in high-throughput environments. **[unsolvable with synchronous approaches!]**
 
-*Scenario*: A client queries the endpoint `/books` 100 times every second. Each request takes on average 1 second to complete. At any moment, the **client** has approximately 100 threads in a waiting state. Given that each thread requires 1MB of RAM, what happens if the books service stops responding for 10 seconds? The client will need ~1GB of RAM just to manage waiting threads.
+*Scenario*: A client queries the endpoint `/books` 100 times every second. Each request takes on average 1 second to complete. At any moment, the **client** has approximately 100 threads in a waiting state. Given that each thread requires 2MB of RAM, what happens if the books service stops responding for 10 seconds? The client will need ~2GB of RAM just to manage waiting threads.
 
 ![](images/thread-pool.webp)
 
@@ -151,8 +151,6 @@ public class BookController {
 * Generates **language-specific classes**
 * Serializes data efficiently in a **compact binary format**
 * **Used by gRPC by default** for message payloads
-
-![](images/rest-vs-grpc.webp)
 
 ![](images/protobuf.webp)
 
@@ -237,51 +235,12 @@ System.out.println(user);
 
 ---
 
-## GraphQL (JSON over HTTP)
+## GraphQL
 
 ![](images/rest-vs-graphql.webp)
 
-```mermaid
-flowchart TB
-    subgraph Client
-        RESTClient[REST Client]
-        GraphQLClient[GraphQL Client]
-    end
-
-    subgraph REST_Services
-        RESTPost[Post Service]
-        RESTUser[User Service]
-        RESTComment[Comment Service]
-    end
-
-    subgraph GraphQL_Services
-        PostResolver[Post Resolver]
-        UserResolver[User Resolver]
-        CommentResolver[Comment Resolver]
-        UserService[User Service]
-        CommentService[Comment Service]
-    end
-
-    RESTClient -->|GET /posts| RESTPost
-    RESTClient -->|GET /users/1| RESTUser
-    RESTClient -->|GET /users/2| RESTUser
-    RESTClient -->|GET /comments?postId=1| RESTComment
-    RESTClient -->|GET /comments?postId=2| RESTComment
-
-    GraphQLClient -->|getPosts + nested user & comments| PostResolver
-    PostResolver --> UserResolver
-    PostResolver --> CommentResolver
-    UserResolver -->|fetch user data| UserService
-    CommentResolver -->|fetch comments| CommentService
-    PostResolver -->|aggregate all data| GraphQLClient
-
-    classDef client fill:#f9f,stroke:#333,stroke-width:1px;
-    classDef server fill:#bbf,stroke:#333,stroke-width:1px;
-    class RESTClient,GraphQLClient client;
-    class RESTPost,RESTUser,RESTComment,PostResolver,UserResolver,CommentResolver,UserService,CommentService server;
-```
-
 *REST Flow*: Multiple HTTP requests to gather data → high chattiness
+
 *GraphQL Flow*: Single query; server aggregates → reduced chattiness
 
 **GraphQL Advantages**:
@@ -313,29 +272,6 @@ flowchart TB
 * **GraphQL**: flexible queries, reduces over/under-fetching; JSON parsing may add latency at edge
 * **gRPC (Protobuf)**: low-latency, binary, streaming; great for IoT, edge, real-time pipelines
 * **Avro**: schema-based, compact binary; excellent for streaming, edge-cloud messaging, schema evolution
-
----
-
-## DTOs
-
-A **DTO (Data Transfer Object)** is used to transfer data between layers or over the network.
-
-**Characteristics**:
-
-* Encapsulation
-* No business logic
-* Serializable
-
-**Use Cases**:
-
-* APIs and microservices
-* Reducing data load
-* Decoupling layers
-
-**Entity-to-DTO Mapping Libraries**:
-
-* **Java**: MapStruct, ModelMapper
-* **Python**: Marshmallow, Pydantic
 
 ---
 

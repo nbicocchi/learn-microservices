@@ -13,7 +13,6 @@
   * REST: `hey`, `Locust`, `Vegeta`
   * gRPC: `ghz`, `grpcurl`
   * GraphQL: `Locust`
-  * Flexible/custom: `Locust` (Python)
 
 ---
 
