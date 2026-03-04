@@ -1,6 +1,6 @@
 # Communication styles
 
-## Towards a Distributed Data Model
+## Consequences of a Distributed Data Model
 
 Monolithic architectures store **all data in a single database**, e.g., `Order`, `OrderLine`, and `Product`. Relationships are straightforward:
 
@@ -62,13 +62,11 @@ What to do when **HttpTimeoutException** is received?
 * **Retry:** Ensure repeated requests do not corrupt state (idempotent calls).
 * **Circuit breaker:** Stop calling failing services temporarily to preserve stability (Hystrix, Resilience4j).
 
-
-
 ---
 
 ### 2. Latency is Zero
 
-**Reality:** Every network call adds delay; distributed calls amplify latency.
+**Reality:** Network calls add significant delays; 
 
 * **Latency:** Time for a single request to travel from sender to receiver, including propagation, transmission, and queuing.
 * **Round-Trip Time (RTT):** Time for a request to go to the receiver and back, including **serialization, processing, network delays, and deserialization**.
@@ -89,15 +87,20 @@ What to do when **HttpTimeoutException** is received?
 | TCP retransmit       | 1s       | 100years    |
 | Container reboot     | 4s       | 400years    |
 
+Dependency Injection can be problematic here, as it obscures the true behavior of the `NetworkService`.
 
 ```java
 @RestController
 public class NetworkReliabilityController {
+    NetworkService remoteService;
+    
+    public NetworkReliabilityController(NetworkService remoteService) {
+        this.remoteService = remoteService; // <- minutes
+    }
 
     @PostMapping("/reliable")
     public ResponseEntity<String> reliableService(@RequestBody String data) {
-        NetworkService remoteService = new NetworkService();  // <- minutes
-        String response = remoteService.process(data);        // <- years
+        String response = remoteService.process(data); // <- years ??
         return ResponseEntity.ok(response);
     }
 }
@@ -117,7 +120,40 @@ public class NetworkReliabilityController {
 
 * 1 Gbps → 128 MB/s → after TCP/IP & serialization → ~32 MB/s
 
-**Technical consequences:**
+
+```
+Esempio: invio del numero 42 via HTTP/TCP/IP
+
+┌─────────────────────────────────────────────┐
+│ Ethernet header (14 B)                       │
+└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│ IP header (20 B)                             │
+└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│ TCP header (20 B)                            │
+└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│ HTTP headers (~100 B)                        │
+│ POST /api/number HTTP/1.1                    │
+│ Host: example.com                            │
+│ Content-Type: application/json              │
+│ Content-Length: 13                           │
+└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│ JSON body (13 B)                             │
+│ {"value":42}                                 │
+└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│ Dato reale (1-2 B)                           │
+│ 42                                           │
+└─────────────────────────────────────────────┘
+
+Totale trasmesso sul cavo: ~167 B
+Dati utili: 1–2 B → solo ~1% dei byte è reale dato
+```
+
+**Mitigation strategies:**
 
 * **Backpressure:** Slow consumers can overwhelm faster producers.
 * **Throttling & rate limiting:** Use token buckets or leaky bucket algorithms.
@@ -136,19 +172,34 @@ public class NetworkReliabilityController {
 
 ---
 
-### 5. Topology Doesn’t Change
+### 5. Topology Does Not Change
 
-**Reality:** Dynamic scaling, failovers, and network partitions affect service discovery and connectivity.
+**Reality:** Logical service topology can appear fixed, but in real systems, **dynamic scaling, and network partitions** constantly affect service discovery and connectivity.
 
-* **Service registries:** Consul, Eureka, or Kubernetes DNS for dynamic discovery.
-* **Load balancers:** Handle node additions/removals transparently.
-* **Retries and idempotency:** Required to avoid duplicate side effects during topology changes.
+**Example – Callback scenario:**
+
+1. **Service A** registers a **callback** with **Service B** to receive event notifications.
+2. **Service B** is removed or fails due to topology changes.
+3. **Service A** continues to attempt communication, consuming **threads, CPU, and memory** for a service that no longer exists.
+
+> ⚠️ **Takeaway:** Dynamic topology can lead to wasted resources if callbacks, connections, or retries aren’t properly managed.
+
+**Mitigation strategies:**
+
+* **Service registries:** Tools like **Consul, Eureka, or Kubernetes DNS** enable dynamic discovery of services.
+* **Retries and idempotency:** Ensure operations don’t cause duplicate side effects during transient failures or service moves.
 
 ---
 
 ### 6. There is One Administrator
 
-**Reality:** Multiple admins and developers can deploy changes independently.
+**Reality:** Rarely is there a single administrator who knows the entire system. Even if someone designed the network from scratch, over time people leave or change roles, and no one retains complete knowledge.
+
+On top of this, developers often make system behavior **highly configurable** to allow runtime adjustments. Every new switch, lever, or toggle increases flexibility—but also reduces the likelihood that anyone fully understands the system.
+
+> ⚠️ **Takeaway:** The combination of staff turnover and extensive configurability creates an environment where unexpected behaviors and misconfigurations are much more likely.
+
+**Mitigation strategies:**
 
 * **Configuration management:** Centralized tools like Spring Cloud Config, Consul, or Vault.
 * **Infrastructure as code:** Terraform, Ansible, or Kubernetes manifests reduce human error.
@@ -158,17 +209,25 @@ public class NetworkReliabilityController {
 
 ### 7. Transport Cost is Zero
 
-**Reality:** Data movement has **latency, CPU, and monetary costs**, especially in cloud environments.
+**Reality:** Data movement always incurs **latency and CPU costs**, but in **cloud environments** the impact is even higher. Every time data is moved between nodes:
+
+* You pay for **network bandwidth**.
+* You incur **CPU usage** for **serialization and deserialization**.
+* These CPU costs translate directly into **monetary cost** on cloud platforms.
+
+> ⚠️ **Takeaway:** Minimizing unnecessary data transfers is critical for both **performance** and **cost efficiency** in cloud systems.
+
+**Mitigation strategies:**
 
 * **Serialization:** JSON vs Protobuf vs Avro; compact formats save bandwidth.
-* **Message size optimization:** Avoid sending entire objects when only partial data is needed.
-* **Cost analysis:** Cloud egress charges can accumulate for high-volume systems.
-
+* **Message size optimization:** Avoid sending entire objects when only partial data is needed (GraphQL).
 ---
 
 ### 8. The Network is Homogeneous
 
 **Reality:** Nodes vary in **language, platform, database, and protocol**.
+
+**Mitigation strategies:**
 
 * **Polyglot persistence:** Mix of relational and NoSQL databases (Postgres, MongoDB, Cassandra).
 * **Cross-language communication:** REST, gRPC, or message brokers handle interoperability.
@@ -219,10 +278,14 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Client
+    participant Broker
     participant Service
-    Client->>Service: Send request
+
+    Client->>Broker: Send request
     Note right of Client: Client continues processing
-    Service-->>Client: Return response later
+    Broker->>Service: Deliver request
+    Service-->>Broker: Return response
+    Broker-->>Client: Deliver response later
 ```
 
 * Non-blocking.
@@ -240,8 +303,10 @@ sequenceDiagram
     participant Subscriber2
 
     Publisher->>Broker: Publish message
+    Note right of Publisher: Publisher continues immediately
     Broker->>Subscriber1: Deliver message
     Broker->>Subscriber2: Deliver message
+    Note right of Broker: Broker handles message distribution
 ```
 
 * Publisher sends messages to a broker.
@@ -255,14 +320,17 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Client
+    participant Broker
     participant Service1
     participant Service2
 
-    Client->>Service1: Send request
-    Client->>Service2: Send request
+    Client->>Broker: Send request to multiple services
     Note right of Client: Client continues processing
-    Service1-->>Client: Return response
-    Service2-->>Client: Return response
+    Broker->>Service1: Deliver request
+    Broker->>Service2: Deliver request
+    Service1-->>Broker: Return response
+    Service2-->>Broker: Return response
+    Broker-->>Client: Deliver responses asynchronously
 ```
 
 * Client sends requests to multiple services asynchronously.
