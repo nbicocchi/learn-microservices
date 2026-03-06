@@ -6,29 +6,29 @@
 
 ![Containers vs VMs](images/containers-vms.webp)
 
-**Deployment density:** how efficiently workloads share infrastructure.
-Higher density → better utilization, but requires careful resource isolation.
+* **Deployment density:** how efficiently workloads share the same infrastructure. Higher density leads to better resource utilization.
+* **Isolation:** mechanisms that keep workloads separated (CPU, memory, filesystem, network), preventing interference and improving security and stability when many workloads run on the same infrastructure.
 
 ### Bare Metal
 
 * Apps run directly on physical servers
 * Conflicts due to shared libraries & dependencies
-* One-app-per-server → high cost, low utilization
-* Minimal isolation, difficult scaling
+* One-app-per-server → high cost, strong isolation
+* Many-apps-per-server → low cost, low isolation
 
 ### Virtual Machines
 
 * Hypervisor (KVM, Xen, VMware ESXi) runs multiple VMs
 * Each VM has its **own kernel and OS**
-* Strong isolation, easier management than bare metal
-* Drawback: high memory & storage overhead, slower boot
+* OK density, strong isolation
+* Drawback: memory & storage overhead, complex management
 
 ### Containers
 
 * Run on **host kernel** with **namespaces + cgroups**
 * Package **only app + dependencies**
 * Fast startup (<1s), minimal overhead
-* Highly portable & scalable
+* High density, OK isolantion
 * Perfect for **microservices and ephemeral workloads**
 
 ---
