@@ -8,8 +8,6 @@ Created by Google, built on:
 * **HTTP/2** (multiplexing, header compression, server push)
 * **Protocol Buffers (Protobuf)** as the default data format
 
-Ideal for **low latency**, **high throughput**, and **strong contracts**.
-
 ---
 
 ## **Why gRPC?**
@@ -17,9 +15,24 @@ Ideal for **low latency**, **high throughput**, and **strong contracts**.
 * Faster and more compact than REST/JSON
 * Strongly typed interfaces
 * Automatic client/server code generation
-* Bi-directional streaming
-* Native load balancing, deadlines, metadata
 * First-class interop (Java, Go, Python, C++, C#, Kotlin...)
+
+---
+
+## **When to use**
+
+* Low-latency internal APIs
+* Microservice-to-microservice communication
+* High-throughput services
+* IoT / robotics / Edge computing
+* Real-time streaming
+* Strongly typed enterprise systems
+
+## **Not ideal for**
+
+* Public APIs (JSON is easier)
+* Browsers (no direct gRPC support)
+* Simple CRUD applications
 
 ---
 
@@ -34,23 +47,18 @@ A **binary serialization format** with:
 
 ---
 
-## **Protobuf Schema Example**
+## **Why Protobuf is Fast**
 
-```proto
-syntax = "proto3";
+**Compact Binary Encoding**
 
-message User {
-  string id = 1;
-  int32 age = 2;
-  bool is_active = 3;
-}
-```
+* Field names **not included** → only numeric tags
+* Variable-length integer encoding
+* Very small payloads (5–10× smaller than JSON)
 
-Key properties:
+**Efficient Parsing**
 
-* Fields identified by numeric **tags** (compact + stable)
-* Supports primitives, enums, nested messages, maps, repeated fields
-* Default values (0, false, empty) — no need for `null`
+* Messages mapped to classes (precompiled code)
+* Zero-copy deserialization patterns available
 
 ---
 
@@ -59,11 +67,47 @@ Key properties:
 ```proto
 syntax = "proto3";
 
+package user;
+
+// ----------------------
+// Messages (Entities)
+// ----------------------
+
+message Post {
+  string timestamp = 1;
+  string content   = 2;
+}
+
+message User {
+  string userUUID  = 1;
+  string nickname  = 2;
+  string birthDate = 3;
+  repeated Post posts = 4; // a user can have multiple posts
+}
+
+// Request and Response messages
+message UserRequest {
+  string userUUID = 1;
+}
+
+message UserResponse {
+  User user = 1;
+}
+
+// ----------------------
+// Service Definition
+// ----------------------
+
 service UserService {
+  // Get a user by UUID
   rpc GetUser (UserRequest) returns (UserResponse);
+
+  // Add a new user
   rpc AddUser (User) returns (UserResponse);
 }
 ```
+
+
 
 ## **Client/Server Generation**
 
@@ -76,22 +120,6 @@ Generates:
 * Strongly typed client stubs
 * Server base classes
 * Message classes
-
----
-
-## **Why Protobuf is Fast**
-
-**Compact Binary Encoding**
-
-* Field names **not included** → only numeric tags
-* Variable-length integer encoding (varint)
-* Very small payloads (5–10× smaller than JSON)
-
-**Efficient Parsing**
-
-* Precompiled code → no reflection
-* Messages mapped to classes
-* Zero-copy deserialization patterns available
 
 ---
 
@@ -147,20 +175,4 @@ UserResponse res = client.getUser(
 
 ---
 
-# **Where gRPC Shines**
-
-## **Best use cases**
-
-* Low-latency internal APIs
-* Microservice-to-microservice communication
-* High-throughput services
-* IoT / robotics / Edge computing
-* Real-time streaming
-* Strongly typed enterprise systems
-
-## **Not ideal for**
-
-* Public APIs (JSON is easier)
-* Browsers (no direct gRPC support → need gRPC-Web)
-* Simple CRUD applications
-
+## Resources

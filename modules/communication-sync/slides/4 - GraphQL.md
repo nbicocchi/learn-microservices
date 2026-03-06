@@ -122,37 +122,6 @@ fragment PostFields on Post {
 }
 ```
 
-### Operations
-In GraphQL, you can send multiple operations (queries, mutations, or subscriptions) in a single request separated by curly braces {}. This is particularly useful when you want to fetch or mutate multiple sets of data in a single round trip to the server.
-
-```graphql
-# First operation
-query PleaseGetHannibal {
-  userByUUID(userUUID: "171f5df0-b213-4a40-8ae6-fe82239ab660") {
-    userUUID
-    nickname
-    birthDate
-    posts {
-      timestamp
-      content
-    }
-  }
-}
-
-# Second operation
-query PleaseGetShyGuy {
-  userByUUID(userUUID: "b1f4748a-f3cd-4fc3-be58-38316afe1574") {
-    userUUID
-    nickname
-    birthDate
-    posts {
-      timestamp
-      content
-    }
-  }
-}
-```
-
 ### Variables
 
 Variables in GraphQL allow you to parameterize your queries or mutations, making them dynamic and reusable.

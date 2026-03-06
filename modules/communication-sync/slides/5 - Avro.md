@@ -13,23 +13,27 @@ Used heavily in **Kafka**, **event-driven architectures**, and **big-data pipeli
 
 ---
 
-## **Key Features**
+## **When to Use Avro**
 
-* **Schema-driven**: every Avro message is validated against a schema.
-* **Compact binary format** → efficient for high-throughput systems.
-* **Dynamic typing at runtime** (schema stored in data file or managed externally).
-* **Language-agnostic** with official bindings (Java, Python, C++, Go, etc.).
-* **Backward, forward, and full schema compatibility** support.
-* **RPC support** (less used today thanks to gRPC, REST, GraphQL).
+* High-throughput messaging
+* Event-driven microservices
+* Schema-controlled data interchange
+* Storage formats (Parquet uses Avro internally)
+
+**Not ideal for**
+
+* Human-readable APIs → JSON/REST is better
+* Browsers (no direct gRPC support)
+* Very complex typed RPC → GraphQL preferred
 
 ---
 
 ## **Schema Structure**
 
-Avro schemas are written in **JSON** and define:
+Avro schemas are written in **JSON** and define `fields` (name + type).
 
-* `type` (record, enum, array, map, fixed, union, primitive)
-* `fields` (name + type)
+* **Primitive Types** `null`, `boolean`, `int`, `long`, `float`, `double`, `bytes`, `string`
+* **Complex Types** `record`, `enum`, `array`, `map`, `fixed`, `union` 
 * optional defaults
 
 ```json
@@ -46,80 +50,44 @@ Avro schemas are written in **JSON** and define:
 
 ---
 
-## **Primitive Types**
-
-* `null`
-* `boolean`
-* `int`, `long`, `float`, `double`
-* `bytes`, `string`
-
-## **Complex Types**
-
-* `record`
-* `enum`
-* `array`
-* `map`
-* `fixed`
-* `union` (often used for nullable fields: `["null", "string"]`)
-
----
-
 ## **How Avro Serializes**
 
 1. **Writer schema** is used to encode the data.
 2. **Reader schema** is used to decode the data.
-3. If schemas differ, Avro applies **schema resolution rules**.
 
+* No field names included in the binary (unlike JSON).Only the raw values go into the payload.
 * Uses **variable-length encoding** for integers (zig-zag + varint).
-* No field names included in the binary (unlike JSON).
-* Only the raw values go into the payload → extremely compact.
 
 ---
 
 ## **Compatibility Types**
 
-* **Backward compatible** → new readers can read old data.
-* **Forward compatible** → old readers can read new data.
-* **Full compatibility** → both directions.
+If schemas differ, Avro applies **schema resolution rules**.
 
-## **Common Rules**
+**Old Schema**
 
-* Adding a new field → must have a **default**
-* Removing a field → safe if it had a default
-* Changing a type → safe only with compatible unions
-* Renaming fields → NOT safe (Avro matches by name)
-
----
-
-## **Why Avro is popular in Kafka**
-
-* Messages are tiny → higher throughput
-* Strong schema guarantees for producers/consumers
-* Integrates with **Schema Registry** (Confluent, Apicurio, Redpanda)
-
-**Typical Pattern**
-
-* Producer writes message using **writer schema**
-* Schema is registered in **Schema Registry**
-* Consumer fetches schema ID + binary payload
-* Registry provides the **reader schema**
-
----
-
-## **Schema Registry**
-
-* Store and version Avro schemas
-* Enforce compatibility rules (backward/forward/full)
-* Provide schema IDs for Kafka messages
-* Serve schemas via REST API
-
-## **Payload Layout in Kafka**
-
-```
-[ magic byte | schema id | avro binary ]
+```json
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    { "name": "name", "type": "string" }
+  ]
+}
 ```
 
-Magic byte = 0 → identifies Schema Registry payload format.
+**New Reader Schema (Backward Compatible)**
+
+```json
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    { "name": "name", "type": "string" },
+    { "name": "age", "type": ["null", "int"], "default": null }
+  ]
+}
+```
 
 ---
 
@@ -146,17 +114,21 @@ GenericRecord user = reader.read(null, decoder);
 
 ---
 
-## **When to Use Avro**
+## **Why Avro is popular in Kafka**
 
-* High-throughput messaging (Kafka, Pulsar)
-* Event-driven microservices
-* Streaming analytics pipelines
-* Schema-controlled data interchange
-* Storage formats (Parquet uses Avro internally)
+* Messages are tiny → higher throughput
+* Strong schema guarantees for producers/consumers
+* Integrates with **Schema Registry** (Confluent, Apicurio, Redpanda)
 
-**Not ideal for**
+**Typical Pattern**
 
-* Human-readable APIs → JSON/REST is better
-* Very complex typed RPC → gRPC or GraphQL preferred
-* Small systems without schema evolution needs
+* Producer writes message using **writer schema**
+* Schema is registered in **Schema Registry**
+* Consumer fetches schema ID + binary payload
+* Registry provides the **reader schema**
 
+```
+[ magic byte | schema id | avro binary ]
+```
+
+## Resources
