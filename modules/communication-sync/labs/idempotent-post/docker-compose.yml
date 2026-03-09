@@ -18,3 +18,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
