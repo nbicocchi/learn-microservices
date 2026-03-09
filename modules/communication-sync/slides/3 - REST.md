@@ -142,25 +142,6 @@ public class PostIntegration {
 
 ## Trying out the messaging system
 
-```yaml
-services:
-  post-service:
-    build: post-service
-    environment:
-      - SERVER_PORT=8080
-    ports:
-      - "8080:8080"
-
-  user-service:
-    build: user-service
-    environment:
-      - SERVER_PORT=8080
-      - APP_POST-SERVICE_HOST=post-service
-      - APP_POST-SERVICE_PORT=8080
-    ports:
-      - "8081:8080"
-```
-
 ```bash
 mvn clean package -Dmaven.test.skip=true
 docker compose up --build --detach
@@ -168,6 +149,10 @@ docker compose up --build --detach
 
 ```bash
 curl -X GET http://localhost:8080/posts | jq
+```
+
+```bash
+curl -X GET http://localhost:8081/users | jq
 ```
 
 ```bash

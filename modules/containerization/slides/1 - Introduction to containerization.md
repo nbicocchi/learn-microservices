@@ -104,11 +104,11 @@ ps aux
 ## Container Technologies
 
 | Tool           | Description                                              | Use Case                                    |
-| -------------- | -------------------------------------------------------- | ------------------------------------------- |
-| LXC / LXD      | Full Linux OS containers, system-level isolation         | Multi-service environments, lightweight VMs |
+|----------------| -------------------------------------------------------- | ------------------------------------------- |
 | systemd-nspawn | Lightweight OS-level containers, integrates with systemd | Testing, lightweight isolated environments  |
-| Podman         | Docker-compatible, daemonless, supports rootless mode    | Secure development and testing environments |
+| LXC / Incus    | Full Linux OS containers, system-level isolation         | Multi-service environments, lightweight VMs |
 | Docker         | Application containers, layered images, OCI-compliant    | Running microservices, CI/CD pipelines      |
+| Podman         | Docker-compatible, daemonless, supports rootless mode    | Secure development and testing environments |
 | Kubernetes     | Container orchestrator: scheduling, scaling, networking  | Multi-node deployments, production clusters |
 
 1. **LXC / LXD** → closest to a full OS, low-level containerization, more isolation, can run multiple services like a lightweight VM.

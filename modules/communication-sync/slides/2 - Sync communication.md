@@ -27,13 +27,37 @@ public class OrderController {
         Payment payment = restClient.get()
                 .uri(url)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});   
+                // Direct deserialization (tightly coupled)
+                .body(new ParameterizedTypeReference<Payment>() {});
         // ...
     }
 }
 ```
 
 **Temporal coupling** occurs when components or services must be available and responsive at the same time to function correctly. This often happens in synchronous communication patterns, where one component must wait for another to process a request before proceeding. In cases where a chain of multiple services need to communicate, **the cumulated latency can significantly degrade performance**. **[unsolvable with synchronous approaches!]**
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant ServiceA
+    participant ServiceB
+    participant ServiceC
+
+    Client->>ServiceA: Request
+    activate ServiceA
+    ServiceA->>ServiceB: Request
+    activate ServiceB
+    ServiceB->>ServiceC: Request
+    activate ServiceC
+    ServiceC-->>ServiceB: Response
+    deactivate ServiceC
+    ServiceB-->>ServiceA: Response
+    deactivate ServiceB
+    ServiceA-->>Client: Response
+    deactivate ServiceA
+
+    Note over Client,ServiceC: Each service must be available\nand respond in order → temporal coupling
+```
 
 **API coupling** refers to the degree of dependency between a client and an API. A highly coupled API means that changes in the API can easily break the client, while a loosely coupled API provides more flexibility and resilience to changes.
 
@@ -80,6 +104,20 @@ public class BookController {
 }
 ```
 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as Book API
+    participant DB as Database
+
+    Client->>API: GET /books
+    API->>DB: Fetch all books
+    DB-->>API: Full Book objects (title, author, isbn, description, publisher, pages)
+    API-->>Client: Full Book objects
+
+    Note over Client: Client only needs title and author but receives unnecessary fields
+```
+
 **Under-fetching (aka chattiness)** occurs when a client requests data from an API but does not receive all the necessary information in a single response. As a result, the client must make additional requests to retrieve the missing data, leading to inefficiencies, increased latency and costs.
 
 *Scenario*: The endpoint `/books` returns a simplified model for books. If the client also needs the publisher, it must make additional requests to fetch publisher details such as: `GET /books/{title}`
@@ -111,6 +149,30 @@ public class BookController {
 }
 ```
 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as Book API
+    participant DB as Database
+
+    Client->>API: GET /books
+    API->>DB: Fetch all books
+    DB-->>API: List of books
+    API-->>Client: List of BookBasicDTO (title, author)
+
+    Note over Client,API: Client needs publisher info
+
+    Client->>API: GET /books/Spring Boot
+    API->>DB: Fetch full book details for "Spring Boot"
+    DB-->>API: Full Book object
+    API-->>Client: Book with publisher details
+
+    Client->>API: GET /books/Microservices
+    API->>DB: Fetch full book details for "Microservices"
+    DB-->>API: Full Book object
+    API-->>Client: Book with publisher details
+```
+
 **Thread pool exhaustion (on client side)**: Clients waiting for a response from the server consume system resources (threads, memory), which can be problematic in high-throughput environments. **[unsolvable with synchronous approaches!]**
 
 *Scenario*: A client queries the endpoint `/books` 100 times every second. Each request takes on average 1 second to complete. At any moment, the **client** has approximately 100 threads in a waiting state. Given that each thread requires 2MB of RAM, what happens if the books service stops responding for 10 seconds? The client will need ~2GB of RAM just to manage waiting threads.
@@ -119,7 +181,7 @@ public class BookController {
 
 ---
 
-## REST (JSON over HTTP)
+## REST (JSON over HTTP) Alternatives
 
 **Limitations of REST**:
 
@@ -134,30 +196,10 @@ public class BookController {
 
 ---
 
-## gRPC (Protobuf over gRPC)
+### gRPC (Protobuf over gRPC) / Avro
 
-* **gRPC** is a **Remote Procedure Call (RPC) framework** developed by Google.
-* It allows you to **define services** and **call methods on remote servers as if they were local**.
-* Supports:
-
-    * Unary RPC (normal request-response)
-    * Bi-directional streaming
-    * Client and server stub generation
-    * HTTP/2 for multiplexing, flow control, and performance
-
-**Protobuf** is a **serialization format and schema language**:
-
-* Defines messages and types in `.proto` files
-* Generates **language-specific classes**
-* Serializes data efficiently in a **compact binary format**
-* **Used by gRPC by default** for message payloads
-
-![](images/protobuf.webp)
-
-**How gRPC Solves REST Limitations**:
-
-* **Serialization**: Uses Protobuf (compact binary format) for efficient size and speed.
-* **API Coupling**: Strict API contracts with backward/forward compatibility.
+* **Serialization**: Compact binary serialization
+* **API Coupling**: Support backward/forward compatibility.
 * **Over-fetching**: Efficient binary serialization reduces unnecessary data.
 * **Under-fetching (chattiness)**: HTTP/2 multiplexing minimizes multiple round trips.
 
@@ -170,90 +212,15 @@ public class BookController {
 | **Under-fetching (chattiness)** | Y    | Reduced |
 | **Thread Pool Exhaustion**      | Y    | Y       |
 
-**Limitations of gRPC**:
-
-* Schema complexity and code generation
-* Poor browser support
-* Strict typing can reduce flexibility
-
----
-
-## Apache Avro
-
-* **Apache Avro** is a **data serialization system** from the Apache Hadoop ecosystem.
-* Optimized for **compact, fast, and schema-based binary serialization**.
-* Supports **cross-language communication** (Java, Python, C++, Go, etc.).
-* Can embed **schema with data**, unlike Protobuf which requires pre-shared schema.
-
-**Avro Schema Example**
-
-```json
-{
-  "type": "record",
-  "name": "User",
-  "namespace": "com.example.avro",
-  "fields": [
-    {"name": "name", "type": "string"},
-    {"name": "age",  "type": "int"},
-    {"name": "email", "type": ["null", "string"], "default": null}
-  ]
-}
-```
-
-**Serialization Example (Java)**
-
-```java
-Schema schema = new Schema.Parser().parse(new File("user.avsc"));
-GenericRecord user = new GenericData.Record(schema);
-user.put("name", "Alice");
-user.put("age", 30);
-
-ByteArrayOutputStream out = new ByteArrayOutputStream();
-DatumWriter<GenericRecord> writer = new SpecificDatumWriter<>(schema);
-BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
-writer.write(user, encoder);
-encoder.flush();
-byte[] bytes = out.toByteArray();
-```
-
-**Deserialization Example**
-
-```java
-DatumReader<GenericRecord> reader = new SpecificDatumReader<>(schema);
-BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
-GenericRecord user = reader.read(null, decoder);
-System.out.println(user);
-```
-
-**How Apache Avro Solves REST Limitations**:
-
-* Compact binary serialization
-* Flexible schema evolution reduces API coupling
-* Avoids over-fetching
-* Reduces payload sizes, improving repeated call efficiency
-* Works well with messaging systems (Kafka)
-
 ---
 
 ## GraphQL
 
-![](images/rest-vs-graphql.webp)
+* **Serialization**: JSON responses include only the fields requested by the client.
+* **API Coupling**: Schema evolution supports backward and forward compatibility.
+* **Over-fetching**: Clients fetch exactly the data they need, avoiding unnecessary fields.
+* **Under-fetching (chattiness)**: Nested queries allow fetching multiple related resources in a single request.
 
-*REST Flow*: Multiple HTTP requests to gather data → high chattiness
-
-*GraphQL Flow*: Single query; server aggregates → reduced chattiness
-
-**GraphQL Advantages**:
-
-* Reduces API coupling
-* Eliminates over-fetching and under-fetching
-* Single endpoint simplifies serialization
-
-**GraphQL Limitations**:
-
-* Query optimization complexity
-* Caching challenges
-* Schema and resolver overhead
 
 | Characteristic                  | REST | GraphQL |
 | ------------------------------- | ---- | ------- |
@@ -266,7 +233,7 @@ System.out.println(user);
 
 ---
 
-## Protocols in the Edge-Cloud Continuum
+### Protocols in the Edge-Cloud Continuum
 
 * **REST (JSON/HTTP)**: simple, widely supported, cloud-friendly; higher latency limits edge suitability
 * **GraphQL**: flexible queries, reduces over/under-fetching; JSON parsing may add latency at edge

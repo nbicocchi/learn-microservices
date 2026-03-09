@@ -36,7 +36,7 @@ As a consequence, services must communicate!
 
 ## Fallacies of Distributed Computing
 
-Distributed systems introduce subtle complexities. Here’s a **deep technical view of each fallacy**:
+Designing distributed systems often leads developers to make intuitive assumptions based on single-machine experience. However, **distribution introduces subtle, critical complexities**. The **fallacies of distributed computing** are common misconceptions that seem obvious but fail in real networks. Understanding these fallacies is key to building **robust, scalable, and resilient distributed systems**.
 
 ---
 
@@ -57,7 +57,7 @@ public class NetworkReliabilityController {
 }
 ```
 
-What to do when **HttpTimeoutException** is received?
+**Mitigation strategies:**
 
 * **Retry:** Ensure repeated requests do not corrupt state (idempotent calls).
 * **Circuit breaker:** Stop calling failing services temporarily to preserve stability (Hystrix, Resilience4j).
@@ -69,7 +69,7 @@ What to do when **HttpTimeoutException** is received?
 **Reality:** Network calls add significant delays; 
 
 * **Latency:** Time for a single request to travel from sender to receiver, including propagation, transmission, and queuing.
-* **Round-Trip Time (RTT):** Time for a request to go to the receiver and back, including **serialization, processing, network delays, and deserialization**.
+* **Round-Trip Time:** Time for a request to go to the receiver and back, including **serialization, processing, network delays, and deserialization**.
 
 
 | Operation            | Duration | Normalized  |
@@ -157,7 +157,7 @@ Dati utili: 1–2 B → solo ~1% dei byte è reale dato
 
 * **Backpressure:** Slow consumers can overwhelm faster producers.
 * **Throttling & rate limiting:** Use token buckets or leaky bucket algorithms.
-* **Compression:** Reduce payload size with gzip or protobuf.
+* **Compression:** Reduce payload size (Protobuf, Avro).
 
 ---
 
@@ -186,7 +186,7 @@ Dati utili: 1–2 B → solo ~1% dei byte è reale dato
 
 **Mitigation strategies:**
 
-* **Service registries:** Tools like **Consul, Eureka, or Kubernetes DNS** enable dynamic discovery of services.
+* **Service registries:** Tools like **Eureka, or Kubernetes DNS** enable dynamic discovery of services.
 * **Retries and idempotency:** Ensure operations don’t cause duplicate side effects during transient failures or service moves.
 
 ---
@@ -219,7 +219,7 @@ On top of this, developers often make system behavior **highly configurable** to
 
 **Mitigation strategies:**
 
-* **Serialization:** JSON vs Protobuf vs Avro; compact formats save bandwidth.
+* **Serialization:** Protobuf and Avro save bandwidth.
 * **Message size optimization:** Avoid sending entire objects when only partial data is needed (GraphQL).
 ---
 

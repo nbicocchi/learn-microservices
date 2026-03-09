@@ -1,10 +1,22 @@
 # GraphQL
 
-GraphQL is a query language for APIs (Application Programming Interfaces), developed by Meta.
+![](images/rest-vs-graphql.webp)
 
-Unlike traditional REST APIs, where the client has to make multiple requests to obtain all the information it needs, GraphQL allows the client to specify exactly what data it wants to obtain and from where, in a single request.
+*REST Flow*: Multiple HTTP requests to gather data → high chattiness
 
-In addition, GraphQL provides a strong typing system, which allows developers to clearly define the data structure and validate queries at compile time. This leads to better automatic API documentation and greater robustness in client and server code.
+*GraphQL Flow*: Single query; server aggregates → reduced chattiness
+
+**GraphQL Advantages**:
+
+* Reduces API coupling
+* Eliminates over-fetching and under-fetching
+* Single endpoint simplifies serialization
+
+**GraphQL Limitations**:
+
+* Query optimization complexity
+* Caching challenges
+* Schema and resolver overhead
 
 ### Queries & Mutations
  Both queries and mutations are defined in the GraphQL schema and can be executed by clients to interact with the server.

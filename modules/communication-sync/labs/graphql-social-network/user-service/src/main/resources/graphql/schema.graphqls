@@ -14,7 +14,6 @@ input UserDTOInput {
   birthDate: String
 }
 
-
 type User {
   userUUID: String!
   nickname: String!

@@ -44,7 +44,6 @@ public class PostIntegration {
                 "variables", Map.of("userUUID", userUUID)
         );
 
-        System.out.println("helllo");
         Map<String, Object> response = restClient
                 .post()
                 .uri(url)
