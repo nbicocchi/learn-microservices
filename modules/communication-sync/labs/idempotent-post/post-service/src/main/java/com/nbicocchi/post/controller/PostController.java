@@ -5,6 +5,7 @@ import com.nbicocchi.post.persistence.model.Post;
 import com.nbicocchi.post.persistence.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,10 @@ import java.util.stream.StreamSupport;
 @RequestMapping("/posts")
 public class PostController {
     private final PostRepository postRepository;
-    RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     public PostController(PostRepository postRepository,
-                          RedisTemplate<String, String> redisTemplate) {
+                          StringRedisTemplate redisTemplate) {
         this.postRepository = postRepository;
         this.redisTemplate = redisTemplate;
     }

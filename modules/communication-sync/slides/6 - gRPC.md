@@ -5,13 +5,6 @@
 gRPC is a **high-performance, cross-language, open-source framework** for **remote procedure calls (RPC)**.
 Created by Google, built on:
 
-* **HTTP/2** (multiplexing, header compression, server push)
-* **Protocol Buffers (Protobuf)** as the default data format
-
----
-
-## **Why gRPC?**
-
 * Faster and more compact than REST/JSON
 * Strongly typed interfaces
 * Automatic client/server code generation
@@ -21,11 +14,9 @@ Created by Google, built on:
 
 ## **When to use**
 
-* Low-latency internal APIs
-* Microservice-to-microservice communication
+* Microservice-to-microservice communication (low-latency)
 * High-throughput services
 * IoT / robotics / Edge computing
-* Real-time streaming
 * Strongly typed enterprise systems
 
 ## **Not ideal for**
@@ -117,9 +108,10 @@ protoc --java_out=. --grpc-java_out=. user.proto
 
 Generates:
 
-* Strongly typed client stubs
 * Server base classes
 * Message classes
+
+![](images/protobuf.webp)
 
 ---
 

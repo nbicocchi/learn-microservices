@@ -1,17 +1,20 @@
 services:
+  redis:
+    image: redis:latest
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
   post-service:
     build: post-service
     environment:
       - SERVER_PORT=8080
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     ports:
       - "8080:8080"
-
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 5s
-      timeout: 2s
-      retries: 60
+    depends_on:
+      redis:
+        condition: service_healthy
