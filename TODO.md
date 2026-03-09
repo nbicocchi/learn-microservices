@@ -4,3 +4,7 @@
 * MicroK8s: Developer-Friendly Kubernetes
 * Kakfa
 * MLOps
+
+---
+
+sistemare DTOs dentro chassis
