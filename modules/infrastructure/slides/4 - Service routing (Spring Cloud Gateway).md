@@ -9,7 +9,7 @@ In this example, our ecosystem consists of three key services: **Users, Posts, a
 ```text
 <properties>
     <java.version>21</java.version>
-    <spring-cloud.version>2024.0.0</spring-cloud.version>
+    <spring-cloud.version>2025.1.0</spring-cloud.version>
 </properties>
 
 <dependencies>

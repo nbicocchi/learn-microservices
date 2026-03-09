@@ -40,7 +40,7 @@ The `<dependencyManagement>` section is typically used in Spring-based projects 
 
 ```xml
 <properties>
-    <spring-cloud.version>2024.0.0</spring-cloud.version>
+    <spring-cloud.version>2025.1.0</spring-cloud.version>
 </properties>
 
 <dependencies>

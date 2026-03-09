@@ -15,7 +15,7 @@ To include Netflix Eureka in our project, we need to add the *spring-cloud-start
 ```
     <properties>
         <java.version>21</java.version>
-        <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <spring-cloud.version>2025.1.0</spring-cloud.version>
     </properties>
     
     <dependencies>
@@ -98,7 +98,7 @@ We only need to bring in a dependency to connect to a discovery server called _s
 ```
     <properties>
         <java.version>21</java.version>
-        <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <spring-cloud.version>2025.1.0</spring-cloud.version>
     </properties>
     
     <dependencies>
@@ -143,24 +143,35 @@ public class CompositeApplication {
 To actually make a request to a registered service, it is enough to **mention the services by name as reported in the Spring Eureka Dashboard**. In our example, the *datetime-composite-service* connects to a set of *datetime-service* replicas.
 
 ```java
-@GetMapping(value = "/datetime")
-public LocalDateTimeWithTimestamp dateTime() {
-   String urlTime = "http://DATETIME-SERVICE/time";
-   String urlDate = "http://DATETIME-SERVICE/date";
+@RestController
+public class CompositeController {
+  private static final Logger LOG = LoggerFactory.getLogger(CompositeController.class);
+  private final RestClient.Builder restClientBuilder;
 
-   LOG.info("Calling time API on URL: {}", urlTime);
-   LocalTime localTime = restClient.get()
-           .uri(urlTime)
-           .retrieve()
-           .body(LocalTime.class);
+  public CompositeController(RestClient.Builder restClientBuilder) {
+    this.restClientBuilder = restClientBuilder;
+  }
 
-   LOG.info("Calling time API on URL: {}", urlDate);
-   LocalDate localDate = restClient.get()
-           .uri(urlDate)
-           .retrieve()
-           .body(LocalDate.class);
+  @GetMapping(value = "/datetime")
+  public LocalDateTimeWithTimestamp dateTime() {
+    RestClient restClient = restClientBuilder.build();
+    String urlTime = "http://DATETIME-SERVICE/time";
+    String urlDate = "http://DATETIME-SERVICE/date";
 
-   return new LocalDateTimeWithTimestamp(localDate, localTime, LocalDateTime.now());
+    LOG.info("Calling time API on URL: {}", urlTime);
+    LocalTime localTime = restClient.get()
+            .uri(urlTime)
+            .retrieve()
+            .body(LocalTime.class);
+
+    LOG.info("Calling time API on URL: {}", urlDate);
+    LocalDate localDate = restClient.get()
+            .uri(urlDate)
+            .retrieve()
+            .body(LocalDate.class);
+
+    return new LocalDateTimeWithTimestamp(localDate, localTime, LocalDateTime.now());
+  }
 }
 ```
 
@@ -202,43 +213,10 @@ eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka/
 * `leaseExpirationDurationInSeconds: 5`:
    - Defines how long the Eureka server will wait (in seconds) before expiring the service instance if it does not receive a lease renewal (heartbeat). If no heartbeat is received within 5 seconds, the instance is considered expired.
 
-## Docker configuration
-
-```yaml
-services:
-   eureka:
-      build: eureka-service
-      ports:
-         - "8761:8761"
-
-   datetime-composite:
-      build: datetime-composite-service
-      ports:
-         - "8080:8080"
-      environment:
-         - SPRING_PROFILES_ACTIVE=docker
-
-   datetime:
-      build: datetime-service
-      environment:
-         - SPRING_PROFILES_ACTIVE=docker
-      deploy:
-         mode: replicated
-         replicas: 3
-```
-
-Once everything is set up, we can run the example project with:
+## Try it
 
 ```bash
 export COMPOSE_FILE="docker-compose-cslb.yml"
-mvn clean package -Dmaven.test.skip=true
-docker compose up --build --detach
-```
-
-You can also test the server-side version with:
-
-```bash
-export COMPOSE_FILE="docker-compose-sslb.yml"
 mvn clean package -Dmaven.test.skip=true
 docker compose up --build --detach
 ```

@@ -1,5 +1,6 @@
 package com.nbicocchi.datetime.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class DateTimeController {
     @Value("${app.default.zone}")
@@ -17,12 +19,16 @@ public class DateTimeController {
 
     @GetMapping(value = "/date")
     public LocalDate date() {
-        return LocalDate.now(ZoneId.of(zoneId));
+        LocalDate currentDate = LocalDate.now(ZoneId.of(zoneId));
+        log.info("Returning date: {} (zone: {})", currentDate, zoneId);
+        return currentDate;
     }
 
     @GetMapping(value = "/time")
     public LocalTime time() {
-        return LocalTime.now(ZoneId.of(zoneId));
+        LocalTime currentTime = LocalTime.now(ZoneId.of(zoneId));
+        log.info("Returning time: {} (zone: {})", currentTime, zoneId);
+        return currentTime;
     }
 
     @GetMapping(value = "/zone")

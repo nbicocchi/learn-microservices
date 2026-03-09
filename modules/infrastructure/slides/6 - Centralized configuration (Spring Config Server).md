@@ -37,7 +37,7 @@ The config server exposes a REST API that can be used by its clients to retrieve
 ```text
 <properties>
     <java.version>21</java.version>
-    <spring-cloud.version>2024.0.0</spring-cloud.version>
+    <spring-cloud.version>2025.1.0</spring-cloud.version>
 </properties>
 
 <dependencies>
@@ -299,7 +299,7 @@ When the config server detects values in the format '{cipher}...', it tries to d
 ```text
 <properties>
     <java.version>21</java.version>
-    <spring-cloud.version>2024.0.0</spring-cloud.version>
+    <spring-cloud.version>2025.1.0</spring-cloud.version>
 </properties>
 
 <dependencies>

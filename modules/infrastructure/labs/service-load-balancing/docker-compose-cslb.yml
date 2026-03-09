@@ -16,6 +16,9 @@ services:
     environment:
       - SERVER_PORT=8080
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+    depends_on:
+      eureka:
+        condition: service_healthy
 
   datetime:
     build: datetime-service
@@ -25,3 +28,6 @@ services:
     deploy:
       mode: replicated
       replicas: 3
+    depends_on:
+      eureka:
+        condition: service_healthy
