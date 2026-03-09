@@ -3,7 +3,7 @@
     <packaging>pom</packaging>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nbicocchi</groupId>
-	<artifactId>idempotent-post</artifactId>
+	<artifactId>rest-idempotent-post</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>idempotent-post</name>
 
