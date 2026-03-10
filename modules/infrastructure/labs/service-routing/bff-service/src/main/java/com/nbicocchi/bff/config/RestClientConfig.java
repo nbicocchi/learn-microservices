@@ -1,4 +1,4 @@
-package com.nbicocchi.composite.config;
+package com.nbicocchi.bff.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

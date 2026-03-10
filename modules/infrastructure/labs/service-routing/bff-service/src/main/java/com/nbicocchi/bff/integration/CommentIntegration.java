@@ -5,12 +5,13 @@ import com.nbicocchi.bff.dto.CommentDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 
 @Component
 public class CommentIntegration {
     private final RestClient.Builder restClientBuilder;
 
-    public CommentIntegration(RestClient.Builder restClientBuilder) {
+    public CommentIntegration(@LoadBalanced RestClient.Builder restClientBuilder) {
         this.restClientBuilder = restClientBuilder;
     }
 

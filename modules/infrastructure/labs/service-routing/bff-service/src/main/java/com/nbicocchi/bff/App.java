@@ -9,12 +9,6 @@ import org.springframework.web.client.RestClient;
 @SpringBootApplication
 public class App {
 
-	@Bean
-	@LoadBalanced
-	public RestClient.Builder loadBalancedRestClientBuilder() {
-		return RestClient.builder();
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(App.class, args);
 	}

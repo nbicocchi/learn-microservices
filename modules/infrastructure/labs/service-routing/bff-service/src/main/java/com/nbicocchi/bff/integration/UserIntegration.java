@@ -1,6 +1,7 @@
 package com.nbicocchi.bff.integration;
 
 import com.nbicocchi.bff.dto.UserDTO;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
 public class UserIntegration {
     private final RestClient.Builder restClientBuilder;
 
-    public UserIntegration(RestClient.Builder restClientBuilder) {
+    public UserIntegration(@LoadBalanced RestClient.Builder restClientBuilder) {
         this.restClientBuilder = restClientBuilder;
     }
 

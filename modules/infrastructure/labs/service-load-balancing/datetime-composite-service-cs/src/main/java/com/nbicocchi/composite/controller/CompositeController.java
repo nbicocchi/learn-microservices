@@ -41,5 +41,4 @@ public class CompositeController {
 
         return new LocalDateTimeWithTimestamp(localDate, localTime, LocalDateTime.now());
     }
-
 }

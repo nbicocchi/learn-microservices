@@ -16,46 +16,14 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,info,gateway"
+        include: "*"
   endpoint:
     gateway:
       access: read_only
 
-spring.cloud.gateway.routes:
-  - id: bff-service
-    uri: lb://bff-service
-    predicates:
-      - Path=/bff/**
-  - id: user-service
-    uri: lb://user-service
-    predicates:
-      - Path=/users/**
-  - id: post-service
-    uri: lb://post-service
-    predicates:
-      - Path=/posts/**
-  - id: comment-service
-    uri: lb://comment-service
-    predicates:
-      - Path=/comments/**
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
 
-  - id: host_route_200
-    uri: http://httpstat.us
-    predicates:
-      - Host=i.feel.lucky
-      - Path=/headerrouting/**
-    filters:
-      - SetPath=/200
-  - id: host_route_418
-    uri: http://httpstat.us
-    predicates:
-      - Host=im.a.teapot
-      - Path=/headerrouting/**
-    filters:
-      - SetPath=/418
-  - id: host_route_501
-    uri: http://httpstat.us
-    predicates:
-      - Path=/headerrouting/**
-    filters:
-      - SetPath=/501
+
+
