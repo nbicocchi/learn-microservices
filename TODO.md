@@ -4,6 +4,9 @@
 * MicroK8s: Developer-Friendly Kubernetes
 * Kakfa
 * MLOps
+* https://chaos-mesh.org/
+* kubernetes service mesh
+* helm
 
 ---
 
