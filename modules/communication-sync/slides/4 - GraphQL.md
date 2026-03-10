@@ -10,7 +10,6 @@
 
 * Reduces API coupling
 * Eliminates over-fetching and under-fetching
-* Single endpoint simplifies serialization
 
 **GraphQL Limitations**:
 

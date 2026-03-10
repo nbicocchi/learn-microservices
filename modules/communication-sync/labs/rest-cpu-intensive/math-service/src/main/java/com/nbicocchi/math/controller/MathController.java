@@ -3,11 +3,12 @@ package com.nbicocchi.math.controller;
 import com.nbicocchi.math.service.MathService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@Log4j2
+@Slf4j
 @RestController
 @AllArgsConstructor
 public class MathController {
@@ -21,6 +22,8 @@ public class MathController {
             @RequestParam Long number,
             @RequestParam Long times,
             @RequestParam String email) {
+
+        log.info(number + " " + times + " " + email);
 
         List<Long> divisors = null;
         for (int i = 0; i < times; i++) {
