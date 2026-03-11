@@ -197,8 +197,7 @@ After moving the configuration files from each client’s source code to the [co
 config-repo/
 ├── application.yml
 ├── datetime-composite-service.yml
-├── datetime-service.yml
-└── gateway-service.yml
+├── datetime-service.ym
 ```
 
 The most of these files are simple and similar to each because all common parts have been included in _application.yml_.
@@ -228,19 +227,6 @@ eureka:
       defaultZone: http://eureka:8761/eureka/
 ```
 
-Below you can see the content of _datetime-composite-service.yml_.
-
-```text
-server.port: 9000
-spring.application.name: datetime-composite-service
-
----
-spring.config.activate.on-profile: docker
-server.port: 8080
-```
-
-
-
 ### Trying out Spring Cloud Config Server
 
 **Configuration retrieval** Configurations can be retrieved using the */service/profile* endpoint exposed by the configuration server. For example, you can use the following command to retrieve the _datetime-service_ configuration for the docker profile. You can test all the other combinations by changing the name either of the *service* or of the *profile*.
@@ -254,44 +240,6 @@ curl http://localhost:8888/datetime-service/docker | jq
   "name": "datetime-service",
   "profiles": [
     "docker"
-  ],
-  "label": null,
-  "version": "f0713f611970dc1b8264e9511d75550651200fc9",
-  "state": "",
-  "propertySources": [
-    {
-      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/datetime-service.yml' via location '' (document #1)",
-      "source": {
-        "spring.config.activate.on-profile": "docker",
-        "server.port": 8080
-      }
-    },
-    {
-      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/datetime-service.yml' via location '' (document #0)",
-      "source": {
-        "server.port": 9001,
-        "spring.application.name": "datetime-service",
-        "app.default.zone": "US/Eastern"
-      }
-    },
-    {
-      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/application.yml' via location '' (document #1)",
-      "source": {
-        "spring.config.activate.on-profile": "docker",
-        "eureka.client.serviceUrl.defaultZone": "http://eureka:8761/eureka/"
-      }
-    },
-    {
-      "name": "https://github.com/nbicocchi/learn-microservices-config/Config resource 'file [/tmp/config-repo-2718930897293658586/application.yml' via location '' (document #0)",
-      "source": {
-        "eureka.client.serviceUrl.defaultZone": "http://localhost:8761/eureka/",
-        "eureka.client.initialInstanceInfoReplicationIntervalSeconds": 5,
-        "eureka.client.registryFetchIntervalSeconds": 5,
-        "eureka.instance.leaseRenewalIntervalInSeconds": 5,
-        "eureka.instance.leaseExpirationDurationInSeconds": 5,
-        "management.endpoints.web.exposure.include": "health,info,env,refresh"
-      }
-    }
   ]
 }
 ```
@@ -299,37 +247,18 @@ curl http://localhost:8888/datetime-service/docker | jq
 The property sources are returned in priority order; if a property is specified in multiple property sources, the first property in the response takes precedence.
 
 ### Securing the configuration
-To protect configurations, Spring Cloud Config Server incorporates several security mechanisms and best practices:
-
-* Use TLS for encrypting data in transit.
-* **Secure sensitive properties using encryption mechanisms (symmetric or asymmetric).**
-* Leverage OAuth 2.0 or other strong authentication mechanisms to protect access to configuration data.
-* Regularly rotate encryption keys and credentials.
-* Limit access to sensitive configurations by enforcing RBAC.
-* Use a private and secured repository for storing configuration files.
-* Regularly audit and monitor configuration access through logs and monitoring tools.
-
-As described above, sensitive data can be encrypted and decrypted using the /encrypt and /decrypt endpoints exposed by the config server.
+To protect configurations, Spring Cloud Config Server, **secures sensitive properties using encryption mechanisms (symmetric or asymmetric).**
 
 ```bash
 curl http://localhost:8888/encrypt -d my-super-secure-password
 ```
 
-```
-b5bceeba6c1f03f807e286b1352aceac4002e27f01bbb4384aa8399a11c8f9853c37b073cdda13b2445043f241de8759%   
-```
-
 ```bash
-curl http://localhost:8888/decrypt -d b5bceeba6c1f03f807e286b1352aceac4002e27f01bbb4384aa8399a11c8f9853c37b073cdda13b2445043f241de8759
+curl http://localhost:8888/decrypt -d 89b3bfc2c01bdb16e31783039a720b887ddf1755ae495c70b89951394f4c9cd21cfd911e01423361db8f72fbd66ef2f1
 ```
 
 ```
 my-super-secure-password%    
-```
-
-If you want to use an encrypted value in a configuration file, you need to prefix it with {cipher} and wrap it in. For example, to store the encrypted version of 'my-super-secure-password', add the following line in a YAML-based configuration file:
-```
-secret-password: '{cipher}b5bceeba6c1f03f807e286b1352aceac4002e27f01bbb4384aa8399a11c8f9853c37b073cdda13b2445043f241de8759'
 ```
 
 When the config server detects values in the format '{cipher}...', it tries to decrypt them using its encryption key before sending them to a client.

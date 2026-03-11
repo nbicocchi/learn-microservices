@@ -25,33 +25,14 @@ services:
       eureka:
         condition: service_healthy
 
-  gateway:
-    build: gateway-service
-    mem_limit: 512m
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
-      - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    depends_on:
-      eureka:
-        condition: service_healthy
-      config:
-        condition: service_healthy
-
   datetime-composite:
     build: datetime-composite-service
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}
       - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+    ports:
+      - "8080:8080"
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
       interval: 10s
@@ -65,7 +46,6 @@ services:
 
   datetime:
     build: datetime-service
-    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - CONFIG_SERVER_HOST=${CONFIG_SERVER_HOST}

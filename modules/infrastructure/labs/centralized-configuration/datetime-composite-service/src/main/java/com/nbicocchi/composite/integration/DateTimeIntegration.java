@@ -5,6 +5,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,14 +14,15 @@ import java.util.Map;
 @Log4j2
 @Service
 public class DateTimeIntegration {
-    RestClient restClient;
+    private final RestClient.Builder restClientBuilder;
 
-    public DateTimeIntegration(RestClient.Builder clientBuilder) {
-        restClient = clientBuilder.build();
+    public DateTimeIntegration(@LoadBalanced RestClient.Builder restClientBuilder) {
+        this.restClientBuilder = restClientBuilder;
     }
 
     public LocalDate getDate() {
-        String url = "http://DATETIME-SERVICE/date";
+        RestClient restClient = restClientBuilder.build();
+        String url = "http://datetime-service/date";
         log.info("Calling time API on URL: {}", url);
         Map<String, LocalDate> map = restClient.get()
                 .uri(url)
@@ -30,7 +32,8 @@ public class DateTimeIntegration {
     }
 
     public LocalTime getTime() {
-        String url = "http://DATETIME-SERVICE/time";
+        RestClient restClient = restClientBuilder.build();
+        String url = "http://datetime-service/time";
         log.info("Calling time API on URL: {}", url);
         Map<String, LocalTime> map = restClient.get()
                 .uri(url)
