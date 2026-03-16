@@ -6,17 +6,30 @@ COPY . .
 RUN mvn -Pnative clean package native:compile -DskipTests
 
 # Add this build plugin to pom.xml
-# <plugin>
-#     <groupId>org.graalvm.buildtools</groupId>
-#     <artifactId>native-maven-plugin</artifactId>
-#     <configuration>
-#         <imageName>test-docker</imageName>
-#         <buildArgs>
-#             <buildArg>--libc=musl</buildArg>
-#             <buildArg>--static</buildArg>
-#         </buildArgs>
-#     </configuration>
-# </plugin>
+#   <plugin>
+#       <groupId>org.graalvm.buildtools</groupId>
+#       <artifactId>native-maven-plugin</artifactId>
+#       <configuration>
+#           <imageName>test-docker</imageName>
+#           <buildArgs>
+#           <buildArg>--libc=musl</buildArg>
+#           <buildArg>--static</buildArg>
+#           </buildArgs>
+#       </configuration>
+#   </plugin>
+#
+#   <plugin>
+#		<groupId>org.apache.maven.plugins</groupId>
+#		<artifactId>maven-compiler-plugin</artifactId>
+#		<configuration>
+#			<annotationProcessorPaths>
+#				<path>
+#					<groupId>org.projectlombok</groupId>
+#					<artifactId>lombok</artifactId>
+#					<version>1.18.44</version>
+#			</annotationProcessorPaths>
+#		</configuration>
+#	</plugin>
 
 # Compress the binary with upx
 FROM alpine:latest AS compressor
