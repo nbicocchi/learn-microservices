@@ -57,6 +57,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
@@ -65,6 +66,18 @@
 					<container>
 						<mainClass>com.nbicocchi.product.App</mainClass>
 					</container>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.graalvm.buildtools</groupId>
+				<artifactId>native-maven-plugin</artifactId>
+				<configuration>
+					<imageName>test-docker</imageName>
+					<buildArgs>
+						<buildArg>--libc=musl</buildArg>
+						<buildArg>--static</buildArg>
+					</buildArgs>
 				</configuration>
 			</plugin>
 		</plugins>

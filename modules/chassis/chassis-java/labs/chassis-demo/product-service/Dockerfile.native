@@ -1,0 +1,37 @@
+# Compile Java
+FROM ghcr.io/graalvm/native-image-community:25-muslib AS builder
+WORKDIR /app
+RUN microdnf install -y maven
+COPY . .
+RUN mvn -Pnative clean package native:compile -DskipTests
+
+# Add this build plugin to pom.xml
+# <plugin>
+#     <groupId>org.graalvm.buildtools</groupId>
+#     <artifactId>native-maven-plugin</artifactId>
+#     <configuration>
+#         <imageName>test-docker</imageName>
+#         <buildArgs>
+#             <buildArg>--libc=musl</buildArg>
+#             <buildArg>--static</buildArg>
+#         </buildArgs>
+#     </configuration>
+# </plugin>
+
+# Compress the binary with upx
+FROM alpine:latest AS compressor
+WORKDIR /app/target
+RUN apk add upx
+COPY --from=builder /app/target/test-docker .
+RUN upx -9 test-docker
+
+# Server runner
+FROM alpine:latest
+WORKDIR /app
+RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
+USER nonroot
+# Copy the compressed binary from the builder
+COPY --from=compressor --chown=nonroot:nonroot /app/target/test-docker /app/server
+COPY --from=builder --chown=nonroot:nonroot /app/target/*.so /app/
+EXPOSE 5000
+ENTRYPOINT ["/app/server"]
