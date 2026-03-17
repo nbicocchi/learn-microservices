@@ -34,12 +34,6 @@ Observability is not just about **what happens**, but also about **how well the 
   * Example: 99.9% of requests must meet the latency target.
   * Example: Payment transaction success rate must remain above 99.5%.
 
-* **Benefits**
-
-  * Sets internal contracts between teams and external SLAs for users.
-  * Detects performance regressions early.
-  * Guides operational priorities and resilient system design.
-
 
 ## Security & Observability
 
@@ -92,7 +86,6 @@ Metrics are numerical values that capture key performance indicators (KPIs) abou
   - **Counter** – A monotonically increasing value that resets only on restart. It is used for counting occurrences, such as the number of HTTP requests or errors.
   - **Gauge** – A value that can increase or decrease, used for measuring things like memory usage or temperature.
   - **Histogram** – A metric that samples observations and counts them in configurable buckets, used for tracking request durations or response sizes. It also provides a total count and sum of values.
-  - **Summary** – Similar to a histogram but provides precomputed quantiles (e.g., 50th, 90th percentile) instead of bucketed counts. Useful for monitoring latency percentiles.
 
 **Use Cases**:
   - **Monitoring**: Continuous monitoring of performance indicators like latency, error rates, and resource consumption.
@@ -160,6 +153,47 @@ rate(http_server_request_duration_seconds_sum[1m])
 - **Prometheus Server**: Core component that collects, stores, and queries metrics.
 - **Data Storage**: Uses a built-in time-series database (TSDB) for efficient metric storage and retrieval.
 - **Alertmanager**: Manages, deduplicates, and routes alerts to notification channels.
+
+
+### Thanos
+
+[Thanos](https://thanos.io/) is an open-source project that extends Prometheus for:
+* **Global View**: Aggregates metrics from multiple Prometheus instances, giving a unified query interface.
+* **Long-Term Storage**: Offloads Prometheus TSDB data to object storage like S3, GCS, or Azure Blob, allowing virtually unlimited retention.
+* **High Availability**: Supports **replicated Prometheus instances** with deduplication to avoid double-counting metrics.
+
+![](images/thanos-architecture.webp)
+
+* **Prometheus** feeds real-time metrics into the **Thanos Sidecar**. It also persists the data in Persistent Volume for a minimum of 6 hours.
+* The **Thanos Sidecar** uploads metrics to Object Storage every 2 hours (default) and allows Thanos Query to access real-time data.
+* **Thanos Store** fetches historical data from Object Storage for querying.
+* **Thanos Query** aggregates data from Thanos Sidecar, Thanos Store, and potentially other query nodes to provide a unified querying interface.
+* **Thanos Compactor** optimizes data in Object Storage to improve query performance.
+
+**Architecture Highlights**: Uses **consistent hashing** to distribute data across store gateways and a **replication factor** to maintain multiple copies of each block. Queries are routed intelligently to only the nodes storing relevant blocks.
+
+
+
+---
+
+### Cortex
+
+[Cortex](https://cortexmetrics.io/) is an open-source project:
+* **Multi-Tenancy**: Isolates tenants while providing a shared infrastructure for metrics collection and query.
+* **Scalable Ingestion**: Writes are ingested and sharded across **ingesters**, then stored in long-term object storage (S3, GCS, DynamoDB, etc.).
+* **Query Federation**: Queries are distributed to the ingesters and **queriers**, which aggregate and return results to clients.
+
+
+![](images/cortex-architecture.png)
+
+* **Distributor**: Receives incoming metrics, replicates them, and writes them to the correct ingesters.
+* **Ingester**: Stores incoming metrics temporarily in-memory and flushes them to long-term storage.
+* **Querier**: Handles read requests, fetching from ingesters and object storage.
+* **Table Manager**: Manages long-term storage schemas (for DynamoDB/Cassandra).
+* **Alertmanager**: Integrated or separate for alert handling.
+
+**Architecture Highlights**: Uses **horizontal scaling** and **sharding via consistent hashing** to ensure load balancing. Queries intelligently target only the nodes containing the relevant time-series data.
+
 
 
 ## Logs
