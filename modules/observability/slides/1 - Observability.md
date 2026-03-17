@@ -20,6 +20,36 @@ An effective observability strategy answers questions like:
 * What was the state of my service at time “y”?
 * Is the issue affecting all users or only a subset?
 
+## Service-Level Indicators (SLI) and Service-Level Objectives (SLO)
+
+Observability is not just about **what happens**, but also about **how well the system meets expectations**.
+
+* **SLI (Service-Level Indicator)** – A quantitative measure of system health.
+
+  * Example: Percentage of HTTP requests with latency < 500ms.
+  * Example: Error rate for payment transactions.
+
+* **SLO (Service-Level Objective)** – The target goal for an SLI.
+
+  * Example: 99.9% of requests must meet the latency target.
+  * Example: Payment transaction success rate must remain above 99.5%.
+
+* **Benefits**
+
+  * Sets internal contracts between teams and external SLAs for users.
+  * Detects performance regressions early.
+  * Guides operational priorities and resilient system design.
+
+
+## Security & Observability
+
+Observability can enhance **security monitoring** in distributed systems.
+
+* **Anomaly Detection** - Detect suspicious access patterns or unexpected spikes in traffic.
+* **Audit Trails** - Track access, changes, and critical operations in centralized logs.
+* **Security Alerts** - Trigger immediate notifications for unusual behaviors, such as repeated failed logins or privilege escalations.
+
+
 ## Pillars of Observability
 
 * **Sources**: Part of the infrastructure and application layer, such as a microservice, a device, a database, a message queue, or the operating system. They typically must be instrumented to emit signals.
@@ -204,6 +234,21 @@ Although each pillar serves a different purpose, they complement one another to 
 
 By integrating these observability pillars with specialized tools—such as Prometheus for metrics, the ELK stack for logs, and Jaeger for tracing—teams can gain comprehensive visibility into system behavior. This integration is crucial for effective monitoring, debugging, and optimization of modern software systems.
 
+## Event-Based Observability
+
+In addition to metrics, logs, and traces, modern observability leverages **real-time event streams** to gain immediate insights.
+
+* **Event Stream Sources**
+
+  * Messaging systems such as **Apache Kafka**, **RabbitMQ**, **AWS Kinesis**, or **NATS** capture events from applications or microservices.
+  * Events may represent completed operations, errors, state changes, or user interactions.
+
+* **Real-Time Metrics and Alerts**
+
+  * Events can be aggregated into metrics or triggers in near real-time without waiting for polling intervals.
+  * Example: Counting `OrderCreated` events in Kafka to monitor throughput and detect sudden drops or spikes.
+
+
 ## Instrumentation
 
 Instrumentation in microservices refers to the process of collecting metrics, logs, and traces to monitor, diagnose, and improve performance. Instrumenting microservices involves costs in terms of resource consumption, performance overhead, and engineering effort.
@@ -353,13 +398,11 @@ public class TracingController {
 * Technique where **no changes to application code** are needed to enable monitoring, observability, or performance tracking.
 * Achieved using **automatic instrumentation** via agents or frameworks.
 
-**Benefits:**
+* **Supported Frameworks**
 
-* No manual edits to business logic
-* Consistent metrics across all services
-* Easy integration in production
-
----
+  * Java: Spring Boot, gRPC, JDBC, HTTP clients
+  * Python: Flask, Django, requests, SQLAlchemy, Celery
+  * Node.js: Express, HTTP, MySQL/Postgres, Redis
 
 #### What is a Java Agent?
 
@@ -459,37 +502,21 @@ The **OpenTelemetry collector** is a versatile, open-source tool designed to col
   - **Processors**: Enrich, filter, batch, or transform data before exporting.
   - **Exporters**: Send the processed data to backends like Prometheus, Elasticsearch, Grafana, or third-party observability platforms (Datadog, New Relic).
 
-## OpenTelemetry Ecosystems
+## Observability as a Platform
 
-### Grafana
+Modern observability favors **unified platforms** over isolated tools.
 
-![](images/grafana-cloud-otlp-architecture-via-otel-collector.webp)
+* **Grafana Cloud** – Integrates metrics, logs, and tracing with Tempo, Loki, Mimir.
 
-The [Grafana ecosystem](https://grafana.com/) started as a data visualization tool and has evolved into a comprehensive monitoring solution when combined with other tools in the Grafana stack.
+* **SigNoz** – Single datastore (ClickHouse) for metrics, logs, traces; simpler to operate than separate stacks.
 
-![](images/grafana.webp)
+* **OpenObserve** – Lightweight Rust-based architecture, optimized for cost, performance, and cloud-native environments.
 
-**Grafana** is an open-source analytics and monitoring platform designed for visualizing metrics and logs from various data sources. (see [here](https://grafana.com/blog/2021/06/22/grafana-dashboard-showcase-visualizations-for-prometheus-home-energy-usage-github-and-more/) a curated list of dashboards).
+* **Benefits**
 
-**Tempo** is a distributed tracing backend designed to collect and store trace data generated by applications. 
-
-**Mimir** is a metrics store designed for high-performance metrics collection and retrieval. It is particularly useful for storing large volumes of time-series data and is often seen as a scalable solution for organizations with extensive observability needs.
-
-**Loki** is a log aggregation system designed to collect, store, and query log data from various sources. Unlike traditional log management systems, Loki is optimized for ease of use and integrates tightly with Grafana.
-
-### Signoz
-[SigNoz](https://signoz.io/) is an open-source observability platform designed for monitoring, tracing, and logging in cloud-native applications.
-
-* SigNoz is OpenTelemetry-native, built to support this open standard from day one. 
-* Grafana uses different backends for different signal types. SigNoz uses a single data store (ClickHouse), a columnar database known for fast ingestion and aggregation. Signoz is generally faster and more efficient for ingestion and queries ([here](https://signoz.io/blog/logs-performance-benchmark/?utm_source=github-readme&utm_medium=logs-benchmark) a detailed comparison).
-* SigNoz is generally easier to self-host compared to Grafana, which requires managing multiple backends and configurations.
-
-### OpenObserve
-[OpenObserve](https://openobserve.ai/) is an open-source observability platform that provides a unified solution for logs, metrics, and traces, optimized for cost-efficiency and scalability.
-
-* OpenObserve is designed for high ingestion performance and low resource usage, using a Rust-based engine and object storage (like S3 or MinIO) as its primary backend.
-* Unlike traditional stacks that require separate systems for each signal type, OpenObserve offers a unified and lightweight architecture that simplifies deployment and maintenance.
-* It supports OpenTelemetry and integrates seamlessly with cloud-native environments, offering a modern alternative to solutions like Grafana and ELK with a strong focus on ease of use and minimal operational overhead.
+  * Simplifies operational complexity.
+  * Centralizes data collection.
+  * Reduces inconsistency across multiple tools.
 
 ## Observability Costs
 
@@ -499,6 +526,14 @@ The [Grafana ecosystem](https://grafana.com/) started as a data visualization to
 - **Networking**: Cross-region data transfers, streaming analytics, and API requests can lead to significant network costs.
 - **Licensing & Tooling**: Proprietary tools add licensing fees, while open-source solutions require infrastructure and maintenance costs.
 - **Optimization Strategies**: Reducing data collection frequency, filtering unnecessary logs, and optimizing queries can control costs while maintaining visibility.
+
+## Best Practices 
+
+* **Control Cardinality** - Avoid highly granular labels (e.g., `user_id`) in metrics to prevent time series explosion.
+* **Data Privacy** - Never log sensitive data (passwords, PII).
+* **Scraping Frequency and Overhead** - Balance frequency of metric collection and log verbosity with system resource consumption.
+* **Retention Policies** - Define retention and compression policies to control storage costs while retaining useful data for analysis.
+
 
 ## Resources
 - Cloud Observability in Action, Hausenblas

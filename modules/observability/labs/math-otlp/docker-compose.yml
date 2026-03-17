@@ -64,7 +64,7 @@ services:
     command: "-target=all -config.file=/etc/tempo.yaml"
     volumes:
       - ./config/tempo.yaml:/etc/tempo.yaml
-      - ./tempo-data:/var/tempo
+      - tempo-data:/var/tempo
     depends_on:
       minio:
         condition: service_healthy
