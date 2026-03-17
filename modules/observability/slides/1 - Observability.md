@@ -1,29 +1,38 @@
 # Observability
 
-When your systems are distributed, **things will break**. And when they do, you want to be able to identify and fix the problem as soon as possible before it alters the entire system’s performance, or affects your organization’s reputation.
+When systems are distributed, **failures are inevitable**. The key is being able to detect and resolve issues **quickly**, before they impact overall performance or damage your organization’s reputation.
 
-People have varying knowledge of what observability means: 
-* For some engineers, it’s the old wine of [monitoring](https://iamondemand.com/blog/how-to-properly-monitor-your-k8s-clusters-and-pods/) in a pristine bottle.
-* Honeycomb, in its [Guide to Achieving Observability](https://www.honeycomb.io/wp-content/uploads/2018/07/Honeycomb-Guide-Achieving-Observability-v1.pdf), defines observability as the ability to ask arbitrary questions about your production environment.
+Observability is interpreted differently across the industry:
 
-Despite the variability in these definitions, **the overarching goal of observability is to achieve better visibility into systems:** 
-* Observability is a property enabling you to understand what’s happening inside your software, from the outside.
-* An observable system provides all the information you need to address day-to-day questions about a system. It also enables you to navigate into the system’s failure modes and **trace issues to their root cause**.
+* Some engineers see it as simply [monitoring](https://iamondemand.com/blog/how-to-properly-monitor-your-k8s-clusters-and-pods/) in a fancier package.
+* Honeycomb, in its [Guide to Achieving Observability](https://www.honeycomb.io/wp-content/uploads/2018/07/Honeycomb-Guide-Achieving-Observability-v1.pdf), defines it as the ability to **ask arbitrary questions about your production environment**.
 
-An effective observability solution may address questions like:
+Regardless of the definition, **observability’s ultimate goal is complete visibility into your system**:
 
-* Why is “y” broken?
-* What went wrong during the release of feature “x”?
-* Why has system performance degraded over the past few days?
-* What did my service look like at point “y”?
-* Is this system issue affecting specific users or all of them?
+* It allows you to understand what’s happening **inside your software from the outside**.
+* It equips you with the data needed to answer everyday operational questions and to **trace failures to their root causes**.
+
+An effective observability strategy answers questions like:
+
+* Why is service “y” failing?
+* What went wrong during the deployment of feature “x”?
+* Why has system performance degraded recently?
+* What was the state of my service at time “y”?
+* Is the issue affecting all users or only a subset?
 
 ## Pillars of Observability
 
 * **Sources**: Part of the infrastructure and application layer, such as a microservice, a device, a database, a message queue, or the operating system. They typically must be instrumented to emit signals.
-* **Signals**: Information emitted by sources. There are different signal types, the most common are logs, metrics, and traces.
+* **Signals**: Information emitted by sources. There are different signal types, the most common are:
+  * logs
+  * metrics
+  * traces
 * **Agents**: Responsible for signal collection, processing, and routing. 
-* **Destinations**: Where you consume signals, for different reasons and use cases. These include visualizations (e.g., dashboards), alerting, long-term storage (for regulatory purposes), and analytics (finding new usages for an app). 
+* **Destinations**: Where you consume signals, for different reasons and use cases. These include:
+  * visualizations (e.g., dashboards)
+  * alerting
+  * long-term storage (for regulatory purposes)
+  * analytics (finding new usages for an app)
 * **Telemetry**: The process of collecting signals from sources, routing or preprocessing via agents, and ingestion to destinations.
 
 ![](images/observability-overview.webp)
@@ -31,11 +40,11 @@ An effective observability solution may address questions like:
 ## Sources
 We categorize sources using a simple and widely used trichotomy: **compute**, **storage**, and **network**. This broad categorization helps understand where issues arise, how they propagate through the system, and what steps to take to maintain health of distributed architectures.
 
-| **Category**  | **Description** | **Specific Metrics**                                                                                                                                                                                                                                                                     |  
-|--------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **Compute**  | The runtime environments where code executes, including VMs, containers, and serverless functions. | - **Container-level metrics**: CPU, memory from Docker/Kubernetes.  <br> - **Function invocation times**: Execution time, cold start duration, and memory usage for AWS Lambda/Google Cloud Functions.                                                                                   | 
-| **Storage**  | Components responsible for persisting and managing data, such as databases, file systems, and object stores. | - **DB Metrics**: Queries per second (QPS), read/write latency, connection pool size, rollback rates.  <br> - **Object Storage Metrics**: S3 `GetObject` latency, `PutObject` success/failure rates.                                                                                     |  
-| **Network**  | Ensures smooth communication between microservices by monitoring connectivity, throughput, and latency. | - **API Gateway Metrics**: Request/response latency, success/failure rates, throttled requests.  <br> - **Load Balancer Metrics**: AWS ELB `RequestCount`, `HTTPCode_ELB_5XX_Count` (errors), `Latency`.  <br> - **Network Traffic**: Data transfer rates, packet loss, bandwidth usage. |
+| **Category** | **Description**                                                                                          | **Specific Metrics**                                                                                                                                                                                                                                                                     |
+| ------------ | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Compute**  | The environments where code runs, including virtual machines, containers, and serverless functions.      | - **Container-level metrics**: CPU usage, memory utilization, and resource limits from Docker/Kubernetes.<br>- **Function metrics**: Execution time, cold start duration, and memory consumption for serverless functions (e.g., AWS Lambda, Google Cloud Functions).                    |
+| **Storage**  | Systems that persist and manage data, such as databases, file systems, and object storage.               | - **Database metrics**: Queries per second (QPS), read/write latency, connection pool utilization, rollback/error rates.<br>- **Object storage metrics**: S3 `GetObject` and `PutObject` latency, success/failure rates, storage throughput.                                             |
+| **Network**  | Components that enable communication between services, monitoring connectivity, latency, and throughput. | - **API Gateway metrics**: Request/response latency, success/failure rates, throttled requests.<br>- **Load Balancer metrics**: Request count, 5xx error rates (`HTTPCode_ELB_5XX_Count`), latency.<br>- **Network traffic metrics**: Bandwidth usage, packet loss, data transfer rates. |
 
 
 ## Signals
@@ -61,6 +70,8 @@ Metrics are numerical values that capture key performance indicators (KPIs) abou
   - **Capacity Planning**: Helps in predicting future resource needs based on trends in usage patterns.
 
 ```text
+http://localhost:8080/actuator/prometheus
+
 # HELP http_server_requests_seconds  
 # TYPE http_server_requests_seconds summary
 http_server_requests_seconds_count{error="none",exception="none",method="GET",outcome="SUCCESS",status="200",uri="/actuator"} 1
@@ -99,11 +110,12 @@ If we were to replace `nodeid` with `user_id`, the number of unique label combin
 
 [Prometheus](https://prometheus.io/) is an open-source monitoring and alerting toolkit widely used for recording real-time metrics and generating alerts. Prometheus was developed at [SoundCloud](https://soundcloud.com/) in 2012 and later became a standalone project under the umbrella of the [Cloud Native Computing Foundation](https://www.cncf.io/).
 
-- **Service Discovery**: Automatically detects and scrapes targets using mechanisms like Kubernetes, Eureka, static configs (easy replica management).
+- **Service Discovery**: Automatically detects and scrapes targets using mechanisms like Kubernetes, Eureka, etc.
 - **Scraping Metrics**: Collects data from targets (applications, services, systems) via HTTP at set intervals.
 - **Query Language**: Provides **PromQL** for querying and analyzing time-series data.
 
 ```
+# the total cumulative time spent handling HTTP server requests, measured in seconds.
 http_server_request_duration_seconds_sum
 rate(http_server_request_duration_seconds_sum[1m])
 ``` 
@@ -141,7 +153,7 @@ Logs are detailed, unstructured or semi-structured textual records that describe
 
 ### ELK Stack
 
-The **ELK stack** is a popular set of tools used for managing and analyzing large volumes of data, particularly logs.
+The [ELK stack](www.elastic.co/elastic-stack) is a popular set of tools used for managing and analyzing large volumes of data, particularly logs.
 
 - **Centralized Logging**: The ELK stack allows organizations to centralize logs from multiple sources, making it easier to manage and analyze log data.
 - **Flexible Visualization**: Kibana’s visualization tools help users present data in various formats, enabling better decision-making based on insights derived from the data.
@@ -170,9 +182,11 @@ Traces track the path of a request as it moves through various services in a dis
 ![](images/trace-retry.webp)
 
 **Use Cases**:
-  - **Performance Optimization**: Traces help identify bottlenecks by showing how long each service takes to process a request.
-  - **Root Cause Analysis**: Tracing allows you to pinpoint which service is causing slowdowns or errors.
-  - **Dependency Visualization**: Traces give a clear picture of how services interact, making it easier to understand complex dependencies in a microservice architecture.
+* **Distributed Context Propagation**: Tracks requests as they propagate across multiple services, providing visibility into their interactions.
+* **Latency Analysis**: Enables analysis of request timing to identify performance bottlenecks and optimize service interactions.
+* **Performance Optimization**: Helps detect bottlenecks by showing how long each service takes to process a request.
+* **Root Cause Analysis**: Makes it possible to pinpoint which service is responsible for slowdowns or errors.
+* **Dependency Visualization**: Provides a clear view of how services interact, making complex dependencies easier to understand in a microservice architecture.
 
 
 ### Traces: Jeager/Zipkin
@@ -180,14 +194,6 @@ Traces track the path of a request as it moves through various services in a dis
 [Jaeger](https://www.jaegertracing.io/) and [Zipkin](https://zipkin.io/) are an open-source end-to-end distributed tracing system designed for monitoring and troubleshooting the performance of microservices-based architectures.
 
 ![](images/jaeger-architecture.webp)
-
-- **Distributed Context Propagation**: Jaeger tracks requests as they propagate through multiple services, providing visibility into the interactions between them.
-- **Latency Analysis**: Users can analyze the timing of requests, helping to identify performance bottlenecks and optimize service interactions.
-- **Root Cause Analysis**: It assists in pinpointing the root causes of performance issues by visualizing the path and duration of requests across services.
-- **Service Dependency Graphs**: Jaeger generates visual representations of service dependencies, helping teams understand the architecture and relationships between services.
-- **Storage Options**: Supports various storage backends, such as MySQL, Cassandra, and Elasticsearch, allowing teams to choose their preferred data storage solution.
-
-
 
 
 ## Combining Metrics, Logs, and Traces
@@ -340,23 +346,104 @@ public class TracingController {
 }
 ```
 
-### Zero-code instrumentation
+### Zero Code Instrumentation
 
-**Zero Code Instrumentation** refers to a technique where no code changes are required to instrument an application for monitoring, observability, or performance tracking. This is typically achieved through automatic instrumentation provided by agents (such as [OpenTelemetry Java agent](https://opentelemetry.io/docs/zero-code/java/agent/)) or frameworks.
+**Definition:**
 
-A **Java agent** is a special type of Java program that can modify the behavior of Java bytecode at runtime. It leverages the Java Instrumentation API, allowing developers or tools to inject custom behavior into Java classes before they are loaded into memory by the JVM.
+* Technique where **no changes to application code** are needed to enable monitoring, observability, or performance tracking.
+* Achieved using **automatic instrumentation** via agents or frameworks.
+
+**Benefits:**
+
+* No manual edits to business logic
+* Consistent metrics across all services
+* Easy integration in production
+
+---
+
+#### What is a Java Agent?
+
+* Special Java program that can **intercept and modify bytecode at runtime**
+* Uses the **Java Instrumentation API**
+* Injects **custom behavior** into classes **before or during loading** by the JVM
+
+**Command to attach an agent:**
 
 ```bash
 java -javaagent:/path/to/agent.jar -jar your-application.jar
 ```
 
+---
 
+#### How It Works
 
+1. **Agent Startup**
 
+  * JVM loads the agent before the main application
+  * `premain()` method is invoked
 
+2. **Class Transformation**
 
+  * Agent registers a **ClassFileTransformer**
+  * JVM provides the **bytecode** of each class as it is loaded
+  * Agent can **modify the bytecode** (inject logging, metrics, tracing)
 
+3. **Injected Behavior**
 
+  * Automatic timers, logging, error capture
+  * Trace ID propagation for distributed systems
+
+---
+
+#### Intercepting Methods with Byte Buddy
+
+**Original Method**
+
+```java
+public void doWork() {
+    businessLogic();
+}
+```
+
+**Instrumented Method via Agent**
+
+```java
+public void doWork() {
+    long start = System.currentTimeMillis();
+    try {
+        businessLogic();
+    } finally {
+        long end = System.currentTimeMillis();
+        log(end - start);
+    }
+}
+```
+
+---
+
+```text
+new AgentBuilder.Default()
+    .type(named("com.example.MyService"))
+    .transform((builder, type, classLoader, module) ->
+        builder.method(named("doWork"))
+               .intercept(MethodDelegation.to(LoggerInterceptor.class))
+    ).installOn(instrumentation);
+```
+
+```java
+public class LoggerInterceptor {
+    @RuntimeType
+    public static Object intercept(@SuperCall Callable<?> zuper) throws Exception {
+        long start = System.currentTimeMillis();
+        try {
+            return zuper.call(); // original method executes
+        } finally {
+            long end = System.currentTimeMillis();
+            System.out.println("Execution time: " + (end - start) + "ms");
+        }
+    }
+}
+```
 
 ## OpenTelemetry Collector (Universal Telemetry Agent)
 

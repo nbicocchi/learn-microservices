@@ -7,7 +7,7 @@ services:
     command: --config /etc/otel-collector-config.yaml
 
   prometheus:
-    image: prom/prometheus:v3.2.1
+    image: prom/prometheus:latest
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus.yaml
     command:
@@ -30,22 +30,44 @@ services:
       - ./config/loki.yaml:/etc/loki/loki.yaml
 
   # Helper container to fix permissions on tempo-data
-  tempo-init:
-    image: alpine:latest
-    user: root
-    entrypoint: ["sh", "-c", "chown -R 10001:10001 /var/tempo"]
-    volumes:
-      - ./tempo-data:/var/tempo
+  minio:
+    image: minio/minio:latest
+    environment:
+      - MINIO_ACCESS_KEY=tempo
+      - MINIO_SECRET_KEY=supersecret
+    ports:
+      - "9001:9001"
+    entrypoint:
+      - sh
+      - -euc
+      - mkdir -p /data/tempo && minio server /data --console-address ':9001'
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redpanda:
+    image: redpandadata/redpanda:latest
+    ports:
+      - "9092:9092" # Kafka API for clients
+    command: >
+      redpanda start --overprovisioned
+      --mode=dev-container
+      --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      --advertise-kafka-addr=PLAINTEXT://redpanda:9092
 
   # Tempo service
   tempo:
-    image: &tempoImage grafana/tempo:latest
-    command: [ "-config.file=/etc/tempo.yaml" ]
+    image: grafana/tempo:latest
+    command: "-target=all -config.file=/etc/tempo.yaml"
     volumes:
       - ./config/tempo.yaml:/etc/tempo.yaml
-      - tempo-data:/var/tempo
+      - ./tempo-data:/var/tempo
     depends_on:
-      - tempo-init
+      minio:
+        condition: service_healthy
 
   grafana:
     image: grafana/grafana:latest
