@@ -36,9 +36,9 @@ The course requires a decent understanding of Java and Python.
 * Latency-sensitive communication
 
 [M5 Infrastructure](modules/infrastructure)
-* Service discovery, routing, configuration
-* Edge-cloud hybrid routing strategies
-* Consensus algorithms (RAFT)
+* Service discovery and routing
+* Centralized configuration
+* Distributed algorithms
 
 [M6 Observability](modules/observability)
 * Instrumentation and maintenance costs

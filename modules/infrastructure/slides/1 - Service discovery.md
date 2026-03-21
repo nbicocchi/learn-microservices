@@ -22,8 +22,7 @@ In the non-cloud world, service location resolution was often solved through a c
 
 While this model works well for applications with a relatively small number of services running on a set of static servers, it is less suited for microservice architectures. The limitations include:
 
-* Traditional load balancers are **statically managed**, making them inflexible in dynamic environments.
-* The registration of new service instances is **not dynamic**, so adding or removing services requires manual intervention.
+* Traditional load balancers are **statically managed**, making them inflexible in dynamic environments (the registration of new service instances is **not dynamic**).
 * Centralizing services behind a single cluster of load balancers **restricts horizontal scalability**, as all traffic must pass through a single dispatching point.
 * Even if the load balancer is made highly available, it remains a **single point of failure for the entire infrastructure**.
 

@@ -11,4 +11,3 @@
 ---
 
 sistemare DTOs dentro chassis
-consistent hashing (e replication factor) dentro algos
