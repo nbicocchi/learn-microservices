@@ -3,21 +3,27 @@
 
 ## API Gateway Pattern
 
-The **API Gateway** is a design pattern commonly used in microservices architectures to **handle incoming requests from clients and route them to the appropriate backend microservices**. It serves as a reverse proxy that consolidates requests, performing functions such as authentication, routing, load balancing, and request transformation. The API Gateway acts as a single entry point into the system, abstracting the complexity of individual microservices from the client.
+The **API Gateway** is a design pattern commonly used in microservices architectures to **handle incoming requests from clients and route them to the appropriate backend microservices**. 
+* acts as a single entry point into the system, abstracting the complexity of individual microservices from the client. 
+* serves as a reverse proxy that consolidates requests, performing functions such as authentication, routing, load balancing, and request transformation. 
 
-Without API Gateway:
 
-* **Clients Must Handle Multiple Endpoints**: Without an API gateway, clients must directly communicate with each individual microservice. This increases complexity, as clients need to be aware of the exact URLs of multiple services. If a service changes—such as adopting a new version, running on a different port, or scaling across multiple instances—clients must update their configurations accordingly.
+**Without an API Gateway:**
 
-* **Difficult API Composition**: Many applications require aggregating data from multiple services. Without a gateway, clients must make multiple requests and manually merge the responses. This increases both latency and implementation complexity.
+* **Multiple Endpoints:** Clients must communicate with each service directly, increasing complexity and requiring updates if services change.
+* **API Composition:** Aggregating data across services requires multiple client requests, raising latency and implementation effort.
+* **Cross-Cutting Concerns:** Each service handles authentication, logging, monitoring, and rate limiting individually, causing duplication and inconsistencies.
 
-* **Cross-Cutting Concerns**: Without an API gateway, each microservice must individually implement cross-cutting concerns such as authentication, authorization, logging, monitoring, rate limiting, and request validation. This leads to duplicated effort, inconsistent security policies, and increased maintenance overhead. An API gateway centralizes these responsibilities, ensuring uniform enforcement across all services.
+
 
 ![](images/api-gateway.webp)
 
 ## Backend for Frontends (BFF) Pattern
 
-The **Backends for Frontends (BFF)** pattern is a variation of the API Gateway pattern that provides specialized backends for different types of clients (e.g., web, mobile, IoT devices). Instead of having a single, monolithic API Gateway, the BFF pattern creates a separate backend tailored to the specific needs of each frontend application. This allows the backend to serve optimized responses that fit the specific requirements of different client types.
+The **Backends for Frontends (BFF)** pattern is a variation of the API Gateway pattern that provides specialized backends for different types of clients (e.g., web, mobile, IoT devices). 
+
+Instead of having a single, monolithic API Gateway, the **BFF pattern creates a separate backend tailored to the specific needs of each frontend application**. 
+
 
 ![](images/bff.webp)
 
@@ -90,6 +96,13 @@ In microservice architectures, usually comes a point where we’ll need to ensur
 
 While it’s possible to **use a shared library for embedding these capabilities into all services**, the more capabilities we build into a common framework shared across all our services, the more **difficult it is to change or add behavior in our common code without having to recompile and redeploy all our services**.
 
+## Try it
+
+```bash
+export COMPOSE_FILE="docker-compose-nogateway.yml"
+mvn clean package -Dmaven.test.skip=true
+docker compose up --build --detach
+```
 
 ## Resources
 - Spring Microservices in Action (Chapter 8)

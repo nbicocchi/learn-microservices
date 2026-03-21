@@ -7,6 +7,7 @@
 * https://chaos-mesh.org/
 * kubernetes service mesh
 * helm
+* port all labs/ to k8s
 
 ---
 

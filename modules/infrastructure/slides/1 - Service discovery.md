@@ -327,7 +327,7 @@ eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka/
 * `leaseExpirationDurationInSeconds: 5`:
   - Defines how long the Eureka server will wait (in seconds) before expiring the service instance if it does not receive a lease renewal (heartbeat). If no heartbeat is received within 5 seconds, the instance is considered expired.
 
-### Try it
+## Try it
 
 ```bash
 export COMPOSE_FILE="docker-compose-cslb.yml"

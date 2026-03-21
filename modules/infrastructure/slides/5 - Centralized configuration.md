@@ -2,10 +2,9 @@
 
 ---
 
-* **Segregate**: Don’t deploy config with the service → use **env vars** or **centralized repository**
-* **Centralize**: Minimize number of repositories → one repo for multiple services
+* **Segregate**: Don’t deploy config with the service, use **env vars** or **centralized repository**
+* **Centralize**: Minimize number of repositories (Security risks if configs are scattered)
 * **Abstract**: Access config via **service interface** (REST/JSON)
-* **Harden**: Ensure **high availability and redundancy** (Security risks if configs are scattered)
 
 ![Centralized Configuration](images/centralized-configuration.webp)
 
@@ -15,7 +14,7 @@
     * Files (source control)
     * Relational DBs
     * Key-value stores
-3. Config changes flow through **build & deployment pipeline**
+3. Config changes flow through **build & deployment pipeline** (GitOps)
 4. Services **refresh config** when changes occur
 
 ---
@@ -229,8 +228,6 @@ eureka:
 
 ### Trying out Spring Cloud Config Server
 
-**Configuration retrieval** Configurations can be retrieved using the */service/profile* endpoint exposed by the configuration server. For example, you can use the following command to retrieve the _datetime-service_ configuration for the docker profile. You can test all the other combinations by changing the name either of the *service* or of the *profile*.
-
 ```bash
 curl http://localhost:8888/datetime-service/docker | jq
 ```
@@ -254,11 +251,7 @@ curl http://localhost:8888/encrypt -d my-super-secure-password
 ```
 
 ```bash
-curl http://localhost:8888/decrypt -d 89b3bfc2c01bdb16e31783039a720b887ddf1755ae495c70b89951394f4c9cd21cfd911e01423361db8f72fbd66ef2f1
-```
-
-```
-my-super-secure-password%    
+curl http://localhost:8888/decrypt -d 4c9b0621e3b70d23e08b2868c07ca584bcaddbac798f1f9f2dbbc0262f3f2c0400c9a3d7fcf3481688256b252b5527bf
 ```
 
 When the config server detects values in the format '{cipher}...', it tries to decrypt them using its encryption key before sending them to a client.
