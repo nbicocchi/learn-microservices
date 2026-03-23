@@ -1,6 +1,15 @@
-# Distributed Caching (Redis)
+# Redis
 
-Redis is an acronym for "Remote Dictionary Server": it is an **open source in-memory distributed Key-Value** store and so works directly in-memory (RAM) rather than like traditional databases that operate on secondary storage such as SSDs or Hard Disks (**low latency**).
+**Redis Overview**
+
+* **Full name:** Remote Dictionary Server
+* **Type:** Open-source, in-memory, distributed Key-Value store
+* **Performance:** Operates directly in RAM rather than on SSD/HDD → extremely low latency
+
+**Architecture Highlights**
+
+* **Single-threaded, event-driven** → uses *select()/poll()* to handle multiple connections without blocking
+* **Atomic operations** → each command is executed fully without interruption, simplifying consistency
 
 | Process                             | Duration  | Normalized |
 |-------------------------------------|-----------|------------|
@@ -17,45 +26,44 @@ Redis is an acronym for "Remote Dictionary Server": it is an **open source in-me
 | TCP retransmit                      | 1s        | 100years   |
 | Container reboot                    | 4s        | 400years   |
 
-Furthermore, Redis uses a **single-thread**, **event-driven** approach. Specifically, this mechanism allows Redis not to block on a specific connection while waiting for a future request. Instead, through the use of system calls like *select()* and *poll()*, it waits for an event to occur on any of its connections, thus not blocking on any particular one. 
 
-Since Redis is single-thread, **each individual operation is atomic** and therefore cannot be interrupted by any other, thus going to simplify operation.
+## Redis Persistence Modes
 
+1. **No Persistence**
 
-## Redis as primary Database or Cache 
+  * **Description:** Purely in-memory; all data lost on restart.
+  * **Use case:** Caching, temporary data, scenarios prioritizing speed over durability.
+  * **Pros:** Fastest performance.
+  * **Cons:** Data lost on restart, no durability.
 
-**No Persistence**
+2. **RDB (Redis Database Snapshots)**
 
-Redis operates purely in-memory with no persistence mechanism. This means all data is lost when Redis is restarted, and no disk I/O is involved. It’s ideal for use cases like caching, where the data is temporary and can be regenerated if needed. This setup is suitable for scenarios where high performance is essential and data loss is tolerable.
-- **Pros**: Fastest performance.
-- **Cons**: Data is lost upon restart, no durability.
+  * **Description:** Saves dataset snapshots at intervals (e.g., every 5 min or N writes).
+  * **Use case:** Occasional persistence, analytics, reporting.
+  * **Pros:** Fast restart, low memory/disk overhead.
+  * **Cons:** Possible data loss between snapshots, no continuous updates.
 
-**RDB (Redis Database)**
+3. **AOF (Append-Only File)**
 
-Redis saves snapshots of the dataset at configured intervals (e.g., every 5 minutes or after a certain number of writes). This method is appropriate for applications where occasional persistence is required, and some data loss between snapshots is acceptable. It works well for use cases where long-term persistence is needed, but high durability isn’t critical, such as analytics and reporting systems.
-- **Pros**: Fast restart times, lower memory and disk overhead.
-- **Cons**: Data loss between snapshots, no continuous updates.
+  * **Description:** Logs every write operation to an append-only file.
+  * **Use case:** High durability needs, e.g., e-commerce, financial systems.
+  * **Pros:** Ensures data consistency, configurable write policies.
+  * **Cons:** Slower performance, larger disk usage.
 
-**AOF (Append-Only File)**
+4. **Hybrid (RDB + AOF)**
 
-Redis logs every write operation in an append-only file (`appendonly.aof`). This mechanism ensures that all write operations are logged and can be replayed on restart, providing higher durability. AOF is suitable for applications that require a higher level of data consistency, such as e-commerce or financial systems, where each operation needs to be preserved.
-- **Pros**: Provides durability with the logging of every write operation, configurable write policies.
-- **Cons**: Larger disk space usage, slower performance due to continuous disk writes.
+  * **Description:** Combines RDB snapshots and AOF logging for both speed and durability.
+  * **Use case:** Large-scale apps requiring fast recovery and reliable data.
+  * **Pros:** Fast recovery + high durability.
+  * **Cons:** More disk usage, potential performance impact from dual persistence.
 
-**Hybrid (RDB + AOF)**
-
-This method combines RDB snapshots and AOF logging to provide a balance of performance and durability. Redis will use RDB snapshots for fast recovery and AOF logs for high durability, applying both on restart. This setup is ideal for applications that need both fast recovery and high data durability, such as large-scale web applications or systems that require both performance and reliability.
-- **Pros**: Combines the advantages of RDB and AOF (fast recovery and high durability).
-- **Cons**: Increased disk space usage, potentially slower performance due to dual persistence operations.
-
-Each persistence method has its advantages depending on whether the priority is performance, durability, or fast recovery.
 
 ## Data Structures in Redis
 The data is organized using **key-value pairs**, where keys are unique identifiers, and values can be of different types as we will see later. Data in Redis is accessed by keys, making it a highly efficient and simple data store.
 
-![](../../../modules_extra/caching/slides/images/key-value.webp)
+![](./images/key-value.webp)
 
-## Redis single-node deployments
+## Single-node Deployment
 
 To interact directly with the Redis server, we can use Docker:
 
@@ -267,7 +275,7 @@ HSET user:123 username "Alice"
 EXEC
 ```
 
-## Redis multi-node deployments
+## Multi-node deployments
 
 In addition to being used on a single machine, Redis is also well-suited for **distributed environments**. 
 
@@ -336,10 +344,4 @@ In practice, consistent hashing often uses **virtual nodes** (also called replic
 
 
 ## Resources
-* [What is Redis and how does it work internally](https://medium.com/@ayushsaxena823/what-is-redis-and-how-does-it-work-cfe2853eb9a9)
-* [Everything You Need to Know About Redis](https://medium.com/codex/7-redis-features-you-might-not-know-bab8c9beb2c)
-* [Redis as a database](https://medium.com/wix-engineering/redis-as-a-database-f9df579b09c0)
-* [Introduction to Redis](https://www.geeksforgeeks.org/introduction-to-redis-server/)
 * [Redis explained](https://architecturenotes.co/p/redis)
-* [Redis operations](https://www.tutorialspoint.com/redis/redis_quick_guide.htm)
-* [Problem of Hash-based partitioning](http://www.mikeperham.com/2009/01/14/consistent-hashing-in-memcache-client/)
