@@ -1,52 +1,5 @@
 # Labs
 
-## Lab 1: Observability
-
-```mermaid
-flowchart TD
-    Client --> Gateway[Gateway-Service]
-    Eureka
-    Gateway --> Math1[Math-Service]
-    Gateway --> Math2[Math-MCD-Service]
-    Math1 --> Gateway
-    Math2 --> Gateway
-    Gateway --> Client
-    
-    subgraph Observability_Backend
-        Prometheus
-        Loki
-        Tempo
-    end
-
-    Eureka --> Observability_Backend
-    Gateway --> Observability_Backend
-    Math1 --> Observability_Backend
-    Math2 --> Observability_Backend
-
-    Observability_Backend --> Grafana
-```
-
-1. Implement a `math-service` exposing an API to compute the prime divisors of a given number.
-    - `GET /divisors?n=<value>&times=<values>&faults=<value>` → Returns the prime divisors of the specified number. The divisors are computed `times` times and errors are returned with `faults` percent probability.
-
-2. Implement a `gateway-service` acting as an API gateway and routing requests to multiple instances of `math-service`.
-    - `GET /divisors?n=<value>&times=<values>&faults=<value>` → Delegates the request to a healthy instance of `math-service` and returns the response.
-
-3. Introduce resiliency patterns to improve system reliability and fault tolerance:
-    - Use Eureka for service discovery and client-side load balancing to distribute requests across available `math-service` instances.
-    - Configure retry logic within `gateway-service` to attempt failed requests to `math-service` up to 3 times before propagating the error.
-    - Implement a circuit breaker in `gateway-service` that opens when 50% of recent requests to `math-service` fail, triggering a fail-fast fallback response.
-   
-4. Integrate Redis in `gateway-service` using the *cache-aside* pattern to cache successful responses from `math-service` and reduce load on backend services.
-
-5. Enable distributed observability through automatic (zero-code) OpenTelemetry instrumentation of `eureka-service`, `gateway-service`, and `math-service`. Configure a monitoring stack based on:
-    - Prometheus (metrics)
-    - Loki (logs)
-    - Tempo (traces)
-    - Grafana (visualization)
-
-5. Evaluate and validate the effectiveness of the implemented resilience mechanisms by analyzing metrics, logs, and traces in Grafana dashboards.
-
 ## Questions
 1. What is observability, and why is it important in microservices architectures?
 2. Explain the distinct role of metrics, logs, and traces in observability.
