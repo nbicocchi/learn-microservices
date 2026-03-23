@@ -1,240 +1,267 @@
-# Microservices resiliency
+# Microservices Resiliency
 
 ## What is Resilience?
-**Microservices are distributed in nature**. When you work with distributed systems, always remember this number one rule **anything could happen**. We might be dealing with network issues, service unavailability, application slowness etc. (remember [Fallacies of Distributed Systems](../../communication-sync/slides/0%20-%20Fallacies%20of%20distributed%20computing.md)!) **An issue with one system might affect another system behavior/performance**. The capacity of a system to recover from such failures, remain functional, and avoid cascading failures makes it **resilient**.
 
-## Thread-related risks
+In distributed systems, **anything can happen**: network failures, service crashes, slow responses, or unexpected load spikes.
+(*Remember the [Fallacies of Distributed Systems](../../communication-sync/slides/0%20-%20Fallacies%20of%20distributed%20computing.md)!*)
 
-### One Thread Per Request Design Pattern
+> An issue in one system can propagate and **affect the behavior and performance of others**.
 
-In this model, when a service (*Service A*) sends a request to another service (*Service B*), it assigns a dedicated thread to handle that request. The thread is mainly responsible for waiting the response. This thread remains in a **waiting state**, simply consuming resources without doing any actual work. [Spring Boot Starter Web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web) is the starter dependency to enable this behaviour.
+**Resilience** is the system’s ability to:
+
+* **Recover from failures**
+* **Continue operating** despite partial failures
+* **Prevent cascading failures** across services
+
+> Think of resilience as a combination of **fault-tolerance**, **graceful degradation**, and **self-healing**.
+
+---
+
+## Thread-Related Risks
+
+### One Thread Per Request
+
+**Traditional synchronous model**:
+
+* Service A assigns a **dedicated thread** to handle each request to Service B.
+* The thread is **blocked while waiting**, consuming memory and some CPU.
+  ([Spring Boot Starter Web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web)) enables this model.
 
 ![](images/one-thread-request-pattern.webp)
 
-When the number of parallel requests increases significantly, the following issues may arise:
+**Problems at scale:**
 
-1. **Memory Consumption**: Even though the thread is waiting and not using CPU resources, it still occupies memory (1MB each approximately), which increases with the number of concurrent requests.
+1. **Memory consumption:** Each thread uses ~2MB; thousands of concurrent requests quickly consume gigabytes.
+2. **Thread pool saturation:** Once the pool (`server.tomcat.threads.max`) is full, new requests queue → increased latency → potential rejection (DoS).
+3. **Resource inefficiency:** Idle threads still consume CPU to manage scheduling, leaving less CPU for actual work.
 
-2. **Thread Pool Saturation**: If many threads are simultaneously waiting for I/O to complete, the thread pool can become exhausted or saturated (see `server.tomcat.threads.max` property). When no free threads are available, the system may queue incoming requests, leading to increased response times, or even reject new requests altogether (**DoS**).
+> This model works for low-to-medium traffic but can **collapse under high load or slow downstream services**.
 
-3. **Resource Inefficiency**: Having a large number of threads that are mostly idle (waiting for I/O) leads to inefficient use of system resources. The system uses CPU resources to manage waiting threads instead of performing useful work.
+---
 
-### Reactive Programming as a Solution
+### Reactive Programming
 
-Instead of dedicating one thread per request, reactive applications handle requests via event-driven models. Operations that would typically block a thread (such as waiting for I/O) are handled asynchronously. When a response is ready (e.g., when data from a database becomes available), a callback mechanism resumes the computation. [Spring Boot Starter WebFlux](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux) is the key starter dependency to enable the reactive paradigm. Take a look at [Quarkus](https://quarkus.io/) as an example of a fully-reactive microservices framework. [Twisted](https://twisted.org/) is another example written in Python.
+**Idea:** Handle requests asynchronously with **non-blocking I/O**.
+
+* Operations like DB queries or HTTP calls **don’t block threads**.
+* Instead, a **callback** resumes the operation once data is ready.
+  ([Spring Boot WebFlux](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux), [Quarkus](https://quarkus.io/), [FastAPI](https://fastapi.tiangolo.com/))
 
 ![](images/reactor-pattern.webp)
 
-**Key Features**:
-- **Non-blocking I/O**: Instead of a thread waiting for I/O operations (e.g., database or network calls), the system registers a callback to handle the operation once it's done, freeing up the thread for other work.
-- **Efficient Resource Usage**: By leveraging non-blocking I/O, a reactive system can handle many more concurrent requests with fewer threads.
-- **Scalability**: Reactive systems scale better because they can handle higher loads without a significant increase in resource consumption.
+**Key benefits:**
 
+* **High concurrency with fewer threads** → can handle thousands of requests on limited hardware
+* **Better CPU utilization** → threads do actual computation instead of waiting
+* **Scalability** → reactive streams can **propagate backpressure**, preventing downstream overload
 
-### Java Virtual Threads as a Solution
+**Example:** Instead of waiting for a DB response, the system subscribes to a **Publisher** and resumes only when data arrives.
 
-Java Virtual Threads, offer an alternative solution. Unlike platform (OS) threads, which are heavy-weight and tied to the underlying operating system, virtual threads are light-weight and managed by the JVM itself. Virtual threads allow Java applications to create a large number of concurrent threads without the usual overhead associated with traditional threads.
+---
+
+### Java Virtual Threads
+
+**A modern alternative to both thread-per-request and reactive models.**
+
+* Lightweight threads managed by the **JVM**, not the OS.
+* Traditional **blocking code can be used**, but at massive scale.
 
 ![](images/virtual-threads-pattern.webp)
 
-**Key Features**:
-- **Lightweight**: Virtual threads are much cheaper to create and manage than platform threads, allowing thousands or even millions of threads to be created without significant resource strain.
-- **No Need for Callbacks**: Unlike reactive programming, where callbacks are often used, virtual threads allow traditional, synchronous-looking code to be written, avoiding the complexity and cognitive overhead of managing asynchronous callbacks.
+**Key features:**
 
-## Understanding the Importance of Resiliency
-When it comes to building resilient systems, focus usually on:
-* **Complete failure of a piece of infrastructure.** 
-* **Building redundancy into each layer of their application**.
+* **Cheap to create and manage:** thousands of virtual threads possible with minimal overhead.
+* **Simplifies code:** no callback chains or reactive frameworks needed.
+* **Compatible with existing libraries:** works with blocking I/O libraries without rewriting code.
 
-Techniques:
-* clustering/load balancing between services
-* segregating infrastructure into multiple locations
+> Best for teams who want **simplicity + high concurrency**, without learning reactive paradigms.
 
-However, detecting and avoiding service degradation is often difficult:
-* **Service degradation can start out as intermittent and then quickly build momentum**.
-* The caller has **no concept of a timeout** to keep the service call from hanging.
-* The caller has **no concept of a circuit breaker**. As long as the service has not entirely failed, an application will continue to call a poorly behaving service and won’t fail fast.
+---
 
-### A real-world story
+### Concurrency → Resilience
 
-**Poorly performing remote services are not only difficult to detect but can trigger a cascading effect (callers might exhaust their thread pools!) that can ripple throughout an entire application ecosystem**. Without safeguards in place, a single, poorly performing service can quickly take down entire applications.
+Concurrency models improve **resource efficiency**, but they **don’t automatically prevent cascading failures**.
+
+* Slow/failing downstream services can **still consume resources**.
+* Requests can **pile up**, increasing latency and memory usage.
+* Failures can **propagate**, bringing multiple services down.
+
+**Resiliency patterns** are required to **detect, contain, and recover from failures**.
+
+---
+
+## Why Resiliency Matters
+
+Building resilient systems is **not just about threads or efficiency**, it’s about maintaining service despite **partial failures**.
+
+**Key considerations:**
+
+* **Infrastructure failures** – servers, databases, networks, or entire services can fail unexpectedly.
+* **Redundancy across layers** – replicate services, distribute data, and deploy across multiple locations.
+
+**Techniques:**
+
+* **Clustering & load balancing** between services
+* **Infrastructure segregation** across regions or availability zones
+* **Monitoring and alerting** to detect anomalies early
+
+**Subtle risks:**
+
+* Intermittent slowness can **snowball into outages**.
+* Clients without **timeouts or circuit breakers** may keep waiting → threads and connections get exhausted.
+
+> Efficient concurrency alone **does not make a system resilient**.
+
+---
+
+### Real-World Example
+
+A minor NAS configuration change caused:
+
+1. Inventory service reads slowed dramatically
+2. Organization service threads and DB connections were **exhausted**
+3. Licensing service calls queued → **cascading failure across three services**
 
 ![](images/why-resiliency-matters.webp)
 
-In the scenario above, three applications are communicating in one form or another with three different services. Applications A and B communicate directly with the licensing service. The licensing service retrieves data from a database and calls the organization service to do some work for it.
+> Single slow service → ripple effect → entire application ecosystem impacted.
 
-The organization service retrieves data from a completely different database platform and calls out to another service, the inventory service, from a third-party cloud provider, whose service relies heavily on an internal Network Attached Storage (NAS) device to write data to a shared filesystem. Application C directly calls the inventory service.
-
-Over the weekend, a network administrator made what they thought was a small tweak to the configuration on the NAS. This change appeared to work fine, but on Monday morning, reads to a particular disk subsystem began performing exceptionally slow.
-
-The developers who wrote the organization service never anticipated slowdowns occurring with calls to the inventory service. They wrote their code so that the writes to their database and the reads from the service occur within the same transaction. When the inventory service starts running slowly, not only does the thread pool for requests to the inventory service start backing up, the number of database connections in the service container’s connection pools becomes exhausted. These connections were held open because the calls to the inventory service never completed.
-
-Now the licensing service starts running out of resources because it’s calling the organization service, which is running slow because of the inventory service. Eventually, all three services stop responding because they run out of resources while waiting for the requests to complete.
+---
 
 ### State of Resilience 2025 Survey
-The [State of Resilience 2025 Survey](../../../books/the-state-of-resilience-2025.pdf) conducted among 1,000 senior cloud architects, engineers, and technology executives across North America, EMEA, and APAC showed:
 
-* **Widespread Operational Weaknesses**: 95% of executives are aware of existing operational weaknesses that leave their organizations vulnerable to financial and operational damage from unplanned outages. Nearly half (48%), however, admit their companies’ efforts are insufficient to address these issues.
+* **95%** aware of operational weaknesses
+* **84%** lost ≥$10,000 due to outages
+* **55%** experienced weekly disruptions
+* **39%** reported employee burnout from outages
 
-* **High Cost of Service Disruption**: All surveyed organizations reported suffering outage-related revenue loss over the last twelve months, with 84% losing at least \$10,000. One-third indicated that their per-outage revenue loss ranged from \$100,000 to \$1,000,000 or more, highlighting the severe economic consequences when resilience measures fall short.
+> Outages are frequent, costly, and damaging to both business and staff morale.
 
-* **Frequent Outages are the New Normal**: Organizations reported experiencing 86 outages annually on average, with 55% experiencing disruptions at least once a week. Notably, 70% of large enterprises said their outages typically take 60 minutes or more to resolve – and almost half experienced downtime for two hours or more.
+---
 
-* **Internal and External Consequences**: The impact of unplanned outages goes far beyond financial losses; they also erode the confidence of consumers and business partners, and damage internal trust in IT teams. Even worse, frequent outages accelerate employee burnout, as 39% of respondents reported increased workloads from missed deadlines and accumulated requests.
+## Client-Side Resiliency Patterns
 
-* **Spotty Preparation**: Just one in three executives claimed their organizations have an organized approach to responding to downtime, and fewer than one-third conduct any failover testing. This lack of preparation exposes organizations to further risks while reinforcing the need for enhanced resilience strategies.
-
-* **Overdue Investments in Resilience**: Overwhelmingly, participants stated a need for investment in operational resilience, especially in automation and AI-driven solutions (49%) and cloud infrastructure services (49%). These investments reflect a forward-looking mindset as organizations recognize the growing importance of AI in disaster prevention and outage recovery capabilities.
-
-
-## Client-side resiliency patterns
-**Client-side resiliency patterns focus on protecting a client of a remote resource (usually another microservice or a database) from crashing when the remote resource fails partially or completely**. These patterns allow the client to fail fast and not consume valuable resources (i.e., database connections, thread pools, memory). 
+Protect **clients** from remote service failures and reduce **resource waste**.
 
 ![](images/client-side-resiliency.webp)
 
-### Client-side load balancing
+---
 
-Client-side load balancing involves having the client look up all of a service’s instances from a service discovery agent (like Netflix Eureka) and then caching the physical location of said service instances.
+### Load Balancing
 
-When a service consumer needs to call a service instance, the client-side load balancer returns a location from the pool of service locations it maintains. **If the client-side load balancer detects a problem, it can remove that service instance from the pool of available service locations and prevent future calls from hitting that service instance.**
+* Client maintains **cache of service instances** (via Eureka or similar).
+* Removes failing instances dynamically.
 
 ![](images/client-side-load-balancing.webp)
 
-### Circuit breaker
+**Benefit:** Prevents requests from hitting unhealthy services, reducing cascading failures.
 
-**The Circuit Breaker pattern acts as a safety mechanism that monitors the availability and responsiveness of dependent services.** The Circuit Breaker maintains a state based on the success or failure of previous requests. If the response indicates a failure, such as a timeout or an error, the Circuit Breaker opens the circuit, preventing further requests from being sent to the failing service. **This avoids overwhelming the failing service and reduces the risk of cascading failures throughout the system.**
+---
 
-The key features of a circuit breaker are as follows:
+### Circuit Breaker
 
-* If a circuit breaker detects too many faults, it will open its circuit not allowing new calls.
-* When the circuit is open, a circuit breaker will perform **fail-fast logic**. This means that it does not wait for a new fault to happen but, instead, it redirects the calls to a **fallback method**.
-* After a while, the circuit breaker will be half-open, allowing new calls to see whether the issue that caused the previous failures is still there. If new failures are detected by the circuit breaker, it will open the circuit again and go back to the fail-fast logic. Otherwise, it will close the circuit and go back to normal operation.
+Monitors dependent services and **fails fast** if unhealthy.
+
+* **Open:** block calls, use fallback
+* **Half-open:** test if service recovered
+* **Closed:** normal operations
 
 ![](images/circuit-breaker-internals.webp)
 
-To monitor the rate of failures and determine when to open or close, circuit breakers use time-based windowing mechanisms to track error counts. Three common methods are: **Fixed Window**, **Sliding Window**, and **Leaky Bucket**.
-
 **Fixed Window**
 
-The **fixed window** method divides time into regular, non-overlapping intervals (windows) of fixed duration (e.g., every 30 seconds or 1 minute). It tracks the number of successful and failed requests within each interval separately (**slow detection, can miss errors at window boundaries**).
+* Count failures in fixed intervals (e.g., 10s).
+* Open circuit if threshold exceeded.
+* **Pros:** Simple. **Cons:** Slow to detect bursts at window edges.
 
 **Sliding Window**
 
-A **sliding window** is similar to a fixed window, but instead of using discrete, non-overlapping windows, the sliding window continuously updates over time, giving more real-time failure tracking. The window "slides" as new requests come in, maintaining a record of failures and successes over a defined duration (**fast detection, might produce false positives in systems prone to bursts**).
+* Continuously track failures over a rolling period.
+* Open circuit if failure ratio exceeds threshold.
+* **Pros:** Fast detection. **Cons:** Sensitive to short bursts.
 
 **Leaky Bucket**
 
-The **leaky bucket** mechanism is inspired by a physical bucket with a hole at the bottom, where water (representing requests) leaks out at a constant rate. The bucket represents the capacity of the system to handle failures, and water drips in as requests fail. If the bucket fills up (reaches its limit), the circuit breaker opens.
+* Failures accumulate in a “bucket” that leaks over time.
+* Open circuit if bucket fills up.
+* **Pros:** Smooths bursts. **Cons:** Needs tuning (bucket size/leak rate).
 
-The leaky bucket algorithm smooths out sudden bursts of errors, only triggering when failures consistently occur over time. It helps prevent spikes in traffic from overwhelming the system by gradually letting failures "leak" out (**designed to smooth out failures over time, good for systems prone to bursts of traffic/failures**).
+---
 
-Example:
-- Bucket size: 100 failures.
-- Leak rate: 1 failure every second.
-- If failures occur faster than the leak rate (e.g., more than 1 failure per second), the bucket fills up. If it fills completely (100 failures), the circuit breaker opens.
+### Fallback
 
-### Fallback processing
-**With the fallback pattern, when a remote service call fails, rather than generating an exception, the service consumer executes an alternative code path and tries to carry out the action through another means.**
-
-For instance, let’s suppose you have an e-commerce site that monitors your user’s behavior and gives them recommendations for other items they might want to buy. If the preference service fails, a fallback mechanism could retrieve a more general list of preferences that are based on all user purchases from a different service.
+* Execute alternative logic when remote calls fail
+* Prevents **exceptions from crashing clients**
 
 ![](images/microservices-resiliency-fallback.webp)
 
+**Example:** Return cached data or default values if a service is down.
+
+---
+
 ### Retry
-When a request fails, the Retry pattern initiates a retry mechanism, which can be configured with a certain number of retries and backoff strategies. The following circumstances have to be understood **before** applying this pattern:
 
-* **Non-idempotent operations** can cause unintended side effects if retried multiple times. Retrying such operations can lead to data inconsistency or duplicate actions.
-* **Circuit breaker**: always consider implementing circuit breakers when enabling retry. When failures are rare, that's not a problem. Instead, **retries that increase load can make matters significantly worse** (e.g., latency is high because bandwidth is saturated).
-* **Exponential backoff/jitter**: It involves increasing the delay between each retry attempt exponentially, reducing the load on the failing service and preventing overwhelming it with repeated requests. Here is a [well written article](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) on how AWS SDKs support exponential backoff and jitter as a part of their retry behaviour.
-
-| Exponential backoff                               | Exponential backoff + jitter                      |
-|---------------------------------------------------|---------------------------------------------------|
-| ![](images/microservices-resiliency-retry-1.webp) | ![](images/microservices-resiliency-retry-2.webp) |
-
-* **Time-sensitive operations**: Retries may not be appropriate for time-critical operations. Retries might not work well where latency's 99th percentile is close to 50th percentile. Look at the graphs below. On the first one, timeouts occasionally happens, a good case for enabling retries. On the second graph, timeouts happen periodically, do not enable retries.
-
+* Retry failed requests **with backoff**
+* Important: **only for idempotent operations**
+* Use **circuit breakers** to avoid retry storms
+* **Exponential backoff + jitter** smooths traffic spikes
 
 | Retry suitable                    | Retry not suitable                    |
-|-----------------------------------|---------------------------------------|
+| --------------------------------- | ------------------------------------- |
 | ![](images/retry-applicable.webp) | ![](images/retry-not-applicable.webp) |
 
+**Tip:** Avoid retries for **time-critical operations**; failing fast is often better.
 
-To characterize the latency profile of a service, [Vegeta HTTP load testing tool](https://github.com/tsenart/vegeta) can be used.
-
-```bash
-echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta plot --title "Latency Chart" > time_service_latency.html
-```
-
-![](images/vegeta-plot.webp)
-
-```bash
-echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta report
-```
-
-```
-Requests      [total, rate, throughput]         250, 50.20, 49.25
-Duration      [total, attack, wait]             5.035s, 4.98s, 54.78ms
-Latencies     [min, mean, 50, 90, 95, 99, max]  53.268ms, 54.472ms, 54.49ms, 54.966ms, 55.187ms, 57.349ms, 59.074ms
-Bytes In      [total, mean]                     7377, 29.51
-Bytes Out     [total, mean]                     0, 0.00
-Success       [ratio]                           99.20%
-Status Codes  [code:count]                      200:248  500:2  
-Error Set:
-500 
-```
-
-
-Temporal heatmaps are often used to represent latency distribution over time. They can be generated using both Vegeta and a charting library.
-
-```bash
-echo 'GET http://127.0.0.1:8080/testLatency?delay=50' | vegeta attack -duration=5s | vegeta report --every 1s --type hdrplot
-```
-
-![](images/latency-heatmap.webp)
+---
 
 ### Timeout
 
-It introduces a time limit for synchronous operations, ensuring that requests do not wait indefinitely for a response. When a service makes a request to a dependent service, a timeout value is set. **If a response is not received within the specified time, the operation is considered failed, and appropriate actions can be taken**. By setting appropriate timeouts, services can avoid getting stuck in unresponsive states and prevent bottlenecks in the system.
+* Set maximum wait for synchronous calls
+* **Too high:** wastes resources
+* **Too low:** triggers unnecessary retries → latency spikes
 
-Typically, the most difficult problem is choosing a timeout value to set:
-* **Setting a timeout which is too high** reduces its usefulness, because resources are still consumed while the client waits for the timeout
-* **Setting a timeout which is too low** might increase traffic on the backend and latency because too many requests are retried. It might also lead to a complete outage, because all requests start being retried.
+**Best practice:** use **high-percentile latency metrics** (e.g., 99.9th percentile) to choose timeouts.
 
-**A good practice for choosing a timeout is to start with the latency metrics of the downstream service**. When we make one service call another service, we choose an acceptable rate of false timeouts (such as 0.1%). Then, we set the timeout at the corresponding latency percentile (99.9th percentile in this example).
+---
 
 ### Bulkhead
 
-A ship is split into small multiple compartments using Bulkheads. Bulkheads are used to seal parts of the ship to prevent entire ship from sinking in case of flood. Similarly, failures should be expected when we design software. 
+**Isolate resources per dependency** to prevent one slow service from consuming all resources.
 
-The application should be split into multiple components and resources should be isolated in such a way that failure of one component is not affecting the other.
-
-**Having different thread pools act as the bulkheads for your service**. Each remote resource is segregated and assigned to a thread pool. If one service is responding slowly, the thread pool for that type of service call can become saturated, but resource exhaustion is confined instead of affecting the whole service.
+* Different thread pools or connection pools per downstream service
+* Failures confined → other parts remain operational
 
 ![](images/microservices-resiliency-bulkhead-3.webp)
 
-For example: Lets assume that service A has very limited resources (5 threads, it can process only 5 concurrent requests). Service A has 2 sets of APIs as shown below.
+**Example:** Service A with `/a/x` (slow) and `/a/y` (fast).
 
-* /a/x – depends on Service X (which is slow sometimes)
-* /a/y – depends on Service Y
-  
-When there are multiple concurrent requests to Service A, say 10, 5 of them are for endpoint /a/x and 5 of them are for endpoint /a/y, there is a chance that Service A might use all its threads to work on the requests for /a/x and consume all the 5 threads.
+Without bulkheads → `/a/x` consumes all threads → `/a/y` blocked.
 
-Even though the remaining requests are for /a/y which is fast and available, Service A does not have free threads to work on the requests (resource exhaustion)! Service X slowness indirectly affects the whole Service A performance.
+With bulkheads → `/a/x` threads isolated → `/a/y` continues.
 
-**Bulkhead Pattern helps us to allocate limit the resources which can be used for specific services so that resource exhaustion can be reduced.**
+---
 
-## Server-side resiliency patterns
+## Server-Side Resiliency Patterns
 
 ### Rate Limiter
 
-**The Rate Limiting pattern controls the rate at which requests are made to a service**. It sets limits on the number of requests that can be processed within a specific time period, ensuring that a service is not overwhelmed by excessive traffic (DoS attacks). It allows services to handle requests within their capacity and ensures fair distribution of resources among clients.
+Controls the **rate of incoming requests**.
+
+* Prevents overload, DoS attacks, and unfair resource usage
+* Strategies: fixed window, sliding window
 
 ![](images/rate-limiter.webp)
 
-When implementing the Rate Limiting pattern, **it is crucial to consider factors such as the maximum allowed requests per unit of time and different rate-limiting strategies, such as fixed windows or sliding windows (see circuit breaker strategies)**. The careful configuration ensures that the rate limits are appropriate for the service's capabilities and the expected load.
+**Load Shedding vs Rate Limiting:**
+
+* **Rate Limiting:** throttle **before processing**
+* **Load Shedding:** drop requests **when overloaded**
+
+---
 
 ## Resources
-- Microservices with Spring Boot 3 and Spring Cloud (Chapter 13)
-- https://www.youtube.com/watch?v=sNzxX45zhJY
 
+* *Microservices with Spring Boot 3 and Spring Cloud* – Chapter 13
+* [YouTube Video on Microservices Resiliency](https://www.youtube.com/watch?v=sNzxX45zhJY)
+* AWS Article: [Exponential Backoff and Jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)
 
