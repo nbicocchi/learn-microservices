@@ -21,7 +21,7 @@ public class MathIntegration {
     }
 
     public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
-        String url = UriComponentsBuilder.fromHttpUrl("http://math-service/divisors")
+        String url = UriComponentsBuilder.fromUriString("http://math-service/divisors")
                 .queryParam("n", n)
                 .queryParam("times", times)
                 .queryParam("faults", faults)
@@ -33,7 +33,7 @@ public class MathIntegration {
     }
 
     public MCDWithLatency getMCD(Long a, Long b, List<Long> aDivisors, List<Long> bDivisors, Long times, Long faults) {
-        String url = UriComponentsBuilder.fromHttpUrl("http://math-service/mcd")
+        String url = UriComponentsBuilder.fromUriString("http://math-service/mcd")
                 .queryParam("a", a)
                 .queryParam("b", b)
                 .queryParam("aDivisors", aDivisors)

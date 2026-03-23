@@ -3,7 +3,6 @@ package com.nbicocchi.gateway.controller;
 import com.nbicocchi.gateway.dto.DivisorsWithLatency;
 import com.nbicocchi.gateway.dto.MCDWithLatency;
 import com.nbicocchi.gateway.service.MathIntegration;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
