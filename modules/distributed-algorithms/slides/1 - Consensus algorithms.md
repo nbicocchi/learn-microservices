@@ -71,6 +71,8 @@ Consensus algorithms are **protocols used in distributed systems** to ensure tha
 
 ---
 
+## Workarounds
+
 ### Partial synchrony
 
 * The network may behave badly at first, but eventually:
@@ -102,6 +104,35 @@ Consensus algorithms are **protocols used in distributed systems** to ensure tha
     * Coordinating replication
 * Leader election uses **timeouts**, which again breaks FLP assumptions.
 * Once the leader is stable, the system can make progress efficiently.
+
+---
+
+**Bully Algorithm**
+
+Based on the concept of **"brute force"** tied to a unique Node ID. The node with the highest ID always wins.
+
+* **Mechanism:**
+  * When a node detects the leader is offline, it sends an "Election" message to all nodes with a **higher ID** than its own.
+  * If it receives a response from a higher-ID node, it stands down.
+  * If no response is received, it proclaims itself the leader and sends a "Victory" message to all other nodes.
+
+* **Strengths:** Very fast if high-ID nodes are stable and reliable.
+* **Weaknesses:** Generates high network traffic ($O(n^2)$ messages) and suffers if the highest-ID node "flaps" (constantly crashes and restarts).
+
+---
+
+**Ring Algorithm**
+
+Based on a **logical circle structure**. Each node is aware only of its immediate successor.
+
+* **Mechanism:**
+  * When a node detects a leader failure, it creates an "Election" message containing its own ID and sends it to its neighbor.
+  * Each node receiving the message adds its ID to the list and passes it forward.
+  * Once the message returns to the initiator (completing the full circle), the node identifies the highest ID in the list as the winner.
+  * A second round of messages is sent to inform the entire ring of the new leader.
+
+* **Strengths:** More organized and predictable; prevents network "flooding."
+* **Weaknesses:** Slower performance (requires a full cycle) and vulnerable if another node in the ring fails during the election process.
 
 ---
 

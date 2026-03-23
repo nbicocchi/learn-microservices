@@ -35,11 +35,8 @@ Types of consensus algorithms:
 * **Origin (1982):** Coined by **Leslie Lamport** in *"The Byzantine Generals Problem"*.
 * **The Allegory:** Generals must decide to **Attack** or **Retreat**. Traitors may send conflicting messages to different generals to prevent a unanimous decision.
 * **The Rule:** To tolerate $f$ traitors, a system requires at least $3f + 1$ total nodes.
-* **First Practical Implementation:** **PBFT (Practical Byzantine Fault Tolerance, 1999)** by **Miguel Castro and Barbara Liskov** demonstrated a working solution for distributed systems.
+* **First Practical Implementation:** **PBFT (Practical Byzantine Fault Tolerance; Castro, Liskov; 1999)** demonstrated a working solution for distributed systems.
 * **Modern Impact:** With **Bitcoin (2008)**, BFT became the cornerstone of blockchain technology.
-
-![](images/bft-algorithm.png)
-
 
 ### Real software
 * etcd
@@ -91,31 +88,6 @@ Leader election ensures that a distributed system **operates as a unified whole*
 The leader is responsible for **serializing operations**, **managing shared resources**, and **orchestrating tasks across worker nodes**.
 * **Safety:** Ensures that **at most one leader exists at any time**, preventing split-brain scenarios.
 * **Liveness:** Guarantees that if the current leader fails, the system **eventually elects a new leader**, maintaining continuous operation.
-
-### **Bully Algorithm**
-
-Based on the concept of **"brute force"** tied to a unique Node ID. The node with the highest ID always wins.
-
-* **Mechanism:** 
-  * When a node detects the leader is offline, it sends an "Election" message to all nodes with a **higher ID** than its own. 
-  * If it receives a response from a higher-ID node, it stands down. 
-  * If no response is received, it proclaims itself the leader and sends a "Victory" message to all other nodes.
-
-* **Strengths:** Very fast if high-ID nodes are stable and reliable.
-* **Weaknesses:** Generates high network traffic ($O(n^2)$ messages) and suffers if the highest-ID node "flaps" (constantly crashes and restarts).
-
-### **Ring Algorithm**
-
-Based on a **logical circle structure**. Each node is aware only of its immediate successor.
-
-* **Mechanism:** 
-  * When a node detects a leader failure, it creates an "Election" message containing its own ID and sends it to its neighbor.
-  * Each node receiving the message adds its ID to the list and passes it forward.
-  * Once the message returns to the initiator (completing the full circle), the node identifies the highest ID in the list as the winner.
-  * A second round of messages is sent to inform the entire ring of the new leader.
-
-* **Strengths:** More organized and predictable; prevents network "flooding."
-* **Weaknesses:** Slower performance (requires a full cycle) and vulnerable if another node in the ring fails during the election process.
 
 ### Real Software
 
