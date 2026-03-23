@@ -6,8 +6,7 @@ Distributed system must solve 6 fundamental challenges:
 2. **Replication & Consistency:** Duplicating data for reliability while managing how updates spread.
 3. **Leader Election:** Appointing a coordinator to manage shared resources and tasks.
 4. **Fault Detection:** Monitoring node health to trigger automatic self-healing.
-5. **Mutual Exclusion:** Controlling access to shared resources to prevent data corruption.
-6. **Clock & Ordering:** Synchronizing time or event sequences without a central clock.
+5. **Clock & Ordering:** Synchronizing time or event sequences without a central clock.
 
 ---
 
@@ -131,7 +130,6 @@ Based on a **logical circle structure**. Each node is aware only of its immediat
 Continuously monitors the system to detect failures and initiate "self-healing."
 
 * **Heartbeat Protocols:** Periodic "I am alive" signals.
-* **Adaptive Detectors:** Adjust timeouts dynamically based on network latency.
 * **Failover:** Shifting workloads to a healthy standby node.
 * **Checkpointing:** Rolling back to the last "safe" snapshot of the global state.
 
@@ -144,28 +142,7 @@ Continuously monitors the system to detect failures and initiate "self-healing."
 
 ---
 
-## 5. Mutual Exclusion & Resource Allocation
-
-Prevents **Race Conditions** by ensuring coordinated access to shared resources.
-
-**Requirements:**
-* **Safety:** Only one node accesses the **Critical Section** at a time.
-* **Liveness:** Prevents **Deadlocks** (everyone waiting forever) and **Starvation** (one node waiting forever).
-
-**Algorithms:**
-* **Lamport’s Bakery:** Uses "ticket numbers" to serve nodes in order.
-* **Ricart–Agrawala:** A message-based approach requiring "Grants" from all nodes.
-* **Token Ring:** A unique digital token circulates; only the holder can access the resource.
-
-### Real Software
-
-* **Apache ZooKeeper** – Distributed locks and barriers ensure only one process accesses a resource at a time.
-* **etcd** – Lock primitives using Raft coordinate access across the cluster.
-* **Redis** – **Redlock** algorithm provides token-based distributed locks.
-
----
-
-## 6. Clock Synchronization & Ordering
+## 5. Clock Synchronization & Ordering
 
 In distributed systems, **no single universal clock** exists. Without proper ordering:
 

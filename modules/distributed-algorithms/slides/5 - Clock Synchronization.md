@@ -20,7 +20,7 @@ These measure actual seconds, minutes, and hours. We use them for things humans 
 
 Logical clocks don't care about the time of day. They only care about **Causality**: "Did Event A happen before Event B?" They use counters that increment whenever an event occurs.
 
-#### **A. Lamport Timestamps**
+#### Lamport Timestamps
 
 This is a simple integer (a counter) that every node maintains.
 
@@ -76,7 +76,7 @@ But in reality the events may have been **independent** (no message exchange).
 This limitation is why distributed systems often use **vector clocks** when they need to detect **causal relationships and conflicts**.
 
 
-#### **B. Vector Clocks**
+#### Vector Clocks
 
 This is a more advanced version where each node keeps an **array (vector)** of counters—one for every node in the system.
 
