@@ -21,17 +21,18 @@
 
 ## Implementation Options
 
+
 **Spring Cloud Config Server**
 
 * General config solution with **multiple backends**
 * Supported stores: filesystem, Git, Redis, Consul
 * Well integrated with **Spring microservices**
 
-**etcd**
+**Kubernetes ConfigMap/Secrets**
 
-* **Kubernetes key-value store**
-* Distributed via **Raft protocol**
-* Fast, scalable, easy to set up
+* Stores **non-sensitive configuration** as key-value pairs
+* **Decouples config from container images** for environment portability
+* Can be consumed as **environment variables, command-line args, or mounted files**
 
 **Apache Zookeeper**
 

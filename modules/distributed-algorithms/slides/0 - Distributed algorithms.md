@@ -1,6 +1,6 @@
 # Distributed Systems Algorithms
 
-A distributed system consists of independent computers that appear to the user as a **single, coherent system**. To achieve this, it must solve 6 fundamental challenges:
+Distributed system must solve 6 fundamental challenges:
 
 1. **Consensus:** Reaching agreement on a single value despite node failures or malicious actors.
 2. **Replication & Consistency:** Duplicating data for reliability while managing how updates spread.
@@ -25,7 +25,7 @@ Ensures all nodes agree on a decision (e.g. the state of a variable), even with 
     * Server B also approves the second transaction because it hasn’t seen the update from A yet.
 * Result: **balance becomes $-40**, violating correctness.
 
-Using a **consensus algorithm** (like Raft or Paxos), the nodes **agree on the order of transactions**, ensuring the final balance is correct: only **one \$70 withdrawal** succeeds first, the second sees $30 and can be rejected or queued.
+Using a **consensus algorithm**, the nodes **agree on the order of transactions**, ensuring the final balance is correct: only **one \$70 withdrawal** succeeds first, the second sees $30 and can be rejected or queued.
 
 Types of consensus algorithms:
 * **Crash Fault Tolerant (CFT):** Handles nodes going offline (e.g., Paxos, Raft).
@@ -43,19 +43,17 @@ Types of consensus algorithms:
 
 
 ### Real software
-* **etcd**. Uses Raft to maintain a consistent distributed key-value store. It is widely used in container orchestration systems.
-* **Apache Kafka**. Uses a Raft-based protocol (KRaft) for metadata consensus in modern versions.
-* **Apache ZooKeeper**. Uses the ZAB (ZooKeeper Atomic Broadcast) protocol, a Paxos-like consensus algorithm.
-* **Consul** – HashiCorp’s service discovery and configuration system.
-* **RethinkDB** – used Raft internally for consensus across nodes.
-* **CockroachDB** – a distributed SQL database using Raft for replication and consistency.
-* **TiDB** – distributed NewSQL database in the cloud-native ecosystem.
+* etcd
+* Apache Kafka 
+* Apache ZooKeeper
+* Consul
+* RethinkDB 
+* CockroachDB
+* TiDB
 
 ---
 
 ## 2. Replication and Consistency
-
-Manages data duplication to ensure **Fault Tolerance** and **High Availability**.
 
 ### Replication
 
@@ -65,9 +63,10 @@ Distribute data across multiple nodes while enabling **scalability** and **fault
 * **Node Addition/Removal:** Only a fraction of keys need to be moved, minimizing disruption compared to naive hashing.
 
 ### Real Software
-* **Cassandra:** Uses consistent hashing + replication factor to store data across cluster nodes.
-* **Amazon DynamoDB:** Partition keys distributed with consistent hashing; supports multiple replicas.
-* **Riak:** Distributed key-value store relying on consistent hashing and vector clocks for conflict resolution.
+* Cassandra
+* Amazon DynamoDB
+* Redis
+* Riak
 
 ### Consistency
 * **Strong Consistency:** All replicas update immediately; users always see the latest data (High accuracy, low availability).
@@ -79,9 +78,10 @@ Distribute data across multiple nodes while enabling **scalability** and **fault
 * **CRDTs:** Mathematical data structures that allow concurrent updates to be merged without conflicts (e.g., Google Docs).
 
 ### Real Software
-* **Amazon DynamoDB**. Primarily implements **eventual consistency**, allowing replicas to converge over time, but also offers optional **strongly consistent reads**.
-* **PostgreSQL** and **MySQL**. Use **Two-Phase Commit (2PC)** to coordinate distributed transactions across multiple nodes or databases.
-* **Redis** (with modules like Redis CRDT). Use **CRDT-based data structures** that allow concurrent updates to be merged automatically without coordination.
+* **Cassandra** (Eventual)
+* **Amazon DynamoDB** (Eventual)
+* **PostgreSQ** (Strong)
+* **MySQL** (Strong)
 
 ---
 
@@ -97,9 +97,10 @@ The leader is responsible for **serializing operations**, **managing shared reso
 
 Based on the concept of **"brute force"** tied to a unique Node ID. The node with the highest ID always wins.
 
-* **Mechanism:** When a node detects the leader is offline, it sends an "Election" message to all nodes with a **higher ID** than its own.
-* If it receives a response from a higher-ID node, it stands down.
-* If no response is received, it proclaims itself the leader and sends a "Victory" message to all other nodes.
+* **Mechanism:** 
+  * When a node detects the leader is offline, it sends an "Election" message to all nodes with a **higher ID** than its own. 
+  * If it receives a response from a higher-ID node, it stands down. 
+  * If no response is received, it proclaims itself the leader and sends a "Victory" message to all other nodes.
 
 * **Strengths:** Very fast if high-ID nodes are stable and reliable.
 * **Weaknesses:** Generates high network traffic ($O(n^2)$ messages) and suffers if the highest-ID node "flaps" (constantly crashes and restarts).
@@ -108,19 +109,20 @@ Based on the concept of **"brute force"** tied to a unique Node ID. The node wit
 
 Based on a **logical circle structure**. Each node is aware only of its immediate successor.
 
-* **Mechanism:** When a node detects a leader failure, it creates an "Election" message containing its own ID and sends it to its neighbor.
-* Each node receiving the message adds its ID to the list and passes it forward.
-* Once the message returns to the initiator (completing the full circle), the node identifies the highest ID in the list as the winner.
-* A second round of messages is sent to inform the entire ring of the new leader.
+* **Mechanism:** 
+  * When a node detects a leader failure, it creates an "Election" message containing its own ID and sends it to its neighbor.
+  * Each node receiving the message adds its ID to the list and passes it forward.
+  * Once the message returns to the initiator (completing the full circle), the node identifies the highest ID in the list as the winner.
+  * A second round of messages is sent to inform the entire ring of the new leader.
 
 * **Strengths:** More organized and predictable; prevents network "flooding."
 * **Weaknesses:** Slower performance (requires a full cycle) and vulnerable if another node in the ring fails during the election process.
 
 ### Real Software
 
-* **etcd** – Uses the **Raft consensus algorithm** to elect a leader that coordinates updates to the cluster state. Widely used by **Kubernetes** for cluster coordination and leader election among control-plane components.
-* **Apache Kafka** – Uses **leader election for partition leaders**, so one broker handles reads and writes for each partition while followers replicate the data.
-* **Eureka** – In a **cluster of Eureka servers**, one instance is designated as the **“replication leader”** to manage **replicating registry information** across all nodes. Other servers synchronize with this leader to ensure consistent service registration and availability.
+* Raft-based strong consensus: etcd, Kafka, Consul, Nomad
+* Paxos-like: ZooKeeper
+* Quorum-based / bully / ring: Redis Sentinel, Hazelcast
 
 ---
 
@@ -135,9 +137,10 @@ Continuously monitors the system to detect failures and initiate "self-healing."
 
 
 ### Real Software
-* **etcd**. Implements **heartbeat messages** between cluster nodes to detect failures quickly and uses **Raft leader election** to recover from leader crashes.
-* **Apache Kafka**. Brokers and controllers monitor each other using **heartbeat protocols**. In case of failure, Kafka automatically **fails over partition leadership** to another broker to maintain availability.
-* **Redis Sentinel**. Monitors master and replica nodes, detects failures using **heartbeat messages**, and performs **automatic failover** to promote a replica to master.
+* Docker
+* Kubernetes
+* Apache Kafka
+* Redis Sentinel
 
 ---
 

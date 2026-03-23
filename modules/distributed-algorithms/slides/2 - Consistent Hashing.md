@@ -4,19 +4,14 @@
 
 * Goal: Efficiently store and search data
 * Naive approach: Array or linked list
-
     * Search by iterating elements → **O(n)** complexity
     * Fast for small lists, slow for large datasets
 
----
-
-## Hash Functions to the Rescue
-
-* Map arbitrary data → integer index
-* Allows near-constant time access for non-sequential or random keys
-* Formula: `index = hash(object) mod N`
-
-    * N = array size (practical, usually ~2× expected elements)
+* Hash Functions:
+  * Map arbitrary data → integer index
+  * Allows near-constant time access for non-sequential or random keys
+  * Formula: `index = hash(object) mod N`
+      * N = array size (practical, usually ~2× expected elements)
 
 ---
 
@@ -29,6 +24,8 @@
     * Insert: add to bucket if not present
     * Search: check bucket for object
 * Complexity: ~**O(N/k)**, with k = number of buckets
+
+![](images/hash-table.png)
 
 ---
 
@@ -47,13 +44,11 @@
         * Pool of servers stores key/value pairs
         * Provides fast access to frequently used data
 
-* **Cache Workflow:**
+## Cache Workflow
 
-    1. Application queries the cache first
-    2. If **cache miss**, fetch from database/source
-    3. Store result in cache for future access
-
-    * Reduces load on origin servers and improves performance
+1. Application queries the cache first
+2. If **cache miss**, fetch from database/source
+3. Store result in cache for future access
 
 * **Key Distribution:**
 
@@ -147,9 +142,7 @@
 
 * Problem: Modulo-based distribution requires massive rehashing when servers change
 * Solution: **Consistent Hashing** (Karger et al., 1997)
-
-    * Minimizes key relocation when servers are added or removed
-    * Assigns both keys and servers to a **hash ring (circle)**
+* Minimizes key relocation when servers are added or removed
 
 ---
 
@@ -220,35 +213,12 @@
 
 ---
 
-## Data Redundancy in Distributed Hash Tables
+## Replication Factor
 
-* **Replication Factor:**
+* Store each key on **k different servers**
+* Ensures **fault tolerance**: data available if a server fails
+* Example: Replication factor = 3 → key `john` on B, C, and A
 
-    * Store each key on **k different servers**
-    * Ensures **fault tolerance**: data available if a server fails
-    * Example: Replication factor = 3 → key `john` on B, C, and A
-
-* **Quorum-Based Reads/Writes:**
-
-    * Inspired by **Dynamo-style replication**
-    * W = replicas required to confirm a write
-    * R = replicas required to respond to a read
-    * If `R + W > N` → strong consistency
-
-* **Periodic Synchronization / Anti-Entropy:**
-
-    * Replicas compare and synchronize periodically
-    * Techniques: **Merkle Trees**, checksums
-
-* **Multi-Region Replication:**
-
-    * Data replicated across geographically distributed servers
-    * Reduces latency and increases disaster resilience
-
-* **Eviction and Backup Policies (for caches):**
-
-    * Use **LRU/LFU** with replication
-    * Periodic backup to persistent storage
 
 ## Resources
 - https://www.linuxjournal.com/article/7451
