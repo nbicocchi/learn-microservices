@@ -9,13 +9,15 @@ services:
       timeout: 10s
       retries: 10
 
-  datetime-composite-cs:
-    build: datetime-composite-service-cs
+  datetime-composite:
+    build: datetime-composite-service
     ports:
       - "8080:8080"
     environment:
       - SERVER_PORT=8080
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - DATETIME_SERVICE_URL=http://datetime-service
+      - APP_CLIENT_LOAD_BALANCED=true;
     depends_on:
       eureka:
         condition: service_healthy

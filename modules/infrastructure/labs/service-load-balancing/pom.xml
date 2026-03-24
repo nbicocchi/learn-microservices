@@ -10,8 +10,7 @@
 
     <modules>
         <module>datetime-service</module>
-        <module>datetime-composite-service-cs</module>
-        <module>datetime-composite-service-ss</module>
+        <module>datetime-composite-service</module>
         <module>eureka-service</module>
     </modules>
 
