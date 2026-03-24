@@ -1,19 +1,18 @@
 # Service Discovery
 
-In distributed systems, services must be able to **locate each other’s network address** to communicate.
-This process is known as **service discovery**.
+In distributed systems, services need a way to **locate each other’s network addresses** to communicate effectively. This mechanism is called **service discovery**, which plays a key role in enabling both **scalability** and **fault tolerance**.
 
 * **Horizontal Scaling**
 
-    * New service instances can be **added or removed dynamically** (e.g., containers).
-    * Service discovery allows clients to **automatically find available instances**.
-    * Workload can be **distributed across multiple instances**.
+  * New service instances can be **added or removed dynamically**, such as when using containers.
+  * Service discovery enables clients to **automatically locate available instances**.
+  * This allows the workload to be **evenly distributed across multiple instances**.
 
 * **Fault Tolerance**
 
-    * Service instances may **fail or become unavailable**.
-    * Discovery systems **monitor service health**.
-    * Unhealthy instances are **removed from the registry**, ensuring requests are routed only to healthy services.
+  * Service instances may **fail or become temporarily unavailable**.
+  * Discovery systems **continuously monitor service health**.
+  * Unhealthy instances are **removed from the registry**, ensuring that requests are always routed to healthy services.
 
 ## DNS-based service discovery
 In the non-cloud world, service location resolution was often solved through a combination of a DNS and a network load balancer.
@@ -62,17 +61,6 @@ http {
 ## Cloud-native service discovery
 
 A robust service discovery mechanism ensures that services dynamically indicate their physical location instead of requiring manual DNS or load balancer configuration.
-Key components of cloud-native service discovery include:
-
-* **Service Registration** – When a service instance starts, it registers its network location (IP address and port) with the service discovery system so that other services can locate and communicate with it.
-
-* **Information Sharing** – In distributed discovery systems, each service typically registers with one discovery node. The registration information is then propagated to the other nodes in the cluster, often through a peer-to-peer synchronization mechanism, ensuring that all nodes maintain a consistent view of available services.
-
-* **Health Monitoring** – Service instances periodically report their health status to the discovery system. If an instance becomes unhealthy or stops responding, it is automatically removed from the registry, preventing traffic from being routed to failed services.
-
-![](images/service-discovery.webp)
-
-
 Cloud native service discovery is:
 
 - **Highly available** – Supports clustering to enable seamless failover if a node becomes unavailable.
@@ -81,10 +69,7 @@ Cloud native service discovery is:
 - **Peer-to-peer** – Shares service health information across nodes, often using gossip-style protocols for efficient data propagation.
 - **Resilient** – Caches service information locally, allowing continued operation even if the discovery service becomes unavailable.
 
-
-
-
-
+![](images/service-discovery.webp)
 
 ## Cloud-native load balancing
 
