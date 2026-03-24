@@ -12,3 +12,4 @@
 ---
 
 sistemare DTOs dentro chassis
+infrastructure/load balancing -> basta unico gateway
