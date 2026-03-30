@@ -172,6 +172,67 @@ rate(http_server_request_duration_seconds_sum[1m])
 - **Alertmanager**: Manages, deduplicates, and routes alerts to notification channels.
 
 
+### PromQL: Main Functions
+
+## **1. Counter / Rate Functions**
+
+* `rate(v range-vector)` → Average per-second rate
+* `irate(v range-vector)` → Instantaneous rate (last interval)
+* `increase(v range-vector)` → Total increase over the range
+* `delta(v range-vector)` → Difference between start and end value
+* `resets(v range-vector)` → Number of counter resets
+
+---
+
+## **2. Gauge / Statistics Functions**
+
+* `avg_over_time(v range-vector)` → Average over the range
+* `min_over_time(v range-vector)` → Minimum value over the range
+* `max_over_time(v range-vector)` → Maximum value over the range
+* `sum_over_time(v range-vector)` → Sum of values over the range
+* `count_over_time(v range-vector)` → Number of samples
+* `quantile_over_time(q, v)` → Percentile over the range
+
+---
+
+## **3. Histogram / Summary**
+
+* `histogram_quantile(q, v matrix-vector)` → Compute percentile from Histogram/Summary
+* Often used with `_bucket` and `rate()`
+
+---
+
+## **4. Aggregation Functions**
+
+* `sum(v)` → Sum across series
+* `avg(v)` → Average across series
+* `min(v)` → Minimum across series
+* `max(v)` → Maximum across series
+* `count(v)` → Count of series
+* `stddev(v)` → Standard deviation
+* `stdvar(v)` → Variance
+
+---
+
+## **5. Transformation Functions**
+
+* `abs(v)` → Absolute value
+* `ceil(v)` / `floor(v)` → Round up / down
+* `round(v[, to_nearest])` → Round to nearest multiple
+* `clamp_min(v, min)` / `clamp_max(v, max)` → Limit values
+
+| Metric               | Function               | PromQL Example                                                                                 | Description                               |
+| -------------------- | ---------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| HTTP Client Requests | `rate()`               | `rate(http_client_request_duration_seconds_count[5m])`                                         | Requests per second                       |
+| HTTP Server Latency  | `histogram_quantile()` | `histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket[5m])) by (le))` | p95 request latency                       |
+| JVM Memory Used      | `avg_over_time()`      | `avg_over_time(jvm_memory_used_bytes[10m])`                                                    | Average JVM memory used over last 10 min  |
+| JVM Threads          | `max_over_time()`      | `max_over_time(jvm_thread_count[5m])`                                                          | Maximum active threads                    |
+| GC Duration          | `rate()`               | `rate(jvm_gc_duration_seconds_sum[5m])`                                                        | Average time spent in garbage collection  |
+| OTLP Exporter        | `increase()`           | `increase(otlp_exporter_exported_total[1h])`                                                   | Total metrics exported in 1h              |
+| Queue Size           | `clamp_max()`          | `clamp_max(queueSize_ratio, 1)`                                                                | Queue occupancy percentage capped at 100% |
+| CPU Utilization      | `avg_over_time()`      | `avg_over_time(jvm_cpu_recent_utilization_ratio[5m])`                                          | Average JVM CPU usage                     |
+
+
 ### Prometheus Problem
 
 Prometheus alone is excellent for local monitoring and collecting metrics from single applications or clusters, but it has some limitations:
