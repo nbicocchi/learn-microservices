@@ -17,10 +17,10 @@ datasources:
     editable: true
     isDefault: false
 
-  - name: Tempo
-    type: tempo
+  - name: Jaeger
+    type: jaeger
     access: proxy
-    url: http://tempo:3200
+    url: http://jaeger:16686
     version: 1
     editable: true
     isDefault: false

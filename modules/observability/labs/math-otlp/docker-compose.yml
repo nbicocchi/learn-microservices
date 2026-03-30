@@ -23,51 +23,16 @@ services:
       timeout: 5s
       retries: 5
 
+  jaeger:
+    image: jaegertracing/jaeger:2.16.0
+    ports:
+      - "16686:16686"
+
   loki:
     image: grafana/loki:latest
     command: -config.file=/etc/loki/loki.yaml
     volumes:
       - ./config/loki.yaml:/etc/loki/loki.yaml
-
-  # Helper container to fix permissions on tempo-data
-  minio:
-    image: minio/minio:latest
-    environment:
-      - MINIO_ACCESS_KEY=tempo
-      - MINIO_SECRET_KEY=supersecret
-    ports:
-      - "9001:9001"
-    entrypoint:
-      - sh
-      - -euc
-      - mkdir -p /data/tempo && minio server /data --console-address ':9001'
-    healthcheck:
-      test: [ "CMD", "mc", "ready", "local" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  redpanda:
-    image: redpandadata/redpanda:latest
-    ports:
-      - "9092:9092" # Kafka API for clients
-    command: >
-      redpanda start --overprovisioned
-      --mode=dev-container
-      --kafka-addr=PLAINTEXT://0.0.0.0:9092
-      --advertise-kafka-addr=PLAINTEXT://redpanda:9092
-
-  # Tempo service
-  tempo:
-    image: grafana/tempo:latest
-    command: "-target=all -config.file=/etc/tempo.yaml"
-    volumes:
-      - ./config/tempo.yaml:/etc/tempo.yaml
-      - tempo-data:/var/tempo
-    depends_on:
-      minio:
-        condition: service_healthy
 
   grafana:
     image: grafana/grafana:latest
@@ -80,11 +45,6 @@ services:
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --spider http://localhost:3000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   eureka:
     build: eureka-service
