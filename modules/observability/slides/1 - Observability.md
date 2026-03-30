@@ -7,7 +7,7 @@ Observability is interpreted differently across the industry:
 * Some engineers see it as simply [monitoring](https://iamondemand.com/blog/how-to-properly-monitor-your-k8s-clusters-and-pods/) in a fancier package.
 * Honeycomb, in its [Guide to Achieving Observability](https://www.honeycomb.io/wp-content/uploads/2018/07/Honeycomb-Guide-Achieving-Observability-v1.pdf), defines it as the ability to **ask arbitrary questions about your production environment**.
 
-Regardless of the definition, **observability’s ultimate goal is complete visibility into your system**:
+Regardless of the definition, **observability’s ultimate goal is visibility into your system**:
 
 * It allows you to understand what’s happening **inside your software from the outside**.
 * It equips you with the data needed to answer everyday operational questions and to **trace failures to their root causes**.
@@ -20,19 +20,17 @@ An effective observability strategy answers questions like:
 * What was the state of my service at time “y”?
 * Is the issue affecting all users or only a subset?
 
-## Service-Level Indicators (SLI) and Service-Level Objectives (SLO)
+## SLI-SLO & Observability
 
 Observability is not just about **what happens**, but also about **how well the system meets expectations**.
 
 * **SLI (Service-Level Indicator)** – A quantitative measure of system health.
-
-  * Example: Percentage of HTTP requests with latency < 500ms.
-  * Example: Error rate for payment transactions.
+  * Percentage of HTTP requests with latency < 500ms.
+  * Error rate for payment transactions.
 
 * **SLO (Service-Level Objective)** – The target goal for an SLI.
-
-  * Example: 99.9% of requests must meet the latency target.
-  * Example: Payment transaction success rate must remain above 99.5%.
+  * 99.9% of requests must meet the latency target.
+  * Payment transaction success rate must remain above 99.5%.
 
 
 ## Security & Observability
@@ -77,20 +75,26 @@ The three pillars of observability—**metrics**, **logs**, and **traces**—pla
 ![](images/observability-pillars.webp)
 
 ## Metrics
+
 Metrics are numerical values that capture key performance indicators (KPIs) about your system over time. They are typically aggregated and provide an overview of system health and performance.
 
-- **Quantitative Data**: Metrics are quantitative and can be counted or measured (e.g., CPU, memory, disk, threads, latency, etc.).
-- **Time-Series Nature**: Metrics are usually collected as time-series data and plotted on dashboards to show trends over time.
+* **Quantitative Data**: Metrics are quantitative and can be counted or measured (e.g., CPU, memory, disk, threads, latency, etc.).
+* **Time-Series Nature**: Metrics are usually collected as time-series data and plotted on dashboards to show trends over time.
 
 **Types**:
-  - **Counter** – A monotonically increasing value that resets only on restart. It is used for counting occurrences, such as the number of HTTP requests or errors.
-  - **Gauge** – A value that can increase or decrease, used for measuring things like memory usage or temperature.
-  - **Histogram** – A metric that samples observations and counts them in configurable buckets, used for tracking request durations or response sizes. It also provides a total count and sum of values.
 
-**Use Cases**:
-  - **Monitoring**: Continuous monitoring of performance indicators like latency, error rates, and resource consumption.
-  - **Alerting**: Alerts can be set when metrics exceed predefined thresholds (e.g., high CPU usage or request errors).
-  - **Capacity Planning**: Helps in predicting future resource needs based on trends in usage patterns.
+* **Counter** – A monotonically increasing value that resets only on restart. It is used for counting occurrences, such as the number of HTTP requests or errors.
+* **Gauge** – A value that can increase or decrease, used for measuring things like memory usage or temperature.
+* **Histogram** – A metric that samples observations and counts them in configurable buckets, used for tracking request durations or response sizes. It also provides a total count and sum of values.
+
+**Labels**:
+Metrics often include **labels** (also called tags or dimensions) to add additional context. Labels are key-value pairs that allow you to break down metrics by categories such as service, endpoint, status code, region, or instance. For example:
+
+```
+http_requests_total{method="GET", endpoint="/api/users", status="200", region="eu-west-1"}
+```
+
+Here, `http_requests_total` is the metric name, and the labels provide context about the request method, endpoint, HTTP status, and geographic region. Labels make it easier to filter, aggregate, and slice metrics in dashboards and alerts.
 
 ```text
 http://localhost:8080/actuator/prometheus
@@ -104,6 +108,19 @@ http_server_requests_seconds_sum{error="none",exception="none",method="GET",outc
 http_server_requests_seconds_count{error="none",exception="none",method="GET",outcome="SUCCESS",status="200",uri="/actuator/prometheus"} 10
 http_server_requests_seconds_sum{error="none",exception="none",method="GET",outcome="SUCCESS",status="200",uri="/actuator/prometheus"} 0.14632263
 ```
+
+> ### `http_server_requests_seconds_count`
+>
+> * **Counts** the number of HTTP requests served with these characteristics (GET, endpoint `/actuator`, status 200, no error).
+> * **Value**: `1` → 1 request served.
+>
+> ### `http_server_requests_seconds_sum`
+>
+> * **Total time** spent serving the same requests, in seconds.
+> * **Value**: `0.01236351` → ~12 ms total.
+>
+> **Average time per request** ≈ `_sum / _count` = 0.01236 s (~12 ms).
+
 
 **Cardinality Explosion**:
 
@@ -155,12 +172,28 @@ rate(http_server_request_duration_seconds_sum[1m])
 - **Alertmanager**: Manages, deduplicates, and routes alerts to notification channels.
 
 
-### Thanos
+### Prometheus Problem
 
-[Thanos](https://thanos.io/) is an open-source project that extends Prometheus for:
-* **Global View**: Aggregates metrics from multiple Prometheus instances, giving a unified query interface.
-* **Long-Term Storage**: Offloads Prometheus TSDB data to object storage like S3, GCS, or Azure Blob, allowing virtually unlimited retention.
-* **High Availability**: Supports **replicated Prometheus instances** with deduplication to avoid double-counting metrics.
+Prometheus alone is excellent for local monitoring and collecting metrics from single applications or clusters, but it has some limitations:
+
+* **Limited vertical scalability**
+
+  * A single Prometheus instance has limits on how much data it can write and read simultaneously.
+* **Limited data retention**
+
+  * Prometheus stores data locally in its TSDB, usually keeping metrics for only a few weeks.
+* **Multi-cluster or multi-data center monitoring**
+
+  * Prometheus is “single-node” per cluster; if you want to aggregate metrics from multiple clusters or regions, you need to run separate queries.
+
+Thus, several projects have emerged to extend Prometheus capabilities:
+
+* **Global View**: Aggregate metrics from multiple Prometheus instances, providing a unified and centralized query interface.
+* **Long-Term Storage**: Offload Prometheus TSDB data to object storage systems (e.g., S3, GCS, Azure Blob), enabling virtually unlimited data retention.
+* **High Availability**: Support replicated Prometheus instances with built-in deduplication mechanisms to prevent double-counting of metrics.
+
+
+### Thanos
 
 ![](images/thanos-architecture.webp)
 
@@ -177,12 +210,6 @@ rate(http_server_request_duration_seconds_sum[1m])
 ---
 
 ### Cortex
-
-[Cortex](https://cortexmetrics.io/) is an open-source project:
-* **Multi-Tenancy**: Isolates tenants while providing a shared infrastructure for metrics collection and query.
-* **Scalable Ingestion**: Writes are ingested and sharded across **ingesters**, then stored in long-term object storage (S3, GCS, DynamoDB, etc.).
-* **Query Federation**: Queries are distributed to the ingesters and **queriers**, which aggregate and return results to clients.
-
 
 ![](images/cortex-architecture.png)
 
@@ -237,7 +264,6 @@ The [ELK stack](www.elastic.co/elastic-stack) is a popular set of tools used for
 ## Traces
 Traces track the path of a request as it moves through various services in a distributed system. They help visualize how requests propagate across different components (a sort of distributed [stack trace](https://en.wikipedia.org/wiki/Stack_trace)).
 
-- **Distributed Context**: Traces are particularly valuable in distributed architectures where a request can span multiple services, databases, and external APIs.
 - **Span and Trace IDs**: Traces are composed of spans, which represent a single operation within a service. Each span contains a unique ID, and all spans related to a single request share the same trace ID.
 - **End-to-End Latency**: Traces provide visibility into the time taken by each service involved in processing a request.
 
@@ -272,6 +298,12 @@ By integrating these observability pillars with specialized tools—such as Prom
 
 In addition to metrics, logs, and traces, modern observability leverages **real-time event streams** to gain immediate insights.
 
+```mermaid
+flowchart TD
+    A[Applications / Microservices] -->|Events OrderCreated, PaymentFailed, ...| B[Event Streaming<br>Kafka / RabbitMQ / Kinesis / NATS]
+    B -->|Streamed in real-time| C[Event Processing / Aggregation<br>Counting, Metrics, Transformations]
+    C -->|Generate real-time metrics & alerts| D[Monitoring & Alerts<br>Dashboard / Prometheus / Grafana / Datadog]
+```
 * **Event Stream Sources**
 
   * Messaging systems such as **Apache Kafka**, **RabbitMQ**, **AWS Kinesis**, or **NATS** capture events from applications or microservices.
@@ -291,7 +323,7 @@ Instrumentation in microservices refers to the process of collecting metrics, lo
 
 To calculate the B2I ratio, determine the number of lines of code (LOC) before adding an instrumentation (adding code for emitting signals for a signal type), and then determine the LOC after the instrumentation. The B2I ratio is then:
 
-B2I = LOC_AFTER_INSTR / LOC_BEFORE_INSTR
+**B2I = LOC_AFTER_INSTR / LOC_BEFORE_INSTR**
 
 In an ideal world, the B2I ratio would be 1, representing zero instrumentation costs in the code. However, in reality, the more LOC you dedicate to instrumentation, the higher the B2I ratio is. For example, if your code has 3800 LOC and you added 400 LOC for instrumentation (say, to emit logs and metrics), then you’d end up with a B2I ratio of 1.105, from (3800 + 400) / 3800.
 
@@ -324,6 +356,26 @@ public class ExampleController {
 }
 ```
 
+```python
+from prometheus_client import Counter, start_http_server
+from flask import Flask
+
+# Create a Counter metric
+REQUEST_COUNTER = Counter('http_requests_total', 'Total HTTP requests')
+
+app = Flask(__name__)
+
+@app.route("/hello")
+def hello():
+    REQUEST_COUNTER.inc()  # Increment the metric counter
+    return "Hello, World!"
+
+if __name__ == "__main__":
+    # Start Prometheus metrics server on port 8000
+    start_http_server(8000)
+    app.run(port=5000)
+```
+
 **Logs**
 
 [SLF4J (Simple Logging Facade for Java)](https://www.slf4j.org/) is a popular logging abstraction in the Java ecosystem, commonly used with logging frameworks like **Logback** or **Log4j** to provide a flexible and consistent logging API.
@@ -346,6 +398,29 @@ public class LoggingController {
         return "Data retrieved!";
     }
 }
+```
+
+```python
+import logging
+from flask import Flask
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s - %(message)s'
+)
+logger = logging.getLogger("LoggingController")
+
+app = Flask(__name__)
+
+@app.route("/data")
+def fetch_data():
+    logger.info("Fetching data...")
+    # Simulate data retrieval
+    return "Data retrieved!"
+
+if __name__ == "__main__":
+    app.run(port=5000)
 ```
 
 The logging system has to be configured to send logs remotely.
@@ -425,6 +500,33 @@ public class TracingController {
 }
 ```
 
+```python
+# Configure OpenTelemetry tracer
+resource = Resource(attributes={"service.name": "tracing-service"})
+trace.set_tracer_provider(TracerProvider(resource=resource))
+tracer = trace.get_tracer(__name__)
+
+# Export spans to console (for demo purposes)
+span_processor = BatchSpanProcessor(ConsoleSpanExporter())
+trace.get_tracer_provider().add_span_processor(span_processor)
+
+app = Flask(__name__)
+
+@app.route("/process")
+def process_request():
+    with tracer.start_as_current_span("processRequest") as span:
+        try:
+            # Simulate some business logic
+            time.sleep(0.5)
+            return "Processed"
+        except Exception as e:
+            span.record_exception(e)
+            return "Failed"
+
+if __name__ == "__main__":
+    app.run(port=5000)
+```
+
 ### Zero Code Instrumentation
 
 **Definition:**
@@ -461,14 +563,8 @@ java -javaagent:/path/to/agent.jar -jar your-application.jar
 
 2. **Class Transformation**
 
-  * Agent registers a **ClassFileTransformer**
   * JVM provides the **bytecode** of each class as it is loaded
   * Agent can **modify the bytecode** (inject logging, metrics, tracing)
-
-3. **Injected Behavior**
-
-  * Automatic timers, logging, error capture
-  * Trace ID propagation for distributed systems
 
 ---
 
@@ -496,17 +592,6 @@ public void doWork() {
 }
 ```
 
----
-
-```text
-new AgentBuilder.Default()
-    .type(named("com.example.MyService"))
-    .transform((builder, type, classLoader, module) ->
-        builder.method(named("doWork"))
-               .intercept(MethodDelegation.to(LoggerInterceptor.class))
-    ).installOn(instrumentation);
-```
-
 ```java
 public class LoggerInterceptor {
     @RuntimeType
@@ -526,15 +611,13 @@ public class LoggerInterceptor {
 
 ![](images/otel-architecture.webp)
 
-The **OpenTelemetry collector** is a versatile, open-source tool designed to collect, process, and export telemetry data, including **logs**, **metrics**, and **traces**. 
+The **OpenTelemetry Collector** is an open-source, vendor-neutral tool for collecting, processing, and exporting **logs, metrics, and traces**. It provides a **unified data collection** solution, replacing multiple specialized agents, and can be deployed either as a local agent or a central service. Its **extensible pipeline** includes:
 
-- **Vendor-Neutral**: OpenTelemetry aims to standardize how telemetry is collected, providing flexibility and portability. 
-- **Unified Data Collection**: The collector supports receiving telemetry data from different sources (metrics, logs, traces) and exporting them to various backends, making it a single agent that replaces multiple specialized agents.
-- **Scalability and Flexibility**: The collector can be deployed as an agent (running locally alongside applications) or as a central service that aggregates telemetry from multiple agents across the infrastructure.
-- **Extensible Pipeline**: The collector follows a pipeline architecture consisting of **receivers**, **processors**, and **exporters**:
-  - **Receivers**: Ingest telemetry data from various sources (e.g., Jaeger, Prometheus, LogStash, instrumented services).
-  - **Processors**: Enrich, filter, batch, or transform data before exporting.
-  - **Exporters**: Send the processed data to backends like Prometheus, Elasticsearch, Grafana, or third-party observability platforms (Datadog, New Relic).
+* **Receivers**: ingest data from various sources.
+* **Processors**: enrich, filter, or transform data.
+* **Exporters**: send data to backends like Prometheus, Elasticsearch, Grafana, or third-party platforms.
+
+It offers **scalability, flexibility, and portability** across different infrastructures.
 
 ## Observability as a Platform
 
@@ -552,14 +635,12 @@ Modern observability favors **unified platforms** over isolated tools.
   * Centralizes data collection.
   * Reduces inconsistency across multiple tools.
 
-## Observability Costs
+### Observability Costs
 
-- **Data Ingestion**: High-frequency metrics, logs, and traces increase ingestion costs, especially in real-time monitoring.
-- **Storage**: Storing high-cardinality and high-volume data can be expensive; retention policies and compression help manage costs.
-- **Compute**: Querying, aggregations, and anomaly detection require processing power, increasing costs in large-scale systems.
-- **Networking**: Cross-region data transfers, streaming analytics, and API requests can lead to significant network costs.
-- **Licensing & Tooling**: Proprietary tools add licensing fees, while open-source solutions require infrastructure and maintenance costs.
-- **Optimization Strategies**: Reducing data collection frequency, filtering unnecessary logs, and optimizing queries can control costs while maintaining visibility.
+* **Storage**: High-volume or high-cardinality data is costly; retention policies and compression help manage expenses.
+* **Compute**: Processing tasks like queries, aggregations, and anomaly detection increase compute costs at scale.
+* **Networking**: Cross-region transfers, streaming analytics, and API calls can add significant network costs.
+* **Licensing & Tooling**: Proprietary tools incur license fees; open-source tools require infrastructure and maintenance resources.
 
 ## Best Practices 
 

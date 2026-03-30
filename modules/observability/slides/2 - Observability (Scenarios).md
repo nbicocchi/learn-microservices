@@ -1,66 +1,20 @@
 # Observability (Scenarios)
 
-### CPU Metrics
+### Key Metrics
 
-* **`jvm_cpu_recent_utilization_ratio`** – Recent CPU usage of the JVM.
+| Metric                                        | Type      | Description                               |
+| --------------------------------------------- | --------- | ----------------------------------------- |
+| `jvm_cpu_recent_utilization_ratio`            | Gauge     | Recent CPU usage by JVM                   |
+| `jvm_thread_count`                            | Gauge     | Number of active JVM threads              |
+| `jvm_memory_used_bytes`                       | Gauge     | Memory currently used by the JVM          |
+| `jvm_gc_collection_seconds_total`             | Counter   | Total time spent in garbage collection    |
+| `http_requests_total`                         | Counter   | Total number of HTTP requests received    |
+| `http_server_request_duration_seconds_bucket` | Histogram | Duration of HTTP server requests          |
+| `http_client_request_duration_seconds_bucket` | Histogram | Duration of outgoing HTTP client requests |
+| `http_errors_total`                           | Counter   | Total number of HTTP errors (4xx, 5xx)    |
+| `process_resident_memory_bytes`               | Gauge     | Resident memory used by the process       |
+| `node_memory_MemAvailable_bytes`              | Gauge     | Available memory on the node              |
 
-  * Low values → system lightly loaded.
-  * High values → high CPU utilization or potential bottlenecks.
-
-* **`jvm_thread_count`** – Total number of active threads in the JVM.
-
-  * Can indicate thread contention, leaks, or high concurrency.
-
-* **Thread states** – Breakdown of threads by state (e.g., `waiting`, `runnable`, `timed_waiting`).
-
-  * Helps understand how threads are spending their time and identify bottlenecks.
-
-### HTTP Server Metrics
-
-* **`http_server_request_duration_seconds_bucket`** – Histogram of server-side request durations.
-
-  * Shows the number of requests completed within specific time intervals (buckets).
-  * Useful for latency distributions and detecting slowdowns.
-
-* **`http_server_request_duration_seconds_count`** – Total cumulative number of server requests handled.
-
-  * Helps verify throughput and detect dropped or blocked requests.
-
-* **`http_server_request_duration_seconds_sum`** – Total cumulative time spent handling HTTP requests.
-
-  * Combined with `_count` to calculate average latency:
-
-    ```
-    average_latency = _sum / _count
-    ```
-  * Highlights periods of high processing times.
-
-* **HTTP status codes** – Tracks counts of response codes (200, 500, 503, etc.).
-
-  * Useful to identify failed or timed-out requests.
-
-### HTTP Client Metrics
-
-* **`http_client_request_duration_seconds_bucket`** – Histogram of client-side request durations.
-
-  * Shows the latency experienced by the client for each request.
-  * Helps detect slow external calls or network issues.
-
-* **`http_client_request_duration_seconds_count`** – Cumulative count of requests made by the client.
-
-* **`http_client_request_duration_seconds_sum`** – Total time spent by the client waiting for responses.
-
-  * Useful for calculating average client latency.
-
-### Other Metrics / Logs / Traces
-
-* **Traces (Tempo)** – Distributed traces for each request, showing service interactions, errors, and timing.
-
-  * Helps pinpoint where failures or delays occur in the request path.
-
-* **Logs (Loki)** – Application and service logs for debugging failures, errors, or unexpected behavior.
-
-These metrics form the foundation for observing system performance under different load conditions, helping to detect CPU/memory pressure, thread contention, request slowdowns, errors, and timeouts.
 
 ## Scenarios
 
