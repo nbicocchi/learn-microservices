@@ -2,12 +2,7 @@
 
 When systems are distributed, **failures are inevitable**. The key is being able to detect and resolve issues **quickly**, before they impact overall performance or damage your organization’s reputation.
 
-Observability is interpreted differently across the industry:
-
-* Some engineers see it as simply [monitoring](https://iamondemand.com/blog/how-to-properly-monitor-your-k8s-clusters-and-pods/) in a fancier package.
-* Honeycomb, in its [Guide to Achieving Observability](https://www.honeycomb.io/wp-content/uploads/2018/07/Honeycomb-Guide-Achieving-Observability-v1.pdf), defines it as the ability to **ask arbitrary questions about your production environment**.
-
-Regardless of the definition, **observability’s ultimate goal is visibility into your system**:
+**Observability’s ultimate goal is visibility into your system**:
 
 * It allows you to understand what’s happening **inside your software from the outside**.
 * It equips you with the data needed to answer everyday operational questions and to **trace failures to their root causes**.
@@ -19,6 +14,17 @@ An effective observability strategy answers questions like:
 * Why has system performance degraded recently?
 * What was the state of my service at time “y”?
 * Is the issue affecting all users or only a subset?
+
+
+## Observability in DevOps
+
+Observability is essential for DevOps and SRE, enabling teams to **see inside complex systems** and act on insights. Key benefits include:
+
+* **Continuous Deployment** – detect issues immediately after release.
+* **Capacity Planning** – identify bottlenecks and scale resources proactively.
+* **Incident Response & Retrospectives** – analyze root causes and prevent recurrence.
+* **Cultural & Process Benefits** – supports collaboration and a data-driven, blameless culture.
+
 
 ## SLI-SLO & Observability
 
@@ -35,11 +41,25 @@ Observability is not just about **what happens**, but also about **how well the 
 
 ## Security & Observability
 
-Observability can enhance **security monitoring** in distributed systems.
+Observability is not just about performance and reliability — it is also a **powerful security tool**. Integrating security considerations into your observability strategy helps detect threats, ensure compliance, and respond to incidents faster.
 
-* **Anomaly Detection** - Detect suspicious access patterns or unexpected spikes in traffic.
-* **Audit Trails** - Track access, changes, and critical operations in centralized logs.
-* **Security Alerts** - Trigger immediate notifications for unusual behaviors, such as repeated failed logins or privilege escalations.
+### **Audit Trails**
+
+* Track all critical operations and access events.
+* **Benefits:**
+
+  * Regulatory compliance (GDPR, PCI-DSS, HIPAA).
+  * Forensic investigation in case of incidents.
+* Can include centralized logs, traces, and system message metadata.
+
+### **Correlation Across Signals**
+
+* Sophisticated attacks generate multiple signals across the system simultaneously:
+
+  * **Metrics:** unusual CPU, memory, or network usage.
+  * **Logs:** failed authentication, suspicious access attempts.
+  * **Traces:** abnormal service-to-service calls.
+* Correlating metrics, logs, and traces helps to **reconstruct attacks** and identify the entry point.
 
 
 ## Pillars of Observability
