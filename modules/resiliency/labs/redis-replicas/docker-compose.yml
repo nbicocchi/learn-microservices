@@ -1,0 +1,36 @@
+services:
+  redis-master:
+    image: redis:latest
+    container_name: redis-master
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-master-data:/data
+
+  redis-replica-1:
+    image: redis:latest
+    container_name: redis-replica-1
+    depends_on:
+      - redis-master
+    command: ["redis-server", "--appendonly", "yes", "--replicaof", "redis-master", "6379"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-replica-1-data:/data
+
+  redis-replica-2:
+    image: redis:latest
+    container_name: redis-replica-2
+    depends_on:
+      - redis-master
+    command: ["redis-server", "--appendonly", "yes", "--replicaof", "redis-master", "6379"]
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis-replica-2-data:/data
+
+volumes:
+  redis-master-data:
+  redis-replica-1-data:
+  redis-replica-2-data:
