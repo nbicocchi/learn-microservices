@@ -31,32 +31,31 @@
 
 1. **No Persistence**
 
-  * **Description:** Purely in-memory; all data lost on restart.
-  * **Use case:** Caching, temporary data, scenarios prioritizing speed over durability.
-  * **Pros:** Fastest performance.
-  * **Cons:** Data lost on restart, no durability.
+  * **Description:** Memory only; data lost on restart.
+  * **Use case:** Temporary caching, speed-critical tasks.
+  * **Pros:** Fastest.
+  * **Cons:** Data lost on restart.
 
-2. **RDB (Redis Database Snapshots)**
+2. **RDB (Snapshots)**
 
-  * **Description:** Saves dataset snapshots at intervals (e.g., every 5 min or N writes).
-  * **Use case:** Occasional persistence, analytics, reporting.
-  * **Pros:** Fast restart, low memory/disk overhead.
-  * **Cons:** Possible data loss between snapshots, no continuous updates.
+  * **Description:** Saves periodic snapshots of data.
+  * **Use case:** Occasional persistence, analytics.
+  * **Pros:** Fast restart, low overhead.
+  * **Cons:** Can lose data between snapshots.
 
 3. **AOF (Append-Only File)**
 
-  * **Description:** Logs every write operation to an append-only file.
-  * **Use case:** High durability needs, e.g., e-commerce, financial systems.
-  * **Pros:** Ensures data consistency, configurable write policies.
-  * **Cons:** Slower performance, larger disk usage.
+  * **Description:** Logs every write operation.
+  * **Use case:** High durability needed, e.g., e-commerce.
+  * **Pros:** Safe, configurable.
+  * **Cons:** Slower, uses more disk.
 
 4. **Hybrid (RDB + AOF)**
 
-  * **Description:** Combines RDB snapshots and AOF logging for both speed and durability.
-  * **Use case:** Large-scale apps requiring fast recovery and reliable data.
-  * **Pros:** Fast recovery + high durability.
-  * **Cons:** More disk usage, potential performance impact from dual persistence.
-
+  * **Description:** Combines snapshots + logs.
+  * **Use case:** Large apps needing fast recovery + durability.
+  * **Pros:** Fast + safe.
+  * **Cons:** Higher disk use, slight performance hit.
 
 ## Data Structures in Redis
 The data is organized using **key-value pairs**, where keys are unique identifiers, and values can be of different types as we will see later. Data in Redis is accessed by keys, making it a highly efficient and simple data store.
@@ -306,41 +305,13 @@ In addition to being used on a single machine, Redis is also well-suited for **d
 
 ### Redis Cluster
 
-> Suitable for horizontal scaling with sharding. It distributes data across multiple nodes, making it ideal for large datasets that exceed the memory capacity of a single instance while ensuring high availability and partition tolerance.
+> Suitable for horizontal scaling with sharding (consistent hashing). It distributes data across multiple nodes, making it ideal for large datasets that exceed the memory capacity of a single instance while ensuring high availability and partition tolerance.
 
 ![](https://miro.medium.com/v2/resize:fit:1400/1*iOMCYDrYkXUNNuK-LlrDcA.png)
 
 - **Data Distribution**: In a Redis Cluster, data is split across multiple master nodes. For example, if the total data size is 100GB, it could be distributed as 30GB in Master1, 40GB in Master2, and 30GB in Master3. This enables horizontal scalability for data storage.
 - **Write Scalability**: Since each master node is responsible for handling write requests, having multiple master nodes allows for scalability in terms of write throughput (writes per second). This helps distribute the write load across several nodes.
 - **High Availability**: If a master node fails, one of its replica nodes is automatically promoted to master. This ensures continued operation and improves the availability of the database, even in the event of node failures.
-
-
-
-
-## Partitioning
-Partitioning involves dividing your dataset into smaller subsets, known as **shards**, and distributing these shards across multiple Redis nodes. Each shard contains a portion of the keys and data. The partitioning strategy often depends on the use case and the key distribution of your data. Some **common partitioning strategies** include:
-
-**Range-Based Partitioning**
-
-In range-based partitioning, you define ranges of keys based on some criteria (e.g., key prefixes or key values), and each range is assigned to a specific Redis node. This approach is **useful when you can predict the distribution of keys across your dataset**.
-
-![](./images/range-based-partitioning.webp)
-
-**Hash-Based Partitioning**
-
-Hash-based partitioning involves applying a hash function to each key to determine which Redis node will store it. This method provides an even distribution of keys across nodes but may require redistributing data when nodes are added or removed.
-
-![](./images/hash-based-partitioning.webp)
-
-**Consistent Hashing**
-
-Consistent hashing is a popular partitioning method in distributed systems. It minimizes data movement when adding or removing nodes, making it more efficient for **dynamic clusters**.
-
-In practice, consistent hashing often uses **virtual nodes** (also called replicas). Each physical node in the cluster is represented by multiple points on the hash ring. This improves load distribution, reduces the chances of hotspot formation, and provides better fault tolerance.
-
-![](./images/consistent-hashing.webp)
-
-![](./images/consistent-hashing-partitioning.webp)
 
 
 ## Resources
