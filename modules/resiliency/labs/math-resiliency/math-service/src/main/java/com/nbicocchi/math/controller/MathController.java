@@ -20,6 +20,7 @@ import java.util.random.RandomGenerator;
 @RequiredArgsConstructor
 public class MathController {
     private final MathService mathService;
+    private static final RandomGenerator RND = RandomGenerator.getDefault();
 
     /**
      * curl -X GET "http://localhost:8081/divisors?n=60&times=2&faults=10"
@@ -65,7 +66,6 @@ public class MathController {
     }
 
     private void throwErrorIfBadLuck(Long faults) {
-        RandomGenerator RND = RandomGenerator.getDefault();
         if (RND.nextInt(0, 100) < faults) {
             throw new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE);
         }

@@ -16,7 +16,6 @@ cache:
   config:
     entryTTL: 60
 
-
 eureka:
   client:
     service-url:
@@ -49,8 +48,8 @@ resilience4j.circuitbreaker:
     default:
       allowHealthIndicatorToFail: false
       slidingWindowType: COUNT_BASED
-      slidingWindowSize: 13
-      failureRateThreshold: 50
+      slidingWindowSize: 50
+      failureRateThreshold: 33
       waitDurationInOpenState: 10000
       permittedNumberOfCallsInHalfOpenState: 3
       automaticTransitionFromOpenToHalfOpenEnabled: true
