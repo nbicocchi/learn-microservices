@@ -5,15 +5,27 @@
 In distributed systems, **anything can happen**: network failures, service crashes, slow responses, or unexpected load spikes.
 (*Remember the [Fallacies of Distributed Systems](../../communication-sync/slides/0%20-%20Fallacies%20of%20distributed%20computing.md)!*)
 
-> An issue in one system can propagate and **affect the behavior and performance of others**.
-
 **Resilience** is the system’s ability to:
 
 * **Recover from failures**
 * **Continue operating** despite partial failures
 * **Prevent cascading failures** across services
 
+> An issue in one system can propagate and **affect the behavior and performance of others**.
+
+
 > Think of resilience as a combination of **fault-tolerance**, **graceful degradation**, and **self-healing**.
+
+---
+
+### State of Resilience 2025 Survey
+
+* **95%** aware of operational weaknesses
+* **84%** lost ≥$10,000 due to outages
+* **55%** experienced weekly disruptions
+* **39%** reported employee burnout from outages
+
+> Outages are frequent, costly, and damaging to both business and staff morale.
 
 ---
 
@@ -51,11 +63,8 @@ In distributed systems, **anything can happen**: network failures, service crash
 
 **Key benefits:**
 
-* **High concurrency with fewer threads** → can handle thousands of requests on limited hardware
-* **Better CPU utilization** → threads do actual computation instead of waiting
-* **Scalability** → reactive streams can **propagate backpressure**, preventing downstream overload
-
-**Example:** Instead of waiting for a DB response, the system subscribes to a **Publisher** and resumes only when data arrives.
+* **High concurrency** → can handle thousands of requests on a single thread
+* **Better CPU utilization** → threads do actual computation instead of waiting (co-routines as used for waiting)
 
 ---
 
@@ -78,43 +87,7 @@ In distributed systems, **anything can happen**: network failures, service crash
 
 ---
 
-### Concurrency → Resilience
-
-Concurrency models improve **resource efficiency**, but they **don’t automatically prevent cascading failures**.
-
-* Slow/failing downstream services can **still consume resources**.
-* Requests can **pile up**, increasing latency and memory usage.
-* Failures can **propagate**, bringing multiple services down.
-
-**Resiliency patterns** are required to **detect, contain, and recover from failures**.
-
----
-
-## Why Resiliency Matters
-
-Building resilient systems is **not just about threads or efficiency**, it’s about maintaining service despite **partial failures**.
-
-**Key considerations:**
-
-* **Infrastructure failures** – servers, databases, networks, or entire services can fail unexpectedly.
-* **Redundancy across layers** – replicate services, distribute data, and deploy across multiple locations.
-
-**Techniques:**
-
-* **Clustering & load balancing** between services
-* **Infrastructure segregation** across regions or availability zones
-* **Monitoring and alerting** to detect anomalies early
-
-**Subtle risks:**
-
-* Intermittent slowness can **snowball into outages**.
-* Clients without **timeouts or circuit breakers** may keep waiting → threads and connections get exhausted.
-
-> Efficient concurrency alone **does not make a system resilient**.
-
----
-
-### Real-World Example
+## Real-World example
 
 A minor NAS configuration change caused:
 
@@ -128,20 +101,9 @@ A minor NAS configuration change caused:
 
 ---
 
-### State of Resilience 2025 Survey
-
-* **95%** aware of operational weaknesses
-* **84%** lost ≥$10,000 due to outages
-* **55%** experienced weekly disruptions
-* **39%** reported employee burnout from outages
-
-> Outages are frequent, costly, and damaging to both business and staff morale.
-
----
-
 ## Client-Side Resiliency Patterns
 
-Protect **clients** from remote service failures and reduce **resource waste**.
+Protect **clients** from remote service failures.
 
 ![](images/client-side-resiliency.webp)
 
@@ -201,16 +163,28 @@ Monitors dependent services and **fails fast** if unhealthy.
 
 ### Retry
 
-* Retry failed requests **with backoff**
-* Important: **only for idempotent operations**
-* Use **circuit breakers** to avoid retry storms
+* Only for **idempotent operations**
 * **Exponential backoff + jitter** smooths traffic spikes
+
+⚠️ Network saturation risk:
+Use **circuit breakers** to prevent **retry storms**
+* Retries increase traffic → more congestion
+* More congestion → more failures
+* More failures → even more retries
+
+
+
 
 | Retry suitable                    | Retry not suitable                    |
 | --------------------------------- | ------------------------------------- |
 | ![](images/retry-applicable.webp) | ![](images/retry-not-applicable.webp) |
 
-**Tip:** Avoid retries for **time-critical operations**; failing fast is often better.
+
+| Backoff                                           | Backoff + jitter                                  |
+|---------------------------------------------------|---------------------------------------------------|
+| ![](images/microservices-resiliency-retry-1.webp) | ![](images/microservices-resiliency-retry-2.webp) |
+
+**Tip:** Avoid retries for **time-critical operations**; failing fast (**fallback**) is often better.
 
 ---
 
