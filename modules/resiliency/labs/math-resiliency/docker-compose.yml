@@ -29,23 +29,10 @@ services:
     volumes:
       - ./config/loki.yaml:/etc/loki/loki.yaml
 
-  # Helper container to fix permissions on tempo-data
-  tempo-init:
-    image: alpine:latest
-    user: root
-    entrypoint: ["sh", "-c", "chown -R 10001:10001 /var/tempo"]
-    volumes:
-      - ./tempo-data:/var/tempo
-
-  # Tempo service
-  tempo:
-    image: &tempoImage grafana/tempo:latest
-    command: [ "-config.file=/etc/tempo.yaml" ]
-    volumes:
-      - ./config/tempo.yaml:/etc/tempo.yaml
-      - tempo-data:/var/tempo
-    depends_on:
-      - tempo-init
+  jaeger:
+    image: jaegertracing/jaeger:2.16.0
+    ports:
+      - "16686:16686"
 
   grafana:
     image: grafana/grafana:latest

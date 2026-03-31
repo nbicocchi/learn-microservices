@@ -23,9 +23,9 @@ public class MathIntegration {
         this.restClient = restClientBuilder.build();
     }
 
-    @Retry(name = "divisors")
-    //@CircuitBreaker(name = "divisors")
-    //@Bulkhead(name = "divisors")
+    //@Retry(name = "divisors")
+    @CircuitBreaker(name = "divisors")
+    @Bulkhead(name = "divisors")
     public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
         String url = UriComponentsBuilder.fromHttpUrl("http://MATH-SERVICE/divisors")
                 .queryParam("n", n)
@@ -38,9 +38,9 @@ public class MathIntegration {
                     .body(new ParameterizedTypeReference<>() {});
     }
 
-    @Retry(name = "mcd")
-    //@CircuitBreaker(name = "mcd")
-    //@Bulkhead(name = "mcd")
+    //@Retry(name = "mcd")
+    @CircuitBreaker(name = "mcd")
+    @Bulkhead(name = "mcd")
     public MCDWithLatency getMCD(Long a, Long b, List<Long> aDivisors, List<Long> bDivisors, Long times, Long faults) {
         String url = UriComponentsBuilder.fromHttpUrl("http://MATH-SERVICE/mcd")
                 .queryParam("a", a)

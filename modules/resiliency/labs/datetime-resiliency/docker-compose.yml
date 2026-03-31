@@ -23,6 +23,8 @@ services:
 
   date:
     build: datetime-service
+    ports:
+      - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker,date
     healthcheck:
@@ -33,6 +35,8 @@ services:
 
   time:
     build: datetime-service
+    ports:
+      - "8082:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker,time
     healthcheck:
@@ -42,7 +46,7 @@ services:
       retries: 5
 
   postgres:
-    image: postgres:latest
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_USER: user
