@@ -1,4 +1,4 @@
-package com.nbicocchi.composite.config;
+package com.nbicocchi.gateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
