@@ -194,10 +194,8 @@ sequenceDiagram
 
 1. **Offline Resilience** – Buffer messages locally to survive **intermittent connectivity**.
 2. **Resource Efficiency** – Queue messages asynchronously to avoid **blocking limited CPU/memory**.
-3. **Autonomous Operation** – Decouple producers/consumers so edge nodes **keep running without cloud access**.
-4. **Eventual Consistency** – Ensure **ordered delivery and retries**, helping sync state with cloud safely.
-5. **Bandwidth Optimization** – Batch or compress messages to **reduce network usage**.
-6. **Local Security & Privacy** – Process sensitive data locally, sending only **encrypted updates** to the cloud.
+3. **Bandwidth Optimization** – Batch or compress messages to **reduce network usage**.
+4. **Local Security & Privacy** – Process sensitive data locally, sending only **encrypted updates** to the cloud.
 
 
 ## Resources

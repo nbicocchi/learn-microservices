@@ -49,7 +49,6 @@ flowchart LR
 **Queue** is the fundamental component that stores messages sent by producers. In fact, messages sent by producers (and routed by exchanges) wait to be processed by consumer applications in queues.
 
 * **Storage**: Queues store messages until they are processed or consumed by applications.
-* **Durability**: Queues can be durable, meaning they survive broker restarts. Durability ensures that messages are not lost even if the broker restarts.
 * **Message Order**: FIFO — First-In, First-Out.
 * **Configurable Properties**: Queues have configurable properties such as maximum length, maximum priority levels, message TTL (Time-To-Live), etc., allowing fine-tuning to meet specific requirements.
 
@@ -98,59 +97,189 @@ A headers exchange **routes messages based on the message's header attributes ra
 * Multiple consumers can subscribe to different patterns without changing producer logic.
 * `Direct` is too rigid for complex systems; `fanout` is too blunt for most enterprise needs; `headers` exchanges are rarely used because pattern-matching on routing keys is simpler and more performant.
 
-## Consumer Groups
 
-* Concept borrowed from Kafka (and also supported in Spring Cloud Stream with RabbitMQ).
-* Multiple consumers **subscribe to the same logical destination** (queue or topic).
-* The broker (or framework) **distributes messages among consumers** automatically (**scaling!**).
+## Communication Patterns
 
-**Behavior**
+### One To Many
 
-* Each message is **delivered to only one consumer** in the group.
-* Parallelism is **dynamic**: any consumer can get the next message.
-* Order is **not guaranteed globally**, but usually per queue.
-* No control over **which consumer gets which message**.
+Each consumer listens on a dedicated anonymous queue. All queues are connected to the same exchange, ensuring that every message published to the exchange is delivered to all consumers.
 
-**Example**
+```mermaid
+flowchart LR
+%% Exchange
+  EX[Exchange: app.events]
 
-* Queue: `orders`
+%% Code dei server
+  Q1[Queue anon 1]
+  Q2[Queue anon 2]
+  Q3[Queue anon 3]
 
-* Consumer group: 3 consumers (C1, C2, C3)
+%% Consumers
+  C1[Consumer 1]
+  C2[Consumer 2]
+  C3[Consumer 3]
 
-* Messages: M1, M2, M3, M4
+%% Producer invia messaggio
+  P[Producer]
 
-* Delivery could be:
+%% Flusso messaggi
+  P --> EX
+  EX -->|Routing Key| Q1
+  EX -->|Routing Key| Q2
+  EX -->|Routing Key| Q3
 
-    * M1 → C2
-    * M2 → C1
-    * M3 → C3
-    * M4 → C1
+%% Flusso dai consumer
+  Q1 --> C1
+  Q2 --> C2
+  Q3 --> C3
+```
+
+### One To Many (Competing Consumers)
+
+All consumers share the same named queue, so each message is delivered to only one consumer. Messages are load-balanced across consumers.
+
+```mermaid
+flowchart LR
+%% Exchange
+  EX[Exchange: app.events]
+
+%% Code nominate
+  Q1[Queue: queue.orders]
+  Q2[Queue: queue.payments]
+
+%% Consumers collegati alle code
+  C1[Consumer A1]
+  C2[Consumer A2]
+  C3[Consumer B1]
+  C4[Consumer B2]
+
+%% Producer invia messaggi
+  P[Producer]
+
+%% Flusso messaggi dal producer all'exchange
+  P --> EX
+
+%% Exchange distribuisce alle code con routing key
+  EX -->|Routing Key| Q1
+  EX -->|Routing Key| Q2
+
+%% Flusso dai consumer
+  Q1 --> C1
+  Q1 --> C2
+  Q2 --> C3
+  Q2 --> C4
+```
+
+### One To Many (Sharded Consumers)
+
+All consumers share the same named queue, so each message is delivered to only one consumer. Messages are load-balanced across consumers.
+ (each consumer receives events related to same entity).
+
+```mermaid
+flowchart LR
+    %% Exchange
+    EX[Exchange: app.events]
+
+    %% Sharded Queues
+    Q1[Queue: shard-1]
+    Q2[Queue: shard-2]
+    Q3[Queue: shard-3]
+
+    %% Consumers (one per queue)
+    C1[Consumer 1]
+    C2[Consumer 2]
+    C3[Consumer 3]
+
+    %% Producer sends messages
+    P[Producer]
+
+    %% Flow from producer to exchange
+    P --> EX
+
+    %% Exchange routes messages to shards (sharding logic)
+    EX -->|Routing Key / Partition Key| Q1
+    EX -->|Routing Key / Partition Key| Q2
+    EX -->|Routing Key / Partition Key| Q3
+
+    %% Flow from each queue to its consumer
+    Q1 --> C1
+    Q2 --> C2
+    Q3 --> C3
+
+    %% Optional styling
+    style EX fill:#ffd,stroke:#333,stroke-width:2px
+    style Q1 fill:#f9f,stroke:#333,stroke-width:2px
+    style Q2 fill:#9f9,stroke:#333,stroke-width:2px
+    style Q3 fill:#9ff,stroke:#333,stroke-width:2px
+    style P fill:#9ff,stroke:#333,stroke-width:2px
+    style C1 fill:#fcc,stroke:#333,stroke-width:2px
+    style C2 fill:#cfc,stroke:#333,stroke-width:2px
+    style C3 fill:#ccf,stroke:#333,stroke-width:2px
+```
+
+### RPC
+
+**Messaging-based RPC** is a pattern where remote procedure calls are implemented on top of a **message broker** (e.g., RabbitMQ), instead of direct network calls.
+
+A client sends a **request message** to a broker, which routes it to a server. The server processes the request and sends back a **response message**. The client typically waits for the reply, matching it using a **correlation identifier**.
+
+```mermaid
+flowchart LR
+    %% Client
+    C[RPC Client]
+
+    %% Exchange
+    EX[Exchange: rpc.topic]
+
+    %% Request path
+    REQ_KEY[routing key: rpc.request]
+    S[RPC Server]
+
+    %% Reply path
+    REPLY_KEY[routing key: rpc.reply.<correlation_id>]
+    Q[Temporary Reply Queue]
+
+    %% Request flow
+    C -->|publish request\ncorrelation_id| EX
+    EX -->|rpc.request| S
+
+    %% Reply flow
+    S -->|publish response\nsame correlation_id| EX
+    EX -->|rpc.reply.correlation_id| Q
+    Q --> C
+```
+
+### Dead-Letter Queue (DLQ)
+
+Handle messages that cannot be processed (nack, TTL expired, retries exceeded).
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|deliver| S1[Service Instance 1]
+    M -->|deliver| S1b[Service Instance 2]
+
+    %% Normal processing (ACK)
+    S1 -->|ack| OK1[Processed Successfully]
+    S1b -->|ack| OK2[Processed Successfully]
+
+    %% Failure (dead-letter)
+    S1 -->|nack / error| DLQ[Dead-Letter Queue]
+    S1b -->|nack / error| DLQ
+
+    DLQ --> DLP[DLQ Processor]
+
+%% Same style family
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+
+    style OK1 fill:#9f9,stroke:#333,stroke-width:2px
+    style OK2 fill:#9f9,stroke:#333,stroke-width:2px
+
+    style DLQ fill:#f99,stroke:#333,stroke-width:2px
+    style DLP fill:#fcc,stroke:#333,stroke-width:2px
+```
 
 
-
-## Partitioned Producers
-
-* Producer assigns messages to **logical partitions**, often based on a **key** (`partition-key-expression`).
-* Spring Cloud Stream maps each partition to a **specific queue** (for RabbitMQ).
-* Consumers can bind to **specific partitions**, ensuring **messages with same key always go to the same consumer**.
-
-**Behavior**
-
-* **Key-based ordering**: messages with same key always go to the same partition/queue.
-* **Deterministic routing**: you control which consumer instance gets which messages.
-* Parallelism is **aligned with partition count**, not just number of consumers.
-
-**Example**
-
-* Partition count: 3
-
-* Partition key: `customerId`
-
-* Messages from customer 123 always go to **partition 0** → specific consumer.
-
-* Messages from customer 456 go to **partition 1** → another consumer.
-
-* **Good for**: processing **per-key ordered streams**, e.g., financial transactions, user activity, IoT events.
 
 ## Resources
 
@@ -158,169 +287,3 @@ A headers exchange **routes messages based on the message's header attributes ra
 - [RabbitMQ Tutorials](https://www.rabbitmq.com/getstarted.html)
 - [RabbitMQ in Action](https://www.manning.com/books/rabbitmq-in-action)
 
-## Communication Patterns
-
-### Routing (Routing Key)
-
-**Purpose:**
-Route messages to different channels/services based on content.
-
-```mermaid
-flowchart LR
-    M[Incoming Message] -->|routing_key=A| S1[Service A]
-    M -->|routing_key=B| S2[Service B]
-
-%% Optional: emphasize competition
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S2 fill:#9f9,stroke:#333,stroke-width:2px
-```
-
-### Routing (Competing Consumers)
-
-**Purpose:**
-Increase throughput by letting multiple consumers share work.
-
-```mermaid
-flowchart LR
-    M[Incoming Message] -->|routing_key=A| S1[Service A Instance 1]
-    M -->|routing_key=A| S1b[Service A Instance 2]
-    M -->|routing_key=B| S2[Service B Instance 1]
-    M -->|routing_key=B| S2b[Service B Instance 2]
-
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S1b fill:#f9f,stroke:#333,stroke-width:2px
-    style S2 fill:#9f9,stroke:#333,stroke-width:2px
-    style S2b fill:#9f9,stroke:#333,stroke-width:2px
-```
-
-### Routing (Sharded Consumers)
-
-**Purpose:**
-Increase throughput by letting multiple consumers share work (each consumer receives events related to same entity).
-
-```mermaid
-flowchart LR
-    M1[Message Key=Order A] --> S1[Consumer Instance 1]
-    M2[Message Key=Order B] --> S2[Consumer Instance 2]
-    M3[Message Key=Order A] --> S1
-    M4[Message Key=Order C] --> S3[Consumer Instance 3]
-
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S2 fill:#9f9,stroke:#333,stroke-width:2px
-    style S3 fill:#9ff,stroke:#333,stroke-width:2px
-
-```
-
-### Dead-Letter Queue (DLQ)
-
-**Purpose:**
-Handle messages that cannot be processed (nack, TTL expired, retries exceeded).
-
-```mermaid
-flowchart LR
-    M[Incoming Message] -->|deliver| S1[Service Instance 1]
-    M -->|deliver| S1b[Service Instance 2]
-
-    %% Normal processing (ACK)
-    S1 -->|ack| OK1[Processed Successfully]
-    S1b -->|ack| OK2[Processed Successfully]
-
-    %% Failure (dead-letter)
-    S1 -->|nack / error| DLQ[Dead-Letter Queue]
-    S1b -->|nack / error| DLQ
-
-    DLQ --> DLP[DLQ Processor]
-
-%% Same style family
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S1b fill:#f9f,stroke:#333,stroke-width:2px
-
-    style OK1 fill:#9f9,stroke:#333,stroke-width:2px
-    style OK2 fill:#9f9,stroke:#333,stroke-width:2px
-
-    style DLQ fill:#f99,stroke:#333,stroke-width:2px
-    style DLP fill:#fcc,stroke:#333,stroke-width:2px
-```
-## Communication Patterns
-
-### Routing (Routing Key)
-
-**Purpose:**
-Route messages to different channels/services based on content.
-
-```mermaid
-flowchart LR
-    M[Incoming Message] -->|routing_key=A| S1[Service A]
-    M -->|routing_key=B| S2[Service B]
-
-%% Optional: emphasize competition
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S2 fill:#9f9,stroke:#333,stroke-width:2px
-```
-
-### Routing (Competing Consumers)
-
-**Purpose:**
-Increase throughput by letting multiple consumers share work.
-
-```mermaid
-flowchart LR
-    M[Incoming Message] -->|routing_key=A| S1[Service A Instance 1]
-    M -->|routing_key=A| S1b[Service A Instance 2]
-    M -->|routing_key=B| S2[Service B Instance 1]
-    M -->|routing_key=B| S2b[Service B Instance 2]
-
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S1b fill:#f9f,stroke:#333,stroke-width:2px
-    style S2 fill:#9f9,stroke:#333,stroke-width:2px
-    style S2b fill:#9f9,stroke:#333,stroke-width:2px
-```
-
-### Routing (Sharded Consumers)
-
-**Purpose:**
-Increase throughput by letting multiple consumers share work (each consumer receives events related to same entity).
-
-```mermaid
-flowchart LR
-    M1[Message Key=Order A] --> S1[Consumer Instance 1]
-    M2[Message Key=Order B] --> S2[Consumer Instance 2]
-    M3[Message Key=Order A] --> S1
-    M4[Message Key=Order C] --> S3[Consumer Instance 3]
-
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S2 fill:#9f9,stroke:#333,stroke-width:2px
-    style S3 fill:#9ff,stroke:#333,stroke-width:2px
-
-```
-
-### Dead-Letter Queue (DLQ)
-
-**Purpose:**
-Handle messages that cannot be processed (nack, TTL expired, retries exceeded).
-
-```mermaid
-flowchart LR
-    M[Incoming Message] -->|deliver| S1[Service Instance 1]
-    M -->|deliver| S1b[Service Instance 2]
-
-    %% Normal processing (ACK)
-    S1 -->|ack| OK1[Processed Successfully]
-    S1b -->|ack| OK2[Processed Successfully]
-
-    %% Failure (dead-letter)
-    S1 -->|nack / error| DLQ[Dead-Letter Queue]
-    S1b -->|nack / error| DLQ
-
-    DLQ --> DLP[DLQ Processor]
-
-%% Same style family
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S1b fill:#f9f,stroke:#333,stroke-width:2px
-
-    style OK1 fill:#9f9,stroke:#333,stroke-width:2px
-    style OK2 fill:#9f9,stroke:#333,stroke-width:2px
-
-    style DLQ fill:#f99,stroke:#333,stroke-width:2px
-    style DLP fill:#fcc,stroke:#333,stroke-width:2px
-```
