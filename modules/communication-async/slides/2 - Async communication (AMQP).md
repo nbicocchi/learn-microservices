@@ -13,6 +13,8 @@ The [Advanced Message Queuing Protocol (AMQP)](https://www.amqp.org/) is an open
 | **Red Hat AMQ**                  | AMQP 1.0              | Commercial distribution based on Apache Qpid/ActiveMQ. Enterprise-grade management and middleware integration.  |
 | **Solace PubSub+**               | AMQP 1.0              | Commercial broker optimized for real-time events and enterprise messaging; also supports MQTT and REST.         |
 
+
+
 ## Key Components
 
 - **Broker**: system that implements AMQP and handles message exchange between *producers* and *consumers*
@@ -155,3 +157,170 @@ A headers exchange **routes messages based on the message's header attributes ra
 - [RabbitMQ Official Documentation](https://www.rabbitmq.com/documentation.html)
 - [RabbitMQ Tutorials](https://www.rabbitmq.com/getstarted.html)
 - [RabbitMQ in Action](https://www.manning.com/books/rabbitmq-in-action)
+
+## Communication Patterns
+
+### Routing (Routing Key)
+
+**Purpose:**
+Route messages to different channels/services based on content.
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|routing_key=A| S1[Service A]
+    M -->|routing_key=B| S2[Service B]
+
+%% Optional: emphasize competition
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+```
+
+### Routing (Competing Consumers)
+
+**Purpose:**
+Increase throughput by letting multiple consumers share work.
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|routing_key=A| S1[Service A Instance 1]
+    M -->|routing_key=A| S1b[Service A Instance 2]
+    M -->|routing_key=B| S2[Service B Instance 1]
+    M -->|routing_key=B| S2b[Service B Instance 2]
+
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+    style S2b fill:#9f9,stroke:#333,stroke-width:2px
+```
+
+### Routing (Sharded Consumers)
+
+**Purpose:**
+Increase throughput by letting multiple consumers share work (each consumer receives events related to same entity).
+
+```mermaid
+flowchart LR
+    M1[Message Key=Order A] --> S1[Consumer Instance 1]
+    M2[Message Key=Order B] --> S2[Consumer Instance 2]
+    M3[Message Key=Order A] --> S1
+    M4[Message Key=Order C] --> S3[Consumer Instance 3]
+
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+    style S3 fill:#9ff,stroke:#333,stroke-width:2px
+
+```
+
+### Dead-Letter Queue (DLQ)
+
+**Purpose:**
+Handle messages that cannot be processed (nack, TTL expired, retries exceeded).
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|deliver| S1[Service Instance 1]
+    M -->|deliver| S1b[Service Instance 2]
+
+    %% Normal processing (ACK)
+    S1 -->|ack| OK1[Processed Successfully]
+    S1b -->|ack| OK2[Processed Successfully]
+
+    %% Failure (dead-letter)
+    S1 -->|nack / error| DLQ[Dead-Letter Queue]
+    S1b -->|nack / error| DLQ
+
+    DLQ --> DLP[DLQ Processor]
+
+%% Same style family
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+
+    style OK1 fill:#9f9,stroke:#333,stroke-width:2px
+    style OK2 fill:#9f9,stroke:#333,stroke-width:2px
+
+    style DLQ fill:#f99,stroke:#333,stroke-width:2px
+    style DLP fill:#fcc,stroke:#333,stroke-width:2px
+```
+## Communication Patterns
+
+### Routing (Routing Key)
+
+**Purpose:**
+Route messages to different channels/services based on content.
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|routing_key=A| S1[Service A]
+    M -->|routing_key=B| S2[Service B]
+
+%% Optional: emphasize competition
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+```
+
+### Routing (Competing Consumers)
+
+**Purpose:**
+Increase throughput by letting multiple consumers share work.
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|routing_key=A| S1[Service A Instance 1]
+    M -->|routing_key=A| S1b[Service A Instance 2]
+    M -->|routing_key=B| S2[Service B Instance 1]
+    M -->|routing_key=B| S2b[Service B Instance 2]
+
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+    style S2b fill:#9f9,stroke:#333,stroke-width:2px
+```
+
+### Routing (Sharded Consumers)
+
+**Purpose:**
+Increase throughput by letting multiple consumers share work (each consumer receives events related to same entity).
+
+```mermaid
+flowchart LR
+    M1[Message Key=Order A] --> S1[Consumer Instance 1]
+    M2[Message Key=Order B] --> S2[Consumer Instance 2]
+    M3[Message Key=Order A] --> S1
+    M4[Message Key=Order C] --> S3[Consumer Instance 3]
+
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#9f9,stroke:#333,stroke-width:2px
+    style S3 fill:#9ff,stroke:#333,stroke-width:2px
+
+```
+
+### Dead-Letter Queue (DLQ)
+
+**Purpose:**
+Handle messages that cannot be processed (nack, TTL expired, retries exceeded).
+
+```mermaid
+flowchart LR
+    M[Incoming Message] -->|deliver| S1[Service Instance 1]
+    M -->|deliver| S1b[Service Instance 2]
+
+    %% Normal processing (ACK)
+    S1 -->|ack| OK1[Processed Successfully]
+    S1b -->|ack| OK2[Processed Successfully]
+
+    %% Failure (dead-letter)
+    S1 -->|nack / error| DLQ[Dead-Letter Queue]
+    S1b -->|nack / error| DLQ
+
+    DLQ --> DLP[DLQ Processor]
+
+%% Same style family
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1b fill:#f9f,stroke:#333,stroke-width:2px
+
+    style OK1 fill:#9f9,stroke:#333,stroke-width:2px
+    style OK2 fill:#9f9,stroke:#333,stroke-width:2px
+
+    style DLQ fill:#f99,stroke:#333,stroke-width:2px
+    style DLP fill:#fcc,stroke:#333,stroke-width:2px
+```
