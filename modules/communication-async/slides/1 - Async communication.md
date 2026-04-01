@@ -40,12 +40,12 @@ There are two primary approaches to asynchronous messaging passing: **broker-bas
 
 ## Brokerless Messaging Systems
 
-Brokerless messaging, eliminates the need for a central broker. Instead, services communicate directly with each other. Brokerless systems use protocols such as **gRPC**, **ZeroMQ**, and **HTTP-based messaging**.
+Brokerless messaging enables direct communication between applications or components **without relying on a central message broker**. This reduces latency, simplifies deployment, and improves scalability, making it ideal for high-performance distributed systems.
 
-For efficient communication, peers spawn **multiple threads or use asynchronous I/O to handle multiple connections at once**. This ensures that the peer can send/receive messages without blocking other tasks.
+[ZeroMQ](https://zeromq.org/) is a lightweight, high-performance messaging library that supports brokerless communication. It provides **asynchronous sockets** with patterns like **publish/subscribe, request/reply, and push/pull**, allowing low-latency messaging across threads, processes, and machines. ZeroMQ abstracts the network layer, letting developers focus on application logic.
 
-* ZeroMQ (https://zeromq.org/)
-* NanoMsg (https://nanomsg.org/)
+[NanoMsg](https://nanomsg.org/) is a simplified, modular messaging library inspired by ZeroMQ. It supports **common messaging patterns** (pub/sub, pipeline, request/reply) and multiple transports (TCP, IPC, in-process). NanoMsg emphasizes **robustness, portability, and ease of maintenance**, making it suitable for scalable distributed applications.
+
 
 #### Advantages
 1. **No Single Point of Failure**: Brokerless systems avoid the broker becoming a single point of failure, making the architecture more resilient to certain types of failures.
@@ -60,7 +60,14 @@ For efficient communication, peers spawn **multiple threads or use asynchronous 
 |-------------------------------------------|----------------------------------------------|
 | ![](images/broker-distributed-broker.webp) | ![](images/broker-distributed-directory.webp) |
 
+**Brokerless Messaging:** Apps communicate directly, giving **maximum flexibility** and low latency.
 
+**Architectures:**
+
+* **Pure Brokerless:** Direct messaging, full control, manual management.
+* **Broker as Directory Service:** Broker tracks locations, messages go direct.
+* **Distributed Broker:** Lightweight queues handle messages, avoid bottlenecks.
+* **Distributed Directory Service:** Replicated directory, no single point of failure, dynamic network.
 
 #### Disadvantages
 1. **Tight Coupling**: In a brokerless system, services need to know how to communicate with each other directly. This increases the coupling between services and makes changes harder to manage (e.g., changing a service’s location or API may require updating all services that communicate with it).
@@ -74,11 +81,11 @@ Broker-based messaging systems rely on a **central message broker** to manage th
 
 Common systems:
 
-| Software                | Protocol(s) Used                                      |
-| ----------------------- | ----------------------------------------------------- |
-| RabbitMQ                | AMQP (Advanced Message Queuing Protocol), MQTT, STOMP |
-| Apache Kafka            | Kafka Protocol (custom TCP-based protocol)            |
-| ActiveMQ                | AMQP, STOMP, MQTT, OpenWire                           ||
+| Software              | Protocol(s) Used                                      |
+|-----------------------| ----------------------------------------------------- |
+| RabbitMQ              | AMQP (Advanced Message Queuing Protocol), MQTT, STOMP |
+| Apache Kafka/RedPanda | Kafka Protocol (custom TCP-based protocol)            |
+| ActiveMQ              | AMQP, STOMP, MQTT, OpenWire                           ||
 
 Proprietary systems:
 
@@ -147,8 +154,8 @@ Route messages to different channels/services based on content.
 
 ```mermaid
 flowchart LR
-    M[Incoming Message] -->|type=A| S1[Service A]
-    M -->|type=B| S2[Service B]
+    M[Incoming Message] -->|routing_key=A| S1[Service A]
+    M -->|routing_key=B| S2[Service B]
 
 %% Optional: emphasize competition
     style S1 fill:#f9f,stroke:#333,stroke-width:2px
@@ -162,10 +169,10 @@ Increase throughput by letting multiple consumers share work.
 
 ```mermaid
 flowchart LR
-    M[Incoming Message] -->|type=A| S1[Service A Instance 1]
-    M -->|type=A| S1b[Service A Instance 2]
-    M -->|type=B| S2[Service B Instance 1]
-    M -->|type=B| S2b[Service B Instance 2]
+    M[Incoming Message] -->|routing_key=A| S1[Service A Instance 1]
+    M -->|routing_key=A| S1b[Service A Instance 2]
+    M -->|routing_key=B| S2[Service B Instance 1]
+    M -->|routing_key=B| S2b[Service B Instance 2]
 
     style S1 fill:#f9f,stroke:#333,stroke-width:2px
     style S1b fill:#f9f,stroke:#333,stroke-width:2px
@@ -180,10 +187,10 @@ Increase throughput by letting multiple consumers share work (each consumer rece
 
 ```mermaid
 flowchart LR
-    M1[Message Key=A] --> S1[Consumer Instance 1]
-    M2[Message Key=B] --> S2[Consumer Instance 2]
-    M3[Message Key=A] --> S1
-    M4[Message Key=C] --> S3[Consumer Instance 3]
+    M1[Message Key=Order A] --> S1[Consumer Instance 1]
+    M2[Message Key=Order B] --> S2[Consumer Instance 2]
+    M3[Message Key=Order A] --> S1
+    M4[Message Key=Order C] --> S3[Consumer Instance 3]
 
     style S1 fill:#f9f,stroke:#333,stroke-width:2px
     style S2 fill:#9f9,stroke:#333,stroke-width:2px

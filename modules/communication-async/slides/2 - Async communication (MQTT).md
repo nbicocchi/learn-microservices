@@ -1,6 +1,12 @@
 # Asynchronous communications (MQTT)
 
-The **Message Queuing Telemetry Transport (MQTT)** is a lightweight, publish-subscribe messaging protocol designed for constrained devices, low-bandwidth networks, and IoT applications. It is widely used in microservices when efficiency and low latency are important.
+The **Message Queuing Telemetry Transport (MQTT)** is a lightweight, publish-subscribe messaging protocol designed for constrained devices, low-bandwidth networks, and IoT applications. 
+
+* Extremely lightweight → suitable for **IoT and constrained devices**
+* Low bandwidth and low latency
+* Reliable delivery with configurable QoS
+* Easy integration with **microservices**, edge devices, and cloud services
+* Ideal for **telemetry, monitoring, notifications, and event-driven architectures**
 
 | Broker                          | MQTT Version      | Notes                                                                                |
 | ------------------------------- | ----------------- | ------------------------------------------------------------------------------------ |
@@ -34,21 +40,14 @@ Topic: bank/account/BA-1001-2025/deposit
 Payload: { "amount": 100.0 }
 QoS: 1
 Retain: false
-Message ID: 42
 ```
 
 ### Topics
 
-* Topics are **hierarchical strings**: `level1/level2/level3`
-* Examples:
-
-    * `bank/account/BA-1001-2025/deposit`
-    * `sensors/temperature/lab1`
-* Supports **wildcards** for subscriptions:
-
-    * `+` → single-level wildcard
-    * `#` → multi-level wildcard
-* Enables **selective message delivery** to subscribers.
+* Topics are **hierarchical strings**: 
+  * `level1/level2/level3`
+  * `bank/account/BA-1001-2025/deposit`
+  * `sensors/temperature/lab1`
 
 ### Quality of Service (QoS)
 
@@ -58,18 +57,13 @@ Message ID: 42
     * `1` → At least once (message may be delivered multiple times)
     * `2` → Exactly once (ensures no duplicates)
 
-Absolutely! Let’s dive deeper into **Retained Messages** and **Last Will and Testament (LWT)** in MQTT. These are key concepts that make MQTT more than just a simple pub/sub protocol.
-
-
 ### Retained Messages
 
-A **retained message** is a special kind of MQTT message that the broker **remembers** even after it has been delivered to all current subscribers.
+**Retained message (MQTT)**: a message the broker **remembers** for a topic.
 
-How it works:
-
-1. When a publisher sends a message with the **retain flag set to `true`**, the broker **stores the last retained message per topic**.
-2. Any **new subscriber** who subscribes to that topic **immediately receives the retained message**, even if the message was published before they subscribed.
-3. Only **one retained message per topic** exists at a time. When a new retained message is sent on the same topic, it **replaces the previous one**.
+* Publisher sets **retain = true** → broker stores it.
+* New subscribers **immediately receive** the last retained message.
+* Only **one retained message per topic** exists; new retained messages **replace** the old one.
 
 ```
 Topic: sensors/temperature/lab1
@@ -82,18 +76,12 @@ Retain: true
 
 ### Last Will and Testament (LWT)
 
-The **Last Will and Testament (LWT)** is a mechanism for **notifying other clients if a client disconnects unexpectedly**.
+**Last Will and Testament (LWT) – MQTT**: a mechanism to **notify others if a client disconnects unexpectedly**.
 
-How it works:
-
-1. When a client connects to the broker, it can specify an **LWT message** with:
-
-    * **Topic** where it should be published
-    * **Payload** (the message content)
-    * **QoS** and **retain flag** for the message
-2. If the client **disconnects gracefully**, nothing happens.
-3. If the client **disconnects ungracefully** (e.g., network failure, crash), the broker **automatically publishes the LWT message** to the specified topic.
-4. Subscribers of that topic can then take **corrective action**.
+* Client sets **LWT** on connect: topic, payload, QoS, retain.
+* **Graceful disconnect** → LWT is ignored.
+* **Ungraceful disconnect** → broker **automatically publishes** the LWT message.
+* Subscribers can take **corrective action**.
 
 ```
 Topic: clients/BA-1001-2025/status
@@ -107,14 +95,28 @@ Retain: true
 * Subscribers register interest in **topics** or **topic patterns**.
 * Broker delivers messages according to **topic hierarchy** and QoS settings.
 * Supports **multiple subscribers per topic**.
+* Supports **wildcards** for subscriptions:
 
-## Why MQTT is used
+    * `+` → Matches **exactly one level** of the topic hierarchy
 
-* Extremely lightweight → suitable for **IoT and constrained devices**
-* Low bandwidth and low latency
-* Reliable delivery with configurable QoS
-* Easy integration with **microservices**, edge devices, and cloud services
-* Ideal for **telemetry, monitoring, notifications, and event-driven architectures**
+          ```text
+          Topic subscription: home/+/temperature
+          Matches:
+            home/livingroom/temperature
+            home/kitchen/temperature
+          Does NOT match:
+            home/livingroom/inside/temperature
+          ```
+
+        * `#` → Matches **any number of levels**, including zero
+
+              ```text
+              Topic subscription: home/#
+              Matches:
+                home/livingroom/temperature
+                home/kitchen/humidity
+                home/livingroom/inside/light
+              ```
 
 ## Resources
 
