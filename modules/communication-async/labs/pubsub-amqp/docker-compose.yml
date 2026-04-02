@@ -3,20 +3,43 @@ services:
     build: publisher-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - EXCHANGE_NAME=myExchange
     depends_on:
       lavinmq:
         condition: service_healthy
 
-  subscriber:
+  subscriber-1:
     build: subscriber-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - EXCHANGE_NAME=myExchange
+      - QUEUE_NAME=queue.1
+      - ROUTING_KEY=money.#
     depends_on:
       lavinmq:
         condition: service_healthy
-    deploy:
-      mode: replicated
-      replicas: 3
+
+  subscriber-2:
+    build: subscriber-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EXCHANGE_NAME=myExchange
+      - QUEUE_NAME=queue.1
+      - ROUTING_KEY=money.#
+    depends_on:
+      lavinmq:
+        condition: service_healthy
+
+  subscriber-3:
+    build: subscriber-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EXCHANGE_NAME=myExchange
+      - QUEUE_NAME=queue.1
+      - ROUTING_KEY=money.#
+    depends_on:
+      lavinmq:
+        condition: service_healthy
 
   lavinmq:
     image: cloudamqp/lavinmq:latest

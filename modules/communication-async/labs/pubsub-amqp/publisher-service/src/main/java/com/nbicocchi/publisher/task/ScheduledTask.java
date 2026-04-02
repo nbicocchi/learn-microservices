@@ -20,7 +20,7 @@ public class ScheduledTask {
     private final MessageSender messageSender;
     private final RandomGenerator randomGenerator = RandomGenerator.getDefault();
     private final List<String> actions = List.of(
-            "money.account.created",
+            "money.account",
             "money.deposit",
             "money.withdraw");
     private final List<String> accounts = List.of(
@@ -48,8 +48,7 @@ public class ScheduledTask {
                         action,
                         randomGenerator.nextDouble(100.0)));
 
-        log.info("Sending event: {}", event);
-
-        messageSender.sendMessage(event.toString());
+        log.info("routing key: {}\tevent: {}", action, event);
+        messageSender.sendMessage(event.toString(), action);
     }
 }
