@@ -24,10 +24,10 @@ public class MathIntegration {
         this.restClient = restClientBuilder.build();
     }
 
-    //@Retry(name = "divisors")
+    @Retry(name = "divisors")
     //@CircuitBreaker(name = "divisors")
     //@Bulkhead(name = "divisors")
-    @Cacheable(cacheNames = "divisors")
+    //@Cacheable(cacheNames = "divisors")
     public DivisorsWithLatency getDivisors(Long n, Long times, Long faults) {
         String url = UriComponentsBuilder.fromHttpUrl("http://MATH-SERVICE/divisors")
                 .queryParam("n", n)

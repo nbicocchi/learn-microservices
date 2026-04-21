@@ -15,10 +15,14 @@ import java.util.random.RandomGenerator;
 
 @Log4j2
 @Component
-@AllArgsConstructor
 public class ScheduledTask {
-    private final MqttGateway mqttGateway;
     private final RandomGenerator randomGenerator = RandomGenerator.getDefault();
+    private final MqttGateway mqttGateway;
+
+    public ScheduledTask(MqttGateway mqttGateway) {
+        this.mqttGateway = mqttGateway;
+    }
+
     private final List<String> actions = List.of(
             "money.account.created",
             "money.deposit",

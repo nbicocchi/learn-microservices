@@ -2,6 +2,7 @@
 
 **Redis Overview**
 
+* **Author:** Salvatore Sanfilippo
 * **Full name:** Remote Dictionary Server
 * **Type:** Open-source, in-memory, distributed Key-Value store
 * **Performance:** Operates directly in RAM rather than on SSD/HDD → extremely low latency
@@ -86,7 +87,7 @@ services:
 We can then install a Redis client, connect:
 
 ```bash
-redis-cli -h redis -p 6379
+redis-cli
 ```
 
 and interact:
@@ -284,7 +285,7 @@ In addition to being used on a single machine, Redis is also well-suited for **d
 
 ### Redis Replication
 
-> Ideal for scenarios where you need to scale read operations. The master handles writes, and replicas handle reads. It's useful when data consistency isn't a concern, and failover is not automated.
+> Ideal for scenarios where you need to scale read operations. The master handles writes, and replicas handle reads.
 
 ![](https://miro.medium.com/v2/resize:fit:1122/1*DphpQeKEVIQVCgxU2_vI_g.png)
 

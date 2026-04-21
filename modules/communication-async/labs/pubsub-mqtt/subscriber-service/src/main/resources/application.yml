@@ -7,16 +7,12 @@ mqtt:
   password:
   clean-session: true
   client-id: subscriber-service
-  default-topic: events.topic
+  default-topic: events/mytopic
 
 ---
 spring.config.activate.on-profile: docker
 
 mqtt:
   url: tcp://mosquitto:1883
-  username:
-  password:
-  clean-session: true
-  client-id: subscriber-service
-  default-topic: events.topic
+
 
