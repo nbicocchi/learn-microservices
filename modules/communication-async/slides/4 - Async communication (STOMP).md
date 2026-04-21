@@ -36,20 +36,27 @@ A STOMP message is called a **frame** and has three parts:
 
 👉 **Command**: specifica l’operazione del frame
 
-* `CONNECT` → apre la connessione con il broker
-* `SEND` → invia un messaggio a una destinazione
-* `SUBSCRIBE` → si registra per ricevere messaggi
-* `ACK` → conferma la corretta elaborazione di un messaggio
-
+* `CONNECT` → opens a connection with the broker
+* `SEND` → sends a message to a destination
+* `SUBSCRIBE` → registers to receive messages
+* `ACK` → confirms successful processing of a message
 
 ### 2. Headers
 
-Key-value metadata:
+Headers are simple **key-value pairs**:
 
-* Routing (`destination`)
-* Priority
-* Correlation (`correlation-id`)
-* Subscription control (`id`, `ack`)
+```text
+destination: /queue/money.deposit
+receipt: msg-12345
+priority: 5
+correlation-id: 123e4567...
+```
+
+👉 They are used for:
+
+* Routing
+* Message tracking
+* Delivery control
 
 ### 3. Body
 
@@ -77,25 +84,6 @@ correlation-id:123e4567-e89b-12d3-a456-426614174000
 
 ---
 
-## Headers (Quick View)
-
-Headers are simple **key-value pairs**:
-
-```text
-destination: /queue/money.deposit
-receipt: msg-12345
-priority: 5
-correlation-id: 123e4567...
-```
-
-👉 They are used for:
-
-* Routing
-* Message tracking
-* Delivery control
-
----
-
 ## Destinations
 
 STOMP uses **destinations** instead of exchanges.
@@ -116,6 +104,19 @@ Examples:
 
 ---
 
+## Subscriptions
+
+Consumers subscribe to a destination:
+
+```
+SUBSCRIBE
+id:sub-001
+destination:/queue/money.deposit
+ack:client
+^@
+```
+--- 
+
 ## Acknowledgements
 
 Consumers can confirm message processing.
@@ -131,24 +132,3 @@ Modes:
 * Reliability
 * Backpressure control
 
----
-
-## Subscriptions
-
-Consumers subscribe to a destination:
-
-```
-SUBSCRIBE
-id:sub-001
-destination:/queue/money.deposit
-ack:client
-^@
-```
-
-### Behavior:
-
-* Multiple consumers allowed
-* Delivery depends on destination type:
-
-  * Queue → load balancing
-  * Topic → broadcast

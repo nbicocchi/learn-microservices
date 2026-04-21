@@ -14,7 +14,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EXCHANGE_NAME=myExchange
       - QUEUE_NAME=queue.1
-      - ROUTING_KEY=money.#
+      - ROUTING_KEY=shard-0
     depends_on:
       lavinmq:
         condition: service_healthy
@@ -24,8 +24,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EXCHANGE_NAME=myExchange
-      - QUEUE_NAME=queue.1
-      - ROUTING_KEY=money.#
+      - QUEUE_NAME=queue.2
+      - ROUTING_KEY=shard-1
     depends_on:
       lavinmq:
         condition: service_healthy
@@ -35,8 +35,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EXCHANGE_NAME=myExchange
-      - QUEUE_NAME=queue.1
-      - ROUTING_KEY=money.#
+      - QUEUE_NAME=queue.3
+      - ROUTING_KEY=shard-2
     depends_on:
       lavinmq:
         condition: service_healthy

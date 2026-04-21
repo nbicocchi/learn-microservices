@@ -23,10 +23,7 @@ The **Message Queuing Telemetry Transport (MQTT)** is a lightweight, publish-sub
 
 ### Message Overview
 
-An **MQTT message** consists of a **topic**, **payload**, and optional **QoS / properties**. MQTT messages are typically very lightweight.
-
-**Components:**
-
+An **MQTT message** consists of:
 * **Topic**: hierarchical string used to route messages
 * **Payload**: the data being sent (binary, JSON, text, etc.)
 * **QoS (Quality of Service)**: delivery guarantee level
@@ -36,7 +33,7 @@ An **MQTT message** consists of a **topic**, **payload**, and optional **QoS / p
 ```
 ## Example MQTT PUBLISH
 
-Topic: bank/account/BA-1001-2025/deposit
+Topic: bank/account/BA-1001-2025
 Payload: { "amount": 100.0 }
 QoS: 1
 Retain: false
@@ -46,7 +43,7 @@ Retain: false
 
 * Topics are **hierarchical strings**: 
   * `level1/level2/level3`
-  * `bank/account/BA-1001-2025/deposit`
+  * `bank/account/BA-1001-2025`
   * `sensors/temperature/lab1`
 
 ### Quality of Service (QoS)
@@ -84,10 +81,9 @@ Retain: true
 * Subscribers can take **corrective action**.
 
 ```
-Topic: clients/BA-1001-2025/status
-Payload: "offline"
-QoS: 1
-Retain: true
+LWT topic: clients/BA-1001-2025/status
+LWT payload: "offline"
+LWT retain: true
 ```
 
 ### Subscriptions
@@ -97,26 +93,26 @@ Retain: true
 * Supports **multiple subscribers per topic**.
 * Supports **wildcards** for subscriptions:
 
-    * `+` → Matches **exactly one level** of the topic hierarchy
+* `+` → Matches **exactly one level** of the topic hierarchy
+* `#` → Matches **any number of levels**, including zero
 
-          ```text
-          Topic subscription: home/+/temperature
-          Matches:
-            home/livingroom/temperature
-            home/kitchen/temperature
-          Does NOT match:
-            home/livingroom/inside/temperature
-          ```
 
-        * `#` → Matches **any number of levels**, including zero
+```text
+Topic subscription: home/+/temperature
+Matches:
+home/livingroom/temperature
+home/kitchen/temperature
+Does NOT match:
+home/livingroom/inside/temperature
+```
 
-              ```text
-              Topic subscription: home/#
-              Matches:
-                home/livingroom/temperature
-                home/kitchen/humidity
-                home/livingroom/inside/light
-              ```
+```text
+Topic subscription: home/#
+Matches:
+home/livingroom/temperature
+home/kitchen/humidity
+home/livingroom/inside/light
+```
 
 ## Resources
 
