@@ -26,12 +26,11 @@ There are two primary approaches to asynchronous messaging passing: **broker-bas
 
 ## Brokerless Messaging Systems
 
-Brokerless messaging enables direct communication between applications or components **without relying on a central message broker**. This reduces latency, simplifies deployment, and improves scalability, making it ideal for high-performance distributed systems.
+**Brokerless messaging** allows applications to communicate directly without a central broker, reducing latency and complexity.
 
-[ZeroMQ](https://zeromq.org/) is a lightweight, high-performance messaging library that supports brokerless communication. It provides **asynchronous sockets** with patterns like **publish/subscribe, request/reply, and push/pull**, allowing low-latency messaging across threads, processes, and machines. ZeroMQ abstracts the network layer, letting developers focus on application logic.
+* ZeroMQ: a high-performance library offering asynchronous sockets and patterns like pub/sub, request/reply, and push/pull. It enables fast, low-latency communication across threads, processes, and machines while abstracting networking details.
 
-[NanoMsg](https://nanomsg.org/) is a simplified, modular messaging library inspired by ZeroMQ. It supports **common messaging patterns** (pub/sub, pipeline, request/reply) and multiple transports (TCP, IPC, in-process). NanoMsg emphasizes **robustness, portability, and ease of maintenance**, making it suitable for scalable distributed applications.
-
+* NanoMsg: a simpler, modular alternative inspired by ZeroMQ, supporting similar messaging patterns and transports (TCP, IPC, in-process), with a focus on robustness, portability, and maintainability for scalable systems.
 
 #### Advantages
 1. **No Single Point of Failure**: Brokerless systems avoid the broker becoming a single point of failure, making the architecture more resilient to certain types of failures.
@@ -137,6 +136,16 @@ flowchart LR
     A --> C[Service C\nupdates its local projection]
 ```
 
+**State**
+- Operational and authoritative data of a service
+- Used by the service’s business logic
+- Acts as the source of truth for that service’s responsibilities
+
+**Projection**
+- Derived view of data built from events or other sources
+- Optimized for querying, reporting, or read performance
+- Not authoritative; can be rebuilt from the underlying events or state
+
 ### Change Data Capture (CDC) aka Automated ECST
 
 **Purpose:**  
@@ -155,18 +164,6 @@ flowchart LR
     CDC --> B[Service B\nupdates its local state]
     CDC --> C[Service C\nupdates its local projection]
 ```
-
-### Event Sourcing
-
-**Purpose:**
-The *event log is the system of record*, not a table with current state.
-
-**Characteristics:**
-
-* Every state change = event
-* State is rebuilt by event replay
-* Perfect audit log
-* Enables temporal queries
 
 ### Saga Pattern (Orchestration)
 
@@ -189,6 +186,58 @@ sequenceDiagram
     Orchestrator ->> Order: OrderCompletedEvent
 ```
 
+### CQRS (Command Query Responsibility Segregation)
+
+**Purpose:**
+Separate the system into a **write (command) side** and a **read (query) side** to optimize scalability, performance, and model clarity.
+
+**Characteristics:**
+
+* Commands and queries are handled by different models
+* Write side focuses on consistency and business rules
+* Read side is optimized for fast queries and projections
+* Events are often used to synchronize both sides
+
+```mermaid
+flowchart LR
+
+%% COMMAND SIDE
+    subgraph Command Side
+        CAPI[Command API]
+        CS[Order Command Service]
+        CDB[(Command DB)]
+
+        CAPI --> CS
+        CS --> CDB
+        CS -->|Publish Events| BROKER[(Message Broker)]
+    end
+
+%% BROKER
+    BROKER -->|Events| CONSUMER[Event Consumers]
+
+%% QUERY SIDE
+    subgraph Query Side
+        QAPI[Query API]
+        QS[Order Query Service]
+        QDB[(Query DB / Read Model)]
+
+        CONSUMER --> QS
+        QS --> QDB
+        QAPI --> QS
+    end
+```
+
+### Event Sourcing
+
+**Purpose:**
+The *event log is the system of record*, not a table with current state.
+
+**Characteristics:**
+
+* Every state change = event
+* State is rebuilt by event replay
+* Perfect audit log
+* Enables temporal queries
 
 ## Brokers at the Edge – Key Benefits
 
