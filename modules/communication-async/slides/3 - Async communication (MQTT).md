@@ -1,118 +1,518 @@
 # Asynchronous communications (MQTT)
 
-The **Message Queuing Telemetry Transport (MQTT)** is a lightweight, publish-subscribe messaging protocol designed for constrained devices, low-bandwidth networks, and IoT applications. 
+## What is MQTT?
 
-* Extremely lightweight → suitable for **IoT and constrained devices**
-* Low bandwidth and low latency
-* Reliable delivery with configurable QoS
-* Easy integration with **microservices**, edge devices, and cloud services
-* Ideal for **telemetry, monitoring, notifications, and event-driven architectures**
+**Message Queuing Telemetry Transport (MQTT)**
 
-| Broker                          | MQTT Version      | Notes                                                                                |
-| ------------------------------- | ----------------- | ------------------------------------------------------------------------------------ |
-| **Mosquitto**                   | 3.1 / 3.1.1 / 5.0 | Open source, lightweight broker, widely used in IoT and microservices.               |
-| **HiveMQ**                      | 3.1 / 3.1.1 / 5.0 | Commercial broker with enterprise support and high scalability.                      |
-| **EMQX**                        | 3.1 / 3.1.1 / 5.0 | High-performance, open-source broker with clustering and cloud-native support.       |
-| **RabbitMQ (with MQTT plugin)** | 3.1 / 3.1.1 / 5.0 | Supports MQTT alongside AMQP/STOMP. Useful for heterogeneous messaging environments. |
-| **AWS IoT Core**                | 3.1.1 / 5.0       | Cloud-managed MQTT broker with secure device connectivity.                           |
-| **Microsoft Azure IoT Hub**     | 3.1 / 3.1.1       | Cloud MQTT broker supporting device-to-cloud and cloud-to-device messaging.          |
-| **Google Cloud IoT Core**       | 3.1 / 3.1.1       | Managed MQTT broker for secure IoT device communication.                             |
-| **LavinMQ**                     | 3.1.1 / 5.0       | High-performance broker, compatible with standard MQTT clients.                      |
+A lightweight publish/subscribe messaging protocol designed for:
+
+* constrained devices
+* unreliable or low-bandwidth networks
+* IoT and edge computing scenarios
+
+👉 Unlike HTTP (request/response), MQTT is **event-driven and asynchronous**.
+
+---
+
+## Key Characteristics
+
+* Low bandwidth usage
+* Low latency
+* Asynchronous communication
+* Decoupled architecture
+* Native fit for IoT
+
+👉 Ideal when you have many distributed producers and consumers.
+
+---
+
+## MQTT Architecture
+
+Core components:
+
+* **Publisher** → sends messages
+* **Broker** → routes messages
+* **Subscriber** → receives messages
+
+```mermaid
+graph LR
+    P[Publisher] --> B[MQTT Broker]
+    B --> S1[Subscriber 1]
+    B --> S2[Subscriber 2]
+```
+
+👉 The broker is the central component.
+
+---
+
+## Decoupling
+
+MQTT enables three types of decoupling:
+
+* **Temporal** → clients do not need to be online at the same time
+* **Spatial** → clients do not know each other
+* **Technological** → different languages and platforms
+
+👉 This is why MQTT works well with microservices.
+
+---
+
+## MQTT in Microservices
+
+MQTT acts as a:
+
+👉 **Lightweight Event Bus**
+
+Typical use cases:
+
+* notifications
+* telemetry
+* real-time updates
+
+```mermaid
+graph LR
+    D[Device / Service] --> B[MQTT Broker]
+    B --> M1[Microservice A]
+    B --> M2[Microservice B]
+    B --> M3[Microservice C]
+```
+
+---
+
+## Brokers
+
+Common MQTT brokers:
+
+* Mosquitto → lightweight, open-source
+* HiveMQ → enterprise-grade
+* EMQX → high-performance, clustered
+* RabbitMQ (MQTT plugin)
+* Cloud solutions (AWS IoT, Azure IoT)
+
+---
 
 ## Message Structure
 
-### Message Overview
+An MQTT message includes:
 
-An **MQTT message** consists of:
-* **Topic**: hierarchical string used to route messages
-* **Payload**: the data being sent (binary, JSON, text, etc.)
-* **QoS (Quality of Service)**: delivery guarantee level
-* **Retain flag**: indicates if broker should store the last message for new subscribers
-* **Message ID / Properties**: optional metadata
+* **Topic** → routing key
+* **Payload** → data (JSON, binary, etc.)
+* **QoS** → delivery guarantee
+* **Retain flag**
+* **Properties** (MQTT 5.0)
+
+---
+
+## Topics
+
+Topics are hierarchical strings:
 
 ```
-## Example MQTT PUBLISH
-
-Topic: bank/account/BA-1001-2025
-Payload: { "amount": 100.0 }
-QoS: 1
-Retain: false
+bank/account/123/deposit
+sensors/temperature/lab1
 ```
 
-### Topics
+👉 Topics define routing, not the payload.
 
-* Topics are **hierarchical strings**: 
-  * `level1/level2/level3`
-  * `bank/account/BA-1001-2025`
-  * `sensors/temperature/lab1`
+---
 
-### Quality of Service (QoS)
+## Topic Design (Best Practices)
 
-* MQTT defines **three QoS levels** for message delivery:
+Recommended pattern:
 
-    * `0` → At most once (fire-and-forget)
-    * `1` → At least once (message may be delivered multiple times)
-    * `2` → Exactly once (ensures no duplicates)
+```
+<domain>/<entity>/<id>/<event>
+```
+
+Examples:
+
+* iot/device/thermostat-1/temperature
+* bank/account/123/withdraw
+
+❗ Avoid:
+
+* generic topics like `data`, `events`
+* encoding routing logic inside payloads
+
+---
+
+## Subscriptions & Wildcards
+
+* `+` → matches one level
+* `#` → matches multiple levels
+
+Examples:
+
+```
+home/+/temperature
+home/#
+```
+
+---
+
+## Quality of Service (QoS)
+
+* QoS 0 → at most once
+* QoS 1 → at least once
+* QoS 2 → exactly once
+
+---
+
+## QoS Trade-offs
+
+| QoS | Guarantee     | Cost   | Typical Use            |
+| --- | ------------- | ------ | ---------------------- |
+| 0   | None          | Low    | High-frequency sensors |
+| 1   | At least once | Medium | Business events        |
+| 2   | Exactly once  | High   | Critical operations    |
+
+👉 QoS 2 is rarely used in practice due to overhead.
+
+👉 QoS 1 may produce duplicates
+
+* idempotent consumers
+* message IDs
+* deduplication logic
+
+
+---
+
+## Retained Messages vs Event Messages (MQTT)
 
 ### Retained Messages
 
-**Retained message (MQTT)**: a message the broker **remembers** for a topic.
+- The broker stores the **last message per topic**
+- New subscribers immediately receive the **latest retained value**
 
-* Publisher sets **retain = true** → broker stores it.
-* New subscribers **immediately receive** the last retained message.
-* Only **one retained message per topic** exists; new retained messages **replace** the old one.
+👉 This is used to represent the **current state** of a system
 
-```
-Topic: sensors/temperature/lab1
-Payload: 22.5
-Retain: true
-```
+**Typical use case:**
+- device status (online/offline)
+- current configuration
+- latest known sensor value
 
-> Think of retained messages like a “sticky note” attached to a topic — the broker always keeps the **latest sticky note** for new subscribers.
+---
 
+### Event Messages (Non-Retained)
 
-### Last Will and Testament (LWT)
+- Messages are **transient**
+- Delivered only at the time of publication
+- Not stored by the broker
 
-**Last Will and Testament (LWT) – MQTT**: a mechanism to **notify others if a client disconnects unexpectedly**.
+👉 This represents a **change or event over time**
 
-* Client sets **LWT** on connect: topic, payload, QoS, retain.
-* **Graceful disconnect** → LWT is ignored.
-* **Ungraceful disconnect** → broker **automatically publishes** the LWT message.
-* Subscribers can take **corrective action**.
+**Typical use case:**
+- temperature readings
+- alerts
+- activity logs
 
-```
-LWT topic: clients/BA-1001-2025/status
-LWT payload: "offline"
-LWT retain: true
-```
+---
 
-### Subscriptions
+### Key Insight
 
-* Subscribers register interest in **topics** or **topic patterns**.
-* Broker delivers messages according to **topic hierarchy** and QoS settings.
-* Supports **multiple subscribers per topic**.
-* Supports **wildcards** for subscriptions:
+👉 Retained messages represent **“what is true now”**  
+👉 Event messages represent **“what just happened”**
+---
 
-* `+` → Matches **exactly one level** of the topic hierarchy
-* `#` → Matches **any number of levels**, including zero
+## Last Will and Testament (LWT)
 
+* Defined when the client connects
+* Published by the broker on unexpected disconnect
 
-```text
-Topic subscription: home/+/temperature
-Matches:
-home/livingroom/temperature
-home/kitchen/temperature
-Does NOT match:
-home/livingroom/inside/temperature
+```mermaid
+graph LR
+    C[Client] --> B[Broker]
+    C -.disconnect failure.-> B
+    B --> S[Subscribers receive LWT]
 ```
 
-```text
-Topic subscription: home/#
-Matches:
-home/livingroom/temperature
-home/kitchen/humidity
-home/livingroom/inside/light
+Use case:
+
+* failure detection in distributed systems
+
+---
+
+## Persistent Sessions (MQTT)
+
+**clean session = false**
+
+When a client reconnects, the broker preserves its session state instead of resetting everything.
+
+The broker stores:
+- subscriptions
+- undelivered QoS 1/2 messages
+- in-flight messages (awaiting acknowledgment)
+
+👉 Useful for intermittently connected devices (IoT, mobile, edge systems)
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant B as Broker
+    participant P as Publisher
+
+    C->>B: CONNECT (cleanSession=false)
+    C->>B: SUBSCRIBE sensors/temp
+    C--x B: Disconnect (offline)
+
+    P->>B: PUBLISH sensors/temp (QoS 1)
+    Note right of B: Message stored in session
+
+    C->>B: RECONNECT (same clientId)
+    B->>C: Deliver stored messages
 ```
+
+## Multiple Consumers on the Same MQTT Topic
+
+### Default Behavior (Standard MQTT)
+
+In MQTT, when multiple clients subscribe to the **same topic**, each of them receives a **full copy** of every message.
+
+👉 This is a **publish/subscribe broadcast model (fan-out)**
+
+```mermaid
+graph LR
+    P[Publisher] --> B[MQTT Broker]
+    B --> C1[Consumer A]
+    B --> C2[Consumer B]
+    B --> C3[Consumer C]
+````
+
+* Each subscriber receives **all messages**
+* There is **no load balancing**
+* Consumers are **independent of each other**
+
+### Shared Subscriptions (MQTT 5.0)
+
+MQTT 5.0 introduces **shared subscriptions** for load balancing:
+
+```
+$share/group1/sensors/temp
+```
+
+```mermaid
+graph LR
+    P[Publisher] --> B[MQTT Broker]
+    B --> C1[Consumer 1]
+    B --> C2[Consumer 2]
+    B --> C3[Consumer 3]
+```
+
+* each message is delivered to **only one consumer in the group**
+* enables **horizontal scaling**
+* behaves similarly to a **queue / consumer group**
+
+---
+
+## End-to-End Example
+
+```mermaid
+graph LR
+    D[IoT Device] --> B[MQTT Broker]
+    B --> M1[Monitoring Service]
+    B --> M2[Alerting Service]
+    B --> M3[Storage Service]
+```
+
+Flow:
+
+1. Device publishes temperature
+2. Broker distributes message
+3. Multiple services react independently
+
+---
+
+## Integration Patterns
+
+* MQTT → Kafka bridge
+* MQTT → REST gateway
+* MQTT → database sink
+
+👉 MQTT is often part of a larger architecture.
+
+---
+
+## Case Study 1: Smart Home
+
+Scenario:
+
+* Sensors publish temperature and humidity
+* Mobile app subscribes for real-time updates
+* Backend stores data
+
+```mermaid
+graph LR
+    S[Sensor] --> B[Broker]
+    B --> A[Mobile App]
+    B --> DB[Backend Storage]
+```
+
+Key benefits:
+
+* real-time updates
+* low power consumption
+
+---
+
+## Case Study 2: Industrial IoT
+
+Scenario:
+
+* Machines publish telemetry
+* Monitoring service detects anomalies
+* Alerting system triggers alarms
+
+```mermaid
+graph LR
+    M[Machine] --> B[Broker]
+    B --> MON[Monitoring]
+    MON --> ALERT[Alert System]
+```
+
+Key benefits:
+
+* predictive maintenance
+* decoupled analytics
+
+---
+
+## Case Study 3: Microservices Event System
+
+Scenario:
+
+* Order service publishes events
+* Payment, shipping, and notification services react
+
+```mermaid
+graph LR
+    O[Order Service] --> B[Broker]
+    B --> P[Payment Service]
+    B --> S[Shipping Service]
+    B --> N[Notification Service]
+```
+
+Key benefits:
+
+* loose coupling
+* scalability
+
+---
+
+## When NOT to Use MQTT
+
+Avoid MQTT for:
+
+* large-scale streaming → use Kafka
+* request/response APIs → use REST
+* strong transactional workflows
+
+---
+
+## Failure Scenarios
+
+### 1. Broker Failure
+
+Problem:
+
+* Single broker becomes a bottleneck or point of failure
+
+Solution:
+
+* clustering (EMQX, HiveMQ)
+* broker redundancy
+
+```mermaid
+graph LR
+    C[Clients] --> B1[Broker 1]
+    C --> B2[Broker 2]
+```
+
+---
+
+### 2. Network Partition
+
+Problem:
+
+* Clients disconnect intermittently
+
+Solutions:
+
+* persistent sessions
+* message buffering
+* retries with backoff
+
+---
+
+### 3. Message Loss (QoS 0)
+
+Problem:
+
+* messages can be dropped
+
+Solution:
+
+* use QoS 1 or QoS 2
+* implement retry logic
+
+---
+
+### 4. Duplicate Messages (QoS 1)
+
+Problem:
+
+* at-least-once delivery → duplicates
+
+Solution:
+
+* idempotent consumers
+* deduplication
+
+---
+
+### 5. Slow Consumers
+
+Problem:
+
+* consumers cannot keep up
+
+Solutions:
+
+* shared subscriptions
+* horizontal scaling
+
+---
+
+## Resilience Patterns
+
+### Retry with Backoff
+
+* exponential retry strategy
+* avoids overload during failures
+
+---
+
+### Circuit Breaker
+
+* stop sending requests to failing services
+* recover after cooldown
+
+---
+
+### Dead Letter Topic (DLT)
+
+* failed messages redirected
+
+```
+sensors/temp → processing → DLT
+```
+
+---
+
+### Idempotent Consumer
+
+* process each message once logically
+
+---
 
 ## Resources
 

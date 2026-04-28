@@ -2,12 +2,12 @@ server:
   port: 8082
 
 mqtt:
-  url: tcp://localhost:1883
-  username:
-  password:
-  clean-session: true
-  client-id: subscriber-service
-  default-topic: events/mytopic
+  url: ${MQTT_URL:tcp://localhost:1883}
+  username: ${MQTT_USERNAME:}
+  password: ${MQTT_PASSWORD:}
+  clean-session: ${MQTT_CLEAN_SESSION:true}
+  client-id: ${MQTT_CLIENT_ID:subscriber-service}
+  default-topic: ${MQTT_DEFAULT_TOPIC:bank/#}
 
 ---
 spring.config.activate.on-profile: docker

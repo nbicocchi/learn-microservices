@@ -63,7 +63,8 @@ public class MqttConfig {
                 new MqttPahoMessageHandler(clientId, factory);
 
         handler.setAsync(true);
-        handler.setDefaultTopic(defaultTopic);
+        //no default topic
+        //handler.setDefaultTopic(defaultTopic);
         handler.setDefaultQos(1);
 
         return handler;

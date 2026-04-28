@@ -42,6 +42,7 @@ public class ScheduledTask {
 
     @Scheduled(fixedRate = 100)
     public void randomMessage() {
+
         String account = accounts.get(randomGenerator.nextInt(accounts.size()));
         String action = actions.get(randomGenerator.nextInt(actions.size()));
 
@@ -50,10 +51,14 @@ public class ScheduledTask {
                 new SpecificEvent(
                         account,
                         action,
-                        randomGenerator.nextDouble(100.0)));
+                        randomGenerator.nextDouble(100.0))
+        );
 
-        log.info("Sending event: {}", event);
+        // dynamic topic based on domain model
+        String topic = "bank/" + account + "/" + action;
 
-        mqttGateway.sendToMqtt(event.toString());
+        log.info("Sending event to topic {}: {}", topic, event);
+
+        mqttGateway.sendToMqtt(event.toString(), topic);
     }
 }

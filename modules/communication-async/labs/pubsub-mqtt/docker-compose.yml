@@ -7,10 +7,16 @@ services:
       mosquitto:
         condition: service_healthy
 
-  subscriber:
+  subscriber-1:
     build: subscriber-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - MQTT_URL=tcp://mosquitto:1883
+      - MQTT_USERNAME=
+      - MQTT_PASSWORD=
+      - MQTT_CLEAN_SESSION=true
+      - MQTT_CLIENT_ID=subscriber-service
+      - MQTT_DEFAULT_TOPIC=bank/#
     depends_on:
       mosquitto:
         condition: service_healthy

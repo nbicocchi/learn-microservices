@@ -1,70 +1,99 @@
-# Asynchronous Communication (STOMP)
-
-## What is STOMP?
-
-The **Simple Text Oriented Messaging Protocol (STOMP)** is a **lightweight, text-based messaging protocol** used to communicate between **clients and message brokers**.
-
-👉 Key idea:
-STOMP prioritizes **simplicity and interoperability** over advanced features.
-
-**Typical use cases:**
-
-* Web applications (via WebSocket)
-* Lightweight microservices communication
-* Real-time notifications
+# Asynchronous Communication with STOMP 
 
 ---
 
-## Supported Brokers
+# What is STOMP?
 
-| Broker                       | STOMP Version | Notes                                                       |
-| ---------------------------- | ------------- | ----------------------------------------------------------- |
-| RabbitMQ                     | 1.2           | Supports STOMP alongside AMQP; widely used in microservices |
-| ActiveMQ (Classic / Artemis) | 1.2 / 1.1     | Enterprise-ready; supports STOMP, MQTT, AMQP                |
-| LavinMQ                      | 1.2           | High-performance, STOMP-compatible                          |
-| ActiveMQ Apollo              | 1.2           | Lightweight; STOMP + MQTT focused                           |
-| HornetQ                      | 1.0           | Legacy Java broker                                          |
-| Solace PubSub+               | 1.2           | Commercial; multi-protocol (STOMP, MQTT, AMQP, REST)        |
+## Definition
+
+STOMP (Simple Text Oriented Messaging Protocol) is a **lightweight, text-based protocol** that defines how clients communicate with message brokers over persistent connections (TCP or WebSocket).
+
+## Key idea
+
+👉 STOMP provides a **minimal, interoperable messaging standard**, independent of broker implementation.
 
 ---
 
-## STOMP Message Structure
+# Where STOMP is Used
 
-A STOMP message is called a **frame** and has three parts:
+## Typical use cases
 
-### 1. Command
+* Real-time web applications (via WebSocket)
+* Microservices event-driven communication
+* Notification systems
+* Lightweight pub/sub architectures
 
-👉 **Command**: specifica l’operazione del frame
+## Integration pattern
 
-* `CONNECT` → opens a connection with the broker
-* `SEND` → sends a message to a destination
-* `SUBSCRIBE` → registers to receive messages
-* `ACK` → confirms successful processing of a message
+Client ⇄ Broker ⇄ Subscribers
 
-### 2. Headers
+---
 
-Headers are simple **key-value pairs**:
+# Brokers Supporting STOMP
+
+STOMP is supported natively or via plugins/extensions.
+
+| Broker           | STOMP Version | Notes                            |
+| ---------------- | ------------- | -------------------------------- |
+| RabbitMQ         | 1.2           | Plugin-based STOMP support       |
+| ActiveMQ Artemis | 1.1/1.2       | Enterprise messaging platform    |
+| LavinMQ          | 1.2           | High-performance broker          |
+| Solace PubSub+   | 1.2           | Multi-protocol commercial broker |
+| HornetQ          | 1.0           | Legacy Java-based broker         |
+
+---
+
+# STOMP over WebSocket
+
+## Why WebSocket?
+
+* Full-duplex communication
+* Low latency
+* Ideal for browsers
+
+👉 STOMP over WebSocket enables real-time web messaging without polling.
+
+---
+
+# Core Concept: Frames
+
+STOMP communication is based on **frames**, which are structured text messages composed of:
+
+1. Command
+2. Headers
+3. Body
+
+---
+
+# 7. STOMP Frame Structure
+
+## 1. Command
+
+Defines the operation:
+
+* CONNECT
+* SEND
+* SUBSCRIBE
+* ACK
+* DISCONNECT
+
+## 2. Headers
+
+Key-value metadata:
 
 ```text
-destination: /queue/money.deposit
-receipt: msg-12345
-priority: 5
-correlation-id: 123e4567...
+content-type: application/json
+destination: /queue/orders
+correlation-id: 12345
 ```
 
-👉 They are used for:
+## 3. Body
 
-* Routing
-* Message tracking
-* Delivery control
-
-### 3. Body
-
-The payload (e.g., JSON, XML, text)
+Payload (JSON, XML, text)
 
 ---
 
-### Example: SEND Frame
+# 8. Example: SEND Frame
 
 ```
 SEND
@@ -77,58 +106,127 @@ correlation-id:123e4567-e89b-12d3-a456-426614174000
   "accountId": "BA-1001-2025",
   "amount": 100.0
 }
-^@
+\0
 ```
 
-👉 `^@` = frame terminator (null character)
+👉 Frame terminator: null character (`\0`)
 
 ---
 
-## Destinations
+# 9. Destinations Model
 
-STOMP uses **destinations** instead of exchanges.
+STOMP uses **logical destinations** instead of broker-specific routing constructs.
 
-Think of them as:
+## Types
 
-* `/queue/...` → **Point-to-point (load balanced)**
-* `/topic/...` → **Publish/subscribe (broadcast)**
+* `/queue/...` → point-to-point (competing consumers)
+* `/topic/...` → publish/subscribe (broadcast)
 
-Examples:
+## Example
 
-* `/queue/orders`
+* `/queue/payments`
 * `/topic/notifications`
 
-👉 Wildcards supported:
+---
+# 10. Routing Semantics
 
-* `/topic/*`
+👉 **STOMP does NOT define routing logic.**
+
+STOMP is only responsible for defining **message format and communication semantics**, not how messages are routed inside the messaging system.
+
+| Layer  | Responsibility                                                  |
+| ------ | --------------------------------------------------------------- |
+| STOMP  | Message format + commands (SEND, SUBSCRIBE, ACK)                |
+| Broker | Routing, delivery semantics, queues/topics, fanout, persistence |
 
 ---
 
-## Subscriptions
+## 🐰 RabbitMQ (STOMP plugin)
 
-Consumers subscribe to a destination:
+* STOMP messages are translated into AMQP concepts
+* `/queue/...` → queue (competing consumers)
+* `/topic/...` → exchange-based routing (fanout / topic exchange)
+
+👉 Actual routing depends on:
+
+* exchange type
+* binding configuration
+* broker setup
+
+---
+
+## ☕ ActiveMQ / Artemis
+
+* Native STOMP support
+* `/queue/...` → internal queue abstraction
+* `/topic/...` → pub/sub topic with optional durable subscriptions
+
+👉 Mapping is more direct because STOMP aligns with broker-native primitives.
+
+---
+
+# 11. Subscription Model
+
+Clients subscribe to destinations:
 
 ```
 SUBSCRIBE
 id:sub-001
 destination:/queue/money.deposit
-ack:client
-^@
+ack:client-individual
+\0
 ```
---- 
 
-## Acknowledgements
+---
 
-Consumers can confirm message processing.
+# 12. Acknowledgement Mechanisms
 
-Modes:
+## Modes
 
-* `auto` → the broker **automatically considers the message delivered** as soon as it’s sent; the client **does nothing**.
-* `client` → the client must **manually send an ACK**; all messages received up to the ACK are confirmed together.
-* `client-individual` → the client sends an **ACK for each individual message**, confirming each message separately.
+### auto
 
-👉 Important for:
+* Broker automatically acknowledges delivery
+* No client interaction required
 
-* Reliability
-* Backpressure control
+### client
 
+* Client explicitly acknowledges messages
+* ACK is cumulative up to message
+
+### client-individual
+
+* Each message must be individually acknowledged
+* Fine-grained control
+
+---
+
+# 13. Reliability Considerations
+
+STOMP acknowledgements support:
+
+* At-least-once delivery
+* Backpressure handling
+* Failure recovery
+
+👉 However, exactly-once delivery is NOT guaranteed by STOMP itself.
+
+---
+
+# 16. Strengths of STOMP
+
+* Simple text format
+* Easy debugging
+* Language agnostic
+* WebSocket-friendly
+
+---
+
+# 17. Limitations
+
+* No native complex routing model
+* No strong delivery guarantees by design
+* Less efficient than binary protocols
+
+---
+
+## Resources
