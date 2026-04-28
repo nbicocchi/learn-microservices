@@ -1,7 +1,10 @@
 # **Asynchronous Communications (Kafka)**
 
 [Apache Kafka](https://kafka.apache.org/) is a **distributed streaming platform** designed for **high-throughput, fault-tolerant, and scalable** data pipelines.
-Kafka enables applications to **publish and subscribe to streams of records**, **store records durably**, and **process streams in real-time**.
+Kafka enables applications to:
+* **publish and subscribe to streams of records**
+* **store records durably**
+* **process streams in real-time**
 
 ---
 
@@ -10,14 +13,8 @@ Kafka enables applications to **publish and subscribe to streams of records**, *
 * **Broker**: Kafka server that stores records and serves clients.
 * **Producer**: Application that publishes messages to Kafka topics.
 * **Consumer**: Application that subscribes to topics and processes messages.
-* **Topic**: Stream of messages identified by a name.
-* **Partition**: A topic is divided into partitions for **parallelism and scalability**.
 
 ---
-
-* **Offset**: Each message in a partition has a unique sequential ID called an **offset**.
-* **Retention**: Kafka keeps messages for a configurable duration or size, independent of consumption.
-* **Replay**: Consumers can re-read messages by resetting their offsets.
 
 ## Kafka Topics
 
@@ -36,13 +33,14 @@ flowchart LR
 ```
 
 A **topic** is like a **channel** or **folder** where messages (called *records*) are stored.
-Producers write to a topic, consumers read from it.
-
-Key points:
+Producers write to a topic, consumers read from it. Topics enable **logical separation** of data streams.
 
 * A topic is **append-only** (Kafka never modifies existing events).
 * Consumers can read the same topic independently without interfering with each other.
-* Topics enable **logical separation** of data streams.
+* **Offset**: Each message in a partition has a unique sequential ID called an **offset**.
+* **Retention**: Kafka keeps messages for a configurable duration or size, independent of consumption.
+* **Replay**: Consumers can re-read messages by resetting their offsets.
+
 
 Example topics:
 
@@ -73,6 +71,7 @@ flowchart LR
 ```
 
 A **partition** is the *unit of parallelism and scaling* inside a topic.
+
 
 A topic is split into N partitions:
 
@@ -114,7 +113,7 @@ Partition 0:
   Followers: Broker 2, Broker 3
 ```
 
-If the leader fails, a follower becomes the new leader (**Raft**).
+If the leader fails, a follower becomes the new leader (**RAFT**).
 
 
 
@@ -172,4 +171,5 @@ If you need ordering per key (e.g., same `orderId`), you send messages using a *
 * [Kafka Official Documentation](https://kafka.apache.org/documentation/)
 * [Kafka Tutorials](https://kafka.apache.org/quickstart)
 * [Kafka in Action](https://www.manning.com/books/kafka-in-action)
+* https://www.redpanda.com/
 

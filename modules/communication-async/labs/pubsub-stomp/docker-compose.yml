@@ -1,0 +1,13 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-stomp
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI
+      - "61613:61613"  # STOMP
+    command: >
+      bash -c "
+      rabbitmq-plugins enable --offline rabbitmq_stomp &&
+      rabbitmq-server
+      "

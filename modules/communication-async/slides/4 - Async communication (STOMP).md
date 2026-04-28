@@ -4,13 +4,22 @@
 
 # What is STOMP?
 
-## Definition
-
 STOMP (Simple Text Oriented Messaging Protocol) is a **lightweight, text-based protocol** that defines how clients communicate with message brokers over persistent connections (TCP or WebSocket).
 
-## Key idea
-
 👉 STOMP provides a **minimal, interoperable messaging standard**, independent of broker implementation.
+
+**Strengths**
+
+* Simple text format
+* Easy debugging
+* Language agnostic
+* WebSocket-friendly
+
+**Limitations**
+
+* No native complex routing model
+* No strong delivery guarantees by design
+* Less efficient than binary protocols
 
 ---
 
@@ -45,8 +54,6 @@ STOMP is supported natively or via plugins/extensions.
 
 # STOMP over WebSocket
 
-## Why WebSocket?
-
 * Full-duplex communication
 * Low latency
 * Ideal for browsers
@@ -65,9 +72,7 @@ STOMP communication is based on **frames**, which are structured text messages c
 
 ---
 
-# 7. STOMP Frame Structure
-
-## 1. Command
+## Command
 
 Defines the operation:
 
@@ -77,7 +82,7 @@ Defines the operation:
 * ACK
 * DISCONNECT
 
-## 2. Headers
+## Headers
 
 Key-value metadata:
 
@@ -87,13 +92,13 @@ destination: /queue/orders
 correlation-id: 12345
 ```
 
-## 3. Body
+## Body
 
 Payload (JSON, XML, text)
 
 ---
 
-# 8. Example: SEND Frame
+# Example: SEND Frame
 
 ```
 SEND
@@ -113,7 +118,7 @@ correlation-id:123e4567-e89b-12d3-a456-426614174000
 
 ---
 
-# 9. Destinations Model
+# Destinations Model
 
 STOMP uses **logical destinations** instead of broker-specific routing constructs.
 
@@ -128,7 +133,7 @@ STOMP uses **logical destinations** instead of broker-specific routing construct
 * `/topic/notifications`
 
 ---
-# 10. Routing Semantics
+# Routing Semantics
 
 👉 **STOMP does NOT define routing logic.**
 
@@ -141,7 +146,7 @@ STOMP is only responsible for defining **message format and communication semant
 
 ---
 
-## 🐰 RabbitMQ (STOMP plugin)
+## RabbitMQ (STOMP plugin)
 
 * STOMP messages are translated into AMQP concepts
 * `/queue/...` → queue (competing consumers)
@@ -155,7 +160,7 @@ STOMP is only responsible for defining **message format and communication semant
 
 ---
 
-## ☕ ActiveMQ / Artemis
+## ActiveMQ / Artemis
 
 * Native STOMP support
 * `/queue/...` → internal queue abstraction
@@ -165,7 +170,7 @@ STOMP is only responsible for defining **message format and communication semant
 
 ---
 
-# 11. Subscription Model
+# Subscription Model
 
 Clients subscribe to destinations:
 
@@ -179,7 +184,7 @@ ack:client-individual
 
 ---
 
-# 12. Acknowledgement Mechanisms
+# Acknowledgement Mechanisms
 
 ## Modes
 
@@ -200,7 +205,7 @@ ack:client-individual
 
 ---
 
-# 13. Reliability Considerations
+# Reliability Considerations
 
 STOMP acknowledgements support:
 
@@ -209,24 +214,5 @@ STOMP acknowledgements support:
 * Failure recovery
 
 👉 However, exactly-once delivery is NOT guaranteed by STOMP itself.
-
----
-
-# 16. Strengths of STOMP
-
-* Simple text format
-* Easy debugging
-* Language agnostic
-* WebSocket-friendly
-
----
-
-# 17. Limitations
-
-* No native complex routing model
-* No strong delivery guarantees by design
-* Less efficient than binary protocols
-
----
 
 ## Resources
