@@ -41,7 +41,7 @@ public class ScheduledTask {
 
     private String routingKey(String accountId, String action) {
         // sharding on action
-        // return action;
+        //return action;
 
         // sharding on accountid
         int shard = Math.floorMod(accountId.hashCode(), SHARDS);

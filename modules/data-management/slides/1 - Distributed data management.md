@@ -7,20 +7,16 @@ While distributed applications provides numerous benefits, they have several lim
 
 The *Database per Service* pattern is a key principle in microservices architecture that promotes loose coupling and independent scalability by assigning each microservice its own dedicated database.
 
-In this pattern, each microservice manages its own private data store, which is not shared with other services. 
-
-This approach provides several advantages:
-* Services can use the most suitable database technology (SQL, NoSQL, time-series, etc.) for their specific needs. 
-* Services can manage its domain data independently, using a data store that best fits its schema and data types. 
+* Services can use the most suitable database technology (SQL, NoSQL, time-series, etc.) for their specific needs.
 * Services can scale their data stores independently and remain insulated from failures in other services.
 
 **However, when a transaction spans multiple databases, maintaining *ACID* properties becomes a challenge**. 
 
 ![distributed transaction](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/distributed-transaction.png)
 
-To address this, the **SAGA pattern** offers an alternative by breaking a transaction into a sequence of smaller, reversible steps. Each step represents a local transaction within a single service, and in case of failure, compensating actions ensure consistency.
+The **SAGA pattern** replaces a single distributed transaction with a sequence of local transactions across services. Each step is independent, and if something fails, **compensating actions** are executed to undo previous steps and keep the system consistent.
 
-Additionally, the **CQRS (Command Query Responsibility Segregation) pattern** can help manage complex data consistency requirements by separating write operations (commands) from read operations (queries), allowing for optimized data storage and retrieval strategies. This separation also enhances scalability and performance, as each side can be independently tuned, scaled, or implemented using different technologies to meet specific throughput and latency requirements.
+The **CQRS pattern** improves handling of complex systems by separating **writes (commands)** from **reads (queries)**. This allows each side to be optimized, scaled, and implemented independently, improving both **scalability and performance**.
 
 ## CAP Theorem
 In 2000, Eric Brewer introduced the idea that there is a fundamental trade-off between
@@ -29,22 +25,9 @@ consistency, availability, and partition tolerance in distributed systems. More 
 * Availability
 * Partition tolerance
 
-Let's consider a very simple distributed system. Our system is composed of two servers, G1 and G2. Both of these servers are keeping track of the same variable, v, whose value is initially v0. G1 and G2 can communicate with each other and can also communicate with external clients.
-
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap1.svg)
-
-A client can request to write and read from any server. When a server receives a request, it performs any computations it wants and then responds to the client. 
-
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap2.svg)![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap3.svg)![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap4.svg)
-
-And here is what a read looks like.
-
-![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap5.svg)![](https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/assets/cap6.svg)
-
-
 **Consistency**
 
-> Every read receives the most recent write or an error. Note that consistency as defined in the CAP theorem is quite different from the consistency guaranteed in ACID database transactions.
+> Every read receives the most recent write or an error. 
 
 In a consistent system, once a client writes a value to any server and gets a response, it expects to get that value (or a fresher value) back from any server it reads from.
 
@@ -63,7 +46,7 @@ In this system, G1 replicates its value to G2 before sending an acknowledgement 
 
 **Availability**
 
-> Every request received by a non-failing node in the system must result in a response. Note that availability as defined in CAP theorem is different from high availability in software architecture.
+> Every request received by a non-failing node in the system must result in a response. 
 
 In an available system, if our client sends a request to a server and the server has not crashed, then the server must eventually respond to the client. The server is not allowed to ignore the client's requests.
 
@@ -124,20 +107,19 @@ In a distributed system, network partitions are inevitable. Under normal conditi
     - **Cassandra**, **DynamoDB**: NoSQL databases that prioritize availability and partition tolerance, offering eventual consistency.
 
 
-## PACEL Theorem
+## PACELC Theorem
 
-In 2007, **Daniel Abadi** extended the CAP theorem to describe a more complete trade-off in distributed systems, called **PACELC**.
+In 2007, **Daniel Abadi** extended the CAP theorem to describe a more complete trade-off in distributed systems.
 
-* PACELC states that in a distributed system:
+* **PACELC** states that in a distributed system: 
 
-> **If there is a Partition (P), choose between Availability (A) and Consistency (C).
-> Else (E), choose between Latency (L) and Consistency (C).**
+* **If there is a Partition (P), choose between Availability (A) and Consistency (C)**.
+
+* **Else (E), choose between Latency (L) and Consistency (C).**
 
 ### Partition Scenario (P)
 
 * Like CAP, when a network partition occurs:
-
-    * **C vs A trade-off** must be made
     * Either prioritize **consistency** (block some operations) → CP behavior
     * Or prioritize **availability** (accept all requests) → AP behavior
 
@@ -166,7 +148,9 @@ In 2007, **Daniel Abadi** extended the CAP theorem to describe a more complete t
 
 We'll take an example of an e-commerce application that processes online orders and is implemented as a microservice architecture.
 
-There is a microservice to create the orders, one that processes the payment, another that updates the inventory and the last one that delivers the order. Each of these microservices performs a local transaction to implement the individual functionalities:
+There is a microservice to create the orders, one that processes the payment, another that updates the inventory and the last one that delivers the order. 
+
+Each of these microservices performs a local transaction to implement the individual functionalities:
 
 ![distributed transaction](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/distributed-transaction.png)
 
@@ -187,33 +171,138 @@ Ensuring transaction correctness in a distributed system requires adherence to A
 
 ## The Two-Phase Commit Pattern (2PC)
 
-The Two-Phase Commit protocol (2PC) is a widely used pattern to implement distributed transactions. We can use this pattern in a microservice architecture to implement distributed transactions.
+The **Two-Phase Commit (2PC)** is a widely used protocol for implementing **distributed transactions**, especially in microservice architectures.
 
-In a two-phase commit protocol there are two key components:
-* the coordinator component that is responsible for controlling the transaction and contains the logic to manage the transaction.
-* the participating nodes (e.g., the microservices) that run their local transactions.
+It ensures that a transaction involving multiple services either **commits everywhere or aborts everywhere**.
 
-As the name indicates, the two-phase commit protocol runs a distributed transaction in two phases:
+---
 
-1.  **Phase 1 (Prepare)** -- The coordinator asks the participating nodes whether they are ready to commit the transaction. The participants returned with a *yes* or *no*.
-2.  **Phase 2 (Commit)** -- If all the participating nodes respond affirmatively in phase 1, the coordinator asks all of them to commit. If at least one node returns negative, the coordinator asks all participants to roll back their local transactions.
+### Main Components
 
-![two phase commit](https://www.baeldung.com/wp-content/uploads/sites/4/2021/04/two-phase-commit.png)
+- **Coordinator**
+  - Orchestrates the entire transaction
+  - Decides whether to commit or abort
 
+- **Participants**
+  - Microservices involved in the transaction
+  - Execute local parts of the transaction
 
-### Problems With 2PC
+---
 
-Although 2PC is useful to implement a distributed transaction, it has the following shortcomings:
+### The Two Phases
 
-* The coordinator node can become the **single point of failure**.
-* All other services need to wait until the slowest service finishes its confirmation. So, the **overall performance of the transaction is bound by the slowest service** **(scalability and performance issues)**.
-* Two-phase commit protocol is **not supported in most NoSQL databases**. Therefore, in a microservice architecture where one or more services use NoSQL databases, we can't apply a two-phase commit. 
+#### 1. Phase 1 — Prepare (Voting Phase)
 
-### Two-Phase Commit (2PC) and CAP Theorem
+The coordinator asks all participants:
 
-**Two-Phase Commit (2PC) aligns with the CP model in the CAP theorem**, prioritizing **consistency** over **availability** during network partitions. The protocol requires synchronous coordination among all participants; if any participant or the coordinator becomes unreachable, the transaction cannot proceed and enters a blocked state. This behavior ensures consistency but reduces availability. 
+> “Can you commit the transaction?”
 
-Because 2PC does not tolerate partitions well, it is poorly suited for environments where network partitions are frequent.
+Each participant replies:
+- **YES** → ready to commit
+- **NO** → cannot commit
+
+---
+
+#### 2. Phase 2 — Commit / Abort
+
+- If **all participants respond YES**, the coordinator sends a **commit** request
+- If **at least one participant responds NO**, the coordinator sends an **abort/rollback** request to all
+
+---
+
+### Problems with 2PC
+
+Despite its simplicity, 2PC has several important drawbacks:
+
+- **Single Point of Failure**
+  - The coordinator is critical; if it fails, the process may stall
+
+- **Blocking Problem**
+  - After voting YES, participants enter an uncertain state
+  - They cannot decide independently
+  - If the coordinator crashes, they may remain blocked indefinitely
+
+- **Poor Performance and Scalability**
+  - The overall transaction is limited by the slowest participant
+
+- **Limited Database Support**
+  - Many NoSQL systems do not support distributed transactions
+
+---
+
+## The Three-Phase Commit Pattern (3PC)
+
+The **Three-Phase Commit (3PC)** improves 2PC by adding an extra phase to reduce blocking and improve fault tolerance.
+
+The key idea is:
+
+> Participants should be able to reach a safe decision even if the coordinator fails.
+
+---
+
+### The Three Phases
+
+#### 1. CanCommit (Voting Phase)
+
+The coordinator asks participants whether they can commit.
+
+Participants respond:
+- **YES** / **NO**
+
+---
+
+#### 2. PreCommit Phase
+
+If all participants vote YES, the coordinator sends a **PRE-COMMIT** message.
+
+At this stage:
+- resources are locked
+- participants prepare to commit
+- but the transaction is not yet finalized
+
+Participants acknowledge this state.
+
+---
+
+#### 3. DoCommit (Final Commit Phase)
+
+The coordinator sends the final **COMMIT** command.
+
+If failures occur before this phase, participants can safely abort.
+
+---
+
+### Advantages of 3PC over 2PC
+
+- Reduces the **blocking problem**
+- Participants can infer safe states in some failure scenarios
+- Better fault tolerance than 2PC
+
+---
+
+### Limitations of 3PC
+
+Despite improvements, 3PC still has drawbacks:
+
+- Assumes a **partially synchronous system** (bounded network delays), which is unrealistic in many real-world systems
+- Introduces **additional communication overhead**
+- The coordinator is still a potential **single point of failure**
+- Rarely used in practice in modern distributed systems
+
+---
+
+## 2PC / 3PC and the CAP Theorem
+
+Both protocols fall under the **CP (Consistency + Partition Tolerance)** category of the CAP theorem.
+
+- They prioritize **consistency**
+- They sacrifice **availability** during network partitions
+
+If the coordinator or a participant becomes unreachable:
+- the transaction may block
+- the system cannot safely proceed
+
+👉 Result: strong consistency, but reduced availability under failures
 
 ## The SAGA Pattern
 
