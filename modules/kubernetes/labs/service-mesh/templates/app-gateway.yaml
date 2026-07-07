@@ -1,0 +1,71 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: app-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: app-routing
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - app-gateway
+  http:
+    # 1. The BFF Route
+    - match:
+        - uri:
+            prefix: /bff
+      route:
+        - destination:
+            host: bff-service
+            port:
+              number: 8080
+
+    # 2. The Users Route
+    - match:
+        - uri:
+            prefix: /users
+      route:
+        - destination:
+            host: user-service
+            port:
+              number: 8080
+
+    # 3. The Posts Route
+    - match:
+        - uri:
+            prefix: /posts
+      route:
+        - destination:
+            host: post-service
+            port:
+              number: 8080
+
+    # 4. The Comments Route
+    - match:
+        - uri:
+            prefix: /comments
+      route:
+        - destination:
+            host: comment-service
+            port:
+              number: 8080
+
+    # 5. Default catch-all route fallback
+    - route:
+        - destination:
+            host: bff-service
+            port:
+              number: 8080

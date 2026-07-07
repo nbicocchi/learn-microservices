@@ -1,0 +1,122 @@
+---
+# 1. PersistentVolumeClaim (The request for storage)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pg-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce # This means the volume can be mounted as read-write by a single node
+  resources:
+    requests:
+      storage: 1Gi  # Request 1 Gigabyte of storage space
+
+---
+# 2. Postgres Deployment (Updated)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: secret
+            - name: POSTGRES_DB
+              value: jdbc_schema
+          volumeMounts:
+            - name: pg-data-volume
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pg-data-volume
+          persistentVolumeClaim:
+            claimName: pg-data-pvc
+
+---
+# 3. Postgres Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# 4. Product-Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: mattev02/product-service
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/jdbc_schema
+
+---
+# 5. Product-Service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+    - name: http-alt
+      port: 8080
+      targetPort: 8080
+
+---
+# 6. Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chassis-demo-ingress
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: chassis.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: product-service
+                port:
+                  number: 8080

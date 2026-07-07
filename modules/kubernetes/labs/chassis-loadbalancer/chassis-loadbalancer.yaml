@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chassis-advanced-lb
+spec:
+  type: LoadBalancer
+
+  loadBalancerIP: "172.21.0.201"
+
+  # Standard service routing
+  selector:
+    app: product-service
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

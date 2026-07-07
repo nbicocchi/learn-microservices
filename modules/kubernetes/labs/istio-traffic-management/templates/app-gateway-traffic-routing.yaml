@@ -1,0 +1,104 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: app-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: bff-destination
+spec:
+  host: bff-service
+  subsets:
+    - name: v1
+      labels:
+        version: v1 # Matches the label on your v1 pods
+    - name: v2
+      labels:
+        version: v2 # Matches the label on your v2 pods
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: app-routing
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - app-gateway
+  http:
+    # 1. The BFF Route (with error rate)
+#    - match:
+#        - uri:
+#            prefix: /bff
+#          headers:
+#            x-beta-version:
+#              exact: "True"
+#      fault:
+#        abort:
+#          httpStatus: 404
+#          percentage:
+#            value: 30.0
+#      route:
+#        - destination:
+#            host: bff-service
+#            subset: v2
+#            port:
+#              number: 8080
+
+    - match:
+        - uri:
+            prefix: /bff
+      route:
+        - destination:
+            host: bff-service
+            subset: v1
+            port:
+              number: 8080
+
+    # 2. The Users Route
+    - match:
+        - uri:
+            prefix: /users
+      route:
+        - destination:
+            host: user-service
+            port:
+              number: 8080
+
+    # 3. The Posts Route
+    - match:
+        - uri:
+            prefix: /posts
+      route:
+        - destination:
+            host: post-service
+            port:
+              number: 8080
+
+    # 4. The Comments Route
+    - match:
+        - uri:
+            prefix: /comments
+      route:
+        - destination:
+            host: comment-service
+            port:
+              number: 8080
+
+    # 5. Default catch-all route fallback
+    - route:
+        - destination:
+            host: bff-service
+            port:
+              number: 8080

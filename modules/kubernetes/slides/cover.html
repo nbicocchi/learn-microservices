@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Cover</title>
+    <style>
+        /* Force the PDF engine to use 16:9 Landscape */
+        @page {
+            size: 16in 9in;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact; /* Forces background colors to print */
+            print-color-adjust: exact;
+        }
+
+        body, html {
+            width: 16in;
+            height: 9in;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Main container covering the full 16:9 area */
+        .cover-wrapper {
+            display: flex;
+            width: 16in;
+            height: 9in;
+        }
+
+        /* Left Side: Typography & Branding */
+        .text-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px;
+            background-color: #1a1a2e;
+            color: #ffffff;
+        }
+
+        .title {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #a8a8b3;
+            margin-bottom: 50px;
+        }
+
+        .metadata {
+            margin-top: auto;
+            font-size: 1.2rem;
+            color: #8b8b99;
+            border-left: 4px solid #e94560;
+            padding-left: 15px;
+        }
+
+        /* Right Side: The Picture */
+        .image-section {
+            flex: 1.2;
+            position: relative;
+            background-color: #1a1a2e;
+
+            /* Add these lines to vertically and horizontally center the image */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cover-image {
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    </style>
+</head>
+<body>
+<div class="cover-wrapper">
+
+    <div class="text-section">
+        <div>
+            <h1 class="title">Kubernetes and Istio</h1>
+            <h2 class="subtitle">LESSON_TITLE</h2>
+        </div>
+        <div class="metadata">
+            <p>Generated: June 2026</p>
+            <p>Version 1.0</p>
+        </div>
+    </div>
+
+    <div class="image-section">
+        <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.thagomizer.com%2Fimg%2Fkubernetes-logo.png&f=1&nofb=1&ipt=c5355a9523f7d73ad5b033c79548f23df38707508b69001bca2936b5c4b572d6" alt="Cover Art" class="cover-image">
+    </div>
+
+</div>
+</body>
+</html>

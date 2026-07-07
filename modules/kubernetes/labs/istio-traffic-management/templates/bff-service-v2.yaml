@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-service-v2
+  labels:
+    app: bff-service
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bff-service
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: bff-service
+        version: v2
+    spec:
+      containers:
+        - name: bff-service
+          image: mattev02/bff-service:v2
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10

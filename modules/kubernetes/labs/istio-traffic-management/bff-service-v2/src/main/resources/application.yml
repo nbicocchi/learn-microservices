@@ -1,0 +1,2 @@
+server.port: 7005
+spring.application.name: bff-service
